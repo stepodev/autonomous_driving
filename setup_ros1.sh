@@ -7,6 +7,15 @@ echo -e "\n\t\tUnd ab geht die wilde Fahrt!\n"
 
 sleep 2
 
+
+sudo apt-get update 
+sleep 3
+sudo apt-get upgrade
+sleep 3
+sudo apt-get dist-upgrade
+sleep 3
+
+
 #Setup your sources.list
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 
@@ -36,5 +45,6 @@ echo -e "\t...jetzt...\n"
 
 sleep 3
 
-echo -e "\n\n\n\n\t."
+echo -e "\n\n\n\n\t\t\t\t\t\t."
+
 
