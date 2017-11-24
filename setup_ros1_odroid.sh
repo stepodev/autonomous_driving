@@ -1,47 +1,39 @@
 #!/bin/bash
 
-set -e
 set -x
 
-echo -e "\n\t\tUnd ab geht die wilde Fahrt!\n"
-
-sleep 2
-
-
-sudo apt-get update 
-sleep 3
-sudo apt-get upgrade
-sleep 3
+printf '\n\t\tUnd ab geht die wilde Fahrt!\n'
 
 #Setup your sources.list
-sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' &&
 
 #Set up your keys
-sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116 &&
 
-set +e
-sudo apt-get update
-set -e
-sudo apt-get install ros-lunar-desktop-full
+#Updating sources and upgrading packages
+sudo apt-get update &&
+sudo apt-get upgrade &&
 
-sudo rosdep init
-rosdep update
+#Installing ros lunar
+sudo apt-get install ros-lunar-desktop-full &&
+sudo rosdep init &&
+rosdep update &&
 
 #Dependencies for building packages
-sudo apt-get install python-rosinstall python-rosinstall-generator python-wstool build-essential
+sudo apt-get install python-rosinstall python-rosinstall-generator python-wstool build-essential &&
 
-#environment variables
+#Environment variables
 echo "source /opt/ros/lunar/setup.bash" >> ~/.bashrc
 source ~/.bashrc
-set +x
-echo -e "\t...läuft...\n"
+
+{ set +x; } 2>/dev/null
+
+printf '\t...läuft...\n'
 
 sleep 5
 
-echo -e "\t...jetzt...\n"
+print '\t...jetzt...\n'
 
 sleep 3
 
-echo -e "\n\n\n\n\t\t\t\t\t\t."
-
-
+printf '\n\n\n\n\t\t\t\t\t\t.'
