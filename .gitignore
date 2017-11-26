@@ -1,0 +1,7 @@
+*.log
+*.aux
+*.fdb_*
+*.fls
+*.pdf
+*.synctex.*
+*.toc

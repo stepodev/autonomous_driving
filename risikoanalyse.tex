@@ -1,18 +1,23 @@
 \documentclass[a4paper, 12pt, titlepage]{scrartcl}  
-\usepackage[T1]{fontenc}
+%\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman]{babel}
+\usepackage{enumitem}
 
 \usepackage{url}
 \usepackage{listings} %Quellcode-Einbinden
 \usepackage[table,gray]{xcolor}
 \pagenumbering{arabic} 
 \usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage[onehalfspacing]{setspace}
-\usepackage[left=3cm,right=3cm,top=2cm,bottom=2cm,includeheadfoot]{geometry}
-\usepackage{tikz}
-\usepackage{overpic}
+%\usepackage{booktabs}
+%\usepackage[onehalfspacing]{setspace}
+%\usepackage[left=3cm,right=3cm,top=2cm,bottom=2cm,includeheadfoot]{geometry}
+\usepackage[left=2cm,right=2cm,top=1cm,bottom=1cm,includeheadfoot]{geometry}
+%\usepackage{tikz}
+%\usepackage{overpic}
+
+\usepackage{enumitem}
+\setitemize{itemsep=0pt}
 
 \begin{document}
 \title{Risikoanalyse\\zum Projekt\\Hochautomatisiertes Fahren} 
@@ -21,7 +26,74 @@
 \tableofcontents
 \newpage
 
-\section{Akzeptanzkriterien (Platzhalter)}
+\section{Akzeptanzkriterien}
+\textbf{Beschreibung}: Erfolg des Projekts ist bedingt durch die erfüllung der Demo Akzeptanzkritierien. Diese sind:
+		\begin{itemize}
+			\item[1.] Ausgangssituation: 3 Fahrzeuge stehen hintereinander.
+			\item[2.]
+			\begin{itemize}
+				\item[a)] Kunde stellt Hindernis in gerader Linie
+				\item[b)] Kunde startet das komplette Szenario.
+			\end{itemize}
+			\item[3.] Die Fahrzeuge fahren im festem Abstand gerade aus und fahren in Kolonne bis zum Hindernis und bleiben dort stehen.
+		\end{itemize}
+
+	\subsection{Szenario läuft nicht fehlerlos ab}
+		\textbf{Beschreibung}: Beliebiger unbekannter Fehler\\
+		\textbf{Auswirkung}: Akzeptanzkriterium nicht erfüllt\\
+		\textbf{Tragweite}: Projektgefährdend\\
+		\textbf{Prävention}:
+		\begin{itemize}
+			\item Test unter Szenariobedingungen mit maximaler verfügbarer Redundanz
+		\end{itemize}
+		\textbf{Alternativen}: 
+
+	\subsection{Szenario schlägt fehl wegen Bauteilfehler}
+	\textbf{Beschreibung}: Unentdeckter Bauteilfehler bei Szenarioausführung\\
+	\textbf{Auswirkung}: Akzeptanzkriterium nicht erfüllt\\
+	\textbf{Tragweite}: Projektgefährdend\\
+	\textbf{Prävention}: 
+	\begin{itemize}
+		\item Eine Woche vor Demo sind alle VIER Fahrzeuge im fahrbereiten Zustand
+		\item maximal DREI werden in dieser Woche zum testen eingesetzt
+		\item HW Bauanleitung ist komplett 1 Woche vorher vorhanden
+	\end{itemize}
+	\textbf{Alternativen}: 
+
+	\subsection{Steuerung funktioniert nicht}
+		\textbf{Beschreibung}: Steuerrechner bei Szenariostart funktioniert nicht\\
+		\textbf{Auswirkung}: Akzeptanzkriterium nicht erfüllt\\
+		\textbf{Tragweite}: Projektgefährdend\\
+		\textbf{Prävention}:		
+		\begin{itemize}
+			\item Jede Gruppe hält einen Steuerrechner lauffähig
+			\item Generalprobe mit allen drei Steuerrechnern
+		\end{itemize}
+		\textbf{Alternativen}: 
+
+	\subsection{Bodenbeschaffenheit verändert Fahrverhalten}
+		\textbf{Beschreibung}: Demoboden verändert fahrverhaltend der Fahrzeuge so, dass Kolonnenverhalten fehlschlägt oder es zur Kollision mit Hindernis kommt\\
+		\textbf{Auswirkung}: Akzeptanzkriterium nicht erfüllt\\
+		\textbf{Tragweite}: Projektgefährdend\\
+		\textbf{Prävention}:
+		\begin{itemize}
+			\item Generalprobe vor Ort
+		\end{itemize}
+		\textbf{Alternativen}: 
+
+	\subsection{Kamera erkennt Hinderniss falsch}
+		\textbf{Beschreibung}: Passanten, Objekte neben Fahrbahn verändern Erkennungsverhalten. Kolonne hält nicht vor dem vom Kunden aufgestellten Objekt
+		\textbf{Auswirkung}: Akzeptanzkriterium nicht erfüllt\\
+		\textbf{Tragweite}: Projektgefährdend\\
+		\textbf{Prävention}: \\
+		\begin{itemize}
+			\item Test mit Passanten und Objekten neben Fahrbahn
+			\item eindeutige Markierung des Objektes
+		\end{itemize}
+		\textbf{Alternativen}: 
+
+	
+\newpage
 \section{Technische Risiken}
 	\subsection{Sach- und Personenschaden durch Kollision}
 		\textbf{Beschreibung}: Sowohl in der Entwicklungsphase als auch bei der abschlie\ss enden Demonstration kann es dazu kommen, dass die Fahrzeuge mit anderen Objekten oder Menschen kollidieren. Eine Kollision kann wie folgt zustande kommen: 
@@ -153,6 +225,7 @@
 				\item Bei Datenverlust auf Universit\"atsserver: Wenden an die RBG\footnote{Rechnerbetriebsgruppe}
 			\end{itemize}
 
+\newpage
 \section{Organisatorische Risiken}
 	\subsection{Schlechte Kommunikation innerhalb des Teams}
 		\textbf{Beschreibung}: Dies betrifft u.a. missverst\"andliche Arbeitszuteilung, unklare Zust\"andigkeiten, Nichteinhalten von Terminen etc. Schlechte Kommunikation kann aber auch bedeuten, dass \"ueber zu viele Kommunikationskan\"ale kommuniziert werden soll und/oder einzelne Mitglieder des Teams die Granularit\"t der Kommunikation als viel zu fein einsch\"atzen, sodass die Kommunikation allein einen Overhead erzeugt, welcher zus\"atzlichen Arbeitsaufwand mit sich bringt.\\
@@ -203,7 +276,7 @@
 				\item organisatorische M\"angel
 				\item Unzufriedenheit, Frust mit dem eigenen Team
 				\item Gef\"uhl, man kommt nicht voran
-				\item Krankheit
+				\item Krankheitb
 			\end{itemize}
 		\textbf{Auswirkung}: Der Workload der verbliebenen Teammitglieder verdichtet sich. \\
 		\textbf{Tragweite}: projektgef\"ahrdend.\\
@@ -272,7 +345,48 @@
 			\end{itemize}
 		Alternativen: /
 
+\
+
 \section{Quellen (Platzhalter)}
 
 
 \end{document}
+
+\subsection{}
+	\textbf{Beschreibung}: \\
+	\textbf{Auswirkung}: \\
+	\textbf{Tragweite}: \\
+	\textbf{Prävention}: \\
+	\begin{itemize}
+		\item
+	\end{itemize}
+	\textbf{Alternativen}: 
+
+	[h4] Risiko Ausbaustufen
+Risiko ABS 2 Obermenge DEMO
+Risiko ABS 3 Obermenge DEMO
+* Bodenbeschaffenheit verändert Kreisfahrverhalten
+  * Risikominimierung:
+    * Generalprobe vor Ort der DEMO
+* Protokoll gibt Kreisfahrverhalten vor, wird von Fahrzeugen unterschiedlich ausgeführt
+  * Risikominimierung:
+    * Jedes Fahrzeug ist selbst verantwortlich Kreisfahrverhalten
+* Kamera erkennt Hindernis vor sich aber ausserhalb des Kreises
+  * Risikominimierung:
+    * Kreis testen mit Hindernissen an den Seiten
+* Akku fällt während fahrt aus
+  * Risikominimierung:
+    * Akkustatus auf Steuerrechner
+    * Notaus Testfall "Auto tot"
+* Auto verlässt Kreis unerwartet ( Szenario Kindertritt )
+  * Risikominimierung:
+    * Notaus, Testfall
+* Hindernis taucht innerhalb des Bremsweges auf (Szenario Kindfall )
+  * Risikominimierung:
+    * Notaus, Testfall
+* Hitzeentwicklung führt zu Fahrzeugausfall
+  * Risikominimierung:
+    * Temperatur als info im Steuercomputer
+    * notaus bei spezifizierter temperaturschwelle
+    * test bis an temperaturschwelle
+Risiko ABS 4 Obermenge DEMO
