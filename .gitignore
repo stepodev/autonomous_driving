@@ -50,3 +50,7 @@ lib/
 msg_gen/
 srv_gen/
 
+cmake-build-debug/
+.idea/
+
+
