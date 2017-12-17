@@ -9,13 +9,19 @@ project(platooning)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  rospy
+	rospy
   std_msgs
-  turtlesim
+	turtlesim
   message_generation
-  roslint
   nodelet
+  roslint
 )
+
+find_package(Boost REQUIRED COMPONENTS 
+  thread
+  system
+  )
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -110,15 +116,9 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-   INCLUDE_DIRS include
-   LIBRARIES RemoteControlNodelet
-   CATKIN_DEPENDS
-        roscpp
-        rospy
-        std_msgs
-        turtlesim
-        message_runtime
-        nodelet
+  INCLUDE_DIRS include
+  LIBRARIES environment_mapping RemoteControlNodelet
+  CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy turtlesim
 #  DEPENDS system_lib
 )
 
@@ -134,13 +134,13 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(RemoteControlNodelet src/RemoteControlNodelet.cpp
-)
+add_library(environment_mapping src/EnvironmentMapping.cpp)
+add_library(RemoteControlNodelet src/RemoteControlNodelet.cpp)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-add_dependencies(RemoteControlNodelet ${catkin_EXPORTED_TARGETS})
+add_dependencies(RemoteControlNodelet  ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -155,12 +155,11 @@ add_executable(platooning_node src/platooning_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#add_dependencies(platooning_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(RemoteControlNodelet
-   ${catkin_LIBRARIES}
-)
+target_link_libraries(platooning_node ${catkin_LIBRARIES})
+add_dependencies(platooning_node platooning_generate_messages_cpp)
 
 #############
 ## Install ##
@@ -182,11 +181,11 @@ target_link_libraries(RemoteControlNodelet
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-
-install(TARGETS platooning_node RemoteControlNodelet
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+install(TARGETS platooning_node environment_mapping RemoteControlNodelet
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
 install(DIRECTORY include/platooning/
@@ -195,6 +194,10 @@ install(DIRECTORY include/platooning/
 #   PATTERN ".svn" EXCLUDE
  )
 
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+  PATTERN ".svn" EXCLUDE)
+
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
 #   # myfile1
@@ -202,10 +205,10 @@ install(DIRECTORY include/platooning/
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
 
-install(DIRECTORY launch
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+#install(DIRECTORY launch
+#        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(FILES nodelets.xml
+install(FILES plugins/nodelet_plugins.xml
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 #############

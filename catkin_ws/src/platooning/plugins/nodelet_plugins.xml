@@ -1,7 +1,19 @@
-<library path="lib/libremoteControlNodelet">
-    <class name="platooning/RemoteControlNodelet" type="platooning::RemoteControlNodelet" base_class_type="nodelet::Nodelet">
+<library path="lib/RemoteControlNodelet">
+    <class name="platooning/RemoteControlNodelet" 
+	         type="platooning::RemoteControlNodelet" 
+            base_class_type="nodelet::Nodelet">
         <description>
             RemoteControl Nodelet
+        </description>
+    </class>
+</library>
+</library>
+<library path="lib/EnvironmentMapping">
+    <class name="platooning/environment_mapping"
+           type="platooning::EnvironmentMapping"
+           base_class_type="nodelet::Nodelet">
+        <description>
+            EnvironmentMapping nodelet.
         </description>
     </class>
 </library>
