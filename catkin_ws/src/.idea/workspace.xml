@@ -11,9 +11,8 @@
   <component name="ChangeListManager">
     <list default="true" id="1774b03e-a675-45f5-b846-f71899d5e239" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/platooning/environment_mapping.launch" afterPath="$PROJECT_DIR$/platooning/environment_mapping.launch" />
-      <change beforePath="$PROJECT_DIR$/platooning/nodelets.xml" afterPath="$PROJECT_DIR$/platooning/nodelets.xml" />
-      <change beforePath="$PROJECT_DIR$/platooning/package.xml" afterPath="$PROJECT_DIR$/platooning/package.xml" />
+      <change beforePath="$PROJECT_DIR$/platooning/src/EnvironmentMapping.cpp" afterPath="$PROJECT_DIR$/platooning/src/EnvironmentMapping.cpp" />
+      <change beforePath="$PROJECT_DIR$/platooning/src/EnvironmentMapping.h" afterPath="$PROJECT_DIR$/platooning/src/EnvironmentMapping.h" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -48,8 +47,8 @@
       <file leaf-file-name="package.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/platooning/package.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="917">
-              <caret line="59" column="2" lean-forward="false" selection-start-line="59" selection-start-column="2" selection-end-line="59" selection-end-column="2" />
+            <state relative-caret-position="702">
+              <caret line="39" column="48" lean-forward="true" selection-start-line="39" selection-start-column="48" selection-end-line="39" selection-end-column="48" />
               <folding />
             </state>
           </provider>
@@ -75,21 +74,31 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EnvironmentMapping.cpp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="EnvironmentMapping.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/platooning/src/EnvironmentMapping.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="8" column="20" lean-forward="false" selection-start-line="8" selection-start-column="8" selection-end-line="8" selection-end-column="21" />
+            <state relative-caret-position="198">
+              <caret line="11" column="8" lean-forward="false" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="29" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EnvironmentMapping.h" pinned="false" current-in-tab="false">
+      <file leaf-file-name="distanceToObj.msg" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/platooning/msg/distanceToObj.msg">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EnvironmentMapping.h" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/platooning/src/EnvironmentMapping.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="36">
-              <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+            <state relative-caret-position="270">
+              <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -104,13 +113,13 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/platooning/msg/EnvironmentMapping.launch" />
-        <option value="$PROJECT_DIR$/platooning/src/EnvironmentMapping.cpp" />
-        <option value="$PROJECT_DIR$/platooning/src/EnvironmentMapping.h" />
         <option value="$PROJECT_DIR$/platooning/nodelet_plugins.xml" />
         <option value="$PROJECT_DIR$/platooning/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/platooning/package.xml" />
         <option value="$PROJECT_DIR$/platooning/environment_mapping.launch" />
         <option value="$PROJECT_DIR$/platooning/nodelets.xml" />
+        <option value="$PROJECT_DIR$/platooning/src/EnvironmentMapping.cpp" />
+        <option value="$PROJECT_DIR$/platooning/src/EnvironmentMapping.h" />
       </list>
     </option>
   </component>
@@ -163,6 +172,12 @@
               <item name="src" type="dad4c3:CidrFilesViewHelper$MyProjectTreeStructure$1" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="platooning" type="462c0819:PsiDirectoryNode" />
+              <item name="msg" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="src" type="dad4c3:CidrFilesViewHelper$MyProjectTreeStructure$1" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="platooning" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -210,7 +225,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="13680000" />
+    <option name="totallyTimeSpent" value="17855000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1312" y="24" width="1248" height="1416" extended-state="4" />
@@ -359,18 +374,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/platooning/src/EnvironmentMapping.h">
+    <entry file="file://$PROJECT_DIR$/platooning/nodelets.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+        <state relative-caret-position="0">
+          <caret line="0" column="18" lean-forward="false" selection-start-line="0" selection-start-column="18" selection-end-line="0" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/platooning/package.xml">
+    <entry file="file://$PROJECT_DIR$/platooning/msg/distanceToObj.msg">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="917">
-          <caret line="59" column="2" lean-forward="false" selection-start-line="59" selection-start-column="2" selection-end-line="59" selection-end-column="2" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -383,18 +398,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/platooning/nodelets.xml">
+    <entry file="file://$PROJECT_DIR$/platooning/package.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="18" lean-forward="false" selection-start-line="0" selection-start-column="18" selection-end-line="0" selection-end-column="18" />
+        <state relative-caret-position="702">
+          <caret line="39" column="48" lean-forward="true" selection-start-line="39" selection-start-column="48" selection-end-line="39" selection-end-column="48" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/platooning/src/EnvironmentMapping.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="20" lean-forward="false" selection-start-line="8" selection-start-column="8" selection-end-line="8" selection-end-column="21" />
+        <state relative-caret-position="198">
+          <caret line="11" column="8" lean-forward="false" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/platooning/src/EnvironmentMapping.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
           <folding />
         </state>
       </provider>
