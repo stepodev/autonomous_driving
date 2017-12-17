@@ -1,8 +1,0 @@
-bool leading_vehicle
-bool following_vehicle
-bool potential_following_vehicle
-float64 inner_platoon_distance
-float64 platoon_speed
-float64 speed
-
-
