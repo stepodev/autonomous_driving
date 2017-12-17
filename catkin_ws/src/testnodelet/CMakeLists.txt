@@ -17,7 +17,7 @@ generate_messages(DEPENDENCIES std_msgs)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES listenerNodelet talkerNodelet
-  CATKIN_DEPENDS nodelet cv_bridge roscpp
+  CATKIN_DEPENDS nodelet roscpp
 )
 
 
