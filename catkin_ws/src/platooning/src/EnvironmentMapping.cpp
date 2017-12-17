@@ -11,7 +11,10 @@ namespace platooning
         // output from optical capturing
         std_msgs::Float64Ptr output(new std_msgs::Float64());
         output->data = 0.33;
-        pub.publish(output);
+        while (true)
+        {
+            pub.publish(output);
+        }
         NODELET_DEBUG("the distance is %f", output->data);
     }
 }
