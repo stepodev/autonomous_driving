@@ -50,3 +50,9 @@ lib/
 msg_gen/
 srv_gen/
 
+# clion 
+.idea/
+
+# cmake intermediates
+cmake-build-debug
+cmake-build-release
