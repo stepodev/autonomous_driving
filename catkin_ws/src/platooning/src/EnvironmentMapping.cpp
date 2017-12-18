@@ -13,7 +13,7 @@ namespace platooning
         output->data = 0.33;
         while (true)
         {
-            //sleep(1);
+            sleep(1);
             pub.publish(output);
         }
         NODELET_DEBUG("the distance is %f", output->data);
