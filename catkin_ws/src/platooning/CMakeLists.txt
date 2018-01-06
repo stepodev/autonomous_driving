@@ -8,14 +8,12 @@ project(platooning)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  std_msgs
-  turtlesim
-  message_generation
-  nodelet
-  roslint
-)
+        roscpp
+        std_msgs
+        message_generation
+        nodelet
+        roslint
+        )
 
 find_package(Boost REQUIRED COMPONENTS 
   thread
@@ -117,8 +115,13 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
+<<<<<<< HEAD
   LIBRARIES environment_mapping RemoteControlNodelet
   CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy turtlesim
+=======
+  LIBRARIES environment_mapping
+  CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet
+>>>>>>> develop
 #  DEPENDS system_lib
 )
 
@@ -137,6 +140,7 @@ include_directories(
 add_library(environment_mapping src/EnvironmentMapping.cpp)
 add_library(RemoteControlNodelet src/RemoteControlNodelet.cpp)
 
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -146,6 +150,7 @@ add_dependencies(RemoteControlNodelet  ${catkin_EXPORTED_TARGETS})
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(platooning_node src/platooning_node.cpp)
+# add_executable(environment_mapping src/EnvironmentMapping.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -158,8 +163,15 @@ add_executable(platooning_node src/platooning_node.cpp)
 #add_dependencies(platooning_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
+
 target_link_libraries(platooning_node ${catkin_LIBRARIES})
 add_dependencies(platooning_node platooning_generate_messages_cpp)
+
+target_link_libraries(environment_mapping ${catkin_LIBRARIES})
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
+# )
+
 
 #############
 ## Install ##
@@ -199,11 +211,9 @@ install(DIRECTORY launch/
   PATTERN ".svn" EXCLUDE)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
+install(FILES nodelets.xml environment_mapping.launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 #install(DIRECTORY launch
 #        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
@@ -224,4 +234,3 @@ install(FILES plugins/nodelet_plugins.xml
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-roslint_cpp()

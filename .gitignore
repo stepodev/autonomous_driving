@@ -55,6 +55,7 @@ srv_gen/
 .idea/
 
 # cmake intermediates
-cmake-build-debug
-cmake-build-release
+cmake-build-debug/
+cmake-build-release/
+
 

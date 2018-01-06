@@ -1,0 +1,9 @@
+<library path="libenvironment_mapping">
+    <class name="platooning/environment_mapping"
+           type="platooning::EnvironmentMapping"
+           base_class_type="nodelet::Nodelet">
+        <description>
+            EnvironmentMapping nodelet.
+        </description>
+    </class>
+</library>
