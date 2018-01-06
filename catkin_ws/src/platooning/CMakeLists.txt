@@ -9,9 +9,9 @@ project(platooning)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-	rospy
+  rospy
   std_msgs
-	turtlesim
+  turtlesim
   message_generation
   nodelet
   roslint
@@ -20,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Boost REQUIRED COMPONENTS 
   thread
   system
-  )
+)
 
 
 ## System dependencies are found with CMake's conventions
