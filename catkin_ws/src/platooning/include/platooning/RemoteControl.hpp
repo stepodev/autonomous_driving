@@ -34,29 +34,15 @@ namespace platooning
  * @ brief Remotecontrol nodelet
  *
  * Remotecontrol nodelet that receives messages from the radio controller and provides TODO remoteDrivingVector.msg and
- * start signal msg
+ * messages starting/stopping remotecontrol mode and driving vector
  */
-    class RemoteControl
+    class RemoteControl : public nodelet::Nodelet
     {
     public:
-        RemoteControl(ros::NodeHandle& nh, std::string& name) : nh_(nh), name_(name){};
-        ~RemoteControl(){};
+        virtual bool onInit();
 
-        /**
-         * Set-up necessary publishers/subscribers
-         * @return true, if successful
-         */
-        bool init()
-        {
-            enableRemoteControlSubscriber = nh_.subscribe("enable", 10, &RemoteControl::enableRC, this);
-            disableRemoteControlSubscriber = nh_.subscribe("disable", 10, &RemoteControl::disableRC, this);
-
-            // advertise remoteDrivingVector and start stop
-            //TODO: remoteDrivingVectorPublisher = nh_.advertise< platooning_msgs::remoteDrivingVector >("commands/remoteDrivingVector", 10);
-            //TODO: remoteStartPublisher = nh_.advertise< platooning_msgs::remoteStart >("commands/remoteStart", 10);
-            //TODO: remoteStopPublisher = nh_.advertise< platooning_msgs::remoteStop >("commands/remoteStop", 10);
-            return true;
-        };
+        RemoteControl(ros::NodeHandle& nh, std::string& name);
+        ~RemoteControl();
 
     private:
         ros::NodeHandle nh_;
@@ -64,6 +50,8 @@ namespace platooning
         ros::Subscriber enableRemoteControlSubscriber, disableRemoteControlSubscriber;
 
         ros::Publisher remoteDrivingVectorPublisher, remoteStartPublisher, remoteStopPublisher;
+
+        bool remoteDrivingEnabled = false;
 
         /**
          * @brief ROS logging output for enabling the controller
@@ -76,16 +64,6 @@ namespace platooning
          * @param msg incoming topic message
          */
         void disableRC(const std_msgs::EmptyConstPtr msg);
-
-    };
-
-    void RemoteControl::enableRC(const std_msgs::EmptyConstPtr msg)
-    {
-
-    };
-
-    void RemoteControl::disableRC(const std_msgs::EmptyConstPtr msg)
-    {
 
     };
 

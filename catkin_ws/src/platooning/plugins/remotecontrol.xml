@@ -1,6 +1,6 @@
-<library path="lib/RemoteControlNodelet">
-    <class name="platooning/RemoteControlNodelet" 
-	         type="platooning::RemoteControlNodelet" 
+<library path="lib/libremotecontrol">
+    <class name="platooning/remotecontrol" 
+	         type="platooning::RemoteControl" 
             base_class_type="nodelet::Nodelet">
         <description>
             RemoteControl Nodelet

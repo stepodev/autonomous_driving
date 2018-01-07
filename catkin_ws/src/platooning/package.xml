@@ -50,6 +50,7 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>nodelet</build_depend>
   <build_depend>roslint</build_depend>
@@ -68,7 +69,7 @@
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
-    <nodelet plugin="${prefix}/nodelets.xml" />
-    <nodelet plugin="${prefix}/plugins/nodelet_plugins.xml" />
+    <nodelet plugin="${prefix}/plugins/environment_mapping.xml" />
+    <nodelet plugin="${prefix}/plugins/remotecontrol.xml" />
   </export>
 </package>

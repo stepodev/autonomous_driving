@@ -11,7 +11,8 @@ int main(int argc, char **argv){
     nodelet::M_string remap(ros::names::getRemappings());
     nodelet::V_string nargv;
     std::string nodelet_name = ros::this_node::getName();
-    nodelet.load(nodelet_name, "platooning/RemoteControlNodelet", remap, nargv);
+    nodelet.load(nodelet_name, "platooning/environment_mapping", remap, nargv);
+    nodelet.load(nodelet_name, "platooning/remotecontrol", remap, nargv);
     ros::spin();
 
     return 0;

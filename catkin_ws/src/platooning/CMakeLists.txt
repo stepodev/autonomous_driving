@@ -134,13 +134,13 @@ include_directories(
 
 ## Declare a C++ library
 add_library(environment_mapping src/EnvironmentMapping.cpp)
-add_library(RemoteControl src/RemoteControl.cpp)
+add_library(remotecontrol src/RemoteControl.cpp)
 
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-add_dependencies(RemoteControl  ${catkin_EXPORTED_TARGETS})
+add_dependencies(remotecontrol  ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -189,7 +189,7 @@ target_link_libraries(environment_mapping remotecontrol ${catkin_LIBRARIES})
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-install(TARGETS platooning_node environment_mapping RemoteControl
+install(TARGETS platooning_node environment_mapping remotecontrol
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -214,7 +214,7 @@ install(FILES nodelets.xml environment_mapping.launch
 #install(DIRECTORY launch
 #        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(FILES plugins/remotecontrol.xml envinoment_mapping.xml
+install(FILES plugins/remotecontrol.xml environment_mapping.xml
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 #############
