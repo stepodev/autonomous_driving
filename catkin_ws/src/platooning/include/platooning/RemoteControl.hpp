@@ -39,9 +39,10 @@ namespace platooning
     class RemoteControl : public nodelet::Nodelet
     {
     public:
-        virtual bool onInit();
+        virtual void onInit();
 
         RemoteControl(ros::NodeHandle& nh, std::string& name);
+        RemoteControl();
         ~RemoteControl();
 
     private:

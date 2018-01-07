@@ -30,13 +30,14 @@ namespace platooning
  */
 
     RemoteControl::RemoteControl(ros::NodeHandle& nh, std::string& name) : nh_(nh), name_(name){};
+    RemoteControl::RemoteControl(){};
     RemoteControl::~RemoteControl(){};
 
     /**
     * Set-up necessary publishers/subscribers
     * @return true, if successful
     */
-    RemoteControl::onInit()
+    void RemoteControl::onInit()
     {
         enableRemoteControlSubscriber = nh_.subscribe("enableRemoteControl", 10, &RemoteControl::enableRC, this);
         disableRemoteControlSubscriber = nh_.subscribe("disableRemoteControl", 10, &RemoteControl::disableRC, this);
@@ -45,7 +46,6 @@ namespace platooning
         //TODO: remoteDrivingVectorPublisher = nh_.advertise< platooning_msgs::remoteDrivingVector >("commands/remoteDrivingVector", 10);
         //TODO: remoteStartPublisher = nh_.advertise< platooning_msgs::remoteStart >("commands/remoteStart", 10);
         //TODO: remoteStopPublisher = nh_.advertise< platooning_msgs::remoteStop >("commands/remoteStop", 10);
-        return true;
     };
 
 
