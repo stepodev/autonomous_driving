@@ -18,58 +18,83 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include "platooning/RemoteControl.hpp"
-#include "std_msgs/String.h"
-#include "platooning/remoteDrivingVector.h"
 
 
-namespace platooning
-{
+namespace platooning {
 
 /**
  * @brief Remotecontrol Nodelet
  */
 
-    RemoteControl::RemoteControl(ros::NodeHandle& nh, std::string& name) : nh_(nh), name_(name){};
-    RemoteControl::RemoteControl(){};
-    RemoteControl::~RemoteControl(){};
+  RemoteControl::RemoteControl(ros::NodeHandle &nh, std::string &name) : nh_(nh), name_(name) {};
 
-    /**
-    * Set-up necessary publishers/subscribers
-    * @return true, if successful
-    */
-    void RemoteControl::onInit()
-    {
-        enableRemoteControlSubscriber = nh_.subscribe("enableRemoteControl", 10, &RemoteControl::enableRC, this);
-        disableRemoteControlSubscriber = nh_.subscribe("disableRemoteControl", 10, &RemoteControl::disableRC, this);
+  RemoteControl::RemoteControl() {};
 
-        // advertise remoteDrivingVector and start stop
-        //TODO: remoteDrivingVectorPublisher = nh_.advertise< platooning_msgs::remoteDrivingVector >("commands/remoteDrivingVector", 10);
-        //TODO: remoteStartPublisher = nh_.advertise< platooning_msgs::remoteStart >("commands/remoteStart", 10);
-        //TODO: remoteStopPublisher = nh_.advertise< platooning_msgs::remoteStop >("commands/remoteStop", 10);
-    };
+  RemoteControl::~RemoteControl() {};
+
+  /**
+  * Set-up necessary publishers/subscribers
+  * @return true, if successful
+  */
+  void RemoteControl::onInit() {
+
+    //subscribers of protocol nodelet
+    enableRemoteControlSubscriber = nh_.subscribe("enableRemoteControlMsg", 10,
+                                                  &RemoteControl::updateRemoteControlStatusHandler, this);
+
+    remoteDrivingVectorSubscriber = nh_.subscribe("remoteDrivingVector",10,
+                                                  &RemoteControl::remoteDrivingVectorHandler, this);
 
 
-    void RemoteControl::enableRC(const std_msgs::EmptyConstPtr msg)
-    {
-        if( !remoteDrivingEnabled ) {
-            NODELET_DEBUG("Enabling Remotecontrol");
-            remoteDrivingEnabled = true;
-        } else {
-            NODELET_WARN_ONCE("Remotecontrol enable called while remotecontrol already enabled");
-        }
+    //publisher of forced driving vector
+    forcedDrivingVectorPublisher = nh_.advertise< platooning::forcedDrivingVector >("commands/forcedDrivingVector", 10);
 
-    };
 
-    void RemoteControl::disableRC(const std_msgs::EmptyConstPtr msg)
-    {
-        if( remoteDrivingEnabled ) {
-            NODELET_DEBUG("Disabling Remotecontrol");
-            remoteDrivingEnabled = false;
-        } else {
-            NODELET_WARN_ONCE("Remotecontrol disable called while remotecontrol already disabled");
-        }
+  };
 
-    };
+  /*
+   * attach source to forcedrivingvector and publish
+   */
+  void RemoteControl::remoteDrivingVectorHandler(const platooning::remoteDrivingVector msg) {
+
+    if( !remoteDrivingEnabled ) {
+      NODELET_WARN_ONCE("received remotecontrolvector while remotecontrol disabled");
+      return;
+    }
+
+    platooning::forcedDrivingVector outmsg;
+    outmsg.speed = msg.speed;
+    outmsg.steering_angle = msg.steering_angle;
+    outmsg.source = "remotecontrol";
+
+    forcedDrivingVectorPublisher.publish(outmsg);
+
+  };
+
+  /*
+   * test errorcases and if all is fine, enable remotecontrol
+   */
+  void RemoteControl::updateRemoteControlStatusHandler(const platooning::enableRemoteControl msg) {
+
+    if (!remoteDrivingEnabled && msg.enableRemoteControl) {
+      NODELET_DEBUG("Enabling Remotecontrol");
+      remoteDrivingEnabled = true;
+    }
+
+    if (remoteDrivingEnabled && !msg.enableRemoteControl) {
+      NODELET_DEBUG("Enabling Remotecontrol");
+      remoteDrivingEnabled = false;
+    }
+
+    if (remoteDrivingEnabled && msg.enableRemoteControl) {
+      NODELET_WARN_ONCE("trying to enable remotecontrol while already enabled");
+    }
+
+    if (!remoteDrivingEnabled && !msg.enableRemoteControl) {
+      NODELET_WARN_ONCE("trying to disable remotecontrol while already enabled");
+    }
+  };
+
 
 } // namespace platooning
 

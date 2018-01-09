@@ -8,18 +8,18 @@ add_compile_options(-std=c++11)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  std_msgs
-  message_generation
-  nodelet
-  roslint
-)
+        roscpp
+        rospy
+        std_msgs
+        message_generation
+        nodelet
+        roslint
+        )
 
-find_package(Boost REQUIRED COMPONENTS 
-  thread
-  system
-)
+find_package(Boost REQUIRED COMPONENTS
+        thread
+        system
+        )
 
 
 ## System dependencies are found with CMake's conventions
@@ -57,12 +57,17 @@ find_package(Boost REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 add_message_files(
-  FILES
-  steeringAngle.msg
-  distanceToObj.msg
-  remoteDrivingVector.msg
-  userInterface.msg
-  prioritisationDrivingVector.msg
+        FILES
+        steeringAngle.msg
+        distanceToObj.msg
+        userInterface.msg
+        prioritisationDrivingVector.msg
+        ########################
+        ## remoteControlMessages
+        remoteDrivingVector.msg
+        enableRemoteControl.msg
+        forcedDrivingVector.msg
+        ########################
 )
 
 ## Generate services in the 'srv' folder
@@ -81,8 +86,8 @@ add_message_files(
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-  DEPENDENCIES
-  std_msgs
+        DEPENDENCIES
+        std_msgs
 )
 
 ################################################
@@ -115,10 +120,10 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES environment_mapping
-  CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
-#  DEPENDS system_lib
+        INCLUDE_DIRS include
+        LIBRARIES environment_mapping
+        CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
+        #  DEPENDS system_lib
 )
 
 ###########
@@ -128,8 +133,8 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
+        include
+        ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -140,7 +145,7 @@ add_library(remotecontrol src/RemoteControl.cpp)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-add_dependencies(remotecontrol  ${catkin_EXPORTED_TARGETS})
+add_dependencies(remotecontrol ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -169,7 +174,6 @@ target_link_libraries(environment_mapping remotecontrol ${catkin_LIBRARIES})
 # )
 
 
-
 #############
 ## Testing ##
 #############
@@ -178,9 +182,9 @@ target_link_libraries(environment_mapping remotecontrol ${catkin_LIBRARIES})
 catkin_add_gtest(remotecontrol-test test/test_remotecontrol.cpp)
 catkin_add_gtest(platooning-test test/test_platooning.cpp)
 
-if(TARGET ${PROJECT_NAME}-test)
-  target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-endif()
+if (TARGET ${PROJECT_NAME}-test)
+    target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+endif ()
 
 
 ## Add folders to be run by python nosetests

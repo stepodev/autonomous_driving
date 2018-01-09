@@ -4,11 +4,11 @@
 
 
 /**
- * @file /kobuki_controller_tutorial/include/kobuki_controller_tutorial/bump_blink_controller.hpp
+ * @file include/platooning/RemoteControl.hpp
  *
  * @brief Remotecontroller nodelet for platooning
  *
- * Nodelet based remotecontoller. Takes radiomessages start, stop, TODO message and publishes remoteDrivingVector.msg
+ * Nodelet based remotecontoller. Takes remotecontrolmessages, remoteDrivingVector. publishes forcedDrviningVector
  *
  * @author stepo
  **/
@@ -25,48 +25,50 @@
 *****************************************************************************/
 // %Tag(FULLTEXT)%
 #include <ros/ros.h>
-#include <std_msgs/Empty.h>
+#include "platooning/remoteDrivingVector.h"
+#include "platooning/enableRemoteControl.h"
+#include "platooning/forcedDrivingVector.h"
 
-namespace platooning
-{
+namespace platooning {
 
 /**
  * @ brief Remotecontrol nodelet
  *
- * Remotecontrol nodelet that receives messages from the radio controller and provides TODO remoteDrivingVector.msg and
- * messages starting/stopping remotecontrol mode and driving vector
+ * Remotecontrol nodelet that receives messages from the radio controller
+ * starting/stopping remotecontrol mode and provides forcedRemoteDrivingVector
  */
-    class RemoteControl : public nodelet::Nodelet
-    {
-    public:
-        virtual void onInit();
+  class RemoteControl : public nodelet::Nodelet {
+  public:
+    virtual void onInit();
 
-        RemoteControl(ros::NodeHandle& nh, std::string& name);
-        RemoteControl();
-        ~RemoteControl();
+    RemoteControl(ros::NodeHandle &nh, std::string &name);
 
-    private:
-        ros::NodeHandle nh_;
-        std::string name_;
-        ros::Subscriber enableRemoteControlSubscriber, disableRemoteControlSubscriber;
+    RemoteControl();
 
-        ros::Publisher remoteDrivingVectorPublisher, remoteStartPublisher, remoteStopPublisher;
+    ~RemoteControl();
 
-        bool remoteDrivingEnabled = false;
+  private:
+    ros::NodeHandle nh_;
+    std::string name_;
+    ros::Subscriber enableRemoteControlSubscriber;
+    ros::Subscriber remoteDrivingVectorSubscriber;
+    ros::Publisher forcedDrivingVectorPublisher;
 
-        /**
-         * @brief ROS logging output for enabling the controller
-         * @param msg incoming topic message
-         */
-        void enableRC(const std_msgs::EmptyConstPtr msg);
+    bool remoteDrivingEnabled = false;
 
-        /**
-         * @brief ROS logging output for disabling the controller
-         * @param msg incoming topic message
-         */
-        void disableRC(const std_msgs::EmptyConstPtr msg);
+    /**
+     * @brief enables or disables remotecontrol
+     * @param msg incoming topic message
+     */
+    void updateRemoteControlStatusHandler(const platooning::enableRemoteControl msg);
 
-    };
+    /**
+     * @brief handles remotedrivingvector
+     * @param msg incoming topic message
+     */
+    void remoteDrivingVectorHandler(const platooning::remoteDrivingVector msg);
+
+  };
 
 
 } // namespace platooning
