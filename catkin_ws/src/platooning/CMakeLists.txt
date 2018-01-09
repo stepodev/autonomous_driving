@@ -8,15 +8,17 @@ add_compile_options(-std=c++11)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+        ## GENERAL
         roscpp
         rospy
-        std_msgs
-        message_generation
         nodelet
         roslint
+        ## MESSAGE GEN
+        message_generation
         )
 
 find_package(Boost REQUIRED COMPONENTS
+        ## DUNNO LOL
         thread
         system
         )
@@ -68,6 +70,8 @@ add_message_files(
         enableRemoteControl.msg
         forcedDrivingVector.msg
         ########################
+        ## templateMessages
+        templateMsg.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -121,7 +125,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
         INCLUDE_DIRS include
-        LIBRARIES environment_mapping
+        LIBRARIES environment_mapping remotecontrol
         CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
         #  DEPENDS system_lib
 )
@@ -133,19 +137,22 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-        include
+        include/platooning
         ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 add_library(environment_mapping src/EnvironmentMapping.cpp)
 add_library(remotecontrol src/RemoteControl.cpp)
+add_library(template src/Template.cpp)
 
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 add_dependencies(remotecontrol ${catkin_EXPORTED_TARGETS})
+add_dependencies(environment_mapping ${catkin_EXPORTED_TARGETS})
+add_dependencies(template ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -168,7 +175,7 @@ add_executable(platooning_node src/platooning_node.cpp)
 target_link_libraries(platooning_node ${catkin_LIBRARIES})
 add_dependencies(platooning_node platooning_generate_messages_cpp)
 
-target_link_libraries(environment_mapping remotecontrol ${catkin_LIBRARIES})
+target_link_libraries(environment_mapping remotecontrol template ${catkin_LIBRARIES})
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
@@ -179,8 +186,12 @@ target_link_libraries(environment_mapping remotecontrol ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(remotecontrol-test test/test_remotecontrol.cpp)
-catkin_add_gtest(platooning-test test/test_platooning.cpp)
+catkin_add_gtest(remotecontrol-unit-test test/unittest_remotecontrol.cpp)
+catkin_add_gtest(platooning-unit-test test/unittest_platooning.cpp)
+
+catkin_add_gtest(template-unit-test test/unittest_template.cpp)
+catkin_add_gtest(template-module-test test/moduletest_template.cpp)
+catkin_add_gtest(template-integration-test test/integrationtest_template.cpp)
 
 if (TARGET ${PROJECT_NAME}-test)
     target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
@@ -211,7 +222,7 @@ endif ()
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-install(TARGETS platooning_node environment_mapping remotecontrol
+install(TARGETS platooning_node environment_mapping remotecontrol template
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -229,12 +240,8 @@ install(DIRECTORY launch/
         PATTERN ".svn" EXCLUDE)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-install(FILES nodelets.xml environment_mapping.launch
+install(FILES remotecontrol.launch environment_mapping.launch template.launch
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
         )
-
-#install(DIRECTORY launch
-#        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-
-install(FILES plugins/remotecontrol.xml environment_mapping.xml
+install(FILES plugins/remotecontrol.xml environment_mapping.xml template.xml
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

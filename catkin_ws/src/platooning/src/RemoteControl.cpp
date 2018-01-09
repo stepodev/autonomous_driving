@@ -15,9 +15,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include <nodelet/nodelet.h>
-#include <pluginlib/class_list_macros.h>
-#include "platooning/RemoteControl.hpp"
+#include "RemoteControl.hpp"
 
 
 namespace platooning {

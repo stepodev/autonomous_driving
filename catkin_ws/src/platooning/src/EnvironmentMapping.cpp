@@ -1,6 +1,6 @@
-#include <pluginlib/class_list_macros.h>
-#include "platooning/EnvironmentMapping.hpp"
-#include <std_msgs/Float64.h>
+
+#include "EnvironmentMapping.hpp"
+
 
 namespace platooning
 {
