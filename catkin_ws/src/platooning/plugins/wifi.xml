@@ -1,0 +1,9 @@
+<library path="lib/libwifi">
+    <class name="platooning/wifi"
+	         type="platooning::Wifi"
+            base_class_type="nodelet::Nodelet">
+        <description>
+            Template Nodelet
+        </description>
+    </class>
+</library>

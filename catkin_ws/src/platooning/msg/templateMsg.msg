@@ -1,0 +1,3 @@
+bool templatebool
+float64 templatefloat
+string templatestring
