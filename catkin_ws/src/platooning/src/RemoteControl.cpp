@@ -77,19 +77,15 @@ namespace platooning {
     if (!remoteDrivingEnabled && msg.enableRemoteControl) {
       NODELET_DEBUG("Enabling Remotecontrol");
       remoteDrivingEnabled = true;
-    }
-
-    if (remoteDrivingEnabled && !msg.enableRemoteControl) {
+    } else if (remoteDrivingEnabled && !msg.enableRemoteControl) {
       NODELET_DEBUG("Enabling Remotecontrol");
       remoteDrivingEnabled = false;
-    }
-
-    if (remoteDrivingEnabled && msg.enableRemoteControl) {
+    } else if (remoteDrivingEnabled && msg.enableRemoteControl) {
       NODELET_WARN_ONCE("trying to enable remotecontrol while already enabled");
-    }
-
-    if (!remoteDrivingEnabled && !msg.enableRemoteControl) {
+    } else if (!remoteDrivingEnabled && !msg.enableRemoteControl) {
       NODELET_WARN_ONCE("trying to disable remotecontrol while already enabled");
+    } else {
+      NODELET_WARN("unknown combination");
     }
   };
 
