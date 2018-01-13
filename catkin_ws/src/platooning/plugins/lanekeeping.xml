@@ -1,0 +1,9 @@
+<library path="lib/liblanekeeping">
+    <class name="platooning/laneleeping"
+	         type="platooning::LaneKeeping"
+            base_class_type="nodelet::Nodelet">
+        <description>
+            lanekeeping nodelet
+        </description>
+    </class>
+</library>

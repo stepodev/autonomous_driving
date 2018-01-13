@@ -1,0 +1,9 @@
+<library path="lib/libprotocol">
+    <class name="platooning/protocol"
+	         type="platooning::Protocol"
+            base_class_type="nodelet::Nodelet">
+        <description>
+            Template Nodelet
+        </description>
+    </class>
+</library>

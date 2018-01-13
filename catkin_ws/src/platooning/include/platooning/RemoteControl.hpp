@@ -4,13 +4,14 @@
 
 
 /**
- * @file include/platooning/RemoteControl.hpp
+ * @file RemoteControl.hpp
+ * @author stepo
  *
  * @brief Remotecontroller nodelet for platooning
  *
  * Nodelet based remotecontoller. Takes remotecontrolmessages, remoteDrivingVector. publishes forcedDrviningVector
  *
- * @author stepo
+ *
  **/
 
 /*****************************************************************************
@@ -23,7 +24,7 @@
 /*****************************************************************************
 ** Includes
 *****************************************************************************/
-// %Tag(FULLTEXT)%
+
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
@@ -74,6 +75,5 @@ namespace platooning {
 
 
 } // namespace platooning
-// %EndTag(FULLTEXT)%
 
 #endif //PLATOONING_REMOTECONTROL_HPP

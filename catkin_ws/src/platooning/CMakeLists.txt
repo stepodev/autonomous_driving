@@ -72,6 +72,19 @@ add_message_files(
         ########################
         ## templateMessages
         templateMsg.msg
+        ########################
+        ## lanekeeping messages
+        ########################
+        ## priorization messages
+        ########################
+        ## protocol messages
+        ########################
+        ## userinterface messages
+        ########################
+        ## vehiclecontrol messages
+        ########################
+        ## wifi messages
+
 )
 
 ## Generate services in the 'srv' folder
@@ -125,7 +138,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
         INCLUDE_DIRS include
-        LIBRARIES environment_mapping remotecontrol
+        LIBRARIES environment_mapping remotecontrol lanekeeping priorization protocol userinterface vehiclecontrol wifi template
         CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
         #  DEPENDS system_lib
 )
@@ -144,6 +157,12 @@ include_directories(
 ## Declare a C++ library
 add_library(environment_mapping src/EnvironmentMapping.cpp)
 add_library(remotecontrol src/RemoteControl.cpp)
+add_library(lanekeeping src/LaneKeeping.cpp)
+add_library(priorization src/Priorization.cpp)
+add_library(protocol src/Protocol.cpp)
+add_library(userinterface src/UserInterface.cpp)
+add_library(vehiclecontrol src/VehicleControl.cpp)
+add_library(wifi src/Wifi.cpp)
 add_library(template src/Template.cpp)
 
 
@@ -152,6 +171,12 @@ add_library(template src/Template.cpp)
 ## either from message generation or dynamic reconfigure
 add_dependencies(remotecontrol ${catkin_EXPORTED_TARGETS})
 add_dependencies(environment_mapping ${catkin_EXPORTED_TARGETS})
+add_dependencies(lanekeeping ${catkin_EXPORTED_TARGETS})
+add_dependencies(priorization ${catkin_EXPORTED_TARGETS})
+add_dependencies(protocol ${catkin_EXPORTED_TARGETS})
+add_dependencies(userinterface ${catkin_EXPORTED_TARGETS})
+add_dependencies(vehiclecontrol ${catkin_EXPORTED_TARGETS})
+add_dependencies(wifi ${catkin_EXPORTED_TARGETS})
 add_dependencies(template ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
@@ -175,7 +200,15 @@ add_executable(platooning_node src/platooning_node.cpp)
 target_link_libraries(platooning_node ${catkin_LIBRARIES})
 add_dependencies(platooning_node platooning_generate_messages_cpp)
 
-target_link_libraries(environment_mapping remotecontrol template ${catkin_LIBRARIES})
+target_link_libraries(environment_mapping ${catkin_LIBRARIES})
+target_link_libraries(remotecontrol ${catkin_LIBRARIES})
+target_link_libraries(lanekeeping ${catkin_LIBRARIES})
+target_link_libraries(priorization ${catkin_LIBRARIES})
+target_link_libraries(protocol ${catkin_LIBRARIES})
+target_link_libraries(userinterface ${catkin_LIBRARIES})
+target_link_libraries(vehiclecontrol ${catkin_LIBRARIES})
+target_link_libraries(wifi ${catkin_LIBRARIES})
+target_link_libraries(template ${catkin_LIBRARIES})
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
@@ -188,6 +221,12 @@ target_link_libraries(environment_mapping remotecontrol template ${catkin_LIBRAR
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(remotecontrol-unit-test test/unittest_remotecontrol.cpp)
 catkin_add_gtest(platooning-unit-test test/unittest_platooning.cpp)
+catkin_add_gtest(lanekeeping-unit-test test/unittest_lanekeeping.cpp)
+catkin_add_gtest(priorization-unit-test test/unittest_priorization.cpp)
+catkin_add_gtest(protocol-unit-test test/unittest_protocol.cpp)
+catkin_add_gtest(userinterface-unit-test test/unittest_userinterface.cpp)
+catkin_add_gtest(vehiclecontrol-unit-test test/unittest_vehiclecontrol.cpp)
+catkin_add_gtest(wifi-unit-test test/unittest_wifi.cpp)
 
 catkin_add_gtest(template-unit-test test/unittest_template.cpp)
 catkin_add_gtest(template-module-test test/moduletest_template.cpp)
@@ -222,7 +261,7 @@ endif ()
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-install(TARGETS platooning_node environment_mapping remotecontrol template
+install(TARGETS platooning_node environment_mapping remotecontrol lanekeeping priorization protocol userinterface vehiclecontrol wifi template
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -240,8 +279,8 @@ install(DIRECTORY launch/
         PATTERN ".svn" EXCLUDE)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-install(FILES remotecontrol.launch environment_mapping.launch template.launch
+install(FILES remotecontrol.launch environment_mapping.launch lanekeeping.launch  priorization.launch  protocol.launch  userinterface.launch  vehiclecontrol.launch  wifi.launch  template.launch
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
         )
-install(FILES plugins/remotecontrol.xml environment_mapping.xml template.xml
+install(FILES plugins/remotecontrol.xml environment_mapping.xml lanekeeping.xml  priorization.xml  protocol.xml  userinterface.xml  vehiclecontrol.xml  wifi.xml  template.xml
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
