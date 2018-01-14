@@ -15,7 +15,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include "Template.hpp"
+#include "UserInterface.hpp"
 
 namespace platooning {
 
@@ -29,7 +29,7 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-  Template::Template() {};
+  UserInterface::UserInterface() {};
 
 
 
@@ -37,7 +37,7 @@ namespace platooning {
 ** Destructors
 *****************************************************************************/
 
-  Template::~Template() {};
+  UserInterface::~UserInterface() {};
 
 
 /*****************************************************************************
@@ -48,11 +48,11 @@ namespace platooning {
   * Set-up necessary publishers/subscribers
   * @return true, if successful
   */
-  void Template::onInit() {
+  void UserInterface::onInit() {
 
     //subscribers of protocol nodelet
     templateSubscriber = nh_.subscribe("templateMsg", 10,
-                                                  &Template::templateTopicHandler, this);
+                                                  &UserInterface::templateTopicHandler, this);
 
     //publisher of forced driving vector
     templatePublisher = nh_.advertise< platooning::templateMsg >("commands/templateMsg", 10);
@@ -68,7 +68,7 @@ namespace platooning {
   /*
    * handling an event and publishing something
    */
-  void Template::templateTopicHandler(const platooning::templateMsg msg) {
+  void UserInterface::templateTopicHandler(const platooning::templateMsg msg) {
 
     NODELET_DEBUG("handling a template");
 
@@ -84,5 +84,5 @@ namespace platooning {
 
 } // namespace platooning
 
-PLUGINLIB_EXPORT_CLASS(platooning::Template, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(platooning::UserInterface, nodelet::Nodelet);
 // %EndTag(FULLTEXT)%

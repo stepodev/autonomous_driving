@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(platooning)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+add_compile_options(-std=c++11 -Wall -g)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -169,15 +169,15 @@ add_library(template src/Template.cpp)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-add_dependencies(remotecontrol ${catkin_EXPORTED_TARGETS})
-add_dependencies(environment_mapping ${catkin_EXPORTED_TARGETS})
-add_dependencies(lanekeeping ${catkin_EXPORTED_TARGETS})
-add_dependencies(priorization ${catkin_EXPORTED_TARGETS})
-add_dependencies(protocol ${catkin_EXPORTED_TARGETS})
-add_dependencies(userinterface ${catkin_EXPORTED_TARGETS})
-add_dependencies(vehiclecontrol ${catkin_EXPORTED_TARGETS})
-add_dependencies(wifi ${catkin_EXPORTED_TARGETS})
-add_dependencies(template ${catkin_EXPORTED_TARGETS})
+add_dependencies(remotecontrol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(environment_mapping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(lanekeeping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(priorization ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(protocol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(userinterface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(vehiclecontrol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(wifi ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(template ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -222,19 +222,30 @@ target_link_libraries(template ${catkin_LIBRARIES})
 catkin_add_gtest(remotecontrol-unit-test test/unittest_remotecontrol.cpp)
 catkin_add_gtest(platooning-unit-test test/unittest_platooning.cpp)
 catkin_add_gtest(lanekeeping-unit-test test/unittest_lanekeeping.cpp)
-catkin_add_gtest(priorization-unit-test test/unittest_priorization.cpp)
+catkin_add_gtest(priorization-unit-test launch/priorization.launch test/unittest_priorization.cpp)
 catkin_add_gtest(protocol-unit-test test/unittest_protocol.cpp)
 catkin_add_gtest(userinterface-unit-test test/unittest_userinterface.cpp)
 catkin_add_gtest(vehiclecontrol-unit-test test/unittest_vehiclecontrol.cpp)
-catkin_add_gtest(wifi-unit-test test/unittest_wifi.cpp)
+catkin_add_gtest(wifi-unit-test launch/wifi.launch test/unittest_wifi.cpp)
 
 catkin_add_gtest(template-unit-test test/unittest_template.cpp)
-catkin_add_gtest(template-module-test test/moduletest_template.cpp)
-catkin_add_gtest(template-integration-test test/integrationtest_template.cpp)
 
-if (TARGET ${PROJECT_NAME}-test)
-    target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-endif ()
+target_link_libraries(remotecontrol-unit-test ${catkin_LIBRARIES})
+target_link_libraries(platooning-unit-test ${catkin_LIBRARIES})
+target_link_libraries(lanekeeping-unit-test ${catkin_LIBRARIES})
+target_link_libraries(priorization-unit-test ${catkin_LIBRARIES})
+target_link_libraries(protocol-unit-test ${catkin_LIBRARIES})
+target_link_libraries(userinterface-unit-test ${catkin_LIBRARIES})
+target_link_libraries(vehiclecontrol-unit-test ${catkin_LIBRARIES})
+target_link_libraries(wifi-unit-test ${catkin_LIBRARIES})
+
+target_link_libraries(template-unit-test ${catkin_LIBRARIES})
+
+
+#if (TARGET ${PROJECT_NAME}-test)
+#    target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES})
+#    target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
+#endif ()
 
 
 ## Add folders to be run by python nosetests
@@ -278,9 +289,19 @@ install(DIRECTORY launch/
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
         PATTERN ".svn" EXCLUDE)
 
+install(DIRECTORY plugins/
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/plugins
+        PATTERN ".svn" EXCLUDE)
+
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-install(FILES remotecontrol.launch environment_mapping.launch lanekeeping.launch  priorization.launch  protocol.launch  userinterface.launch  vehiclecontrol.launch  wifi.launch  template.launch
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-        )
-install(FILES plugins/remotecontrol.xml environment_mapping.xml lanekeeping.xml  priorization.xml  protocol.xml  userinterface.xml  vehiclecontrol.xml  wifi.xml  template.xml
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+#install(FILES launch/remotecontrol.launch launch/environment_mapping.launch launch/lanekeeping.launch launch/priorization.launch  protocol.launch  userinterface.launch  vehiclecontrol.launch  wifi.launch  template.launch
+#        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+#        )
+#install(FILES plugins/remotecontrol.xml environment_mapping.xml lanekeeping.xml  priorization.xml  protocol.xml  userinterface.xml  vehiclecontrol.xml  wifi.xml  template.xml
+#        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+
+
+## TESTSNIPPET
+add_executable(testsnippet testsnippet.hpp testsnippet.cpp)
+target_link_libraries(testsnippet ${catkin_LIBRARIES})
