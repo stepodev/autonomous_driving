@@ -63,13 +63,13 @@ namespace platooning {
      * @brief enables or disables remotecontrol
      * @param msg incoming topic message
      */
-    void updateRemoteControlStatusHandler(const platooning::enableRemoteControl msg);
+    void updateRemoteControlStatusHandler(platooning::enableRemoteControl msg);
 
     /**
      * @brief handles remotedrivingvector
      * @param msg incoming topic message
      */
-    void remoteDrivingVectorHandler(const platooning::remoteDrivingVector msg);
+    void remoteDrivingVectorHandler(platooning::remoteDrivingVector msg);
 
   };
 
