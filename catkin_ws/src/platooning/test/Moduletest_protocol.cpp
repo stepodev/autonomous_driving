@@ -55,7 +55,7 @@ namespace platooning {
                                        &Moduletest_protocol::hndl_platooningAction, this);
 
     //publisher of forced driving vector
-    pub_platoonProtocolIn = nh_.advertise< platooning::platoonProtocolIn >("commands/platoonProtocolIn", 10);
+    pub_platoonProtocolIn = nh_.advertise< platooning::platoonProtocolIn >("platoonProtocolIn", 10);
 
     genTest1();
 
@@ -69,7 +69,7 @@ namespace platooning {
   /*
    * handling an event and publishing something
    */
-  void Moduletest_protocol::hndl_platooningAction(const platooning::platooningAction msg) {
+  void Moduletest_protocol::hndl_platooningAction(platooning::platooningAction msg) {
 
     std::ofstream myfile;
     myfile.open ("test1.txt");
@@ -107,7 +107,15 @@ namespace platooning {
 
     msg.payload = os.str();
 
-    pub_platoonProtocolIn.publish(msg);
+      while (true)
+      {
+          sleep(1);
+          pub_platoonProtocolIn.publish(msg);
+          std::cout << "moduletest wrote a thing" << std::endl;
+
+      }
+
+
 
   }
 

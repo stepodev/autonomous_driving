@@ -75,6 +75,13 @@
     <!-- Other tools can request additional information be placed here -->
     <nodelet plugin="${prefix}/plugins/environment_mapping.xml" />
     <nodelet plugin="${prefix}/plugins/remotecontrol.xml" />
+    <nodelet plugin="${prefix}/plugins/lanekeeping.xml" />
+    <nodelet plugin="${prefix}/plugins/priorization.xml" />
+    <nodelet plugin="${prefix}/plugins/protocol.xml" />
+    <nodelet plugin="${prefix}/plugins/userinterface.xml" />
+    <nodelet plugin="${prefix}/plugins/vehiclecontrol.xml" />
+    <nodelet plugin="${prefix}/plugins/wifi.xml" />
+    <nodelet plugin="${prefix}/plugins/moduletest_protocol.xml" />
     <rosdoc config="rosdoc.yaml" />
   </export>
 </package>

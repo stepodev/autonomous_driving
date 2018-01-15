@@ -57,10 +57,10 @@ namespace platooning {
                                              &Protocol::platoonProtocolInHandler, this);
 
     //publisher of messages to send out
-    pub_platooningOut = nh_.advertise< platooning::platoonProtocolOut >("commands/platoonProtocolOut", 10);
+    pub_platooningOut = nh_.advertise< platooning::platoonProtocolOut >("platoonProtocolOut", 10);
 
     //publisher of decoded platooning messages
-    pub_platooningAction = nh_.advertise< platooning::platoonProtocolOut >("commands/platooningAction", 10);
+    pub_platooningAction = nh_.advertise< platooning::platoonProtocolOut >("platooningAction", 10);
 
   };
 
@@ -75,6 +75,7 @@ namespace platooning {
   void Protocol::platoonProtocolInHandler(platooning::platoonProtocolIn msg) {
 
     NODELET_DEBUG("json payload received");
+      std::cout << "protocol recvd a thing" << std::endl;
 
     platooningAction decodedMsg = DecodeIncomingJson( msg.payload );
 
@@ -93,6 +94,8 @@ namespace platooning {
 *****************************************************************************/
 
   platooningAction Protocol::DecodeIncomingJson( std::string& json ) {
+
+      std::cout << "i recvd a thing" << std::endl;
 
     pt::ptree root;
     try {
