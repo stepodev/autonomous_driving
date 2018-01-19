@@ -75,6 +75,7 @@
     <!-- Other tools can request additional information be placed here -->
     <nodelet plugin="${prefix}/plugins/environment_mapping.xml" />
     <nodelet plugin="${prefix}/plugins/remotecontrol.xml" />
+    <nodelet plugin="${prefix}/plugins/vehiclecontrol.xml" />
     <rosdoc config="rosdoc.yaml" />
   </export>
 </package>

@@ -161,7 +161,7 @@ add_library(lanekeeping src/LaneKeeping.cpp)
 add_library(priorization src/Priorization.cpp)
 add_library(protocol src/Protocol.cpp)
 add_library(userinterface src/UserInterface.cpp)
-add_library(vehiclecontrol src/VehicleControl.cpp)
+add_library(vehiclecontrol include/platooning/VehicleControl.hpp src/VehicleControl.cpp)
 add_library(wifi src/Wifi.cpp)
 add_library(template src/Template.cpp)
 

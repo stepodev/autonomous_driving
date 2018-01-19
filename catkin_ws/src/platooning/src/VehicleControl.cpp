@@ -64,7 +64,7 @@ namespace platooning {
         g_pose = pose;
     }*/
 
-    void VehicleControl::prioritisationDrivingVectorCallback(platooning::prioritisationDrivingVectorConstPtr &prioDrivingVector) {
+    void VehicleControl::prioritisationDrivingVectorCallback(platooning::prioritisationDrivingVector prioDrivingVector) {
         NODELET_DEBUG("Getting platooning/prioritisationDrivingVector message");
         g_prioDrivingVector = prioDrivingVector;
         commandTurtle();
@@ -73,8 +73,8 @@ namespace platooning {
     void VehicleControl::commandTurtle() {
         NODELET_DEBUG("Publishing turtlesim/twist message");
         geometry_msgs::Twist twist;
-        twist.linear.x = g_prioDrivingVector->speed;
-        twist.angular.z = g_prioDrivingVector->steering_angle;
+        twist.linear.x = g_prioDrivingVector.speed;
+        twist.angular.z = g_prioDrivingVector.steering_angle;
         publisher.publish(twist);
     }
 

@@ -87,7 +87,7 @@ namespace platooning {
     ros::Subscriber subscriber;
     ros::Publisher publisher;
     turtlesim::PoseConstPtr g_pose;
-    platooning::prioritisationDrivingVectorConstPtr g_prioDrivingVector;
+    platooning::prioritisationDrivingVector g_prioDrivingVector;
 
 
     /**
@@ -95,7 +95,7 @@ namespace platooning {
      * @param msg incoming topic message
      */
     //void poseCallback(const turtlesim::PoseConstPtr& pose);
-    void prioritisationDrivingVectorCallback(platooning::prioritisationDrivingVectorConstPtr &prioDrivingVector);
+    void prioritisationDrivingVectorCallback(platooning::prioritisationDrivingVector prioDrivingVector);
     void commandTurtle();
 
   };
