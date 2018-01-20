@@ -60,7 +60,9 @@ namespace platooning {
     pub_platooningOut = nh_.advertise< platooning::platoonProtocolOut >("platoonProtocolOut", 10);
 
     //publisher of decoded platooning messages
-    pub_platooningAction = nh_.advertise< platooning::platoonProtocolOut >("platooningAction", 10);
+    pub_platooningAction = nh_.advertise< platooning::platooningAction >("platooningAction", 10);
+
+    NODELET_INFO("PROTOCOL init done");
 
   };
 
@@ -75,17 +77,33 @@ namespace platooning {
   void Protocol::platoonProtocolInHandler(platooning::platoonProtocolIn msg) {
 
     NODELET_DEBUG("json payload received");
-      std::cout << "protocol recvd a thing" << std::endl;
 
-    platooningAction decodedMsg = DecodeIncomingJson( msg.payload );
+    try {
+      platooningAction decodedMsg = DecodeIncomingJson( msg.payload );
 
-    switch ( decodedMsg.actionType ) {
-      case LEADER_REQUEST:
-        pub_platooningAction.publish(decodedMsg);
-      default:
-        break;
+      switch ( decodedMsg.actionType ) {
+        case LEADER_REQUEST:
+          pub_platooningAction.publish(decodedMsg);
+        default:
+          break;
+      }
+
+    } catch(pt::json_parser_error& ex) {
+      std::stringstream ss;
+
+      ss << "[PROTOCOL] incoming json parse error, json malformed\n"
+         << ex.what() << " " << ex.line() << " " << ex.message();
+
+      NODELET_ERROR(ss.str().c_str());
+    } catch( std::exception& ex ) {
+
+      std::stringstream ss;
+
+      ss << "[PROTOCOL] error platoonProtocolInHandler\n"
+          << ex.what();
+
+      NODELET_ERROR( ss.str().c_str() );
     }
-
   }
 
 
@@ -95,14 +113,12 @@ namespace platooning {
 
   platooningAction Protocol::DecodeIncomingJson( std::string& json ) {
 
-      std::cout << "i recvd a thing" << std::endl;
+    std::cout << "i recvd a thing" << std::endl;
+
+    std::stringstream ss(json);
 
     pt::ptree root;
-    try {
-      pt::read_json( json, root );
-    } catch ( const pt::json_parser_error& ex) {
-      NODELET_ERROR("incoming json parse error");
-    }
+    pt::read_json( ss, root );
 
     platooningAction action;
 

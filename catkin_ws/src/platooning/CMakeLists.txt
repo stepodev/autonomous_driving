@@ -87,6 +87,10 @@ add_message_files(
         ## vehiclecontrol messages
         ########################
         ## wifi messages
+        ########################
+        ## test messages
+        runTestCommand.msg
+        testResult.msg
 
 )
 
@@ -205,11 +209,15 @@ add_dependencies(platooning_node platooning_generate_messages_cpp)
 
 
 ##############################################
-#### platooning module tests
+#### platooning tests
 ##############################################
 add_library(moduletest_protocol include/tests/Moduletest_protocol.hpp include/platooning/Protocol.hpp test/Moduletest_protocol.cpp)
 add_dependencies(moduletest_protocol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_protocol ${catkin_LIBRARIES})
+
+add_library(testrunner test/testrunner.cpp)
+add_dependencies(testrunner ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(testrunner ${catkin_LIBRARIES})
 
 
 ##################

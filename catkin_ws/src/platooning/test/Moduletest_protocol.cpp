@@ -54,11 +54,16 @@ namespace platooning {
     sub_platooningAction = nh_.subscribe("platooningAction", 10,
                                        &Moduletest_protocol::hndl_platooningAction, this);
 
+    std::cout << "subbing to runtestcommand" << std::endl;
+    sub_runTestCmd = nh_.subscribe("runTestCommand", 10,
+                                   &Moduletest_protocol::hndl_runTestCmd, this);
+
     //publisher of forced driving vector
     pub_platoonProtocolIn = nh_.advertise< platooning::platoonProtocolIn >("platoonProtocolIn", 10);
 
-    genTest1();
+    pub_testResult = nh_.advertise<platooning::testResult>("testResult",10);
 
+    NODELET_INFO("Moduletest_protocol init done");
   };
 
 
@@ -71,21 +76,41 @@ namespace platooning {
    */
   void Moduletest_protocol::hndl_platooningAction(platooning::platooningAction msg) {
 
-    std::ofstream myfile;
-    myfile.open ("test1.txt");
+    platooning::testResult resmsg;
+    resmsg.success = true;
 
-    myfile << "actionType:" << (msg.actionType == LEADER_REQUEST)
+    if( msg.actionType != LEADER_REQUEST ) {
+      resmsg.success = false;
+    }
+
+    if( msg.vehicleId != 2 ) {
+      resmsg.success = false;
+    }
+
+    if( msg.platoonId != 3 ) {
+      resmsg.success = false;
+    }
+
+    std::stringstream resstr;
+    resstr << "actionType:" + (msg.actionType == LEADER_REQUEST)
         << " vehicleId:" << (msg.vehicleId == 2)
-        << " platoonId:" << (msg.platoonId == 3)
-        << std::endl;
+        << " platoonId:" << (msg.platoonId == 3);
 
-    myfile.close();
+    //resmsg.comment = resstr.str();
 
     std::cout << "i wrotes a thing" << std::endl;
 
+    pub_testResult.publish(resmsg);
+
   }
 
-  void Moduletest_protocol::genTest1() {
+  void Moduletest_protocol::hndl_runTestCmd(platooning::runTestCommand msg) {
+
+    std::cout << "Protocol: ya talkin to me?" << std::endl;
+
+    if( msg.testToRun != "moduleTest_platooning_leaderrequest") {
+      return;
+    }
 
     pt::ptree root;
 
@@ -103,23 +128,15 @@ namespace platooning {
 
     pt::write_json(os,root,false);
 
-    platoonProtocolIn msg;
+    std::cout << os.str();
 
-    msg.payload = os.str();
+    platoonProtocolIn inmsg;
 
-      while (true)
-      {
-          sleep(1);
-          pub_platoonProtocolIn.publish(msg);
-          std::cout << "moduletest wrote a thing" << std::endl;
+    inmsg.payload = os.str();
 
-      }
-
-
+    pub_platoonProtocolIn.publish(inmsg);
 
   }
-
-
 } // namespace platooning
 
 PLUGINLIB_EXPORT_CLASS(platooning::Moduletest_protocol, nodelet::Nodelet);

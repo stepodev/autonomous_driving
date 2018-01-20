@@ -95,6 +95,14 @@ namespace platooning {
 
     void onInit();
 
+  protected:
+    /**
+     * @brief takes json and decodes it
+     * @param msg protocol data
+     */
+    platooningAction DecodeIncomingJson( std::string& json );
+
+
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
@@ -110,11 +118,6 @@ namespace platooning {
      */
     void platoonProtocolInHandler(platooning::platoonProtocolIn msg);
 
-    /**
-     * @brief takes json and decodes it
-     * @param msg protocol data
-     */
-    platooningAction DecodeIncomingJson( std::string& json );
   };
 
 

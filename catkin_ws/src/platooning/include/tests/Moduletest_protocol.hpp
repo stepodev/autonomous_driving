@@ -27,12 +27,13 @@
 #include <ros/ros.h>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <platooning/runTestCommand.h>
+#include <platooning/testResult.h>
 #include <sstream>
-#include <iostream>
-#include <fstream>
 
 #include "platooning/platooningAction.h" //includes topic aka message
 #include "platooning/platoonProtocolIn.h" //includes topic aka message
+#include "platooning/testResult.h" //includes topic aka message
 #include "Protocol.hpp"
 
 namespace pt = boost::property_tree;
@@ -78,8 +79,6 @@ namespace platooning {
   public:
     virtual void onInit();
 
-    Moduletest_protocol(ros::NodeHandle &nh, std::string &name);
-
     Moduletest_protocol();
 
     ~Moduletest_protocol();
@@ -88,16 +87,17 @@ namespace platooning {
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
     ros::Subscriber sub_platooningAction;
+    ros::Subscriber sub_runTestCmd;
 
     ros::Publisher pub_platoonProtocolIn;
+    ros::Publisher pub_testResult;
 
     /**
      * @brief to achieve X does Y
      * @param msg incoming topic message
      */
     void hndl_platooningAction(platooning::platooningAction msg);
-
-    void genTest1();
+    void hndl_runTestCmd(platooning::runTestCommand msg);
 
   };
 
