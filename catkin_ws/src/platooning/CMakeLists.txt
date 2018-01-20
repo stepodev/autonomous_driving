@@ -78,12 +78,19 @@ add_message_files(
         ## priorization messages
         ########################
         ## protocol messages
+        platooningAction.msg
+        platoonProtocolIn.msg
+        platoonProtocolOut.msg
         ########################
         ## userinterface messages
         ########################
         ## vehiclecontrol messages
         ########################
         ## wifi messages
+        ########################
+        ## test messages
+        runTestCommand.msg
+        testResult.msg
 
 )
 
@@ -151,72 +158,71 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
         include/platooning
+        include/tests
         ${catkin_INCLUDE_DIRS}
 )
+#######################
+#### platooning modules
+#######################
 
 ## Declare a C++ library
-add_library(environment_mapping src/EnvironmentMapping.cpp)
-add_library(remotecontrol src/RemoteControl.cpp)
-add_library(lanekeeping src/LaneKeeping.cpp)
-add_library(priorization src/Priorization.cpp)
-add_library(protocol src/Protocol.cpp)
-add_library(userinterface src/UserInterface.cpp)
-add_library(vehiclecontrol src/VehicleControl.cpp)
-add_library(wifi src/Wifi.cpp)
-add_library(template src/Template.cpp)
-
-
-## Add cmake target dependencies of the library
-## as an example, code may need to be generated before libraries
-## either from message generation or dynamic reconfigure
-add_dependencies(remotecontrol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_library(environment_mapping include/platooning/EnvironmentMapping.hpp src/EnvironmentMapping.cpp)
 add_dependencies(environment_mapping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(environment_mapping ${catkin_LIBRARIES})
+
+add_library(remotecontrol include/platooning/RemoteControl.hpp src/RemoteControl.cpp)
+add_dependencies(remotecontrol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(remotecontrol ${catkin_LIBRARIES})
+
+add_library(lanekeeping include/platooning/LaneKeeping.hpp src/LaneKeeping.cpp)
 add_dependencies(lanekeeping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(lanekeeping ${catkin_LIBRARIES})
+
+add_library(priorization include/platooning/Priorization.hpp src/Priorization.cpp)
 add_dependencies(priorization ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(priorization ${catkin_LIBRARIES})
+
+add_library(protocol include/platooning/Protocol.hpp src/Protocol.cpp)
 add_dependencies(protocol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(protocol ${catkin_LIBRARIES})
+
+add_library(userinterface include/platooning/UserInterface.hpp src/UserInterface.cpp)
 add_dependencies(userinterface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(userinterface ${catkin_LIBRARIES})
+
+add_library(vehiclecontrol include/platooning/VehicleControl.hpp src/VehicleControl.cpp)
 add_dependencies(vehiclecontrol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(vehiclecontrol ${catkin_LIBRARIES})
+
+add_library(wifi include/platooning/Wifi.hpp src/Wifi.cpp)
 add_dependencies(wifi ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(wifi ${catkin_LIBRARIES})
+
+add_library(template include/platooning/Template.hpp src/Template.cpp)
 add_dependencies(template ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(template ${catkin_LIBRARIES})
 
-## Declare a C++ executable
-## With catkin_make all packages are built within a single CMake context
-## The recommended prefix ensures that target names across packages don't collide
 add_executable(platooning_node src/platooning_node.cpp)
-# add_executable(environment_mapping src/EnvironmentMapping.cpp)
-
-## Rename C++ executable without prefix
-## The above recommended prefix causes long target names, the following renames the
-## target back to the shorter version for ease of user use
-## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-#add_dependencies(platooning_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
-
 target_link_libraries(platooning_node ${catkin_LIBRARIES})
 add_dependencies(platooning_node platooning_generate_messages_cpp)
 
-target_link_libraries(environment_mapping ${catkin_LIBRARIES})
-target_link_libraries(remotecontrol ${catkin_LIBRARIES})
-target_link_libraries(lanekeeping ${catkin_LIBRARIES})
-target_link_libraries(priorization ${catkin_LIBRARIES})
-target_link_libraries(protocol ${catkin_LIBRARIES})
-target_link_libraries(userinterface ${catkin_LIBRARIES})
-target_link_libraries(vehiclecontrol ${catkin_LIBRARIES})
-target_link_libraries(wifi ${catkin_LIBRARIES})
-target_link_libraries(template ${catkin_LIBRARIES})
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
 
 
-#############
-## Testing ##
-#############
+##############################################
+#### platooning tests
+##############################################
+add_library(moduletest_protocol include/tests/Moduletest_protocol.hpp include/platooning/Protocol.hpp test/Moduletest_protocol.cpp)
+add_dependencies(moduletest_protocol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(moduletest_protocol ${catkin_LIBRARIES})
+
+add_library(testrunner test/testrunner.cpp)
+add_dependencies(testrunner ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(testrunner ${catkin_LIBRARIES})
+
+
+##################
+## UNIT Testing ##
+##################
 
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(remotecontrol-unit-test test/unittest_remotecontrol.cpp)

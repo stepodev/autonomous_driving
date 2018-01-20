@@ -89,7 +89,7 @@ namespace platooning {
      * @brief to achieve X does Y
      * @param msg incoming topic message
      */
-    void templateTopicHandler(const platooning::templateMsg msg);
+    void templateTopicHandler(platooning::templateMsg msg);
 
   };
 

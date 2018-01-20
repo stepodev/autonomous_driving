@@ -1,7 +1,3 @@
-//
-// Created by stepo on 12/16/17.
-//
-
 /**
  * @file doxygen_c.h
  * @author My Self
@@ -19,20 +15,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_PROTOCOL_HPP
-#define PLATOONING_PROTOCOL_HPP
-
-/*****************************************************************************
-** DEFINES
-*****************************************************************************/
-
-#define LEADER_REQUEST 0x01
-#define FOLLOWER_REQUEST 0x02
-#define ACCEPT_RESPONSE 0x03
-#define REJECT_RESPONSE 0x04
-#define HEARTBEAT 0x05
-#define BROADCAST 0x06
-#define LEAVE_PLATOON 0x07
+#ifndef PLATOONING_MODULETEST_PROTOCOL_HPP
+#define PLATOONING_MODULETEST_PROTOCOL_HPP
 
 /*****************************************************************************
 ** Includes
@@ -41,18 +25,22 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include <boost/property_tree/ptree.hpp> //json parsing and generating
-#include <boost/property_tree/json_parser.hpp> //json parsing and generating
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <platooning/runTestCommand.h>
+#include <platooning/testResult.h>
+#include <sstream>
 
 #include "platooning/platooningAction.h" //includes topic aka message
 #include "platooning/platoonProtocolIn.h" //includes topic aka message
-#include "platooning/platoonProtocolOut.h" //includes topic aka message
+#include "platooning/testResult.h" //includes topic aka message
+#include "Protocol.hpp"
+
+namespace pt = boost::property_tree;
 
 namespace platooning {
 
-/*****************************************************************************
-** Classes
-*****************************************************************************/
+
 /**
  * @brief Example showing how to document a function with Doxygen.
  *
@@ -87,40 +75,33 @@ namespace platooning {
  * @warning Warning.
  */
 
-  class Protocol : public nodelet::Nodelet {
+  class Moduletest_protocol : public nodelet::Nodelet {
   public:
-    Protocol();
+    virtual void onInit();
 
-    ~Protocol();
+    Moduletest_protocol();
 
-    void onInit();
-
-  protected:
-    /**
-     * @brief takes json and decodes it
-     * @param msg protocol data
-     */
-    platooningAction DecodeIncomingJson( std::string& json );
-
+    ~Moduletest_protocol();
 
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
-    ros::Subscriber sub_platooningIn; /**< subscribers to incoming messages from wifi. */
+    ros::Subscriber sub_platooningAction;
+    ros::Subscriber sub_runTestCmd;
 
-    ros::Publisher pub_platooningOut; /**< provides to messages to send via wifi. */
-    ros::Publisher pub_platooningAction; /**< provides to messages to send via wifi. */
-
+    ros::Publisher pub_platoonProtocolIn;
+    ros::Publisher pub_testResult;
 
     /**
-     * @brief receives json payloads from wifi, transforms them to messages
-     * @param msg json payload
+     * @brief to achieve X does Y
+     * @param msg incoming topic message
      */
-    void platoonProtocolInHandler(platooning::platoonProtocolIn msg);
+    void hndl_platooningAction(platooning::platooningAction msg);
+    void hndl_runTestCmd(platooning::runTestCommand msg);
 
   };
 
 
 } // namespace platooning
 
-#endif //PLATOONING_PROTOCOL_HPP
+#endif //PLATOONING_MODULETEST_PROTOCOL_HPP

@@ -15,7 +15,9 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include "Template.hpp"
+#include "Protocol.hpp"
+
+namespace pt = boost::property_tree;
 
 namespace platooning {
 
@@ -29,7 +31,7 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-  Template::Template() {};
+  Protocol::Protocol() = default;
 
 
 
@@ -37,7 +39,7 @@ namespace platooning {
 ** Destructors
 *****************************************************************************/
 
-  Template::~Template() {};
+  Protocol::~Protocol() = default;
 
 
 /*****************************************************************************
@@ -48,15 +50,19 @@ namespace platooning {
   * Set-up necessary publishers/subscribers
   * @return true, if successful
   */
-  void Template::onInit() {
+  void Protocol::onInit() {
 
     //subscribers of protocol nodelet
-    templateSubscriber = nh_.subscribe("templateMsg", 10,
-                                                  &Template::templateTopicHandler, this);
+    sub_platooningIn = nh_.subscribe("platoonProtocolIn", 10,
+                                             &Protocol::platoonProtocolInHandler, this);
 
-    //publisher of forced driving vector
-    templatePublisher = nh_.advertise< platooning::templateMsg >("commands/templateMsg", 10);
+    //publisher of messages to send out
+    pub_platooningOut = nh_.advertise< platooning::platoonProtocolOut >("platoonProtocolOut", 10);
 
+    //publisher of decoded platooning messages
+    pub_platooningAction = nh_.advertise< platooning::platooningAction >("platooningAction", 10);
+
+    NODELET_INFO("PROTOCOL init done");
 
   };
 
@@ -68,21 +74,86 @@ namespace platooning {
   /*
    * handling an event and publishing something
    */
-  void Template::templateTopicHandler(const platooning::templateMsg msg) {
+  void Protocol::platoonProtocolInHandler(platooning::platoonProtocolIn msg) {
 
-    NODELET_DEBUG("handling a template");
+    NODELET_DEBUG("json payload received");
 
-    if( msg.templatebool || !msg.templatebool ) {
-      templatePublisher.publish(msg);
-    } else {
-      NODELET_WARN("warning you of stuff");
+    try {
+      platooningAction decodedMsg = DecodeIncomingJson( msg.payload );
+
+      switch ( decodedMsg.actionType ) {
+        case LEADER_REQUEST:
+          pub_platooningAction.publish(decodedMsg);
+        default:
+          break;
+      }
+
+    } catch(pt::json_parser_error& ex) {
+      std::stringstream ss;
+
+      ss << "[PROTOCOL] incoming json parse error, json malformed\n"
+         << ex.what() << " " << ex.line() << " " << ex.message();
+
+      NODELET_ERROR(ss.str().c_str());
+    } catch( std::exception& ex ) {
+
+      std::stringstream ss;
+
+      ss << "[PROTOCOL] error platoonProtocolInHandler\n"
+          << ex.what();
+
+      NODELET_ERROR( ss.str().c_str() );
     }
-
   }
 
 
+/*****************************************************************************
+** Helper functions
+*****************************************************************************/
+
+  platooningAction Protocol::DecodeIncomingJson( std::string& json ) {
+
+    std::cout << "i recvd a thing" << std::endl;
+
+    std::stringstream ss(json);
+
+    pt::ptree root;
+    pt::read_json( ss, root );
+
+    platooningAction action;
+
+    action.actionType = root.get<short>("MessageType");
+
+    switch ( action.actionType ) {
+      case LEADER_REQUEST :
+        action.vehicleId = root.get<unsigned int>("vehicle_id");
+        action.platoonId = root.get<unsigned int>("platoon_id");
+        break;
+      case FOLLOWER_REQUEST:
+        break;
+      case ACCEPT_RESPONSE:
+        break;
+      case REJECT_RESPONSE:
+        break;
+      case HEARTBEAT:
+        break;
+      case BROADCAST:
+        action.vehicleId = root.get<unsigned int>("vehicle_id");
+        action.platoonId = root.get<unsigned int>("platoon_id");
+        action.innerPlatoonDistance = root.get<unsigned int>("ipd");
+        action.platoonSpeed = root.get<unsigned int>("ps");
+        break;
+      case LEAVE_PLATOON:
+        break;
+      default:
+        NODELET_ERROR("unrecognized message type");
+    }
+
+    return action;
+
+  }
 
 } // namespace platooning
 
-PLUGINLIB_EXPORT_CLASS(platooning::Template, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(platooning::Protocol, nodelet::Nodelet);
 // %EndTag(FULLTEXT)%
