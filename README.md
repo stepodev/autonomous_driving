@@ -11,3 +11,8 @@ To start:
 2. `rostopic list` and `rosnode list` should show new node_name and topic_name
 3. `rostopic echo {topic_name}` should show messages by the node on the topic
 
+To test:
+1. `roslaunch platooning test/moduletest_node_name.test`
+2. read test1.txt in folder TBD
+
+
