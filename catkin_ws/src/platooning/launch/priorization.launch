@@ -1,6 +1,4 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="standalone_nodelet"  args="manager" output="screen"/>
-
     <node pkg="nodelet" type="nodelet" name="template" args="load platooning/Priorization standalone_nodelet">
     </node>
 </launch>

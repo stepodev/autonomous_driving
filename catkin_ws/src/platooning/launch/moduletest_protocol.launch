@@ -1,4 +1,4 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="moduletest_protocol" args="load platooning/moduletest_protocol standalone_nodelet">
+    <node pkg="nodelet" type="nodelet" name="moduletest_protocol" args="load platooning/moduletest_protocol moduletest_protocol">
     </node>
 </launch>

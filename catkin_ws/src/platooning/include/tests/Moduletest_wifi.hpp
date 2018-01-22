@@ -1,7 +1,3 @@
-//
-// Created by stepo on 12/16/17.
-//
-
 /**
  * @file doxygen_c.h
  * @author My Self
@@ -19,8 +15,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_TEMPLATE_HPP
-#define PLATOONING_TEMPLATE_HPP
+#ifndef PLATOONING_MODULETEST_WIFI_HPP
+#define PLATOONING_MODULETEST_WIFI_HPP
 
 /*****************************************************************************
 ** Includes
@@ -29,7 +25,18 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include "platooning/templateMsg.h" //includes topic aka message
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <platooning/runTestCommand.h>
+#include <platooning/testResult.h>
+#include <sstream>
+
+#include "platooning/platoonProtocolOut.h" //includes topic aka message
+#include "platooning/testResult.h" //includes topic aka message
+#include "UdpServer.hpp"
+#include "Moduletest.hpp"
+
+using boost::asio::ip::udp;
 
 namespace platooning {
 
@@ -68,32 +75,43 @@ namespace platooning {
  * @warning Warning.
  */
 
-  class Template : public nodelet::Nodelet {
+  class Moduletest_wifi : public Moduletest {
   public:
     virtual void onInit();
 
-    Template(ros::NodeHandle &nh, std::string &name);
+    Moduletest_wifi();
 
-    Template();
-
-    ~Template();
+    ~Moduletest_wifi();
 
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
-    ros::Subscriber sub_templateTopic;
-    ros::Publisher pub_templateTopic;
+    std::unique_ptr<UdpServer> server_;
+    boost::asio::io_service io_service_;
+    std::string current_test_;
+    boost::thread iothread;
 
+    ros::Publisher pub_udpserver_platoonProtocolIn_;
+    ros::Subscriber sub_platoonProtocolIn;
+
+    ros::Subscriber sub_runTestCmd;
+
+    ros::Publisher pub_testResult;
 
     /**
      * @brief to achieve X does Y
      * @param msg incoming topic message
      */
-    void hndl_templateTopic(platooning::templateMsg msg);
+    void hndl_platoonProtocolIn(platooning::platoonProtocolIn msg);
+    void hndl_runTestCmd(platooning::runTestCommand msg);
+
+    void test_send_udp_recv_protocolIn();
+
+    void test_send_protocolOut_recv_protocolIn();
 
   };
 
 
 } // namespace platooning
 
-#endif //PLATOONING_TEMPLATE_HPP
+#endif //PLATOONING_MODULETEST_WIFI_HPP

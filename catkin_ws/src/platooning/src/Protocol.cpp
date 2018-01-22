@@ -82,7 +82,7 @@ namespace platooning {
       platooningAction decodedMsg = DecodeIncomingJson( msg.payload );
 
       switch ( decodedMsg.actionType ) {
-        case LEADER_REQUEST:
+        case LV_REQUEST:
           pub_platooningAction.publish(decodedMsg);
         default:
           break;
@@ -125,19 +125,19 @@ namespace platooning {
     action.actionType = root.get<short>("MessageType");
 
     switch ( action.actionType ) {
-      case LEADER_REQUEST :
+      case LV_REQUEST :
         action.vehicleId = root.get<unsigned int>("vehicle_id");
         action.platoonId = root.get<unsigned int>("platoon_id");
         break;
-      case FOLLOWER_REQUEST:
+      case FV_REQUEST:
         break;
       case ACCEPT_RESPONSE:
         break;
       case REJECT_RESPONSE:
         break;
-      case HEARTBEAT:
+      case FV_HEARTBEAT:
         break;
-      case BROADCAST:
+      case LV_BROADCAST:
         action.vehicleId = root.get<unsigned int>("vehicle_id");
         action.platoonId = root.get<unsigned int>("platoon_id");
         action.innerPlatoonDistance = root.get<unsigned int>("ipd");

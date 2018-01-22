@@ -91,6 +91,7 @@ add_message_files(
         ## test messages
         runTestCommand.msg
         testResult.msg
+        registerTestcases.msg
 
 )
 
@@ -166,7 +167,7 @@ include_directories(
 #######################
 
 ## Declare a C++ library
-add_library(environment_mapping include/platooning/EnvironmentMapping.hpp src/EnvironmentMapping.cpp)
+add_library(environment_mapping include/platooning/EnvironmentMapping.hpp src/EnvironmentMapping.cpp src/UdpServer.cpp include/platooning/UdpServer.hpp)
 add_dependencies(environment_mapping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(environment_mapping ${catkin_LIBRARIES})
 
@@ -182,7 +183,7 @@ add_library(priorization include/platooning/Priorization.hpp src/Priorization.cp
 add_dependencies(priorization ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(priorization ${catkin_LIBRARIES})
 
-add_library(protocol include/platooning/Protocol.hpp src/Protocol.cpp)
+add_library(protocol include/platooning/MessageTypes.hpp include/platooning/Protocol.hpp src/Protocol.cpp)
 add_dependencies(protocol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(protocol ${catkin_LIBRARIES})
 
@@ -194,9 +195,13 @@ add_library(vehiclecontrol include/platooning/VehicleControl.hpp src/VehicleCont
 add_dependencies(vehiclecontrol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(vehiclecontrol ${catkin_LIBRARIES})
 
-add_library(wifi include/platooning/Wifi.hpp src/Wifi.cpp)
-add_dependencies(wifi ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(wifi ${catkin_LIBRARIES})
+add_library(wifi include/platooning/MessageTypes.hpp include/platooning/UdpServer.hpp include/platooning/Wifi.hpp src/Wifi.cpp)
+add_dependencies(wifi udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(wifi udpserver ${catkin_LIBRARIES})
+
+add_library(udpserver include/platooning/MessageTypes.hpp include/platooning/UdpServer.hpp src/UdpServer.cpp)
+add_dependencies(udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(udpserver ${catkin_LIBRARIES})
 
 add_library(template include/platooning/Template.hpp src/Template.cpp)
 add_dependencies(template ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
@@ -211,9 +216,17 @@ add_dependencies(platooning_node platooning_generate_messages_cpp)
 ##############################################
 #### platooning tests
 ##############################################
+add_library(moduletest include/tests/Moduletest.hpp test/Moduletest.cpp)
+add_dependencies(moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(moduletest ${catkin_LIBRARIES})
+
 add_library(moduletest_protocol include/tests/Moduletest_protocol.hpp include/platooning/Protocol.hpp test/Moduletest_protocol.cpp)
-add_dependencies(moduletest_protocol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(moduletest_protocol ${catkin_LIBRARIES})
+add_dependencies(moduletest_protocol moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_protocol moduletest ${catkin_LIBRARIES})
+
+add_library(moduletest_wifi include/tests/Moduletest.hpp include/tests/Moduletest_wifi.hpp include/platooning/Wifi.hpp include/platooning/MessageTypes.hpp  test/Moduletest_wifi.cpp)
+add_dependencies(moduletest_protocol moduletest udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(moduletest_wifi moduletest udpserver ${catkin_LIBRARIES})
 
 add_library(testrunner test/testrunner.cpp)
 add_dependencies(testrunner ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
