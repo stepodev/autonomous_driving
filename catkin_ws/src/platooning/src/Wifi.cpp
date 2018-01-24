@@ -4,9 +4,9 @@
 
 
 /**
- * @file /platooning/src/platooning.cpp
+ * @file /platooning/src/wifi.cpp
  *
- * @brief Nodelet implementation of RemoteContol
+ * @brief Implements Listeners and Senders for traffic towards the network
  *
  * @author stepo
  **/
@@ -29,15 +29,14 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-  Wifi::Wifi() {};
-
+  Wifi::Wifi() = default;
 
 
 /*****************************************************************************
 ** Destructors
 *****************************************************************************/
 
-  Wifi::~Wifi() {};
+  Wifi::~Wifi() = default;
 
 
 /*****************************************************************************
@@ -46,16 +45,27 @@ namespace platooning {
 
   /**
   * Set-up necessary publishers/subscribers
-  * @return true, if successful
   */
   void Wifi::onInit() {
 
-    //subscribers of protocol nodelet
-    templateSubscriber = nh_.subscribe("templateMsg", 10,
-                                                  &Wifi::templateTopicHandler, this);
+    name_ = "wifi";
 
-    //publisher of forced driving vector
-    templatePublisher = nh_.advertise< platooning::templateMsg >("commands/templateMsg", 10);
+    //subscribers of protocol nodelet
+    sub_platoonProtocolOut_ = nh_.subscribe("platoonProtocolOut", 10,
+                                            &Wifi::hndl_platoonProtocolOut, this);
+
+    pub_platoonProtocolIn_ = nh_.advertise<platoonProtocolIn>("platoonProtocolIn", 10);
+
+    io_thread = boost::thread([this]() { this->io_service_.run(); });
+    std::cout << "iothread" << std::endl;
+
+    try {
+      server_ = std::unique_ptr<UdpServer>(new UdpServer(io_service_,pub_platoonProtocolIn_));
+    } catch (std::exception &e) {
+      NODELET_FATAL( std::string("[WIFI] udpserver init failed\n" + std::string(e.what())).c_str());
+    }
+
+    NODELET_INFO("[WIFI] init done");
 
 
   };
@@ -68,18 +78,16 @@ namespace platooning {
   /*
    * handling an event and publishing something
    */
-  void Wifi::templateTopicHandler(const platooning::templateMsg msg) {
+  void Wifi::hndl_platoonProtocolOut(platooning::platoonProtocolOut msg) {
 
-    NODELET_DEBUG("handling a template");
-
-    if( msg.templatebool || !msg.templatebool ) {
-      templatePublisher.publish(msg);
-    } else {
-      NODELET_WARN("warning you of stuff");
-    }
+    server_->start_send(msg);
 
   }
 
+
+/*****************************************************************************
+** HELPER CLASS
+*****************************************************************************/
 
 
 } // namespace platooning

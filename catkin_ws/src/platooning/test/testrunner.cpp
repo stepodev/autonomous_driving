@@ -10,18 +10,16 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include "platooning/runTestCommand.h"
-#include "platooning/testResult.h"
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
-#include <sstream>
-#include <iostream>
 #include <fstream>
 #include <chrono>
-#include <thread>
 #include <boost/thread/thread.hpp>
 
+#include "platooning/runTestCommand.h"
+#include "platooning/testResult.h"
+#include "platooning/registerTestcases.h"
 
 using namespace std;
 
@@ -61,15 +59,30 @@ namespace platooning {
       ros::NodeHandle nh_;
 
       sub_testResult = nh_.subscribe("testResult", 10,
-                                                     &Testrunner::hndl_testResult, this);
+                                     &Testrunner::hndl_testResult, this);
+
+      sub_registerTestcases = nh_.subscribe("registerTestcases", 10 ,
+                                            &Testrunner::hndl_registerTestcases, this );
 
       pub_testRunCommand = nh_.advertise<platooning::runTestCommand>("runTestCommand", 10);
 
-      registerTestcases();
+      boost::thread t([this]() {
+        while(sub_registerTestcases.getNumPublishers() != 0 ) {
+          NODELET_INFO("[testrunner] waiting for registers)");
+          boost::this_thread::sleep_for(boost::chrono::seconds(1));
+        }
 
-      runthread = unique_ptr<boost::thread>( new boost::thread(boost::bind(&Testrunner::run, this)));
+        if( !testsToRunlist.empty() ) {
+          runthread = unique_ptr<boost::thread>( new boost::thread(boost::bind(&Testrunner::run, this)));
+        } else {
+          NODELET_FATAL("[testrunner] no testcases have been registered");
+        }
 
-      NODELET_INFO("testrunner init done");
+      });
+
+
+
+      NODELET_INFO("[testrunner] init done");
 
     }
 
@@ -85,6 +98,7 @@ namespace platooning {
     ros::Subscriber sub_testResult;
     ros::Publisher pub_testRunCommand;
     unique_ptr<boost::thread> runthread;
+    ros::Subscriber sub_registerTestcases;
 
     /*****************************************************************************
     ** Handlers
@@ -92,7 +106,6 @@ namespace platooning {
 
 
     void hndl_testResult(platooning::testResult msg) {
-
 
       myfile << testsToRunlist.front() << msg.success << " " << msg.comment << std::endl;
 
@@ -107,15 +120,15 @@ namespace platooning {
     ** Helpers
     *****************************************************************************/
 
-    void registerTestcases() {
-      testsToRunlist = list<string>();
+    void hndl_registerTestcases( platooning::registerTestcases msg) {
 
-      testsToRunlist.emplace_back("moduleTest_platooning_leaderrequest");
+      NODELET_INFO(std::string("[testrunner] registered testcase " + msg.testcase).c_str());
+
+      testsToRunlist.emplace_back(msg.testcase);
+
     }
 
     void run() {
-
-      cout << "runnin" << keepSpinning << std::endl;
 
       while (!testsToRunlist.empty()) {
 
@@ -124,21 +137,23 @@ namespace platooning {
 
         while (pub_testRunCommand.getNumSubscribers() == 0) {
           NODELET_WARN("found no subscribers");
-          this_thread::sleep_for(std::chrono::seconds(5));
+          boost::this_thread::sleep_for(boost::chrono::seconds(5));
         }
 
         pub_testRunCommand.publish(runcmd);
 
 
         while (keepSpinning) {
-          this_thread::sleep_for(std::chrono::seconds(1));
-          NODELET_WARN("Spinnin");
+          boost::this_thread::sleep_for(boost::chrono::seconds(1));
+          NODELET_WARN("[testrunner] waiting for test to finish");
         }
       }
 
-      NODELET_INFO("TESTRUNNER done");
+      NODELET_INFO("[testrunner] done");
 
     }
+
+
   }; // namespace platooning
 }
 

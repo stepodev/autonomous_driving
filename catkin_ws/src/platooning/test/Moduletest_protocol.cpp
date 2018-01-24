@@ -1,8 +1,3 @@
-//
-// Created by stepo on 12/16/17.
-//
-
-
 /**
  * @file /platooning/src/platooning.cpp
  *
@@ -16,6 +11,7 @@
 *****************************************************************************/
 
 #include "Moduletest_protocol.hpp"
+#include <platooning/registerTestcases.h>
 
 // %Tag(FULLTEXT)%
 namespace platooning {
@@ -50,6 +46,8 @@ namespace platooning {
   */
   void Moduletest_protocol::onInit() {
 
+    name_ = "Moduletest_protocol";
+
     //subscribers of protocol nodelet
     sub_platooningAction = nh_.subscribe("platooningAction", 10,
                                        &Moduletest_protocol::hndl_platooningAction, this);
@@ -62,6 +60,12 @@ namespace platooning {
     pub_platoonProtocolIn = nh_.advertise< platooning::platoonProtocolIn >("platoonProtocolIn", 10);
 
     pub_testResult = nh_.advertise<platooning::testResult>("testResult",10);
+
+    std::list<std::string> testcases_to_register = {
+        "moduleTest_platooning_leaderrequest"
+    };
+
+    register_testcases( testcases_to_register );
 
     NODELET_INFO("Moduletest_protocol init done");
   };
@@ -79,7 +83,7 @@ namespace platooning {
     platooning::testResult resmsg;
     resmsg.success = true;
 
-    if( msg.actionType != LEADER_REQUEST ) {
+    if( msg.actionType != LV_REQUEST ) {
       resmsg.success = false;
     }
 
@@ -92,7 +96,7 @@ namespace platooning {
     }
 
     std::stringstream resstr;
-    resstr << "actionType:" + (msg.actionType == LEADER_REQUEST)
+    resstr << "actionType:" + (msg.actionType == LV_REQUEST)
         << " vehicleId:" << (msg.vehicleId == 2)
         << " platoonId:" << (msg.platoonId == 3);
 
@@ -114,7 +118,7 @@ namespace platooning {
 
     pt::ptree root;
 
-    root.put("MessageType",(unsigned int) LEADER_REQUEST );
+    root.put("MessageType",(unsigned int) LV_REQUEST );
     root.put("vehicle_id",(unsigned int) 2 );
     root.put("platoon_id",(unsigned int) 3 );
     root.put("ipd",(unsigned int) 4 );
@@ -137,6 +141,8 @@ namespace platooning {
     pub_platoonProtocolIn.publish(inmsg);
 
   }
+
+
 } // namespace platooning
 
 PLUGINLIB_EXPORT_CLASS(platooning::Moduletest_protocol, nodelet::Nodelet);

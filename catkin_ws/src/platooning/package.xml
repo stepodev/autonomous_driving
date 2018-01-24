@@ -82,6 +82,7 @@
     <nodelet plugin="${prefix}/plugins/vehiclecontrol.xml" />
     <nodelet plugin="${prefix}/plugins/wifi.xml" />
     <nodelet plugin="${prefix}/plugins/moduletest_protocol.xml" />
+    <nodelet plugin="${prefix}/plugins/moduletest_wifi.xml" />
     <nodelet plugin="${prefix}/plugins/testrunner.xml" />
     <rosdoc config="rosdoc.yaml" />
   </export>

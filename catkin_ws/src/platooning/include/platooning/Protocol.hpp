@@ -26,14 +26,6 @@
 ** DEFINES
 *****************************************************************************/
 
-#define LEADER_REQUEST 0x01
-#define FOLLOWER_REQUEST 0x02
-#define ACCEPT_RESPONSE 0x03
-#define REJECT_RESPONSE 0x04
-#define HEARTBEAT 0x05
-#define BROADCAST 0x06
-#define LEAVE_PLATOON 0x07
-
 /*****************************************************************************
 ** Includes
 *****************************************************************************/
@@ -47,6 +39,7 @@
 #include "platooning/platooningAction.h" //includes topic aka message
 #include "platooning/platoonProtocolIn.h" //includes topic aka message
 #include "platooning/platoonProtocolOut.h" //includes topic aka message
+#include "MessageTypes.hpp"
 
 namespace platooning {
 

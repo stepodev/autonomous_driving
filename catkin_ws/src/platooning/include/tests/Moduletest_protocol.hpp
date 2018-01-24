@@ -35,6 +35,7 @@
 #include "platooning/platoonProtocolIn.h" //includes topic aka message
 #include "platooning/testResult.h" //includes topic aka message
 #include "Protocol.hpp"
+#include "Moduletest.hpp"
 
 namespace pt = boost::property_tree;
 
@@ -75,7 +76,7 @@ namespace platooning {
  * @warning Warning.
  */
 
-  class Moduletest_protocol : public nodelet::Nodelet {
+  class Moduletest_protocol : public Moduletest {
   public:
     virtual void onInit();
 
@@ -84,8 +85,6 @@ namespace platooning {
     ~Moduletest_protocol();
 
   private:
-    ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-    std::string name_;
     ros::Subscriber sub_platooningAction;
     ros::Subscriber sub_runTestCmd;
 

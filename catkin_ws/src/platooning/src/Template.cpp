@@ -46,16 +46,16 @@ namespace platooning {
 
   /**
   * Set-up necessary publishers/subscribers
-  * @return true, if successful
   */
   void Template::onInit() {
 
     //subscribers of protocol nodelet
-    templateSubscriber = nh_.subscribe("templateMsg", 10,
-                                                  &Template::templateTopicHandler, this);
+    sub_templateTopic = nh_.subscribe("templateTopic", 10,
+                                                  &Template::hndl_templateTopic, this);
 
     //publisher of forced driving vector
-    templatePublisher = nh_.advertise< platooning::templateMsg >("commands/templateMsg", 10);
+
+    pub_templateTopic = nh_.advertise< platooning::templateMsg >("templateMsg", 10);
 
 
   };
@@ -68,12 +68,12 @@ namespace platooning {
   /*
    * handling an event and publishing something
    */
-  void Template::templateTopicHandler(const platooning::templateMsg msg) {
+  void Template::hndl_templateTopic(const platooning::templateMsg msg) {
 
     NODELET_DEBUG("handling a template");
 
     if( msg.templatebool || !msg.templatebool ) {
-      templatePublisher.publish(msg);
+      pub_templateTopic.publish(msg);
     } else {
       NODELET_WARN("warning you of stuff");
     }
