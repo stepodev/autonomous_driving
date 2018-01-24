@@ -225,13 +225,15 @@ add_dependencies(moduletest_protocol moduletest ${catkin_EXPORTED_TARGETS} ${PRO
 target_link_libraries(moduletest_protocol moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_wifi include/tests/Moduletest.hpp include/tests/Moduletest_wifi.hpp include/platooning/Wifi.hpp include/platooning/MessageTypes.hpp  test/Moduletest_wifi.cpp)
-add_dependencies(moduletest_protocol moduletest udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(moduletest_wifi moduletest udpserver ${catkin_LIBRARIES})
+add_dependencies(moduletest_protocol pcap moduletest udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(moduletest_wifi pcap moduletest udpserver ${catkin_LIBRARIES})
 
 add_library(testrunner test/testrunner.cpp)
 add_dependencies(testrunner ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(testrunner ${catkin_LIBRARIES})
 
+add_library(pcap test/Pcap.hpp test/Pcap.cpp)
+target_link_libraries(pcap libpcap.so)
 
 ##################
 ## UNIT Testing ##
@@ -323,4 +325,4 @@ install(DIRECTORY plugins/
 
 ## TESTSNIPPET
 add_executable(testsnippet testsnippet.hpp testsnippet.cpp)
-target_link_libraries(testsnippet ${catkin_LIBRARIES})
+target_link_libraries(testsnippet libpcap.so ${catkin_LIBRARIES})

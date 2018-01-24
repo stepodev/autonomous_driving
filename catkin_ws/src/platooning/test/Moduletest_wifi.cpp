@@ -51,27 +51,25 @@ namespace platooning {
   * @return true, if successful
   */
   void Moduletest_wifi::onInit() {
+
+    name_ = "Moduletest_wifi";
+
     sub_runTestCmd = nh_.subscribe("runTestCommand", 10,
                                    &Moduletest_wifi::hndl_runTestCmd, this);
 
-    pub_testResult = nh_.advertise<platooning::testResult>("testResult", 10);
+    sub_platoonProtocolIn = nh_.subscribe("platoonProtocolIn", 10,
+                                   &Moduletest_wifi::hndl_platoonProtocolIn, this);
 
-    pub_udpserver_platoonProtocolIn_ = nh_.advertise<platoonProtocolIn>("platoonProtocolIn", 10);
+    pub_testResult = nh_.advertise<platooning::testResult>("testResult", 10);
 
     std::list<std::string> testcases_to_register = {
         "moduleTest_wifi_send_udp_recv_protocolIn"
-        , "moduleTest_wifi_send_protocolOut_recv_protocolIn"
+        , "moduleTest_wifi_send_protocolOut_recv_udp"
     };
 
     register_testcases(testcases_to_register);
 
     iothread = boost::thread([this]() { this->io_service_.run(); });
-
-    try {
-      server_ = std::unique_ptr<UdpServer>(new UdpServer(io_service_, pub_udpserver_platoonProtocolIn_));
-    } catch (std::exception &e) {
-      NODELET_FATAL( std::string("[moduletest_wifi] udpserver init failed\n" + std::string(e.what())).c_str());
-    }
 
     NODELET_INFO("[moduletest_wifi] init done");
   };
@@ -94,10 +92,19 @@ namespace platooning {
     outmsg.success = true;
 
     if (msg.payload != current_test_) {
+      outmsg.comment = std::string("[moduletest_wifi] payload mismatch. ought: ")
+                       + current_test_ + " was " + msg.payload;
+      NODELET_WARN( outmsg.comment.c_str());
       outmsg.success = false;
     }
 
     pub_testResult.publish(outmsg);
+
+
+  }
+
+  void Moduletest_wifi::handl_udp_recvd( std::shared_ptr<std::vector<char>> msg ) {
+
 
 
   }
@@ -109,22 +116,46 @@ namespace platooning {
 
     NODELET_INFO("[Moduletest wifi] test_send_udp_recv_protocolIn");
 
-    sub_platoonProtocolIn = nh_.subscribe("platoonProtocolIn", 10,
-                                          &Moduletest_wifi::hndl_platoonProtocolIn, this);
+    try {
+      boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( &Moduletest_wifi::handl_udp_recvd, this, _1 ) );
 
-    platoonProtocolOut outmsg;
-    outmsg.message_type = LV_REQUEST;
-    outmsg.payload = "moduleTest_wifi_send_protocolOut_recv_protocolIn";
+      server_ = std::unique_ptr<UdpServer>( new UdpServer(io_service_
+          , cbfun
+          , udp::endpoint(udp::v4(),10001)
+          , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
+    } catch (std::exception &e) {
+      NODELET_FATAL( std::string("[moduletest_wifi] udpserver init failed\n" + std::string(e.what())).c_str());
+    }
 
+    try {
+      platooning::platoonProtocolOut outmsg;
+      outmsg.message_type = LV_REQUEST;
+      outmsg.payload = "test_send_udp_recv_protocolIn";
 
+      server_->start_send(outmsg);
+    } catch ( std::exception &e) {
+      NODELET_FATAL( std::string("[moduletest_wifi] udpserver start_send failed\n" + std::string(e.what())).c_str());
+    }
   }
 
   /**
  * @brief tests wifi to receive a message and send as udp datagram
  */
-  void Moduletest_wifi::test_send_protocolOut_recv_protocolIn() {
+  void Moduletest_wifi::test_send_protocolOut_recv_udp() {
 
-    NODELET_INFO("[Moduletest wifi] test_send_protocolOut_recv_protocolIn");
+    NODELET_INFO("[Moduletest wifi] test_send_protocolOut_recv_udp");
+
+    try {
+      boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( &Moduletest_wifi::handl_udp_recvd, this, _1 ) );
+
+      server_ = std::unique_ptr<UdpServer>( new UdpServer(
+          io_service_
+          , cbfun
+          , udp::endpoint(udp::v4(),10001)
+          , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
+    } catch (std::exception &e) {
+      NODELET_FATAL( std::string("[moduletest_wifi] udpserver init failed\n" + std::string(e.what())).c_str());
+    }
 
     ros::Publisher pub_platoonProtocolOut = nh_.advertise<platooning::platoonProtocolOut>("platoonProtocolOut", 10);
 
@@ -146,9 +177,9 @@ namespace platooning {
     }
 
 
-    if (msg.testToRun == "moduleTest_wifi_send_protocolOut_recv_protocolIn") {
-      current_test_ = "moduleTest_wifi_send_protocolOut_recv_protocolIn";
-      test_send_protocolOut_recv_protocolIn();
+    if (msg.testToRun == "moduleTest_wifi_test_send_protocolOut_recv_udp") {
+      current_test_ = "moduleTest_wifi_send_protocolOut_recv_udp";
+      test_send_protocolOut_recv_udp();
     }
 
   }

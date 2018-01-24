@@ -91,9 +91,7 @@ namespace platooning {
     std::string current_test_;
     boost::thread iothread;
 
-    ros::Publisher pub_udpserver_platoonProtocolIn_;
     ros::Subscriber sub_platoonProtocolIn;
-
     ros::Subscriber sub_runTestCmd;
 
     ros::Publisher pub_testResult;
@@ -107,8 +105,9 @@ namespace platooning {
 
     void test_send_udp_recv_protocolIn();
 
-    void test_send_protocolOut_recv_protocolIn();
+    void test_send_protocolOut_recv_udp();
 
+    void handl_udp_recvd(std::shared_ptr<std::vector<char>> msg);
   };
 
 

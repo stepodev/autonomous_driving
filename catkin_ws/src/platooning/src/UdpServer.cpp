@@ -5,11 +5,13 @@
 
 #include "UdpServer.hpp"
 
-UdpServer::UdpServer(boost::asio::io_service &io_service, ros::Publisher pub)
-    : socket_( io_service, udp::endpoint(boost::asio::ip::address_v4::broadcast(), 10000)) {
+UdpServer::UdpServer(boost::asio::io_service &io_service
+    , boost::function<void(std::shared_ptr<std::vector<char>>)> callback
+    , udp::endpoint bind_endpoint
+    , udp::endpoint remote_endpoint)
+    : socket_( io_service, bind_endpoint ) {
 
-  //publisher of stuff
-  pub_platoonProtocolIn_ = pub;
+  remote_endpoint_ = std::move(remote_endpoint);
 
   start_receive();
 
@@ -56,45 +58,18 @@ void UdpServer::start_send(std::string message, int32_t message_type) {
 }
 
 void UdpServer::handle_receive(const boost::system::error_code &error,
-                                      std::size_t /*bytes_transferred*/) {
+                                      std::size_t size /*bytes_transferred*/) {
   std::cout << "handl recv" << std::endl;
 
   if (!error || error == boost::asio::error::message_size) {
 
     std::cout << "handling receive" << std::endl;
 
-    char buf[MAX_RECV_BYTES];
+    std::shared_ptr<std::vector<char>> pbuf = std::shared_ptr<std::vector<char>>( new std::vector<char>(size));
 
-    socket_.receive(boost::asio::buffer(buf));
+    socket_.receive(boost::asio::buffer(*pbuf));
 
-    char message_type_array[sizeof(int32_t)];
-    memcpy(message_type_array, buf, sizeof(int32_t));
-
-    int32_t message_type;
-    sscanf(message_type_array, "%i", &message_type);
-
-    char* ptr = &buf[sizeof(int32_t)-1];
-
-    std::string str = ptr;
-
-    platooning::platoonProtocolIn msg;
-
-    switch (message_type) {
-      case LV_BROADCAST:
-      case FV_HEARTBEAT:
-      case LV_REQUEST:
-      case FV_REQUEST:
-      case ACCEPT_RESPONSE:
-      case REJECT_RESPONSE:
-      case LEAVE_PLATOON:
-        msg.payload = str;
-        pub_platoonProtocolIn_.publish(msg);
-        break;
-
-      default:
-        break;
-
-    }
+    callback(pbuf);
 
     start_receive();
   }
@@ -103,3 +78,5 @@ void UdpServer::handle_receive(const boost::system::error_code &error,
 void UdpServer::handle_send(const boost::system::error_code &error,
                             std::size_t /*bytes_transferred*/) {
 }
+
+

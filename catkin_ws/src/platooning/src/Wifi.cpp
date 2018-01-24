@@ -60,7 +60,13 @@ namespace platooning {
     std::cout << "iothread" << std::endl;
 
     try {
-      server_ = std::unique_ptr<UdpServer>(new UdpServer(io_service_,pub_platoonProtocolIn_));
+      //bind to local 10000 port, broadcast to 10000 port
+      boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( &Wifi::hndl_wifi_receive, this, _1 ) );
+
+      server_ = std::unique_ptr<UdpServer>(new UdpServer(io_service_
+                                                 , cbfun
+                                                 , udp::endpoint(udp::v4(),10000)
+                                                 , udp::endpoint(ip::address_v4::broadcast(),10000)));
     } catch (std::exception &e) {
       NODELET_FATAL( std::string("[WIFI] udpserver init failed\n" + std::string(e.what())).c_str());
     }
@@ -80,8 +86,39 @@ namespace platooning {
    */
   void Wifi::hndl_platoonProtocolOut(platooning::platoonProtocolOut msg) {
 
-    server_->start_send(msg);
+    server_->start_send(std::move(msg));
 
+  }
+
+  void Wifi::hndl_wifi_receive(std::shared_ptr<std::vector<char>> msg)  {
+
+    char message_type_array[sizeof(int32_t)];
+    memcpy(message_type_array, msg->data(), sizeof(int32_t));
+
+    int32_t message_type;
+    sscanf(message_type_array, "%i", &message_type);
+
+    //hopefully the whole string without the message
+    std::string str( msg->begin()+sizeof(int32_t),msg->end());
+
+    platooning::platoonProtocolIn outmsg;
+
+    switch (message_type) {
+      case LV_BROADCAST:
+      case FV_HEARTBEAT:
+      case LV_REQUEST:
+      case FV_REQUEST:
+      case ACCEPT_RESPONSE:
+      case REJECT_RESPONSE:
+      case LEAVE_PLATOON:
+        outmsg.payload = str;
+        pub_platoonProtocolIn_.publish(outmsg);
+        break;
+
+      default:
+        break;
+
+    }
   }
 
 

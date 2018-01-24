@@ -19,7 +19,10 @@ using boost::asio::ip::udp;
 class UdpServer {
 public:
 
-  UdpServer(boost::asio::io_service &io_service, ros::Publisher pub);
+  UdpServer(boost::asio::io_service &io_service
+      , boost::function<void(std::shared_ptr<std::vector<char>>)>
+      , udp::endpoint bind_endpoint
+      , udp::endpoint remote_endpoint);
 
   void start_send(platooning::platoonProtocolOut);
 
@@ -33,15 +36,12 @@ private:
   void handle_send(const boost::system::error_code &error
       , size_t);
 
-
-
   udp::socket socket_;
   udp::endpoint remote_endpoint_;
   boost::array<char, MAX_RECV_BYTES> recv_buffer_;
   boost::array<char, MAX_RECV_BYTES> send_buffer_;
-  ros::Publisher pub_platoonProtocolIn_; /* publishes received platooning messages */
-  ros::Publisher pub_communicationMessageIn_; /* publishes received communication messages */
 
+  boost::function<void(std::shared_ptr<std::vector<char>>)> callback;
 
 };
 

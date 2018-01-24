@@ -35,6 +35,8 @@
 #include <boost/thread/thread.hpp>
 #include <string>
 #include <boost/asio.hpp>
+#include <functional>
+#include <utility>
 
 #include "platooning/platoonProtocolOut.h"
 #include "platooning/platoonProtocolIn.h"
@@ -94,15 +96,17 @@ namespace platooning {
     std::unique_ptr<UdpServer> server_;
     boost::thread io_thread;
 
-    ros::Subscriber sub_platoonProtocolOut_; /* subscribes to platooning messages that need to be send through wifi */
-    ros::Subscriber sub_communicationMessageOut_; /* subscribes to communication messages that need to be send through wifi */
+    ros::Subscriber sub_platoonProtocolOut_; /* hands to udp_server to publish received messages */
+
     ros::Publisher pub_platoonProtocolIn_; /* hands to udp_server to publish received messages */
+    ros::Publisher pub_communicationMessageIn_; /* publishes received communication messages */
 
     /**
      * @brief to achieve X does Y
      * @param msg incoming topic message
      */
     void hndl_platoonProtocolOut(platooning::platoonProtocolOut msg);
+    void hndl_wifi_receive( std::shared_ptr<std::vector<char>> msg);
 
   };
 
