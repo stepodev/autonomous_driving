@@ -85,12 +85,14 @@ namespace platooning {
    * handling an event and publishing something
    */
   void Wifi::hndl_platoonProtocolOut(platooning::platoonProtocolOut msg) {
+    std::cout << "calling server to send" << std::endl;
 
     server_->start_send(std::move(msg));
 
   }
 
   void Wifi::hndl_wifi_receive(std::shared_ptr<std::vector<char>> msg)  {
+    std::cout << "handling wifi receive" << std::endl;
 
     char message_type_array[sizeof(int32_t)];
     memcpy(message_type_array, msg->data(), sizeof(int32_t));
@@ -112,6 +114,8 @@ namespace platooning {
       case REJECT_RESPONSE:
       case LEAVE_PLATOON:
         outmsg.payload = str;
+        std::cout << "wifi pubbung protocolin" << std::endl;
+
         pub_platoonProtocolIn_.publish(outmsg);
         break;
 

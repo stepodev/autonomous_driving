@@ -1,56 +1,80 @@
-//
-// Created by stepo on 1/14/18.
-//
 
-#include <stdio.h>
-#include <pcap.h>
+#include <ctime>
+#include <iostream>
+#include <string>
+#include <boost/array.hpp>
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/asio.hpp>
 
-int main(int argc, char **argv){
+using boost::asio::ip::udp;
 
-  char *dev;        /* Device to sniff on */
-  char errbuf[PCAP_ERRBUF_SIZE]; /* Error string */
-  pcap_t *handle;		/* Session handle */
-  struct bpf_program fp;		/* The compiled filter expression */
-  char filter_exp[] = "port 10000";	/* The filter expression */
-  bpf_u_int32 mask;		/* The netmask of our sniffing device */
-  bpf_u_int32 net;		/* The IP of our sniffing device */
-  struct pcap_pkthdr header;	/* The header that pcap gives us */
-  const u_char *packet;		/* The actual packet */
+std::string make_daytime_string()
+{
+  using namespace std; // For time_t, time and ctime;
+  time_t now = time(0);
+  return ctime(&now);
+}
 
-
-  dev = pcap_lookupdev(errbuf);
-  if (dev == NULL) {
-    fprintf(stderr, "Couldn't find default device: %s\n", errbuf);
-    return(2);
+class udp_server
+{
+public:
+  udp_server(boost::asio::io_service& io_service)
+      : socket_(io_service, udp::endpoint(udp::v4(), 10000))
+  {
+    start_receive();
   }
-  printf("Device: %s\n", dev);
 
-  /* Find the properties for the device */
-  if (pcap_lookupnet(dev, &net, &mask, errbuf) == -1) {
-    fprintf(stderr, "Couldn't get netmask for device %s: %s\n", dev, errbuf);
-    net = 0;
-    mask = 0;
+private:
+  void start_receive()
+  {
+    socket_.async_receive_from(
+        boost::asio::buffer(recv_buffer_), remote_endpoint_,
+        boost::bind(&udp_server::handle_receive, this,
+                    boost::asio::placeholders::error,
+                    boost::asio::placeholders::bytes_transferred));
   }
-  /* Open the session in promiscuous mode */
-  handle = pcap_open_live(dev, BUFSIZ, 1, 1000, errbuf);
-  if (handle == NULL) {
-    fprintf(stderr, "Couldn't open device %s: %s\n", dev, errbuf);
-    return(2);
+
+  void handle_receive(const boost::system::error_code& error,
+                      std::size_t /*bytes_transferred*/)
+  {
+    if (!error || error == boost::asio::error::message_size)
+    {
+      boost::shared_ptr<std::string> message(
+          new std::string(make_daytime_string()));
+
+      socket_.async_send_to(boost::asio::buffer(*message), remote_endpoint_,
+                            boost::bind(&udp_server::handle_send, this, message,
+                                        boost::asio::placeholders::error,
+                                        boost::asio::placeholders::bytes_transferred));
+
+      start_receive();
+    }
   }
-  /* Compile and apply the filter */
-  if (pcap_compile(handle, &fp, filter_exp, 0, net) == -1) {
-    fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_exp, pcap_geterr(handle));
-    return(2);
+
+  void handle_send(boost::shared_ptr<std::string> /*message*/,
+                   const boost::system::error_code& /*error*/,
+                   std::size_t /*bytes_transferred*/)
+  {
   }
-  if (pcap_setfilter(handle, &fp) == -1) {
-    fprintf(stderr, "Couldn't install filter %s: %s\n", filter_exp, pcap_geterr(handle));
-    return(2);
+
+  udp::socket socket_;
+  udp::endpoint remote_endpoint_;
+  boost::array<char, 1> recv_buffer_;
+};
+
+int main()
+{
+  try
+  {
+    boost::asio::io_service io_service;
+    udp_server server(io_service);
+    io_service.run();
   }
-  /* Grab a packet */
-  packet = pcap_next(handle, &header);
-  /* Print its length */
-  printf("Jacked a packet with length of [%d]\n", header.len);
-  /* And close the session */
-  pcap_close(handle);
-  return(0);
+  catch (std::exception& e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
+
+  return 0;
 }

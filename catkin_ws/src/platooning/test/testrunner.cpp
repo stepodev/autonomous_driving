@@ -67,20 +67,26 @@ namespace platooning {
       pub_testRunCommand = nh_.advertise<platooning::runTestCommand>("runTestCommand", 10);
 
       boost::thread t([this]() {
+        while(sub_registerTestcases.getNumPublishers() == 0 && testsToRunlist.empty()) {
+          std::stringstream ss;
+          ss << "[testrunner] waiting for registers). have testcases " << testsToRunlist.size();
+          NODELET_INFO( ss.str().c_str() );
+          boost::this_thread::sleep_for(boost::chrono::seconds(1));
+        }
+
         while(sub_registerTestcases.getNumPublishers() != 0 ) {
-          NODELET_INFO("[testrunner] waiting for registers)");
+          NODELET_INFO("[testrunner] waiting for all testcases to be published)");
           boost::this_thread::sleep_for(boost::chrono::seconds(1));
         }
 
         if( !testsToRunlist.empty() ) {
           runthread = unique_ptr<boost::thread>( new boost::thread(boost::bind(&Testrunner::run, this)));
+          NODELET_INFO("[testrunner] started running tests");
         } else {
           NODELET_FATAL("[testrunner] no testcases have been registered");
         }
 
       });
-
-
 
       NODELET_INFO("[testrunner] init done");
 

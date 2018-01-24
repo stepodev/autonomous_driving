@@ -105,6 +105,7 @@ namespace platooning {
 
   void Moduletest_wifi::handl_udp_recvd( std::shared_ptr<std::vector<char>> msg ) {
 
+    std::cout << "modiletest wifi handl udp recvd " << std::endl;
 
 
   }

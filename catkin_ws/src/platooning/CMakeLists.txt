@@ -8,21 +8,20 @@ add_compile_options(-std=c++11 -Wall -g)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-        ## GENERAL
-        roscpp
-        rospy
-        nodelet
-        roslint
-        ## MESSAGE GEN
-        message_generation
-        )
+    ## GENERAL
+    roscpp
+    rospy
+    nodelet
+    roslint
+    ## MESSAGE GEN
+    message_generation
+    )
 
 find_package(Boost REQUIRED COMPONENTS
-        ## DUNNO LOL
-        thread
-        system
-        )
-
+    ## DUNNO LOL
+    thread
+    system
+    )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -325,4 +324,7 @@ install(DIRECTORY plugins/
 
 ## TESTSNIPPET
 add_executable(testsnippet testsnippet.hpp testsnippet.cpp)
-target_link_libraries(testsnippet libpcap.so ${catkin_LIBRARIES})
+target_link_libraries(testsnippet ${catkin_LIBRARIES})
+
+add_executable(client client.cpp)
+target_link_libraries(client ${catkin_LIBRARIES})

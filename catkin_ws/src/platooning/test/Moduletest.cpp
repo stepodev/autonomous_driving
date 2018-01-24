@@ -37,6 +37,8 @@ void Moduletest::register_testcases(std::list<std::string> testcases_to_register
     }
     pub.shutdown();
 
+    pub = ros::Publisher();
+
   }));
 
 }
