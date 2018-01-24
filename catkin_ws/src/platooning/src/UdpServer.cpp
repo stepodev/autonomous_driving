@@ -55,6 +55,8 @@ void UdpServer::start_send(std::string message, int32_t message_type) {
   message.copy(pos, message.length(), 4);
   send_buffer_[sizeof(int32_t) + message.length()] = '\0';
 
+  fix copy shit into sendbuffer
+
   std::cout << "srv sending " << send_buffer_.data() << std::endl;
 
   try {
