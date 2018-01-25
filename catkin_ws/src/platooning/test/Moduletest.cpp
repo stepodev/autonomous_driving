@@ -5,7 +5,7 @@
 
 void Moduletest::register_testcases(std::list<std::string> testcases_to_register) {
 
-  if( testcases_to_register.size() == 0 ) {
+  if( testcases_to_register.empty() ) {
     NODELET_FATAL(std::string("[" + name_ + "] no testcases to publish").c_str());
     return;
   }
@@ -14,6 +14,8 @@ void Moduletest::register_testcases(std::list<std::string> testcases_to_register
     NODELET_INFO(std::string("[" + name_ + "] publishing testcases").c_str());
 
     ros::Publisher pub = this->nh_.advertise<platooning::registerTestcases>("registerTestcases", 10);
+
+    boost::this_thread::sleep_for(boost::chrono::seconds(3));
 
     int cntr = 0;
     while (pub.getNumSubscribers() == 0 && cntr++ < 10) {
@@ -38,6 +40,8 @@ void Moduletest::register_testcases(std::list<std::string> testcases_to_register
       pub.publish(msg);
     }
     pub.shutdown();
+
+    NODELET_INFO(std::string("[" + name_ + "] stopped publishing testcases.").c_str());
 
   }));
 

@@ -69,8 +69,6 @@ namespace platooning {
 
     register_testcases(testcases_to_register);
 
-    iothread = boost::thread([this]() { this->io_service_.run(); });
-
     NODELET_INFO("[moduletest_wifi] init done");
   };
 
@@ -92,15 +90,15 @@ namespace platooning {
     outmsg.success = true;
 
     if (msg.payload != current_test_) {
-      outmsg.comment = std::string("[moduletest_wifi] payload mismatch. ought: ")
-                       + current_test_ + " was " + msg.payload;
+      outmsg.comment = std::string("[moduletest_wifi] payload mismatch.\nought:\"")
+                       + current_test_ + "\"\nwas   \"" + msg.payload + "\"HELLLOOO";
       NODELET_WARN( outmsg.comment.c_str());
       outmsg.success = false;
     }
 
     pub_testResult.publish(outmsg);
 
-
+    server_ = nullptr;
   }
 
   void Moduletest_wifi::handl_udp_recvd( std::shared_ptr<std::vector<char>> msg ) {
@@ -119,10 +117,11 @@ namespace platooning {
     try {
       boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_wifi::handl_udp_recvd), this, _1 ) );
 
-      server_ = std::unique_ptr<UdpServer>( new UdpServer(io_service_
-          , cbfun
-          , udp::endpoint(udp::v4(),10001)
-          , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
+      server_ = std::unique_ptr<UdpServer>(
+          new UdpServer(
+              cbfun
+            , udp::endpoint(udp::v4(),10001)
+            , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
     } catch (std::exception &e) {
       NODELET_FATAL( std::string("[moduletest_wifi] udpserver init failed\n" + std::string(e.what())).c_str());
     }
@@ -130,7 +129,7 @@ namespace platooning {
     try {
       platooning::platoonProtocolOut outmsg;
       outmsg.message_type = LV_REQUEST;
-      outmsg.payload = "test_send_udp_recv_protocolIn";
+      outmsg.payload = "moduleTest_wifi_send_udp_recv_protocolIn";
 
       server_->start_send(outmsg);
     } catch ( std::exception &e) {
@@ -149,8 +148,7 @@ namespace platooning {
       boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_wifi::handl_udp_recvd), this, _1 ) );
 
       server_ = std::unique_ptr<UdpServer>( new UdpServer(
-          io_service_
-          , cbfun
+            cbfun
           , udp::endpoint(udp::v4(),10001)
           , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
     } catch (std::exception &e) {
@@ -177,7 +175,7 @@ namespace platooning {
     }
 
 
-    if (msg.testToRun == "moduleTest_wifi_test_send_protocolOut_recv_udp") {
+    if (msg.testToRun == "moduleTest_wifi_send_protocolOut_recv_udp") {
       current_test_ = "moduleTest_wifi_send_protocolOut_recv_udp";
       test_send_protocolOut_recv_udp();
     }

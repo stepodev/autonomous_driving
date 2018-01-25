@@ -56,17 +56,11 @@ namespace platooning {
 
     pub_platoonProtocolIn_ = nh_.advertise<platoonProtocolIn>("platoonProtocolIn", 10);
 
-    io_service_ptr_ = std::shared_ptr<io_service>( new io_service);
-
-    io_thread = boost::thread([this]() { this->io_service_ptr_->run(); });
-    std::cout << "iothread" << std::endl;
-
     try {
       //bind to local 10000 port, broadcast to 10000 port
       boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( boost::mem_fn(&Wifi::hndl_wifi_receive), this, _1 ) );
 
-      server_ = std::unique_ptr<UdpServer>(new UdpServer(*io_service_ptr_
-                                                 , cbfun
+      server_ptr_ = std::unique_ptr<UdpServer>( new UdpServer( cbfun
                                                  , udp::endpoint(udp::v4(),10000)
                                                  , udp::endpoint(ip::address_v4::broadcast(),10000)));
     } catch (std::exception &e) {
@@ -74,8 +68,6 @@ namespace platooning {
     }
 
     NODELET_INFO("[WIFI] init done");
-
-
   };
 
 
@@ -89,18 +81,17 @@ namespace platooning {
   void Wifi::hndl_platoonProtocolOut(platooning::platoonProtocolOut msg) {
     std::cout << "calling server to send" << std::endl;
 
-    server_->start_send(std::move(msg));
+    server_ptr_->start_send(std::move(msg));
 
   }
 
   void Wifi::hndl_wifi_receive(std::shared_ptr<std::vector<char>> msg)  {
     std::cout << "handling wifi receive" << std::endl;
 
-    char message_type_array[sizeof(int32_t)];
-    memcpy(message_type_array, msg->data(), sizeof(int32_t));
-
     int32_t message_type;
-    sscanf(message_type_array, "%i", &message_type);
+    memcpy(&message_type, msg->data(), sizeof(int32_t));
+
+    std::cout << "[wifi] recvd message type " << message_type << "\nmessage:" << msg->data() << std::endl;
 
     //hopefully the whole string without the message
     std::string str( msg->begin()+sizeof(int32_t),msg->end());
@@ -122,6 +113,7 @@ namespace platooning {
         break;
 
       default:
+        NODELET_FATAL("[wifi] messagetype not recognized");
         break;
 
     }

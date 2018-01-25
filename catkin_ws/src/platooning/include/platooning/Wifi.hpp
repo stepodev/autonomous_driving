@@ -92,9 +92,8 @@ namespace platooning {
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
-    std::shared_ptr<io_service> io_service_ptr_;
-    std::unique_ptr<UdpServer> server_;
-    boost::thread io_thread;
+    std::unique_ptr<UdpServer> server_ptr_;
+
 
     ros::Subscriber sub_platoonProtocolOut_; /* hands to udp_server to publish received messages */
 

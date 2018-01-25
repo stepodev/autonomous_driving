@@ -68,15 +68,17 @@ namespace platooning {
 
       boost::thread t([this]() {
         int cntr = 0;
-        while(sub_registerTestcases.getNumPublishers() == 0  && cntr++ < 20) {
+        while(sub_registerTestcases.getNumPublishers() == 0
+              && cntr++ < 10
+              && testsToRunlist.empty() ) {
           std::stringstream ss;
           NODELET_INFO( "[testrunner] waiting testcase publishers");
           boost::this_thread::sleep_for(boost::chrono::seconds(1));
         }
 
         cntr = 0;
-        while(sub_registerTestcases.getNumPublishers() != 0 && cntr++ < 20) {
-          NODELET_INFO("[testrunner] waiting for all testcases to be published)");
+        while(sub_registerTestcases.getNumPublishers() != 0 && cntr++ < 10) {
+          NODELET_INFO("[testrunner] waiting for remaining publishers " + sub_registerTestcases.getNumPublishers() );
           boost::this_thread::sleep_for(boost::chrono::seconds(1));
         }
 
@@ -100,7 +102,7 @@ namespace platooning {
     *****************************************************************************/
 
     ofstream myfile = std::ofstream();
-    bool keepSpinning = true;
+    bool waitForTestToFinish = true;
     list<string> testsToRunlist;
     ros::Subscriber sub_testResult;
     ros::Publisher pub_testRunCommand;
@@ -118,9 +120,7 @@ namespace platooning {
 
       testsToRunlist.pop_front();
 
-      if (testsToRunlist.empty()) {
-        keepSpinning = false;
-      }
+      waitForTestToFinish = false;
     }
 
     /*****************************************************************************
@@ -147,10 +147,11 @@ namespace platooning {
           boost::this_thread::sleep_for(boost::chrono::seconds(5));
         }
 
+        NODELET_INFO( (std::string("[testrunner] start test ") + runcmd.testToRun).c_str() );
         pub_testRunCommand.publish(runcmd);
+        waitForTestToFinish = true;
 
-
-        while (keepSpinning) {
+        while (waitForTestToFinish) {
           boost::this_thread::sleep_for(boost::chrono::seconds(1));
           NODELET_WARN("[testrunner] waiting for test to finish");
         }

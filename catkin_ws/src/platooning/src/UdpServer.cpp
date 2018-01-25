@@ -5,27 +5,33 @@
 
 #include "UdpServer.hpp"
 
-UdpServer::UdpServer(boost::asio::io_service &io_service
-    , boost::function<void(std::shared_ptr<std::vector<char>>)> callback
+UdpServer::UdpServer( boost::function<void(std::shared_ptr<std::vector<char>>)> receive_callback
     , udp::endpoint bind_endpoint
-    , udp::endpoint remote_endpoint)
-    : socket_( io_service, bind_endpoint ) {
+    , udp::endpoint remote_endpoint) {
 
-  boost::asio::socket_base::broadcast option(true);
-  socket_.set_option(option);
+  std::cout << "iothread" << std::endl;
+
+  socket_ptr_ = std::unique_ptr<udp::socket>( new udp::socket( io_service_, bind_endpoint ));
+
+  boost::asio::socket_base::broadcast enable_broadcast(true);
+  socket_ptr_->set_option(enable_broadcast);
+  boost::asio::socket_base::reuse_address reuse_address(true);
+  socket_ptr_->set_option(reuse_address);
 
   remote_endpoint_ = std::move(remote_endpoint);
 
-  callback_ = callback;
+  std::cout << bind_endpoint.address() << bind_endpoint.port() << bind_endpoint.data() << std::endl;
+
+  callback_ = receive_callback;
 
   start_receive();
 
-  std::cout << "srv starting receive" << std::endl;
+  io_thread_ = boost::thread([this] { this->io_service_.run();});
 }
 
 void UdpServer::start_receive() {
 
-  socket_.async_receive_from(
+  socket_ptr_->async_receive_from(
       boost::asio::buffer(recv_buffer_), remote_endpoint_,
       boost::bind(&UdpServer::handle_receive, this,
                   boost::asio::placeholders::error,
@@ -51,14 +57,11 @@ void UdpServer::start_send(std::string message, int32_t message_type) {
   }
 
   try {
+    memcpy(send_buffer_.data(),&message_type,sizeof(message_type));
 
-    std::stringstream ss;
+    memcpy(send_buffer_.data()+ sizeof(message_type),message.c_str(), message.length());
 
-    ss << message_type << message;
-
-    memcpy(send_buffer_.data(),ss.str().c_str(),ss.str().length());
-
-    send_buffer_[sizeof(int32_t) + message.length() -1] = '\0';
+    send_buffer_[sizeof(int32_t) + message.length() ] = '\0';
 
     std::cout << "srv sending " << send_buffer_.data() << std::endl;
   } catch( std::exception &ex ) {
@@ -66,7 +69,7 @@ void UdpServer::start_send(std::string message, int32_t message_type) {
   }
 
   try {
-    socket_.async_send_to(
+    socket_ptr_->async_send_to(
         boost::asio::buffer(send_buffer_), remote_endpoint_,
         boost::bind(&UdpServer::handle_send, this,
                     boost::asio::placeholders::error,
@@ -82,22 +85,21 @@ void UdpServer::start_send(std::string message, int32_t message_type) {
 
 void UdpServer::handle_receive(const boost::system::error_code &error,
                                       std::size_t size /*bytes_transferred*/) {
-  std::cout << "handl recv" << std::endl;
+  std::cout << "udpserv handl recv " << !error <<  (error == boost::asio::error::message_size) << std::endl;
 
   if (!error || error == boost::asio::error::message_size) {
 
-    std::cout << "handling receive" << std::endl;
+    std::shared_ptr<std::vector<char>> pbuf = std::shared_ptr<std::vector<char>>(
+        new std::vector<char>(recv_buffer_.begin(), recv_buffer_.end()));
 
-    std::shared_ptr<std::vector<char>> pbuf = std::shared_ptr<std::vector<char>>( new std::vector<char>(size));
-
-    socket_.receive(boost::asio::buffer(*pbuf));
 
     callback_(pbuf);
 
     start_receive();
 
     std::cout << "srv recv done" << std::endl;
-
+  } else {
+    std::cerr << "[udpserver] error during handling receive:" << error.message();
   }
 }
 

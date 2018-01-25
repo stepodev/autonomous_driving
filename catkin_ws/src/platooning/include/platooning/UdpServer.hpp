@@ -7,6 +7,7 @@
 
 #include <boost/asio.hpp>
 #include <ros/ros.h>
+#include <boost/thread/thread.hpp>
 
 #include "platooning/platoonProtocolOut.h"
 #include <platooning/platoonProtocolIn.h>
@@ -19,10 +20,8 @@ using boost::asio::ip::udp;
 class UdpServer {
 public:
 
-  UdpServer(boost::asio::io_service &io_service
-      , boost::function<void(std::shared_ptr<std::vector<char>>)>
-      , udp::endpoint bind_endpoint
-      , udp::endpoint remote_endpoint);
+  UdpServer(boost::function<void(std::shared_ptr<std::vector<char>>)> receive_callback, udp::endpoint bind_endpoint,
+              udp::endpoint remote_endpoint);
 
   void start_send(platooning::platoonProtocolOut);
 
@@ -36,7 +35,10 @@ private:
   void handle_send(const boost::system::error_code &error
       , size_t);
 
-  udp::socket socket_;
+  std::unique_ptr<udp::socket> socket_ptr_;
+  boost::asio::io_service io_service_;
+  boost::thread io_thread_;
+
   udp::endpoint remote_endpoint_;
   boost::array<char, MAX_RECV_BYTES> recv_buffer_;
   boost::array<char, MAX_RECV_BYTES> send_buffer_;
