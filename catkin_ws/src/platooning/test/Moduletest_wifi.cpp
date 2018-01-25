@@ -107,7 +107,6 @@ namespace platooning {
 
     std::cout << "modiletest wifi handl udp recvd " << std::endl;
 
-
   }
 
   /**

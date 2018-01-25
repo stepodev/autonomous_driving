@@ -42,7 +42,7 @@ void UdpServer::start_send(platooning::platoonProtocolOut msg) {
 
 void UdpServer::start_send(std::string message, int32_t message_type) {
 
-  std::cout << "start send check len" << std::endl;
+  std::cout << "start send check len of msg \"" << message << "\" type " << message_type << std::endl;
 
   if (message.length() + sizeof(message_type) + 1 > MAX_RECV_BYTES) {
     throw;
@@ -50,14 +50,24 @@ void UdpServer::start_send(std::string message, int32_t message_type) {
 
   std::cout << "start send" << std::endl;
 
-  memcpy(&message_type, send_buffer_.data(), sizeof(int32_t));
-  char* pos = send_buffer_.data() + sizeof(int32_t);
-  message.copy(pos, message.length(), 4);
-  send_buffer_[sizeof(int32_t) + message.length()] = '\0';
+  try {
 
-  fix copy shit into sendbuffer
+    char* chararr[sizeof(int32_t)];
+    memcpy(*chararr, &message_type , sizeof(int32_t));
 
-  std::cout << "srv sending " << send_buffer_.data() << std::endl;
+    std::cout << "type:" << message_type << " content:" << chararr << std::endl;
+
+    memcpy(&message_type, send_buffer_.data(), sizeof(int32_t));
+    std::cout << "srv sending " << send_buffer_.data() << std::endl;
+    char *pos = send_buffer_.data() + sizeof(int32_t);
+    std::cout << "srv sending " << pos << std::endl;
+    message.copy(pos, message.length());
+    send_buffer_[sizeof(int32_t) + message.length()] = '\0';
+
+    std::cout << "srv sending " << send_buffer_.data() << std::endl;
+  } catch( std::exception &ex ) {
+    std::cerr << "udpserver error stuffing sendbuffer " << ex.what() << std::endl;
+  }
 
   try {
     socket_.async_send_to(
