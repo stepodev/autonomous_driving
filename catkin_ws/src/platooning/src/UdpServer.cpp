@@ -16,6 +16,8 @@ UdpServer::UdpServer(boost::asio::io_service &io_service
 
   remote_endpoint_ = std::move(remote_endpoint);
 
+  callback_ = callback;
+
   start_receive();
 
   std::cout << "srv starting receive" << std::endl;
@@ -48,21 +50,15 @@ void UdpServer::start_send(std::string message, int32_t message_type) {
     throw;
   }
 
-  std::cout << "start send" << std::endl;
-
   try {
 
-    char* chararr[sizeof(int32_t)];
-    memcpy(*chararr, &message_type , sizeof(int32_t));
+    std::stringstream ss;
 
-    std::cout << "type:" << message_type << " content:" << chararr << std::endl;
+    ss << message_type << message;
 
-    memcpy(&message_type, send_buffer_.data(), sizeof(int32_t));
-    std::cout << "srv sending " << send_buffer_.data() << std::endl;
-    char *pos = send_buffer_.data() + sizeof(int32_t);
-    std::cout << "srv sending " << pos << std::endl;
-    message.copy(pos, message.length());
-    send_buffer_[sizeof(int32_t) + message.length()] = '\0';
+    memcpy(send_buffer_.data(),ss.str().c_str(),ss.str().length());
+
+    send_buffer_[sizeof(int32_t) + message.length() -1] = '\0';
 
     std::cout << "srv sending " << send_buffer_.data() << std::endl;
   } catch( std::exception &ex ) {
@@ -96,7 +92,7 @@ void UdpServer::handle_receive(const boost::system::error_code &error,
 
     socket_.receive(boost::asio::buffer(*pbuf));
 
-    callback(pbuf);
+    callback_(pbuf);
 
     start_receive();
 

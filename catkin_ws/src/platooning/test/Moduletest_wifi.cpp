@@ -117,7 +117,7 @@ namespace platooning {
     NODELET_INFO("[Moduletest wifi] test_send_udp_recv_protocolIn");
 
     try {
-      boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( &Moduletest_wifi::handl_udp_recvd, this, _1 ) );
+      boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_wifi::handl_udp_recvd), this, _1 ) );
 
       server_ = std::unique_ptr<UdpServer>( new UdpServer(io_service_
           , cbfun
@@ -146,7 +146,7 @@ namespace platooning {
     NODELET_INFO("[Moduletest wifi] test_send_protocolOut_recv_udp");
 
     try {
-      boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( &Moduletest_wifi::handl_udp_recvd, this, _1 ) );
+      boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_wifi::handl_udp_recvd), this, _1 ) );
 
       server_ = std::unique_ptr<UdpServer>( new UdpServer(
           io_service_

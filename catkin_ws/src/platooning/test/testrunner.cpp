@@ -67,14 +67,15 @@ namespace platooning {
       pub_testRunCommand = nh_.advertise<platooning::runTestCommand>("runTestCommand", 10);
 
       boost::thread t([this]() {
-        while(sub_registerTestcases.getNumPublishers() == 0 && testsToRunlist.empty()) {
+        int cntr = 0;
+        while(sub_registerTestcases.getNumPublishers() == 0  && cntr++ < 20) {
           std::stringstream ss;
-          ss << "[testrunner] waiting for registers). have testcases " << testsToRunlist.size();
-          NODELET_INFO( ss.str().c_str() );
+          NODELET_INFO( "[testrunner] waiting testcase publishers");
           boost::this_thread::sleep_for(boost::chrono::seconds(1));
         }
 
-        while(sub_registerTestcases.getNumPublishers() != 0 ) {
+        cntr = 0;
+        while(sub_registerTestcases.getNumPublishers() != 0 && cntr++ < 20) {
           NODELET_INFO("[testrunner] waiting for all testcases to be published)");
           boost::this_thread::sleep_for(boost::chrono::seconds(1));
         }

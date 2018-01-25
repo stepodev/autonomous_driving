@@ -41,7 +41,7 @@ private:
   boost::array<char, MAX_RECV_BYTES> recv_buffer_;
   boost::array<char, MAX_RECV_BYTES> send_buffer_;
 
-  boost::function<void(std::shared_ptr<std::vector<char>>)> callback;
+  boost::function<void(std::shared_ptr<std::vector<char>>)> callback_;
 
 };
 

@@ -20,7 +20,8 @@ protected:
   void register_testcases( std::list<std::string> testcases_to_register );
 
   ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-  std::string name_ = "moduletest_protocol";
+
+  std::string name_ = "Moduletest";
 
 };
 

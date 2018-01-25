@@ -6,6 +6,7 @@
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
+#include <boost/thread/thread.hpp>
 
 using boost::asio::ip::udp;
 
@@ -54,8 +55,9 @@ private:
 
   void handle_send(boost::shared_ptr<std::string> /*message*/,
                    const boost::system::error_code& /*error*/,
-                   std::size_t /*bytes_transferred*/)
+                   std::size_t rcvdbytes /*bytes_transferred*/)
   {
+    std::cout << "server handled bytes" << rcvdbytes << std::endl;
   }
 
   udp::socket socket_;
@@ -67,9 +69,11 @@ int main()
 {
   try
   {
-    boost::asio::io_service io_service;
-    udp_server server(io_service);
-    io_service.run();
+    std::shared_ptr<boost::asio::io_service> io_service = std::shared_ptr<boost::asio::io_service>( new boost::asio::io_service);
+    udp_server server(*io_service);
+    boost::thread io_thread = boost::thread([io_service]() { io_service->run(); });
+
+    while(true){};
   }
   catch (std::exception& e)
   {

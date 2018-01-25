@@ -85,7 +85,7 @@ namespace platooning {
 
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-    std::string name_;
+    std::string name_ = "moduletest_wifi";
     std::unique_ptr<UdpServer> server_;
     boost::asio::io_service io_service_;
     std::string current_test_;

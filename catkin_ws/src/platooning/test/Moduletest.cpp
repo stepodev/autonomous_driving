@@ -26,7 +26,9 @@ void Moduletest::register_testcases(std::list<std::string> testcases_to_register
       return;
     }
 
-    NODELET_INFO(std::string("[" + name_ + "] subscribers found. publishing.").c_str());
+    if(pub.getNumSubscribers() != 0 ) {
+      NODELET_INFO(std::string("[" + name_ + "] subscribers found. publishing.").c_str());
+    }
 
     platooning::registerTestcases msg;
 
@@ -36,8 +38,6 @@ void Moduletest::register_testcases(std::list<std::string> testcases_to_register
       pub.publish(msg);
     }
     pub.shutdown();
-
-    pub = ros::Publisher();
 
   }));
 
