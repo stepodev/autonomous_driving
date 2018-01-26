@@ -101,7 +101,7 @@ namespace platooning {
     server_ = nullptr;
   }
 
-  void Moduletest_wifi::handl_udp_recvd( std::shared_ptr<std::vector<char>> msg ) {
+  void Moduletest_wifi::handl_udp_recvd( std::pair<std::string, int32_t> msg_pair ) {
 
     std::cout << "modiletest wifi handl udp recvd " << std::endl;
 
@@ -115,7 +115,7 @@ namespace platooning {
     NODELET_INFO("[Moduletest wifi] test_send_udp_recv_protocolIn");
 
     try {
-      boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_wifi::handl_udp_recvd), this, _1 ) );
+      boost::function<void (std::pair<std::string, int32_t>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_wifi::handl_udp_recvd), this, _1 ) );
 
       server_ = std::unique_ptr<UdpServer>(
           new UdpServer(
@@ -131,7 +131,7 @@ namespace platooning {
       outmsg.message_type = LV_REQUEST;
       outmsg.payload = "moduleTest_wifi_send_udp_recv_protocolIn";
 
-      server_->start_send(outmsg);
+      server_->start_send(outmsg.payload, outmsg.message_type);
     } catch ( std::exception &e) {
       NODELET_FATAL( std::string("[moduletest_wifi] udpserver start_send failed\n" + std::string(e.what())).c_str());
     }
@@ -145,7 +145,7 @@ namespace platooning {
     NODELET_INFO("[Moduletest wifi] test_send_protocolOut_recv_udp");
 
     try {
-      boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_wifi::handl_udp_recvd), this, _1 ) );
+      boost::function<void (std::pair<std::string, int32_t>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_wifi::handl_udp_recvd), this, _1 ) );
 
       server_ = std::unique_ptr<UdpServer>( new UdpServer(
             cbfun

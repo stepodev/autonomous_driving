@@ -247,6 +247,7 @@ catkin_add_gtest(protocol-unit-test test/unittest_protocol.cpp)
 catkin_add_gtest(userinterface-unit-test test/unittest_userinterface.cpp)
 catkin_add_gtest(vehiclecontrol-unit-test test/unittest_vehiclecontrol.cpp)
 catkin_add_gtest(wifi-unit-test launch/wifi.launch test/unittest_wifi.cpp)
+catkin_add_gtest(udpserver-unit-test test/unittest_udpserver.cpp)
 
 catkin_add_gtest(template-unit-test test/unittest_template.cpp)
 

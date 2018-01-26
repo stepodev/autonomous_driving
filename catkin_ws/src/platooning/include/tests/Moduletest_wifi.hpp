@@ -107,7 +107,7 @@ namespace platooning {
 
     void test_send_protocolOut_recv_udp();
 
-    void handl_udp_recvd(std::shared_ptr<std::vector<char>> msg);
+    void handl_udp_recvd(std::pair<std::string, int32_t> msg);
   };
 
 

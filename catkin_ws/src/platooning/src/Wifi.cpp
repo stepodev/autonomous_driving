@@ -58,7 +58,7 @@ namespace platooning {
 
     try {
       //bind to local 10000 port, broadcast to 10000 port
-      boost::function<void (std::shared_ptr<std::vector<char>>)> cbfun( boost::bind( boost::mem_fn(&Wifi::hndl_wifi_receive), this, _1 ) );
+      boost::function<void (std::pair<std::string, int32_t>)> cbfun( boost::bind( boost::mem_fn(&Wifi::hndl_wifi_receive), this, _1 ) );
 
       server_ptr_ = std::unique_ptr<UdpServer>( new UdpServer( cbfun
                                                  , udp::endpoint(udp::v4(),10000)
@@ -81,24 +81,15 @@ namespace platooning {
   void Wifi::hndl_platoonProtocolOut(platooning::platoonProtocolOut msg) {
     std::cout << "calling server to send" << std::endl;
 
-    server_ptr_->start_send(std::move(msg));
-
+    server_ptr_->start_send(msg.payload, msg.message_type);
   }
 
-  void Wifi::hndl_wifi_receive(std::shared_ptr<std::vector<char>> msg)  {
+  void Wifi::hndl_wifi_receive(std::pair<std::string, int32_t> message_pair)  {
     std::cout << "handling wifi receive" << std::endl;
-
-    int32_t message_type;
-    memcpy(&message_type, msg->data(), sizeof(int32_t));
-
-    std::cout << "[wifi] recvd message type " << message_type << "\nmessage:" << msg->data() << std::endl;
-
-    //hopefully the whole string without the message
-    std::string str( msg->begin()+sizeof(int32_t),msg->end());
 
     platooning::platoonProtocolIn outmsg;
 
-    switch (message_type) {
+    switch (message_pair.second) {
       case LV_BROADCAST:
       case FV_HEARTBEAT:
       case LV_REQUEST:
@@ -106,7 +97,7 @@ namespace platooning {
       case ACCEPT_RESPONSE:
       case REJECT_RESPONSE:
       case LEAVE_PLATOON:
-        outmsg.payload = str;
+        outmsg.payload = message_pair.first;
         std::cout << "wifi pubbung protocolin" << std::endl;
 
         pub_platoonProtocolIn_.publish(outmsg);

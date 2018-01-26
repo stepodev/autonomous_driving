@@ -105,7 +105,7 @@ namespace platooning {
      * @param msg incoming topic message
      */
     void hndl_platoonProtocolOut(platooning::platoonProtocolOut msg);
-    void hndl_wifi_receive( std::shared_ptr<std::vector<char>> msg);
+    void hndl_wifi_receive(std::pair<std::string, int32_t> message_tup);
 
   };
 
