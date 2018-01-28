@@ -83,17 +83,17 @@ namespace platooning {
 
   void Moduletest_wifi::hndl_platoonProtocolIn(platooning::platoonProtocolIn msg) {
 
-    NODELET_INFO("[moduletest_wifi] hndl_platoonProtocolIn received a thing");
+    boost::shared_ptr<testResult> outmsg = boost::shared_ptr<testResult>( new testResult);
 
-    testResult outmsg;
-
-    outmsg.success = true;
+    outmsg->success = true;
 
     if (msg.payload != current_test_) {
-      outmsg.comment = std::string("[moduletest_wifi] payload mismatch.\nought:\"")
-                       + current_test_ + "\"\nwas   \"" + msg.payload + "\"HELLLOOO";
-      NODELET_WARN( outmsg.comment.c_str());
-      outmsg.success = false;
+      outmsg->comment = std::string("[moduletest_wifi] payload mismatch.\nought:\"")
+                       + current_test_ + "\"\nwas   \"" + msg.payload + "\"";
+      NODELET_WARN( outmsg->comment.c_str());
+      outmsg->success = false;
+    } else {
+      NODELET_INFO("[moduletest_wifi] GREATU SUCCESSU");
     }
 
     pub_testResult.publish(outmsg);
@@ -157,10 +157,19 @@ namespace platooning {
 
     ros::Publisher pub_platoonProtocolOut = nh_.advertise<platooning::platoonProtocolOut>("platoonProtocolOut", 10);
 
-    platooning::platoonProtocolOut msg;
+    if( pub_platoonProtocolOut.getNumSubscribers() == 0 ) {
+      NODELET_FATAL("Moduletest wifi] test_send_protocolOut_recv_udp: no subscribers to platoonProtocolOut");
+      boost::shared_ptr<platooning::testResult> msg = boost::shared_ptr<platooning::testResult>( new platooning::testResult);
+      msg->success = false;
+      msg->comment = "[Moduletest wifi] test_send_protocolOut_recv_udp: no subscribers to platoonProtocolOut";
+      pub_testResult.publish(msg);
+      return;
+    }
 
-    msg.payload = "moduleTest_wifi_send_udp_recv_protocolIn";
-    msg.message_type = LEAVE_PLATOON;
+    boost::shared_ptr<platooning::platoonProtocolOut> msg = boost::shared_ptr<platooning::platoonProtocolOut>( new platooning::platoonProtocolOut);
+
+    msg->payload = "moduleTest_wifi_send_protocolOut_recv_udp";
+    msg->message_type = LEAVE_PLATOON;
 
     pub_platoonProtocolOut.publish(msg);
 

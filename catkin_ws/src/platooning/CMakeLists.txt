@@ -17,6 +17,8 @@ find_package(catkin REQUIRED COMPONENTS
     message_generation
     )
 
+find_package(rostest REQUIRED)
+
 find_package(Boost REQUIRED COMPONENTS
     ## DUNNO LOL
     thread
@@ -237,30 +239,40 @@ target_link_libraries(pcap libpcap.so)
 ##################
 ## UNIT Testing ##
 ##################
-
+# if your test needs a roscore, use
+# add_rostest_gtest(YOURNODELET-unit-test launch/YOURNODELET.launch test/unittest_YOURNODELET.cpp)
+# target_link_libraries(YOURNODELET-unit-test YOURNODELET_REQUIRED_LIBRARIES ${catkin_LIBRARIES})
+##################
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(remotecontrol-unit-test test/unittest_remotecontrol.cpp)
-catkin_add_gtest(platooning-unit-test test/unittest_platooning.cpp)
-catkin_add_gtest(lanekeeping-unit-test test/unittest_lanekeeping.cpp)
-catkin_add_gtest(priorization-unit-test launch/priorization.launch test/unittest_priorization.cpp)
-catkin_add_gtest(protocol-unit-test test/unittest_protocol.cpp)
-catkin_add_gtest(userinterface-unit-test test/unittest_userinterface.cpp)
-catkin_add_gtest(vehiclecontrol-unit-test test/unittest_vehiclecontrol.cpp)
-catkin_add_gtest(wifi-unit-test launch/wifi.launch test/unittest_wifi.cpp)
-catkin_add_gtest(udpserver-unit-test test/unittest_udpserver.cpp)
-
-catkin_add_gtest(template-unit-test test/unittest_template.cpp)
-
 target_link_libraries(remotecontrol-unit-test ${catkin_LIBRARIES})
+
+catkin_add_gtest(platooning-unit-test test/unittest_platooning.cpp)
 target_link_libraries(platooning-unit-test ${catkin_LIBRARIES})
+
+catkin_add_gtest(lanekeeping-unit-test test/unittest_lanekeeping.cpp)
 target_link_libraries(lanekeeping-unit-test ${catkin_LIBRARIES})
+
+catkin_add_gtest(priorization-unit-test test/unittest_priorization.cpp)
 target_link_libraries(priorization-unit-test ${catkin_LIBRARIES})
-target_link_libraries(protocol-unit-test ${catkin_LIBRARIES})
+
+catkin_add_gtest(userinterface-unit-test test/unittest_userinterface.cpp)
 target_link_libraries(userinterface-unit-test ${catkin_LIBRARIES})
-target_link_libraries(vehiclecontrol-unit-test ${catkin_LIBRARIES})
+
+catkin_add_gtest(vehiclecontrol-unit-test test/unittest_vehiclecontrol.cpp)
+target_link_libraries(vehiclecontrol-unit-test vehcikecontrol ${catkin_LIBRARIES})
+
+catkin_add_gtest(wifi-unit-test launch/wifi.launch test/unittest_wifi.cpp)
 target_link_libraries(wifi-unit-test ${catkin_LIBRARIES})
 
+catkin_add_gtest(udpserver-unit-test test/unittest_udpserver.cpp)
+target_link_libraries(udpserver-unit-test udpserver ${catkin_LIBRARIES})
+
+catkin_add_gtest(template-unit-test test/unittest_template.cpp)
 target_link_libraries(template-unit-test ${catkin_LIBRARIES})
+
+add_rostest_gtest(protocol-unit-test launch/protocol.launch test/unittest_protocol.cpp)
+target_link_libraries(protocol-unit-test protocol ${catkin_LIBRARIES})
 
 
 #if (TARGET ${PROJECT_NAME}-test)

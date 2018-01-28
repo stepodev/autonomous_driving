@@ -87,6 +87,7 @@ namespace platooning {
           NODELET_INFO("[testrunner] started running tests");
         } else {
           NODELET_FATAL("[testrunner] no testcases have been registered");
+          waitForTestToFinish = false;
         }
 
       });
@@ -117,9 +118,7 @@ namespace platooning {
     void hndl_testResult(platooning::testResult msg) {
 
       myfile << testsToRunlist.front() << msg.success << " " << msg.comment << std::endl;
-
       testsToRunlist.pop_front();
-
       waitForTestToFinish = false;
     }
 
@@ -137,28 +136,35 @@ namespace platooning {
 
     void run() {
 
-      while (!testsToRunlist.empty()) {
+      boost::shared_ptr<platooning::runTestCommand> runcmd = boost::shared_ptr<platooning::runTestCommand>(
+          new platooning::runTestCommand());
 
-        platooning::runTestCommand runcmd;
-        runcmd.testToRun = testsToRunlist.front();
+      while (!testsToRunlist.empty()) {
+        runcmd->testToRun = testsToRunlist.front();
 
         while (pub_testRunCommand.getNumSubscribers() == 0) {
-          NODELET_WARN("found no subscribers");
+          NODELET_WARN("[testrunner] trying to run tests. found no subscribers to runtestcommand");
           boost::this_thread::sleep_for(boost::chrono::seconds(5));
         }
 
-        NODELET_INFO( (std::string("[testrunner] start test ") + runcmd.testToRun).c_str() );
+        NODELET_INFO( (std::string("[testrunner] start test ") + runcmd->testToRun).c_str() );
         pub_testRunCommand.publish(runcmd);
         waitForTestToFinish = true;
 
-        while (waitForTestToFinish) {
-          boost::this_thread::sleep_for(boost::chrono::seconds(1));
+        int cntr = 0;
+        while (waitForTestToFinish && cntr++ < 3) {
+          boost::this_thread::sleep_for(boost::chrono::seconds(3));
           NODELET_WARN("[testrunner] waiting for test to finish");
+        }
+
+        if(cntr == 4 ) {
+          NODELET_FATAL( std::string("testrunner] test failed \"" + runcmd->testToRun + "\"").c_str());
+          testsToRunlist.pop_front();
         }
       }
 
       NODELET_INFO("[testrunner] done");
-
+      ros::shutdown();
     }
 
 

@@ -35,15 +35,15 @@ TEST(UdpServer, MessageConversionTest) {
 
 boost::function<void(std::pair<std::string,int32_t>)> cbfun;
 
-  UdpServerTester server = UdpServerTester(
+  std::shared_ptr<UdpServerTester> server = std::shared_ptr<UdpServerTester>( new UdpServerTester(
         cbfun
         , udp::endpoint(udp::v4(),10001)
-        , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000));
+        , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
 
   std::string message = "thisisateststringplstestme";
   int32_t message_type = 0x00112233;
 
-  std::pair<std::string, int32_t> testout = server.Convert(message,message_type);
+  std::pair<std::string, int32_t> testout = server->Convert(message,message_type);
 
   ASSERT_EQ( testout.first, message);
   ASSERT_EQ( testout.second, message_type);
