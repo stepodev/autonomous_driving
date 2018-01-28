@@ -29,6 +29,8 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <platooning/runTestCommand.h>
 #include <platooning/testResult.h>
+#include <platooning/platoonProtocolIn.h>
+#include <platooning/platoonProtocolOut.h>
 #include <sstream>
 
 #include "platooning/platoonProtocolOut.h" //includes topic aka message

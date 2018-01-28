@@ -6,12 +6,11 @@
 #define PLATOONING_UDP_SERVER_HPP
 
 #include <boost/asio.hpp>
-#include <ros/ros.h>
+#include <boost/function.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/array.hpp>
 #include <utility>
 
-#include "platooning/platoonProtocolOut.h"
-#include "platooning/platoonProtocolIn.h"
 #include "MessageTypes.hpp"
 
 const int32_t MAX_RECV_BYTES = 1024;

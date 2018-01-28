@@ -122,7 +122,7 @@ namespace platooning {
 
     platooningAction action;
 
-    action.actionType = root.get<short>("MessageType");
+    action.actionType = root.get<int32_t>("MessageType");
 
     switch ( action.actionType ) {
       case LV_REQUEST :
