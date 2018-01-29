@@ -1,5 +1,0 @@
-int16 actionType
-int64 vehicleId
-int64 platoonId
-int64 innerPlatoonDistance
-int64 platoonSpeed

@@ -22,7 +22,7 @@ ControllerUi::~ControllerUi()
 
 void ControllerUi::on_startPlatooning_clicked()
 {
-
+    server_ptr_->start_send("go",REMOTE_CUSTOM);
 }
 
 void ControllerUi::receive_message( std::pair<std::string, int32_t> msgpair )
@@ -34,7 +34,9 @@ void ControllerUi::receive_message( std::pair<std::string, int32_t> msgpair )
     pt::ptree root;
     boost::property_tree::read_json( ss, root );
 
-    //parse out message info, update ui
+    if(msgpair.second == REMOTE_LOG ) {
+        //parse stuff
+    }
 }
 
 void ControllerUi::on_toggleRemote_clicked()

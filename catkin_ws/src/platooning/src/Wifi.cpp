@@ -75,8 +75,9 @@ namespace platooning {
 ** Handlers
 *****************************************************************************/
 
-  /*
-   * handling an event and publishing something
+  /**
+   * @brief Sends messages into the network
+   * @param platoonProtocolOut msg to be sent
    */
   void Wifi::hndl_platoonProtocolOut(platooning::platoonProtocolOut msg) {
     std::cout << "calling server to send" << std::endl;
@@ -84,25 +85,34 @@ namespace platooning {
     server_ptr_->start_send(msg.payload, msg.message_type);
   }
 
+  /**
+   * @brief handles received messages from the network
+   * @param message_pair with message_type and payload
+   */
   void Wifi::hndl_wifi_receive(std::pair<std::string, int32_t> message_pair)  {
     std::cout << "handling wifi receive" << std::endl;
 
-    platooning::platoonProtocolIn outmsg;
+    boost::shared_ptr<platooning::platoonProtocolIn> outmsg
+        = boost::shared_ptr<platooning::platoonProtocolIn>( new platooning::platoonProtocolIn);
 
     switch (message_pair.second) {
       case LV_BROADCAST:
       case FV_HEARTBEAT:
-      case LV_REQUEST:
       case FV_REQUEST:
-      case ACCEPT_RESPONSE:
-      case REJECT_RESPONSE:
-      case LEAVE_PLATOON:
-        outmsg.payload = message_pair.first;
-        std::cout << "wifi pubbung protocolin" << std::endl;
-
+      case LV_ACCEPT:
+      case LV_REJECT:
+      case FV_LEAVE:
+        outmsg->payload = message_pair.first;
         pub_platoonProtocolIn_.publish(outmsg);
         break;
 
+      case REMOTE_CMD:
+        break;
+      case REMOTE_CUSTOM:
+        break;
+      case REMOTE_LOG:
+        //TODO: do something useful
+        break;
       default:
         NODELET_FATAL("[wifi] messagetype not recognized");
         break;

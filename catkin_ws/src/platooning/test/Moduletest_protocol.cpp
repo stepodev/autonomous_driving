@@ -25,7 +25,8 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-  Moduletest_protocol::Moduletest_protocol() = default;
+  Moduletest_protocol::Moduletest_protocol()
+  : Moduletest( {"moduleTest_protocol_fv_request"} ){}
 
 
 
@@ -46,26 +47,21 @@ namespace platooning {
   */
   void Moduletest_protocol::onInit() {
 
+    std::cout << "[moduletest Protocol]: init?" << std::endl;
+
     name_ = "Moduletest_protocol";
 
     //subscribers of protocol nodelet
-    sub_platooningAction = nh_.subscribe("platooningAction", 10,
-                                       &Moduletest_protocol::hndl_platooningAction, this);
+    sub_fv_request = nh_.subscribe("fv_request", 10,
+                                       &Moduletest_protocol::hndl_fv_request, this);
 
     std::cout << "subbing to runtestcommand" << std::endl;
     sub_runTestCmd = nh_.subscribe("runTestCommand", 10,
                                    &Moduletest_protocol::hndl_runTestCmd, this);
 
-    //publisher of forced driving vector
     pub_platoonProtocolIn = nh_.advertise< platooning::platoonProtocolIn >("platoonProtocolIn", 10);
 
     pub_testResult = nh_.advertise<platooning::testResult>("testResult",10);
-
-    std::list<std::string> testcases_to_register = {
-        "moduleTest_platooning_leaderrequest"
-    };
-
-    register_testcases( testcases_to_register );
 
     NODELET_INFO("Moduletest_protocol init done");
   };
@@ -78,31 +74,25 @@ namespace platooning {
   /*
    * handling an event and publishing something
    */
-  void Moduletest_protocol::hndl_platooningAction(platooning::platooningAction msg) {
+  void Moduletest_protocol::hndl_fv_request(platooning::fv_request msg) {
 
-    platooning::testResult resmsg;
-    resmsg.success = true;
+    std::cout << "[moduletest Protocol]: handlin fv_request?" << std::endl;
 
-    if( msg.actionType != LV_REQUEST ) {
-      resmsg.success = false;
+    boost::shared_ptr<platooning::testResult> resmsg
+        = boost::shared_ptr<platooning::testResult>( new platooning::testResult);
+        resmsg->success = true;
+
+    if( msg.src_vehicle != 2 ) {
+      resmsg->success = false;
+      std::stringstream resstr;
+      resstr << "src_vehicle:2 == " << msg.src_vehicle << "=" << (msg.src_vehicle == 2);
+
+      resmsg->comment = resstr.str();
     }
 
-    if( msg.vehicleId != 2 ) {
-      resmsg.success = false;
+    if( resmsg->success ) {
+      NODELET_ERROR( (std::string("[") + name_ + "] error with " + resmsg->comment).c_str());
     }
-
-    if( msg.platoonId != 3 ) {
-      resmsg.success = false;
-    }
-
-    std::stringstream resstr;
-    resstr << "actionType:" + (msg.actionType == LV_REQUEST)
-        << " vehicleId:" << (msg.vehicleId == 2)
-        << " platoonId:" << (msg.platoonId == 3);
-
-    //resmsg.comment = resstr.str();
-
-    std::cout << "i wrotes a thing" << std::endl;
 
     pub_testResult.publish(resmsg);
 
@@ -112,17 +102,16 @@ namespace platooning {
 
     std::cout << "Protocol: ya talkin to me?" << std::endl;
 
-    if( msg.testToRun != "moduleTest_platooning_leaderrequest") {
+    if( msg.testToRun != "moduleTest_protocol_fv_request") {
       return;
     }
 
     pt::ptree root;
 
-    root.put("MessageType",(unsigned int) LV_REQUEST );
-    root.put("vehicle_id",(unsigned int) 2 );
+    root.put("src_vehicle",(unsigned int) 2 );
     root.put("platoon_id",(unsigned int) 3 );
-    root.put("ipd",(unsigned int) 4 );
-    root.put("ps",(unsigned int) 5 );
+    root.put("ipd",(float) 4 );
+    root.put("ps",(float) 5 );
 
     if( !boost::property_tree::json_parser::verify_json(root,1)) {
       NODELET_ERROR("moduletest_protocol invalid json");
@@ -136,6 +125,7 @@ namespace platooning {
 
     platoonProtocolIn inmsg;
 
+    inmsg.message_type = FV_REQUEST;
     inmsg.payload = os.str();
 
     pub_platoonProtocolIn.publish(inmsg);

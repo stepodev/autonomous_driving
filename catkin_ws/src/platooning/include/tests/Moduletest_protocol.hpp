@@ -31,7 +31,6 @@
 #include <platooning/testResult.h>
 #include <sstream>
 
-#include "platooning/platooningAction.h" //includes topic aka message
 #include "platooning/platoonProtocolIn.h" //includes topic aka message
 #include "platooning/testResult.h" //includes topic aka message
 #include "Protocol.hpp"
@@ -85,7 +84,7 @@ namespace platooning {
     ~Moduletest_protocol();
 
   private:
-    ros::Subscriber sub_platooningAction;
+    ros::Subscriber sub_fv_request;
     ros::Subscriber sub_runTestCmd;
 
     ros::Publisher pub_platoonProtocolIn;
@@ -95,7 +94,7 @@ namespace platooning {
      * @brief to achieve X does Y
      * @param msg incoming topic message
      */
-    void hndl_platooningAction(platooning::platooningAction msg);
+    void hndl_fv_request(platooning::fv_request msg);
     void hndl_runTestCmd(platooning::runTestCommand msg);
 
   };

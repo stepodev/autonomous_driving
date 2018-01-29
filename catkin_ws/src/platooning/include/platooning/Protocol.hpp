@@ -35,10 +35,16 @@
 #include <ros/ros.h>
 #include <boost/property_tree/ptree.hpp> //json parsing and generating
 #include <boost/property_tree/json_parser.hpp> //json parsing and generating
+#include <boost/uuid/uuid.hpp>
 
-#include "platooning/platooningAction.h" //includes topic aka message
 #include "platooning/platoonProtocolIn.h" //includes topic aka message
 #include "platooning/platoonProtocolOut.h" //includes topic aka message
+#include "platooning/lv_broadcast.h" //includes topic aka message
+#include "platooning/lv_accept.h" //includes topic aka message
+#include "platooning/lv_reject.h" //includes topic aka message
+#include "platooning/fv_request.h" //includes topic aka message
+#include "platooning/fv_heartbeat.h" //includes topic aka message
+#include "platooning/fv_leave.h" //includes topic aka message
 #include "MessageTypes.hpp"
 
 namespace platooning {
@@ -90,19 +96,49 @@ namespace platooning {
 
   protected:
     /**
+     * @brief contains data for the given message_type
+     */
+    class MessageFields
+    {
+    public:
+      uint32_t message_type;
+      uint32_t src_vehicle;
+      uint32_t dst_vehicle;
+      uint32_t platoon_id;
+      float ipd;
+      float ps;
+      std::vector<uint32_t> followers;
+
+    };
+
+    /**
      * @brief takes json and decodes it
      * @param msg protocol data
      */
-    platooningAction DecodeIncomingJson( std::string& json );
+    void DecodeIncomingJson( std::string& json, lv_broadcast& message);
+    void DecodeIncomingJson( std::string& json, lv_accept& message);
+    void DecodeIncomingJson( std::string& json, lv_reject& message);
+    void DecodeIncomingJson( std::string& json, fv_heartbeat& message);
+    void DecodeIncomingJson( std::string& json, fv_leave& message);
+    void DecodeIncomingJson( std::string& json, fv_request& message);
 
 
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
+    boost::uuids::uuid vehicle_id_;
+
     ros::Subscriber sub_platooningIn; /**< subscribers to incoming messages from wifi. */
 
     ros::Publisher pub_platooningOut; /**< provides to messages to send via wifi. */
-    ros::Publisher pub_platooningAction; /**< provides to messages to send via wifi. */
+
+    /**< publishers for platooning messages. */
+    ros::Publisher pub_lv_broadcast;
+    ros::Publisher pub_lv_accept;
+    ros::Publisher pub_lv_reject;
+    ros::Publisher pub_fv_heartbeat;
+    ros::Publisher pub_fv_leave;
+    ros::Publisher pub_fv_request;
 
 
     /**
