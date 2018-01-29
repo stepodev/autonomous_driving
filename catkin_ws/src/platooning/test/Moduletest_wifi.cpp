@@ -32,7 +32,9 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-  Moduletest_wifi::Moduletest_wifi() = default;
+  Moduletest_wifi::Moduletest_wifi()
+      : Moduletest( { "moduleTest_wifi_send_udp_recv_protocolIn"
+                        , "moduleTest_wifi_send_protocolOut_recv_udp"}) {};
 
 
 /*****************************************************************************
@@ -63,11 +65,8 @@ namespace platooning {
     pub_testResult = nh_.advertise<platooning::testResult>("testResult", 10);
 
     std::list<std::string> testcases_to_register = {
-        "moduleTest_wifi_send_udp_recv_protocolIn"
-        , "moduleTest_wifi_send_protocolOut_recv_udp"
-    };
 
-    register_testcases(testcases_to_register);
+    };
 
     NODELET_INFO("[moduletest_wifi] init done");
   };
@@ -128,7 +127,7 @@ namespace platooning {
 
     try {
       platooning::platoonProtocolOut outmsg;
-      outmsg.message_type = LV_REQUEST;
+      outmsg.message_type = FV_REQUEST;
       outmsg.payload = "moduleTest_wifi_send_udp_recv_protocolIn";
 
       server_->start_send(outmsg.payload, outmsg.message_type);
@@ -169,7 +168,7 @@ namespace platooning {
     boost::shared_ptr<platooning::platoonProtocolOut> msg = boost::shared_ptr<platooning::platoonProtocolOut>( new platooning::platoonProtocolOut);
 
     msg->payload = "moduleTest_wifi_send_protocolOut_recv_udp";
-    msg->message_type = LEAVE_PLATOON;
+    msg->message_type = FV_LEAVE;
 
     pub_platoonProtocolOut.publish(msg);
 

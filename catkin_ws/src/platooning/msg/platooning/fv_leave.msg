@@ -1,3 +1,2 @@
-bool templatebool
-float64 templatefloat
-string templatestring
+uint32 src_vehicle
+uint32 platoon_id

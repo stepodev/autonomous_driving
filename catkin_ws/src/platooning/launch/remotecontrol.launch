@@ -1,4 +1,0 @@
-<launch>
-    <node pkg="nodelet" type="nodelet" name="remotecontrol" args="load platooning/remotecontrol remotecontrol">
-    </node>
-</launch>

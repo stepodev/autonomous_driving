@@ -60,7 +60,12 @@ namespace platooning {
     pub_platooningOut = nh_.advertise< platooning::platoonProtocolOut >("platoonProtocolOut", 10);
 
     //publisher of decoded platooning messages
-    pub_platooningAction = nh_.advertise< platooning::platooningAction >("platooningAction", 10);
+    pub_lv_broadcast = nh_.advertise< platooning::lv_broadcast >("lv_broadcast", 10);
+    pub_lv_accept = nh_.advertise< platooning::lv_accept >("lv_accept", 10);
+    pub_lv_reject = nh_.advertise< platooning::lv_reject >("lv_reject", 10);
+    pub_fv_heartbeat = nh_.advertise< platooning::fv_heartbeat >("fv_heartbeat", 10);
+    pub_fv_leave = nh_.advertise< platooning::fv_leave >("fv_leave", 10);
+    pub_fv_request = nh_.advertise< platooning::fv_request >("fv_request", 10);
 
     NODELET_INFO("PROTOCOL init done");
 
@@ -75,17 +80,56 @@ namespace platooning {
   * @brief decodes json payload of incoming message and publishes data on the appropriate topic
   * @return true, if successful
   */
-  void Protocol::platoonProtocolInHandler(platooning::platoonProtocolIn msg) {
+  void Protocol::platoonProtocolInHandler(platooning::platoonProtocolIn inmsg) {
 
     NODELET_DEBUG("json payload received");
 
     try {
-      MessageFields msgfields = DecodeIncomingJson( msg.payload, msg.message_type );
-
-      switch ( msg.message_type ) {
+      switch ( inmsg.message_type ) {
         case LV_BROADCAST:
-
+        {
+          boost::shared_ptr<lv_broadcast> outmsg = boost::shared_ptr<lv_broadcast>( new lv_broadcast);
+          DecodeIncomingJson( inmsg.payload, *outmsg );
+          pub_lv_broadcast.publish(outmsg);
+        }
+          break;
+        case LV_REJECT:
+        {
+          boost::shared_ptr<lv_reject> outmsg = boost::shared_ptr<lv_reject>( new lv_reject);
+          DecodeIncomingJson( inmsg.payload, *outmsg );
+          pub_lv_reject.publish(outmsg);
+        }
+          break;
+        case LV_ACCEPT:
+        {
+          boost::shared_ptr<lv_accept> outmsg = boost::shared_ptr<lv_accept>( new lv_accept);
+          DecodeIncomingJson( inmsg.payload, *outmsg );
+          pub_lv_accept.publish(outmsg);
+        }
+          break;
+        case FV_LEAVE:
+        {
+          boost::shared_ptr<fv_leave> outmsg = boost::shared_ptr<fv_leave>( new fv_leave);
+          DecodeIncomingJson( inmsg.payload, *outmsg );
+          pub_fv_leave.publish(outmsg);
+        }
+          break;
+        case FV_REQUEST:
+        {
+          boost::shared_ptr<fv_request> outmsg = boost::shared_ptr<fv_request>( new fv_request);
+          DecodeIncomingJson( inmsg.payload, *outmsg );
+          pub_fv_request.publish(outmsg);
+        }
+          break;
+        case FV_HEARTBEAT:
+        {
+          boost::shared_ptr<fv_heartbeat> outmsg = boost::shared_ptr<fv_heartbeat>( new fv_heartbeat);
+          DecodeIncomingJson( inmsg.payload, *outmsg );
+          pub_fv_heartbeat.publish(outmsg);
+        }
+          break;
         default:
+          NODELET_ERROR("[protocol] unknown message type");
           break;
       }
 
@@ -112,54 +156,77 @@ namespace platooning {
 ** Helper functions
 *****************************************************************************/
 
-  template <class T>
-  void Protocol::DecodeIncomingJson<T>( std::string& json, T message ) {
+  void Protocol::DecodeIncomingJson( std::string& json, lv_broadcast& message ) {
 
-    std::cout << "i recvd a thing" << std::endl;
+    std::stringstream ss(json);
 
+    pt::ptree root;
+    pt::read_json(ss, root);
+
+    message.src_vehicle = root.get<uint32_t>("src_vehicle");
+    message.platoon_id = root.get<uint32_t>("platoon_id");
+    message.ipd = root.get<float>("ipd");
+    message.pd = root.get<float>("pd");
+
+  }
+
+  void Protocol::DecodeIncomingJson( std::string& json, lv_accept& message ) {
     std::stringstream ss(json);
 
     pt::ptree root;
     pt::read_json( ss, root );
 
-    switch ( message ) {
-      case FV_REQUEST :
-        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
-        //msgfields.ipd = root.get<float>("ipd");
-        //msgfields.ipd = root.get<float>("pd");
-        break;
-      case LV_ACCEPT:
-        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
-        msgfields.platoon_id = root.get<uint32_t >("platoon_id");
-        msgfields.dst_vehicle = root.get<uint32_t >("dst_vehicle");
-        break;
-      case LV_REJECT:
-        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
-        msgfields.platoon_id = root.get<uint32_t >("platoon_id");
-        msgfields.dst_vehicle = root.get<uint32_t >("dst_vehicle");
-        break;
-      case FV_HEARTBEAT:
-        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
-        msgfields.platoon_id = root.get<uint32_t >("platoon_id");
-        break;
-      case LV_BROADCAST:
-        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
-        msgfields.platoon_id = root.get<uint32_t >("platoon_id");
-        msgfields.ipd = root.get<float>("ipd");
-        msgfields.ipd = root.get<float>("pd");
-        break;
-      case FV_LEAVE:
-        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
-        msgfields.platoon_id = root.get<uint32_t >("platoon_id");
-        break;
-      default:
-        NODELET_ERROR("unrecognized message type");
-    }
-
-    return msgfields;
+    message.src_vehicle = root.get<uint32_t >("src_vehicle");
+    message.platoon_id = root.get<uint32_t >("platoon_id");
+    message.dst_vehicle = root.get<uint32_t >("dst_vehicle");
 
   }
 
+  void Protocol::DecodeIncomingJson( std::string& json, lv_reject& message ) {
+    std::stringstream ss(json);
+
+    pt::ptree root;
+    pt::read_json( ss, root );
+
+    message.src_vehicle = root.get<uint32_t >("src_vehicle");
+    message.platoon_id = root.get<uint32_t >("platoon_id");
+    message.dst_vehicle = root.get<uint32_t >("dst_vehicle");
+
+  }
+
+  void Protocol::DecodeIncomingJson( std::string& json, fv_request& message ) {
+    std::stringstream ss(json);
+
+    pt::ptree root;
+    pt::read_json( ss, root );
+
+    message.src_vehicle = root.get<uint32_t >("src_vehicle");
+    //msgfields.ipd = root.get<float>("ipd");
+    //msgfields.ipd = root.get<float>("pd");
+
+  }
+
+  void Protocol::DecodeIncomingJson( std::string& json, fv_heartbeat& message ) {
+    std::stringstream ss(json);
+
+    pt::ptree root;
+    pt::read_json( ss, root );
+
+    message.src_vehicle = root.get<uint32_t >("src_vehicle");
+    message.platoon_id = root.get<uint32_t >("platoon_id");
+
+  }
+
+  void Protocol::DecodeIncomingJson( std::string& json, fv_leave& message ) {
+    std::stringstream ss(json);
+
+    pt::ptree root;
+    pt::read_json( ss, root );
+
+    message.src_vehicle = root.get<uint32_t >("src_vehicle");
+    message.platoon_id = root.get<uint32_t >("platoon_id");
+
+  }
 } // namespace platooning
 
 PLUGINLIB_EXPORT_CLASS(platooning::Protocol, nodelet::Nodelet);

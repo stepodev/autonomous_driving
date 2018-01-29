@@ -15,13 +15,21 @@
 
 class Moduletest : public nodelet::Nodelet {
 
-protected:
+public:
+  Moduletest() = delete;
+  Moduletest( std::list<std::string> testcases );
 
-  void register_testcases( std::list<std::string> testcases_to_register );
+protected:
 
   ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
 
   std::string name_ = "Moduletest";
+
+  std::string current_test_;
+
+private:
+  void register_testcases();
+  std::list<std::string> testcases_to_register_;
 
 };
 
