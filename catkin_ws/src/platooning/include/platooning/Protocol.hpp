@@ -35,6 +35,7 @@
 #include <ros/ros.h>
 #include <boost/property_tree/ptree.hpp> //json parsing and generating
 #include <boost/property_tree/json_parser.hpp> //json parsing and generating
+#include <boost/uuid/uuid.hpp>
 
 #include "platooning/platooningAction.h" //includes topic aka message
 #include "platooning/platoonProtocolIn.h" //includes topic aka message
@@ -90,15 +91,34 @@ namespace platooning {
 
   protected:
     /**
+     * @brief contains data for the given message_type
+     */
+    class MessageFields
+    {
+    public:
+      uint32_t message_type;
+      uint32_t src_vehicle;
+      uint32_t dst_vehicle;
+      uint32_t platoon_id;
+      float ipd;
+      float ps;
+      std::vector<uint32_t> followers;
+
+    };
+
+    /**
      * @brief takes json and decodes it
      * @param msg protocol data
      */
-    platooningAction DecodeIncomingJson( std::string& json );
+    template <class T>
+    void DecodeIncomingJson( std::string& json, T message);
 
 
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
+    boost::uuids::uuid vehicle_id_;
+
     ros::Subscriber sub_platooningIn; /**< subscribers to incoming messages from wifi. */
 
     ros::Publisher pub_platooningOut; /**< provides to messages to send via wifi. */

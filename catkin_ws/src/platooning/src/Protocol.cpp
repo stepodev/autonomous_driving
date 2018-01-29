@@ -71,19 +71,20 @@ namespace platooning {
 ** Handlers
 *****************************************************************************/
 
-  /*
-   * handling an event and publishing something
-   */
+  /**
+  * @brief decodes json payload of incoming message and publishes data on the appropriate topic
+  * @return true, if successful
+  */
   void Protocol::platoonProtocolInHandler(platooning::platoonProtocolIn msg) {
 
     NODELET_DEBUG("json payload received");
 
     try {
-      platooningAction decodedMsg = DecodeIncomingJson( msg.payload );
+      MessageFields msgfields = DecodeIncomingJson( msg.payload, msg.message_type );
 
-      switch ( decodedMsg.actionType ) {
-        case LV_REQUEST:
-          pub_platooningAction.publish(decodedMsg);
+      switch ( msg.message_type ) {
+        case LV_BROADCAST:
+
         default:
           break;
       }
@@ -111,7 +112,8 @@ namespace platooning {
 ** Helper functions
 *****************************************************************************/
 
-  platooningAction Protocol::DecodeIncomingJson( std::string& json ) {
+  template <class T>
+  void Protocol::DecodeIncomingJson<T>( std::string& json, T message ) {
 
     std::cout << "i recvd a thing" << std::endl;
 
@@ -120,36 +122,41 @@ namespace platooning {
     pt::ptree root;
     pt::read_json( ss, root );
 
-    platooningAction action;
-
-    action.actionType = root.get<short>("MessageType");
-
-    switch ( action.actionType ) {
-      case LV_REQUEST :
-        action.vehicleId = root.get<unsigned int>("vehicle_id");
-        action.platoonId = root.get<unsigned int>("platoon_id");
+    switch ( message ) {
+      case FV_REQUEST :
+        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
+        //msgfields.ipd = root.get<float>("ipd");
+        //msgfields.ipd = root.get<float>("pd");
         break;
-      case FV_REQUEST:
+      case LV_ACCEPT:
+        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
+        msgfields.platoon_id = root.get<uint32_t >("platoon_id");
+        msgfields.dst_vehicle = root.get<uint32_t >("dst_vehicle");
         break;
-      case ACCEPT_RESPONSE:
-        break;
-      case REJECT_RESPONSE:
+      case LV_REJECT:
+        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
+        msgfields.platoon_id = root.get<uint32_t >("platoon_id");
+        msgfields.dst_vehicle = root.get<uint32_t >("dst_vehicle");
         break;
       case FV_HEARTBEAT:
+        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
+        msgfields.platoon_id = root.get<uint32_t >("platoon_id");
         break;
       case LV_BROADCAST:
-        action.vehicleId = root.get<unsigned int>("vehicle_id");
-        action.platoonId = root.get<unsigned int>("platoon_id");
-        action.innerPlatoonDistance = root.get<unsigned int>("ipd");
-        action.platoonSpeed = root.get<unsigned int>("ps");
+        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
+        msgfields.platoon_id = root.get<uint32_t >("platoon_id");
+        msgfields.ipd = root.get<float>("ipd");
+        msgfields.ipd = root.get<float>("pd");
         break;
-      case LEAVE_PLATOON:
+      case FV_LEAVE:
+        msgfields.src_vehicle = root.get<uint32_t >("src_vehicle");
+        msgfields.platoon_id = root.get<uint32_t >("platoon_id");
         break;
       default:
         NODELET_ERROR("unrecognized message type");
     }
 
-    return action;
+    return msgfields;
 
   }
 

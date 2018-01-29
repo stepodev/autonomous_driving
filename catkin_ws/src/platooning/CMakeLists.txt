@@ -67,8 +67,6 @@ add_message_files(
         ########################
         ## remoteControlMessages
         remoteDrivingVector.msg
-        enableRemoteControl.msg
-        forcedDrivingVector.msg
         ########################
         ## templateMessages
         templateMsg.msg
@@ -78,9 +76,14 @@ add_message_files(
         ## priorization messages
         ########################
         ## protocol messages
-        platooningAction.msg
-        platoonProtocolIn.msg
-        platoonProtocolOut.msg
+        platooning/platoonProtocolIn.msg
+        platooning/platoonProtocolOut.msg
+        platooning/fv_heartbeat.msg
+        platooning/fv_leave.msg
+        platooning/fv_request.msg
+        platooning/lv_accept.msg
+        platooning/lv_reject.msg
+        platooning/lv_broadcast.msg
         ########################
         ## userinterface messages
         ########################
@@ -89,9 +92,9 @@ add_message_files(
         ## wifi messages
         ########################
         ## test messages
-        runTestCommand.msg
-        testResult.msg
-        registerTestcases.msg
+        testing/runTestCommand.msg
+        testing/testResult.msg
+        testing/registerTestcases.msg
 
 )
 
