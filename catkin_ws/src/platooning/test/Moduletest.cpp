@@ -5,14 +5,12 @@
 
 void Moduletest::register_testcases(std::list<std::string> testcases_to_register) {
 
-  if( testcases_to_register.size() == 0 ) {
+  if( testcases_to_register.empty() ) {
     NODELET_FATAL(std::string("[" + name_ + "] no testcases to publish").c_str());
     return;
   }
 
   std::unique_ptr<boost::thread> registerthread ( new boost::thread([this, testcases_to_register] {
-    NODELET_INFO(std::string("[" + name_ + "] publishing testcases").c_str());
-
     ros::Publisher pub = this->nh_.advertise<platooning::registerTestcases>("registerTestcases", 10);
 
     int cntr = 0;
@@ -26,16 +24,25 @@ void Moduletest::register_testcases(std::list<std::string> testcases_to_register
       return;
     }
 
-    NODELET_INFO(std::string("[" + name_ + "] subscribers found. publishing.").c_str());
+    if(pub.getNumSubscribers() != 0 ) {
+      NODELET_INFO(std::string("[" + name_ + "] subscribers found. publishing.").c_str());
 
-    platooning::registerTestcases msg;
+      for (auto &x : testcases_to_register) {
+        boost::shared_ptr<platooning::registerTestcases> msgptr = boost::shared_ptr<platooning::registerTestcases>(
+            new platooning::registerTestcases());
 
-    for (auto &x : testcases_to_register) {
-      msg.testcase = x;
+        msgptr->testcase = x;
 
-      pub.publish(msg);
+        pub.publish(msgptr);
+      }
+      pub.shutdown();
+
+      NODELET_INFO(std::string("[" + name_ + "] stopped publishing testcases.").c_str());
+      return;
     }
-    pub.shutdown();
+
+    NODELET_FATAL(std::string("[" + name_ + "] shouldnt be here").c_str());
+
 
   }));
 
