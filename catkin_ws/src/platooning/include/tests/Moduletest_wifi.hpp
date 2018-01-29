@@ -29,6 +29,8 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <platooning/runTestCommand.h>
 #include <platooning/testResult.h>
+#include <platooning/platoonProtocolIn.h>
+#include <platooning/platoonProtocolOut.h>
 #include <sstream>
 
 #include "platooning/platoonProtocolOut.h" //includes topic aka message
@@ -85,15 +87,13 @@ namespace platooning {
 
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-    std::string name_;
+    std::string name_ = "moduletest_wifi";
     std::unique_ptr<UdpServer> server_;
     boost::asio::io_service io_service_;
     std::string current_test_;
     boost::thread iothread;
 
-    ros::Publisher pub_udpserver_platoonProtocolIn_;
     ros::Subscriber sub_platoonProtocolIn;
-
     ros::Subscriber sub_runTestCmd;
 
     ros::Publisher pub_testResult;
@@ -107,8 +107,9 @@ namespace platooning {
 
     void test_send_udp_recv_protocolIn();
 
-    void test_send_protocolOut_recv_protocolIn();
+    void test_send_protocolOut_recv_udp();
 
+    void handl_udp_recvd(std::pair<std::string, int32_t> msg);
   };
 
 

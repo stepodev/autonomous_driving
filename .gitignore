@@ -58,4 +58,8 @@ srv_gen/
 cmake-build-debug/
 cmake-build-release/
 
+# QtCreator
+Debug/
+*.autosave
+*.pro.user
 
