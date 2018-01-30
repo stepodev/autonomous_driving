@@ -19,8 +19,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_TEMPLATE_HPP
-#define PLATOONING_TEMPLATE_HPP
+#ifndef PLATOONING_PRIORISATION_HPP
+#define PLATOONING_PRIORISATION_HPP
 
 /*****************************************************************************
 ** Includes
@@ -96,4 +96,4 @@ namespace platooning {
 
 } // namespace platooning
 
-#endif //PLATOONING_TEMPLATE_HPP
+#endif //PLATOONING_PRIORISATION_HPP

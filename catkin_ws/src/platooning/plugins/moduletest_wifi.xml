@@ -1,0 +1,9 @@
+<library path="lib/libmoduletest_wifi">
+    <class name="platooning/moduletest_wifi"
+	         type="platooning::Moduletest_wifi"
+            base_class_type="nodelet::Nodelet">
+        <description>
+            Moduletest Nodelet Wifi
+        </description>
+    </class>
+</library>

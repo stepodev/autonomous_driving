@@ -19,8 +19,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_TEMPLATE_HPP
-#define PLATOONING_TEMPLATE_HPP
+#ifndef PLATOONING_WIFI_HPP
+#define PLATOONING_WIFI_HPP
 
 /*****************************************************************************
 ** Includes
@@ -29,10 +29,23 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include "platooning/templateMsg.h" //includes topic aka message
+#include <cstdlib>
+#include <deque>
+#include <iostream>
+#include <boost/thread/thread.hpp>
+#include <string>
+#include <boost/asio.hpp>
+#include <functional>
+#include <utility>
+
+#include "platooning/platoonProtocolOut.h"
+#include "platooning/platoonProtocolIn.h"
+#include "MessageTypes.hpp"
+#include "UdpServer.hpp"
+
+using namespace boost::asio;
 
 namespace platooning {
-
 
 /**
  * @brief Example showing how to document a function with Doxygen.
@@ -72,8 +85,6 @@ namespace platooning {
   public:
     virtual void onInit();
 
-    Wifi(ros::NodeHandle &nh, std::string &name);
-
     Wifi();
 
     ~Wifi();
@@ -81,19 +92,24 @@ namespace platooning {
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
-    ros::Subscriber templateSubscriber;
-    ros::Publisher templatePublisher;
+    std::unique_ptr<UdpServer> server_ptr_;
 
+
+    ros::Subscriber sub_platoonProtocolOut_; /* hands to udp_server to publish received messages */
+
+    ros::Publisher pub_platoonProtocolIn_; /* hands to udp_server to publish received messages */
+    ros::Publisher pub_communicationMessageIn_; /* publishes received communication messages */
 
     /**
      * @brief to achieve X does Y
      * @param msg incoming topic message
      */
-    void templateTopicHandler(const platooning::templateMsg msg);
+    void hndl_platoonProtocolOut(platooning::platoonProtocolOut msg);
+    void hndl_wifi_receive(std::pair<std::string, int32_t> message_tup);
 
   };
 
 
 } // namespace platooning
 
-#endif //PLATOONING_TEMPLATE_HPP
+#endif //PLATOONING_WIFI_HPP

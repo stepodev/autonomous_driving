@@ -7,14 +7,21 @@
  */
 
 #include <gtest/gtest.h>
+#include "Protocol.hpp"
+
+class Testprotocol : platooning::Protocol {
+
+};
 
 /**
  * @brief tests X
  *
  * Detailed explanation.
  */
-TEST(templateTests, function1Test) {
-  ASSERT_NE(1,2);
+TEST(protocolTests, decodeJsonTest) {
+  platooning::Protocol prt;
+
+
 }
 
 /**

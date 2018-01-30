@@ -8,21 +8,22 @@ add_compile_options(-std=c++11 -Wall -g)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-        ## GENERAL
-        roscpp
-        rospy
-        nodelet
-        roslint
-        ## MESSAGE GEN
-        message_generation
-        )
+    ## GENERAL
+    roscpp
+    rospy
+    nodelet
+    roslint
+    ## MESSAGE GEN
+    message_generation
+    )
+
+find_package(rostest REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS
-        ## DUNNO LOL
-        thread
-        system
-        )
-
+    ## DUNNO LOL
+    thread
+    system
+    )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -60,30 +61,43 @@ find_package(Boost REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
         FILES
-        steeringAngle.msg
-        distanceToObj.msg
-        userInterface.msg
-        prioritisationDrivingVector.msg
-        ########################
-        ## remoteControlMessages
-        remoteDrivingVector.msg
-        enableRemoteControl.msg
-        forcedDrivingVector.msg
-        ########################
-        ## templateMessages
-        templateMsg.msg
         ########################
         ## lanekeeping messages
+        steeringAngle.msg
+        ########################
+        ## environment mapping messages
+        distanceToObj.msg
         ########################
         ## priorization messages
+        prioritisationDrivingVector.msg
         ########################
         ## protocol messages
+        platooning/fv_heartbeat.msg
+        platooning/fv_leave.msg
+        platooning/fv_request.msg
+        platooning/lv_accept.msg
+        platooning/lv_reject.msg
+        platooning/lv_broadcast.msg
         ########################
         ## userinterface messages
+        userInterface.msg
         ########################
         ## vehiclecontrol messages
         ########################
         ## wifi messages
+        platooning/platoonProtocol.msg
+        ########################
+        ## remote control messages
+        remotecontrolInput.msg
+        platooningToggle.msg
+        ########################
+        ## test messages
+        testing/runTestCommand.msg
+        testing/testResult.msg
+        testing/registerTestcases.msg
+        ########################
+        ## templateMessages
+        templateMsg.msg
 
 )
 
@@ -138,7 +152,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
         INCLUDE_DIRS include
-        LIBRARIES environment_mapping remotecontrol lanekeeping priorization protocol userinterface vehiclecontrol wifi template
+        LIBRARIES environment_mapping lanekeeping priorization protocol userinterface vehiclecontrol wifi template
         CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
         #  DEPENDS system_lib
 )
@@ -151,95 +165,113 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
         include/platooning
+        include/tests
         ${catkin_INCLUDE_DIRS}
 )
+#######################
+#### platooning modules
+#######################
 
 ## Declare a C++ library
-add_library(environment_mapping src/EnvironmentMapping.cpp)
-add_library(remotecontrol src/RemoteControl.cpp)
-add_library(lanekeeping src/LaneKeeping.cpp)
-add_library(priorization src/Priorization.cpp)
-add_library(protocol src/Protocol.cpp)
-add_library(userinterface src/UserInterface.cpp)
-add_library(vehiclecontrol src/VehicleControl.cpp)
-add_library(wifi src/Wifi.cpp)
-add_library(template src/Template.cpp)
-
-
-## Add cmake target dependencies of the library
-## as an example, code may need to be generated before libraries
-## either from message generation or dynamic reconfigure
-add_dependencies(remotecontrol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_library(environment_mapping include/platooning/EnvironmentMapping.hpp src/EnvironmentMapping.cpp src/UdpServer.cpp include/platooning/UdpServer.hpp)
 add_dependencies(environment_mapping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(environment_mapping ${catkin_LIBRARIES})
+
+add_library(lanekeeping include/platooning/LaneKeeping.hpp src/LaneKeeping.cpp)
 add_dependencies(lanekeeping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(lanekeeping ${catkin_LIBRARIES})
+
+add_library(priorization include/platooning/Priorization.hpp src/Priorization.cpp)
 add_dependencies(priorization ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(priorization ${catkin_LIBRARIES})
+
+add_library(protocol include/platooning/MessageTypes.hpp include/platooning/Protocol.hpp src/Protocol.cpp)
 add_dependencies(protocol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(protocol ${catkin_LIBRARIES})
+
+add_library(userinterface include/platooning/UserInterface.hpp src/UserInterface.cpp)
 add_dependencies(userinterface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(userinterface ${catkin_LIBRARIES})
+
+add_library(vehiclecontrol include/platooning/VehicleControl.hpp src/VehicleControl.cpp)
 add_dependencies(vehiclecontrol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-add_dependencies(wifi ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(vehiclecontrol ${catkin_LIBRARIES})
+
+add_library(wifi include/platooning/MessageTypes.hpp include/platooning/UdpServer.hpp include/platooning/Wifi.hpp src/Wifi.cpp)
+add_dependencies(wifi udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(wifi udpserver ${catkin_LIBRARIES})
+
+add_library(udpserver include/platooning/MessageTypes.hpp include/platooning/UdpServer.hpp src/UdpServer.cpp)
+add_dependencies(udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(udpserver ${catkin_LIBRARIES})
+
+add_library(template include/platooning/Template.hpp src/Template.cpp)
 add_dependencies(template ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(template ${catkin_LIBRARIES})
 
-## Declare a C++ executable
-## With catkin_make all packages are built within a single CMake context
-## The recommended prefix ensures that target names across packages don't collide
 add_executable(platooning_node src/platooning_node.cpp)
-# add_executable(environment_mapping src/EnvironmentMapping.cpp)
-
-## Rename C++ executable without prefix
-## The above recommended prefix causes long target names, the following renames the
-## target back to the shorter version for ease of user use
-## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-#add_dependencies(platooning_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
-
 target_link_libraries(platooning_node ${catkin_LIBRARIES})
 add_dependencies(platooning_node platooning_generate_messages_cpp)
 
-target_link_libraries(environment_mapping ${catkin_LIBRARIES})
-target_link_libraries(remotecontrol ${catkin_LIBRARIES})
-target_link_libraries(lanekeeping ${catkin_LIBRARIES})
-target_link_libraries(priorization ${catkin_LIBRARIES})
-target_link_libraries(protocol ${catkin_LIBRARIES})
-target_link_libraries(userinterface ${catkin_LIBRARIES})
-target_link_libraries(vehiclecontrol ${catkin_LIBRARIES})
-target_link_libraries(wifi ${catkin_LIBRARIES})
-target_link_libraries(template ${catkin_LIBRARIES})
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
 
 
-#############
-## Testing ##
-#############
+##############################################
+#### platooning tests
+##############################################
+add_library(moduletest include/tests/Moduletest.hpp test/Moduletest.cpp)
+add_dependencies(moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(moduletest ${catkin_LIBRARIES})
 
+add_library(moduletest_protocol include/tests/Moduletest_protocol.hpp include/platooning/Protocol.hpp test/Moduletest_protocol.cpp)
+add_dependencies(moduletest_protocol moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_protocol moduletest ${catkin_LIBRARIES})
+
+add_library(moduletest_wifi include/tests/Moduletest.hpp include/tests/Moduletest_wifi.hpp include/platooning/Wifi.hpp include/platooning/MessageTypes.hpp  test/Moduletest_wifi.cpp)
+add_dependencies(moduletest_protocol pcap moduletest udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(moduletest_wifi pcap moduletest udpserver ${catkin_LIBRARIES})
+
+add_library(testrunner test/testrunner.cpp)
+add_dependencies(testrunner ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(testrunner ${catkin_LIBRARIES})
+
+add_library(pcap test/Pcap.hpp test/Pcap.cpp)
+target_link_libraries(pcap libpcap.so)
+
+##################
+## UNIT Testing ##
+##################
+# if your test needs a roscore, use
+# add_rostest_gtest(YOURNODELET-unit-test launch/YOURNODELET.launch test/unittest_YOURNODELET.cpp)
+# target_link_libraries(YOURNODELET-unit-test YOURNODELET_REQUIRED_LIBRARIES ${catkin_LIBRARIES})
+##################
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(remotecontrol-unit-test test/unittest_remotecontrol.cpp)
+
 catkin_add_gtest(platooning-unit-test test/unittest_platooning.cpp)
-catkin_add_gtest(lanekeeping-unit-test test/unittest_lanekeeping.cpp)
-catkin_add_gtest(priorization-unit-test launch/priorization.launch test/unittest_priorization.cpp)
-catkin_add_gtest(protocol-unit-test test/unittest_protocol.cpp)
-catkin_add_gtest(userinterface-unit-test test/unittest_userinterface.cpp)
-catkin_add_gtest(vehiclecontrol-unit-test test/unittest_vehiclecontrol.cpp)
-catkin_add_gtest(wifi-unit-test launch/wifi.launch test/unittest_wifi.cpp)
-
-catkin_add_gtest(template-unit-test test/unittest_template.cpp)
-
-target_link_libraries(remotecontrol-unit-test ${catkin_LIBRARIES})
 target_link_libraries(platooning-unit-test ${catkin_LIBRARIES})
+
+catkin_add_gtest(lanekeeping-unit-test test/unittest_lanekeeping.cpp)
 target_link_libraries(lanekeeping-unit-test ${catkin_LIBRARIES})
+
+catkin_add_gtest(priorization-unit-test test/unittest_priorization.cpp)
 target_link_libraries(priorization-unit-test ${catkin_LIBRARIES})
-target_link_libraries(protocol-unit-test ${catkin_LIBRARIES})
+
+catkin_add_gtest(userinterface-unit-test test/unittest_userinterface.cpp)
 target_link_libraries(userinterface-unit-test ${catkin_LIBRARIES})
-target_link_libraries(vehiclecontrol-unit-test ${catkin_LIBRARIES})
+
+catkin_add_gtest(vehiclecontrol-unit-test test/unittest_vehiclecontrol.cpp)
+target_link_libraries(vehiclecontrol-unit-test vehiclecontrol ${catkin_LIBRARIES})
+
+catkin_add_gtest(wifi-unit-test launch/wifi.launch test/unittest_wifi.cpp)
 target_link_libraries(wifi-unit-test ${catkin_LIBRARIES})
 
+catkin_add_gtest(udpserver-unit-test test/unittest_udpserver.cpp)
+target_link_libraries(udpserver-unit-test udpserver ${catkin_LIBRARIES})
+
+catkin_add_gtest(template-unit-test test/unittest_template.cpp)
 target_link_libraries(template-unit-test ${catkin_LIBRARIES})
+
+add_rostest_gtest(protocol-unit-test launch/protocol.launch test/unittest_protocol.cpp)
+target_link_libraries(protocol-unit-test protocol ${catkin_LIBRARIES})
 
 
 #if (TARGET ${PROJECT_NAME}-test)
@@ -272,7 +304,7 @@ target_link_libraries(template-unit-test ${catkin_LIBRARIES})
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-install(TARGETS platooning_node environment_mapping remotecontrol lanekeeping priorization protocol userinterface vehiclecontrol wifi template
+install(TARGETS platooning_node environment_mapping lanekeeping priorization protocol userinterface vehiclecontrol wifi template
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -294,10 +326,10 @@ install(DIRECTORY plugins/
         PATTERN ".svn" EXCLUDE)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-#install(FILES launch/remotecontrol.launch launch/environment_mapping.launch launch/lanekeeping.launch launch/priorization.launch  protocol.launch  userinterface.launch  vehiclecontrol.launch  wifi.launch  template.launch
+#install(FILES launch/environment_mapping.launch launch/lanekeeping.launch launch/priorization.launch  protocol.launch  userinterface.launch  vehiclecontrol.launch  wifi.launch  template.launch
 #        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 #        )
-#install(FILES plugins/remotecontrol.xml environment_mapping.xml lanekeeping.xml  priorization.xml  protocol.xml  userinterface.xml  vehiclecontrol.xml  wifi.xml  template.xml
+#install(FILES environment_mapping.xml lanekeeping.xml  priorization.xml  protocol.xml  userinterface.xml  vehiclecontrol.xml  wifi.xml  template.xml
 #        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 
@@ -305,3 +337,6 @@ install(DIRECTORY plugins/
 ## TESTSNIPPET
 add_executable(testsnippet testsnippet.hpp testsnippet.cpp)
 target_link_libraries(testsnippet ${catkin_LIBRARIES})
+
+add_executable(client client.cpp)
+target_link_libraries(client ${catkin_LIBRARIES})

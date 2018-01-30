@@ -1,0 +1,9 @@
+<library path="lib/libtestrunner">
+    <class name="platooning/testrunner"
+	         type="platooning::Testrunner"
+            base_class_type="nodelet::Nodelet">
+        <description>
+            Template Nodelet
+        </description>
+    </class>
+</library>
