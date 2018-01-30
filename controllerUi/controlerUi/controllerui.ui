@@ -193,17 +193,17 @@
       </row>
       <row>
        <property name="text">
-        <string>remoteControl</string>
+        <string>platoon size</string>
        </property>
       </row>
       <row>
        <property name="text">
-        <string>platoonSize</string>
+        <string>platoon members</string>
        </property>
       </row>
       <row>
        <property name="text">
-        <string>vehicle_id</string>
+        <string>vehicle id</string>
        </property>
       </row>
       <column>

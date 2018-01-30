@@ -27,6 +27,7 @@ void ControllerUi::on_startPlatooning_clicked()
 
 void ControllerUi::receive_message( std::pair<std::string, int32_t> msgpair )
 {
+    /*
     namespace pt = boost::property_tree;
 
     std::stringstream ss(msgpair->second);
@@ -37,6 +38,7 @@ void ControllerUi::receive_message( std::pair<std::string, int32_t> msgpair )
     if(msgpair.second == REMOTE_LOG ) {
         //parse stuff
     }
+    */
 }
 
 void ControllerUi::on_toggleRemote_clicked()

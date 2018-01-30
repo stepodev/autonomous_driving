@@ -2,7 +2,10 @@ bool leading_vehicle
 bool following_vehicle
 bool potential_following_vehicle
 float64 inner_platoon_distance
+float64 actual_distance
 float64 platoon_speed
 float64 speed
-
-
+string platooning_state
+int32 src_vehicle
+int32 platoon_size
+string platoon_members

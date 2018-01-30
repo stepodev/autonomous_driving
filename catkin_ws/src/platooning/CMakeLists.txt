@@ -61,24 +61,17 @@ find_package(Boost REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
         FILES
-        steeringAngle.msg
-        distanceToObj.msg
-        userInterface.msg
-        prioritisationDrivingVector.msg
-        ########################
-        ## remoteControlMessages
-        remoteDrivingVector.msg
-        ########################
-        ## templateMessages
-        templateMsg.msg
         ########################
         ## lanekeeping messages
+        steeringAngle.msg
+        ########################
+        ## environment mapping messages
+        distanceToObj.msg
         ########################
         ## priorization messages
+        prioritisationDrivingVector.msg
         ########################
         ## protocol messages
-        platooning/platoonProtocolIn.msg
-        platooning/platoonProtocolOut.msg
         platooning/fv_heartbeat.msg
         platooning/fv_leave.msg
         platooning/fv_request.msg
@@ -87,15 +80,24 @@ add_message_files(
         platooning/lv_broadcast.msg
         ########################
         ## userinterface messages
+        userInterface.msg
         ########################
         ## vehiclecontrol messages
         ########################
         ## wifi messages
+        platooning/platoonProtocol.msg
+        ########################
+        ## remote control messages
+        remotecontrolInput.msg
+        platooningToggle.msg
         ########################
         ## test messages
         testing/runTestCommand.msg
         testing/testResult.msg
         testing/registerTestcases.msg
+        ########################
+        ## templateMessages
+        templateMsg.msg
 
 )
 
