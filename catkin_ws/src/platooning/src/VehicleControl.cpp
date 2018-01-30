@@ -67,7 +67,7 @@ namespace platooning {
     void VehicleControl::prioritisationDrivingVectorCallback(platooning::prioritisationDrivingVector prioDrivingVector) {
         NODELET_DEBUG("Getting platooning/prioritisationDrivingVector message");
         g_prioDrivingVector = prioDrivingVector;
-        commandTurtle();
+        //commandTurtle();
     }
 
     void VehicleControl::commandTurtle() {
