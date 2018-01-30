@@ -22,6 +22,7 @@ namespace platooning {
 
 		private:
 			ros::NodeHandle nh_;
+			ros::Publisher userInterfacePub;
 			ros::Subscriber userInterfaceSubsc;
 			void msg_callback(const platooning::userInterface& subscMsg);
 	};
