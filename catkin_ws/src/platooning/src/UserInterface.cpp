@@ -6,7 +6,8 @@ namespace platooning
 	UserInterface::~UserInterface() {};
 
 	void UserInterface::onInit() {
-		userInterfaceSubsc = nh_.subscribe("UserInterface", 1000, &UserInterface::msg_callback, this);
+		userInterfaceSubsc = nh_.subscribe("UserInterface", 10, &UserInterface::msg_callback, this);
+		userInterfacePub = nh_.advertise<userInterface>("platooningProtocolOut", 10);
 	};
 
 	void UserInterface::msg_callback(const platooning::userInterface& subscMsg)
@@ -18,6 +19,8 @@ namespace platooning
 		if (subscMsg.following_vehicle == 0)
 			fv = "No";
 		std::cout << "\r" << "LV: " << lv << " | FV: " << fv << " | IPD: " << subscMsg.inner_platoon_distance << " | PSpeed: " << subscMsg.platoon_speed << " | VSpeed: " << subscMsg.speed << " " << std::flush;
+
+		userInterfacePub.publish(subscMsg);
 	}
 }
 
