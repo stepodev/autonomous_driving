@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="nodelet" type="nodelet" name="testrunner" args="load platooning/testrunner nodeletmanager">
+      </node>
+</launch>

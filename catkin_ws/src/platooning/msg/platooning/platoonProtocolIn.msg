@@ -1,0 +1,2 @@
+string payload
+uint32 message_type

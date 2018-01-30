@@ -81,15 +81,15 @@ namespace platooning {
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
-    ros::Subscriber templateSubscriber;
-    ros::Publisher templatePublisher;
+    ros::Subscriber sub_templateTopic;
+    ros::Publisher pub_templateTopic;
 
 
     /**
      * @brief to achieve X does Y
      * @param msg incoming topic message
      */
-    void templateTopicHandler(const platooning::templateMsg msg);
+    void hndl_templateTopic(platooning::templateMsg msg);
 
   };
 

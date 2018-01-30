@@ -19,8 +19,12 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_TEMPLATE_HPP
-#define PLATOONING_TEMPLATE_HPP
+#ifndef PLATOONING_PROTOCOL_HPP
+#define PLATOONING_PROTOCOL_HPP
+
+/*****************************************************************************
+** DEFINES
+*****************************************************************************/
 
 /*****************************************************************************
 ** Includes
@@ -29,11 +33,25 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include "platooning/templateMsg.h" //includes topic aka message
+#include <boost/property_tree/ptree.hpp> //json parsing and generating
+#include <boost/property_tree/json_parser.hpp> //json parsing and generating
+#include <boost/uuid/uuid.hpp>
+
+#include "platooning/platoonProtocolIn.h" //includes topic aka message
+#include "platooning/platoonProtocolOut.h" //includes topic aka message
+#include "platooning/lv_broadcast.h" //includes topic aka message
+#include "platooning/lv_accept.h" //includes topic aka message
+#include "platooning/lv_reject.h" //includes topic aka message
+#include "platooning/fv_request.h" //includes topic aka message
+#include "platooning/fv_heartbeat.h" //includes topic aka message
+#include "platooning/fv_leave.h" //includes topic aka message
+#include "MessageTypes.hpp"
 
 namespace platooning {
 
-
+/*****************************************************************************
+** Classes
+*****************************************************************************/
 /**
  * @brief Example showing how to document a function with Doxygen.
  *
@@ -70,30 +88,68 @@ namespace platooning {
 
   class Protocol : public nodelet::Nodelet {
   public:
-    virtual void onInit();
-
-    Protocol(ros::NodeHandle &nh, std::string &name);
-
     Protocol();
 
     ~Protocol();
 
+    void onInit();
+
+  protected:
+    /**
+     * @brief contains data for the given message_type
+     */
+    class MessageFields
+    {
+    public:
+      uint32_t message_type;
+      uint32_t src_vehicle;
+      uint32_t dst_vehicle;
+      uint32_t platoon_id;
+      float ipd;
+      float ps;
+      std::vector<uint32_t> followers;
+
+    };
+
+    /**
+     * @brief takes json and decodes it
+     * @param msg protocol data
+     */
+    void DecodeIncomingJson( std::string& json, lv_broadcast& message);
+    void DecodeIncomingJson( std::string& json, lv_accept& message);
+    void DecodeIncomingJson( std::string& json, lv_reject& message);
+    void DecodeIncomingJson( std::string& json, fv_heartbeat& message);
+    void DecodeIncomingJson( std::string& json, fv_leave& message);
+    void DecodeIncomingJson( std::string& json, fv_request& message);
+
+
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
-    ros::Subscriber templateSubscriber;
-    ros::Publisher templatePublisher;
+    boost::uuids::uuid vehicle_id_;
+
+    ros::Subscriber sub_platooningIn; /**< subscribers to incoming messages from wifi. */
+
+    ros::Publisher pub_platooningOut; /**< provides to messages to send via wifi. */
+
+    /**< publishers for platooning messages. */
+    ros::Publisher pub_lv_broadcast;
+    ros::Publisher pub_lv_accept;
+    ros::Publisher pub_lv_reject;
+    ros::Publisher pub_fv_heartbeat;
+    ros::Publisher pub_fv_leave;
+    ros::Publisher pub_fv_request;
 
 
     /**
-     * @brief to achieve X does Y
-     * @param msg incoming topic message
+     * @brief receives json payloads from wifi, transforms them to messages
+     * @param msg json payload
      */
-    void templateTopicHandler(const platooning::templateMsg msg);
+    void platoonProtocolInHandler(platooning::platoonProtocolIn msg);
 
   };
 
 
 } // namespace platooning
 
-#endif //PLATOONING_TEMPLATE_HPP
+#endif //PLATOONING_PROTOCOL_HPP
