@@ -7,7 +7,7 @@ namespace platooning
 
 	void UserInterface::onInit() {
 		userInterfaceSubsc = nh_.subscribe("UserInterface", 10, &UserInterface::msg_callback, this);
-		userInterfacePub = nh_.advertise<userInterface>("platooningProtocolOut", 10);
+		userInterfacePub = nh_.advertise<userInterface>("out/platoonProtocol", 10);
 	};
 
 	void UserInterface::msg_callback(const platooning::userInterface& subscMsg)
