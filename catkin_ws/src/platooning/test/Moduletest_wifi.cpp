@@ -80,7 +80,7 @@ namespace platooning {
    * @brief Handles Wifi published messages to our graph
    */
 
-  void Moduletest_wifi::hndl_platoonProtocolIn(platooning::platoonProtocolIn msg) {
+  void Moduletest_wifi::hndl_platoonProtocolIn(platooning::platoonProtocol msg) {
 
     boost::shared_ptr<testResult> outmsg = boost::shared_ptr<testResult>( new testResult);
 

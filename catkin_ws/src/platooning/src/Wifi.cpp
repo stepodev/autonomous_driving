@@ -51,10 +51,10 @@ namespace platooning {
     name_ = "wifi";
 
     //subscribers of protocol nodelet
-    sub_platoonProtocolOut_ = nh_.subscribe("platoonProtocolOut", 10,
+    sub_platoonProtocolOut_ = nh_.subscribe("out/platoonProtocol", 10,
                                             &Wifi::hndl_platoonProtocolOut, this);
 
-    pub_platoonProtocolIn_ = nh_.advertise<platoonProtocolIn>("platoonProtocolIn", 10);
+    pub_platoonProtocolIn_ = nh_.advertise<platoonProtocol>("in/platoonProtocol", 10);
 
     try {
       //bind to local 10000 port, broadcast to 10000 port
@@ -77,9 +77,9 @@ namespace platooning {
 
   /**
    * @brief Sends messages into the network
-   * @param platoonProtocolOut msg to be sent
+   * @param platoonProtocol msg to be sent
    */
-  void Wifi::hndl_platoonProtocolOut(platooning::platoonProtocolOut msg) {
+  void Wifi::hndl_platoonProtocolOut(platooning::platoonProtocol msg) {
     std::cout << "calling server to send" << std::endl;
 
     server_ptr_->start_send(msg.payload, msg.message_type);
@@ -92,8 +92,8 @@ namespace platooning {
   void Wifi::hndl_wifi_receive(std::pair<std::string, int32_t> message_pair)  {
     std::cout << "handling wifi receive" << std::endl;
 
-    boost::shared_ptr<platooning::platoonProtocolIn> outmsg
-        = boost::shared_ptr<platooning::platoonProtocolIn>( new platooning::platoonProtocolIn);
+    boost::shared_ptr<platooning::platoonProtocol> outmsg
+        = boost::shared_ptr<platooning::platoonProtocol>( new platooning::platoonProtocol);
 
     switch (message_pair.second) {
       case LV_BROADCAST:

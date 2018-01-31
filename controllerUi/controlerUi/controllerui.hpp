@@ -22,6 +22,8 @@ public:
     explicit ControllerUi(QWidget *parent = 0);
     ~ControllerUi();
 
+    void add_slave_vehicle( int32_t vehicle_id);
+
 protected:
     void keyPressEvent(QKeyEvent *);
     void keyReleaseEvent(QKeyEvent *);
@@ -35,6 +37,7 @@ private:
     Ui::ControllerUi *ui;
     bool remoteEnabled = false;
     std::unique_ptr<UdpServer> server_ptr_;
+    std::list<int32_t> slave_vehicle_ids;
 
     void receive_message( std::pair<std::string, int32_t> msgpair ) ;
 };

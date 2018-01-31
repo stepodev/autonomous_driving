@@ -273,7 +273,6 @@ target_link_libraries(template-unit-test ${catkin_LIBRARIES})
 add_rostest_gtest(protocol-unit-test launch/protocol.launch test/unittest_protocol.cpp)
 target_link_libraries(protocol-unit-test protocol ${catkin_LIBRARIES})
 
-
 #if (TARGET ${PROJECT_NAME}-test)
 #    target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES})
 #    target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})

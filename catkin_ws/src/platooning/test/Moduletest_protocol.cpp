@@ -59,7 +59,7 @@ namespace platooning {
     sub_runTestCmd = nh_.subscribe("runTestCommand", 10,
                                    &Moduletest_protocol::hndl_runTestCmd, this);
 
-    pub_platoonProtocolIn = nh_.advertise< platooning::platoonProtocolIn >("platoonProtocolIn", 10);
+    pub_platoonProtocolIn = nh_.advertise< platooning::platoonProtocol >("in/platoonProtocol", 10);
 
     pub_testResult = nh_.advertise<platooning::testResult>("testResult",10);
 
@@ -123,7 +123,7 @@ namespace platooning {
 
     std::cout << os.str();
 
-    platoonProtocolIn inmsg;
+    platoonProtocol inmsg;
 
     inmsg.message_type = FV_REQUEST;
     inmsg.payload = os.str();

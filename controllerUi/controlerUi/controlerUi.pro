@@ -28,7 +28,7 @@ SOURCES += \
         controllerui.cpp
 
 HEADERS += \
-        controllerui.h
+    controllerui.hpp
 
 FORMS += \
         controllerui.ui

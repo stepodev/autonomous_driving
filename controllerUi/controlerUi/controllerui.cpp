@@ -1,4 +1,4 @@
-#include "controllerui.h"
+#include "controllerui.hpp"
 #include "ui_controllerui.h"
 
 ControllerUi::ControllerUi(QWidget *parent) :
@@ -6,13 +6,15 @@ ControllerUi::ControllerUi(QWidget *parent) :
     ui(new Ui::ControllerUi)
 {
     ui->setupUi(this);
-    QWidget::grabKeyboard();
+    QWidget::grabKeyboard(); //only this widget get keypresses
 
+    //start server
     boost::function<void (std::pair<std::string, int32_t>)> cbfun( boost::bind( boost::mem_fn(&ControllerUi::receive_message), this, _1 ) );
 
     server_ptr_ = std::unique_ptr<UdpServer>( new UdpServer( cbfun
                                                   , udp::endpoint(udp::v4(),10000)
                                                   , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
+
 }
 
 ControllerUi::~ControllerUi()

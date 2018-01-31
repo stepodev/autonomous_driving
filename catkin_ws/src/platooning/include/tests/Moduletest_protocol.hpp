@@ -31,7 +31,7 @@
 #include <platooning/testResult.h>
 #include <sstream>
 
-#include "platooning/platoonProtocolIn.h" //includes topic aka message
+#include "platooning/platoonProtocol.h" //includes topic aka message
 #include "platooning/testResult.h" //includes topic aka message
 #include "Protocol.hpp"
 #include "Moduletest.hpp"

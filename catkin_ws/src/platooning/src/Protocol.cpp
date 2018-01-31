@@ -53,11 +53,11 @@ namespace platooning {
   void Protocol::onInit() {
 
     //subscribers of protocol nodelet
-    sub_platooningIn = nh_.subscribe("platoonProtocolIn", 10,
+    sub_platooningIn = nh_.subscribe("in/platoonProtocol", 10,
                                              &Protocol::platoonProtocolInHandler, this);
 
     //publisher of messages to send out
-    pub_platooningOut = nh_.advertise< platooning::platoonProtocolOut >("platoonProtocolOut", 10);
+    pub_platooningOut = nh_.advertise< platooning::platoonProtocol >("out/platoonProtocol", 10);
 
     //publisher of decoded platooning messages
     pub_lv_broadcast = nh_.advertise< platooning::lv_broadcast >("lv_broadcast", 10);
@@ -80,7 +80,7 @@ namespace platooning {
   * @brief decodes json payload of incoming message and publishes data on the appropriate topic
   * @return true, if successful
   */
-  void Protocol::platoonProtocolInHandler(platooning::platoonProtocolIn inmsg) {
+  void Protocol::platoonProtocolInHandler(platooning::platoonProtocol inmsg) {
 
     NODELET_DEBUG("json payload received");
 
@@ -144,7 +144,7 @@ namespace platooning {
 
       std::stringstream ss;
 
-      ss << "[PROTOCOL] error platoonProtocolInHandler\n"
+      ss << "[PROTOCOL] error in/platoonProtocolHandler\n"
           << ex.what();
 
       NODELET_ERROR( ss.str().c_str() );

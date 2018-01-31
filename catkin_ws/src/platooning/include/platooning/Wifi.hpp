@@ -38,8 +38,7 @@
 #include <functional>
 #include <utility>
 
-#include "platooning/platoonProtocolOut.h"
-#include "platooning/platoonProtocolIn.h"
+#include "platooning/platoonProtocol.h"
 #include "MessageTypes.hpp"
 #include "UdpServer.hpp"
 
@@ -104,7 +103,7 @@ namespace platooning {
      * @brief to achieve X does Y
      * @param msg incoming topic message
      */
-    void hndl_platoonProtocolOut(platooning::platoonProtocolOut msg);
+    void hndl_platoonProtocolOut(platooning::platoonProtocol msg);
     void hndl_wifi_receive(std::pair<std::string, int32_t> message_tup);
 
   };

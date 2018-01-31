@@ -37,8 +37,7 @@
 #include <boost/property_tree/json_parser.hpp> //json parsing and generating
 #include <boost/uuid/uuid.hpp>
 
-#include "platooning/platoonProtocolIn.h" //includes topic aka message
-#include "platooning/platoonProtocolOut.h" //includes topic aka message
+#include "platooning/platoonProtocol.h" //includes topic aka message
 #include "platooning/lv_broadcast.h" //includes topic aka message
 #include "platooning/lv_accept.h" //includes topic aka message
 #include "platooning/lv_reject.h" //includes topic aka message
@@ -145,7 +144,7 @@ namespace platooning {
      * @brief receives json payloads from wifi, transforms them to messages
      * @param msg json payload
      */
-    void platoonProtocolInHandler(platooning::platoonProtocolIn msg);
+    void platoonProtocolInHandler(platooning::platoonProtocol msg);
 
   };
 

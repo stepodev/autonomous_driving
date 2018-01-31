@@ -29,8 +29,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <platooning/runTestCommand.h>
 #include <platooning/testResult.h>
-#include <platooning/platoonProtocolIn.h>
-#include <platooning/platoonProtocolOut.h>
+#include <platooning/platoonProtocol.h>
 #include <sstream>
 
 #include "platooning/platoonProtocolOut.h" //includes topic aka message
@@ -102,7 +101,7 @@ namespace platooning {
      * @brief to achieve X does Y
      * @param msg incoming topic message
      */
-    void hndl_platoonProtocolIn(platooning::platoonProtocolIn msg);
+    void hndl_platoonProtocolIn(platooning::platoonProtocol msg);
     void hndl_runTestCmd(platooning::runTestCommand msg);
 
     void test_send_udp_recv_protocolIn();
