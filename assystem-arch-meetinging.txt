@@ -1,0 +1,22 @@
+optical -> environ => dist aqu (from ultrasonic) -> dist preprocess
+
+functional benennung z.b. wifi -> radioInterface
+software beschreibung vs. functionale beschreibung
+auch bei messages
+
+egomotion raus aus priorisation
+geschw kommt aus stm
+
+stm:
+lanedetection -> querregler
+speed soll - mav -> längsregler
+
+json -> protobuf?
+
+ultraschall: init messung -> cm 
+
+i2cdetect auf odroid auslesen. 
+
+70ms zwischen distanzmessung. 
+
+remotecontrol: notstop
