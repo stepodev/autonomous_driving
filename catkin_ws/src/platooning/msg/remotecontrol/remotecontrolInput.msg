@@ -1,0 +1,3 @@
+float32 remoteSpeed
+float32 remoteAngle
+bool emergencyStop
