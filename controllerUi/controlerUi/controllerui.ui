@@ -20,8 +20,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
+      <x>-40</x>
+      <y>40</y>
       <width>1271</width>
       <height>591</height>
      </rect>
@@ -148,69 +148,114 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QTableWidget" name="infoTable">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
+     <widget class="QWidget" name="formLayoutWidget">
       <property name="geometry">
        <rect>
         <x>220</x>
         <y>0</y>
-        <width>371</width>
-        <height>291</height>
+        <width>381</width>
+        <height>381</height>
        </rect>
       </property>
-      <property name="rowCount">
-       <number>8</number>
-      </property>
-      <property name="columnCount">
-       <number>1</number>
-      </property>
-      <row>
-       <property name="text">
-        <string>speed</string>
-       </property>
-      </row>
-      <row>
-       <property name="text">
-        <string>platoonspeed</string>
-       </property>
-      </row>
-      <row>
-       <property name="text">
-        <string>distance</string>
-       </property>
-      </row>
-      <row>
-       <property name="text">
-        <string>platoon distance</string>
-       </property>
-      </row>
-      <row>
-       <property name="text">
-        <string>LV/FV</string>
-       </property>
-      </row>
-      <row>
-       <property name="text">
-        <string>platoon size</string>
-       </property>
-      </row>
-      <row>
-       <property name="text">
-        <string>platoon members</string>
-       </property>
-      </row>
-      <row>
-       <property name="text">
-        <string>vehicle id</string>
-       </property>
-      </row>
-      <column>
-       <property name="text">
-        <string>Data</string>
-       </property>
-      </column>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>inner platoon distance:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>actual platoon distance:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>LV/FV:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="info_lvfv">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>platoon speed:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>actual speed:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>platooning state:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>vehicle_id:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>platoon_size:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>platoon members:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="info_ipd"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="info_actual_distance"/>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="info_ps"/>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="info_actual_speed"/>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="info_platooningstate"/>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="info_vehicle_id"/>
+       </item>
+       <item row="7" column="1">
+        <widget class="QLineEdit" name="info_platoonsize"/>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLineEdit" name="info_platoonmembers"/>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
@@ -226,7 +271,7 @@
      <x>0</x>
      <y>0</y>
      <width>1274</width>
-     <height>19</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuController_Ui">
