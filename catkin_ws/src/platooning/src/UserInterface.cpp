@@ -124,7 +124,7 @@ namespace platooning
   }
 
   void UserInterface::hndl_remotecontrol_toggle(const remotecontrolToggle &msg) {
-    ui_msg_->remotecontrol_state = msg.remotecontrol_state;
+    ui_msg_->enable_remotecontrol = msg.enable_remotecontrol;
   }
 
   void UserInterface::hndl_platooning_toggle(const platooningToggle &msg) {

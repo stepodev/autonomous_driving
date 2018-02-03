@@ -37,6 +37,8 @@
 #include <boost/property_tree/json_parser.hpp> //json parsing and generating
 #include <boost/uuid/uuid.hpp>
 #include <platooning/userInterface.h>
+#include <platooning/remotecontrolInput.h>
+#include <platooning/remotecontrolToggle.h>
 
 #include "platooning/platoonProtocol.h" //includes topic aka message
 #include "platooning/lv_broadcast.h" //includes topic aka message
@@ -45,7 +47,9 @@
 #include "platooning/fv_request.h" //includes topic aka message
 #include "platooning/fv_heartbeat.h" //includes topic aka message
 #include "platooning/fv_leave.h" //includes topic aka message
+#include "platooning/platooningToggle.h"
 #include "MessageTypes.hpp"
+#include "Topics.hpp"
 
 namespace platooning {
 
@@ -96,43 +100,54 @@ namespace platooning {
 
   protected:
     /**
-     * @brief contains data for the given message_type
-     */
-    class MessageFields
-    {
-    public:
-      uint32_t message_type;
-      uint32_t src_vehicle;
-      uint32_t dst_vehicle;
-      uint32_t platoon_id;
-      float ipd;
-      float ps;
-      std::vector<uint32_t> followers;
-
-    };
-
-    /**
      * @brief takes json and decodes it
      * @param msg protocol data
      */
-    void DecodeIncomingJson( std::string& json, lv_broadcast& message);
-    void DecodeIncomingJson( std::string& json, lv_accept& message);
-    void DecodeIncomingJson( std::string& json, lv_reject& message);
-    void DecodeIncomingJson( std::string& json, fv_heartbeat& message);
-    void DecodeIncomingJson( std::string& json, fv_leave& message);
-    void DecodeIncomingJson( std::string& json, fv_request& message);
-    void EncodeOutboundMessage( std::string& json, lv_broadcast& message);
-    void EncodeOutboundMessage( std::string& json, lv_accept& message);
-    void EncodeOutboundMessage( std::string& json, lv_reject& message);
-    void EncodeOutboundMessage( std::string& json, fv_heartbeat& message);
-    void EncodeOutboundMessage( std::string& json, fv_leave& message);
-    void EncodeOutboundMessage( std::string& json, fv_request& message);
+    void decode_json(const std::string &json, lv_broadcast &message);
+
+    void decode_json(const std::string &json, lv_accept &message);
+
+    void decode_json(const std::string &json, lv_reject &message);
+
+    void decode_json(const std::string &json, fv_heartbeat &message);
+
+    void decode_json(const std::string &json, fv_leave &message);
+
+    void decode_json(const std::string &json, fv_request &message);
+
+    void decode_json(const std::string &json, remotecontrolInput &message);
+
+    void decode_json(const std::string &json, remotecontrolToggle &message);
+
+    void decode_json(const std::string &json, platooningToggle &message);
+
+    void decode_json(const std::string &json, userInterface &message);
+
+
+    std::string encode_message(const lv_broadcast &message);
+
+    std::string encode_message(const lv_accept &message);
+
+    std::string encode_message(const lv_reject &message);
+
+    std::string encode_message(const fv_heartbeat &message);
+
+    std::string encode_message(const fv_leave &message);
+
+    std::string encode_message(const fv_request &message);
+
+    std::string encode_message(const remotecontrolInput &message);
+
+    std::string encode_message(const remotecontrolToggle &message);
+
+    std::string encode_message(const platooningToggle &message);
+
+    std::string encode_message(const userInterface &message);
 
 
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_ = "MessageDistribution";
-    int32_t vehicle_id_ = 3;
 
     ros::Subscriber sub_platooningIn; /**< subscribers to incoming messages from radiointerface. */
 
@@ -162,11 +177,17 @@ namespace platooning {
      * @param msg json payload
      */
     void hndl_platooningIn(platooning::platoonProtocol msg);
+
     void hndl_lv_broadcast(platooning::lv_broadcast msg);
+
     void hndl_lv_accept(platooning::lv_accept msg);
+
     void hndl_lv_reject(platooning::lv_reject msg);
+
     void hndl_fv_heartbeat(platooning::fv_heartbeat msg);
+
     void hndl_fv_leave(platooning::fv_leave msg);
+
     void hndl_fv_request(platooning::fv_request msg);
 
     void hndl_ui(platooning::userInterface msg);

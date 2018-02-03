@@ -9,6 +9,9 @@
 
 #include "UdpServer.hpp"
 #include "MessageTypes.hpp"
+#include "remotecontrolToggle.h"
+#include "platooningToggle.h"
+
 
 namespace Ui {
 class ControllerUi;

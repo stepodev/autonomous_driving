@@ -1,1 +1,1 @@
-bool platooning_state
+bool enable_platooning

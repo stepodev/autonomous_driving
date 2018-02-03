@@ -14,6 +14,8 @@ ControllerUi::ControllerUi(QWidget *parent) :
     server_ptr_ = std::unique_ptr<UdpServer>( new UdpServer( cbfun
                                                   , udp::endpoint(udp::v4(),10000)
                                                   , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
+
+    server_ptr_->set_filter_own_broadcasts(false);
 }
 
 ControllerUi::~ControllerUi()
@@ -42,7 +44,12 @@ void ControllerUi::receive_message( std::pair<std::string, int32_t> msgpair )
         std::stringstream ss(msgpair.first);
 
         pt::ptree root;
-        boost::property_tree::read_json( ss, root );
+        try {
+          boost::property_tree::read_json( ss, root );
+        } catch( std::exception &ex ) {
+            std::cerr << "[controllerUi] invalid json\n" << ex.what() << std::endl;
+        }
+
 
         int32_t remotevehicle_id = 0;
 

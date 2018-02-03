@@ -1,1 +1,1 @@
-bool remotecontrol_state
+bool enable_remotecontrol
