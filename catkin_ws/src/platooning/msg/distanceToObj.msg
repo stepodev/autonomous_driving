@@ -1,1 +1,1 @@
-float64 distance_to_obj
+float32 distance_to_obj

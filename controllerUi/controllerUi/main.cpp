@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     w.show();
 
     //adds vehicles to listen to from args
-    w.add_slave_vehicle(2);
+    w.add_slave_vehicle(3);
 
     return a.exec();
 }

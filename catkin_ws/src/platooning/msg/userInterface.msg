@@ -6,6 +6,7 @@ float32 actual_distance
 float32 platoon_speed
 float32 speed
 string platooning_state
-int32 src_vehicle
-int32 platoon_size
-string platoon_members
+uint32 src_vehicle
+uint32 platoon_size
+uint32[] platoon_members
+bool remotecontrol_state

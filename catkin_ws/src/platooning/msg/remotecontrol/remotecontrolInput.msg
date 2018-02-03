@@ -1,3 +1,3 @@
-float32 remoteSpeed
-float32 remoteAngle
-bool emergencyStop
+float32 remote_speed
+float32 remote_angle
+bool emergency_stop

@@ -35,11 +35,16 @@ private slots:
 
 private:
     Ui::ControllerUi *ui;
-    bool remoteEnabled = false;
+    bool remoteEnabled_ = false;
     std::unique_ptr<UdpServer> server_ptr_;
-    std::list<int32_t> slave_vehicle_ids;
+    std::list<int32_t> slave_vehicle_ids_;
+    boost::thread keypollthread_;
+
+    float remote_lat_angle = 0;
+    float remote_speed = 0;
 
     void receive_message( std::pair<std::string, int32_t> msgpair ) ;
+    void keypresspoll();
 };
 
 #endif // CONTROLLERUI_H

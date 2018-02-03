@@ -15,7 +15,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include "Template.hpp"
+#include "../include/Template.hpp"
 
 namespace platooning {
 
@@ -50,7 +50,7 @@ namespace platooning {
   void Template::onInit() {
 
     //subscribers of protocol nodelet
-    sub_templateTopic = nh_.subscribe("templateTopic", 10,
+    sub_templateTopic = nh_.subscribe(topics::TEMPLATETOPIC, 10,
                                                   &Template::hndl_templateTopic, this);
 
     //publisher of forced driving vector

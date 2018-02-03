@@ -1,2 +1,2 @@
 string payload
-int32 message_type
+uint32 message_type

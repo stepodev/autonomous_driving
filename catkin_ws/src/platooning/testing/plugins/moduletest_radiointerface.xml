@@ -1,0 +1,9 @@
+<library path="lib/libmoduletest_radiointerface">
+    <class name="platooning/moduletest_radiointerface"
+	         type="platooning::Moduletest_radiointerface"
+            base_class_type="nodelet::Nodelet">
+        <description>
+            Moduletest Nodelet RadioInterface
+        </description>
+    </class>
+</library>
