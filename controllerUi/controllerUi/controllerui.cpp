@@ -25,7 +25,9 @@ ControllerUi::~ControllerUi()
 
 void ControllerUi::on_startPlatooning_clicked()
 {
-    server_ptr_->start_send("go",REMOTE_CUSTOM);
+    platooning::platooningToggle msg;
+    msg.enable_platooning = remoteEnabled_;
+    server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLTOGGLE);
 }
 
 void ControllerUi::add_slave_vehicle( int32_t vehicle_id) {
@@ -39,68 +41,29 @@ void ControllerUi::receive_message( std::pair<std::string, int32_t> msgpair )
             return;
         }
 
-        namespace pt = boost::property_tree;
+        switch( msgpair.second ) {
 
-        std::stringstream ss(msgpair.first);
+            case REMOTE_USERINTERFACE:
+            platooning::userInterface msg;
+            platooning::decode_json(msgpair.first, msg);
 
-        pt::ptree root;
-        try {
-          boost::property_tree::read_json( ss, root );
-        } catch( std::exception &ex ) {
-            std::cerr << "[controllerUi] invalid json\n" << ex.what() << std::endl;
+            try { ui->info_actual_distance->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) {}
+            try { ui->info_actual_speed->setText( std::to_string(msg.speed).c_str() );} catch( std::exception &ex ) {}
+            try { ui->info_ipd->setText( std::to_string(msg.inner_platoon_distance).c_str() );} catch( std::exception &ex ) {}
+            try { ui->info_lvfv->setText( msg.following_vehicle ? "FV" : "" );} catch( std::exception &ex ) {}
+            try { ui->info_lvfv->setText( msg.leading_vehicle ? "FV" : "" );} catch( std::exception &ex ) {}
+            try { ui->info_platooningstate->setText( msg.platooning_state.c_str() );} catch( std::exception &ex ) {}
+            try { ui->info_platoonmembers->setText( boost::algorithm::join(msg.platoon_members),',').c_str();} catch( std::exception &ex ) {}
+
+
+            break;
+        default:
+            break;
         }
 
+        std::find(slave_vehicle_ids_.begin(), slave_vehicle_ids_.end(), remotevehicle_id) != slave_vehicle_ids_.end();
 
-        int32_t remotevehicle_id = 0;
 
-        if(msgpair.second == REMOTE_LOG ) {
-            try {
-              remotevehicle_id = root.get<int32_t>("vehicle_id");
-            } catch( std::exception) {} //do we care?
-        }
-
-        if(msgpair.second == REMOTE_LOG
-                && std::find(slave_vehicle_ids_.begin(), slave_vehicle_ids_.end(), remotevehicle_id) != slave_vehicle_ids_.end() ) {
-            try {
-                if(root.get<bool>("leading_vehicle")) {
-                    ui->info_lvfv->setText( "LEADER");
-                }
-            } catch( std::exception) {} //do we care?
-
-            try {
-                if(root.get<bool>("following_vehicle")) {
-                    ui->info_lvfv->setText("FOLLOWER");
-                }
-            } catch( std::exception) {} //do we care?
-
-            try {
-              ui->info_ipd->setText(std::to_string(root.get<float>("inner_platoon_distance")).c_str());
-            } catch( std::exception) {} //do we care?
-
-            try {
-              ui->info_actual_distance->setText(std::to_string(root.get<float>("actual_distance")).c_str());
-            } catch( std::exception) {} //do we care?
-
-            try {
-              ui->info_ps->setText(std::to_string(root.get<float>("platoon_speed")).c_str());
-            } catch( std::exception) {} //do we care?
-
-            try {
-              ui->info_actual_speed->setText(std::to_string(root.get<float>("speed")).c_str());
-            } catch( std::exception) {} //do we care?
-
-            try {
-              ui->info_platooningstate->setText(root.get<std::string>("platooning_state").c_str());
-            } catch( std::exception) {} //do we care?
-
-            try {
-              ui->info_platoonsize->setText(std::to_string(root.get<int32_t>("platoon_size")).c_str());
-            } catch( std::exception) {} //do we care?
-
-            try {
-              ui->info_platoonmembers->setText(root.get<std::string>("platoon_members").c_str());
-            } catch( std::exception) {} //do we care?
-        }
     } catch( std::exception &ex ) {
         std::cerr << "receive_message crash with " << ex.what() << std::endl;
     }
@@ -135,6 +98,11 @@ void ControllerUi::on_toggleRemote_clicked()
             ui->info_remote_lat->setDisabled(true);
             ui->info_remote_speed->setDisabled(true);
         }
+
+        platooning::remotecontrolToggle msg;
+        msg.enable_remotecontrol = remoteEnabled_;
+        server_ptr_->start_send(platooning::encode_message(msg), REMOTE_CONTROLTOGGLE);
+
     } catch( std::exception &ex) {
         std::cerr << "toggleremote crash with " << ex.what() << std::endl;
     }
@@ -172,13 +140,13 @@ void ControllerUi::keypresspoll() {
                 remote_lat_angle += 3;
                 ui->info_remote_lat->insert( std::to_string( remote_lat_angle).c_str());
             }
-            root.put("remote_speed", remote_speed);
-            root.put("remote_angle", remote_lat_angle);
-            os.str("");
 
-            boost::property_tree::write_json(os,root,false);
+            platooning::remotecontrolInput msg;
 
-            server_ptr_->start_send(os.str(),REMOTE_CONTROL);
+            msg.remote_speed = remote_speed;
+            msg.remote_angle = remote_lat_angle;
+            msg.emergency_stop = false;
+            server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLINPUT);
             boost::this_thread::sleep_for(boost::chrono::milliseconds(1500));
         }
     } catch( std::exception &ex) {

@@ -83,6 +83,10 @@ namespace platooning {
     pub_fv_leave = nh_.advertise<platooning::fv_leave>(topics::IN_FV_LEAVE, 100);
     pub_fv_request = nh_.advertise<platooning::fv_request>(topics::IN_FV_REQUEST, 100);
 
+    pub_remotecontrol_input = nh_.advertise<remotecontrolInput>(topics::REMOTECONTROLINPUT, 100);
+    pub_remotecontrol_toggle = nh_.advertise<remotecontrolToggle>(topics::TOGGLE_REMOTECONTROL, 100);
+    pub_platooning_toggle = nh_.advertise<platooningToggle>(topics::TOGGLE_PLATOONING, 100);
+
     NODELET_INFO("MessageDistribution init done");
 
   };
@@ -96,7 +100,7 @@ namespace platooning {
   * @brief decodes json payload of incoming message and publishes data on the appropriate topic
   * @return true, if successful
   */
-  void MessageDistribution::hndl_platooningIn(platooning::platoonProtocol inmsg) {
+  void MessageDistribution::hndl_platooningIn(const platooning::platoonProtocol &inmsg) {
 
     NODELET_DEBUG("json payload received");
 
@@ -140,17 +144,18 @@ namespace platooning {
         case REMOTE_CONTROLINPUT: {
           boost::shared_ptr<remotecontrolInput> outmsg = boost::shared_ptr<remotecontrolInput>(new remotecontrolInput);
           decode_json(inmsg.payload, *outmsg);
-          pub_fv_heartbeat.publish(outmsg);
+          pub_remotecontrol_input.publish(outmsg);
         }
         case REMOTE_CONTROLTOGGLE: {
-          boost::shared_ptr<remotecontrolToggle> outmsg = boost::shared_ptr<remotecontrolToggle>(new remotecontrolToggle);
+          boost::shared_ptr<remotecontrolToggle> outmsg = boost::shared_ptr<remotecontrolToggle>(
+              new remotecontrolToggle);
           decode_json(inmsg.payload, *outmsg);
-          pub_fv_heartbeat.publish(outmsg);
+          pub_remotecontrol_toggle.publish(outmsg);
         }
         case REMOTE_PLATOONINGTOGGLE: {
           boost::shared_ptr<platooningToggle> outmsg = boost::shared_ptr<platooningToggle>(new platooningToggle);
           decode_json(inmsg.payload, *outmsg);
-          pub_fv_heartbeat.publish(outmsg);
+          pub_platooning_toggle.publish(outmsg);
         }
           break;
         default:
@@ -170,292 +175,60 @@ namespace platooning {
     }
   }
 
+  void MessageDistribution::hndl_lv_broadcast(const lv_broadcast &msg) {
+    auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+    p->message_type = LV_BROADCAST;
+    p->payload = encode_message(msg);
 
-/*****************************************************************************
-** Helper Methods
-*****************************************************************************/
-
-  template<typename T>
-  std::vector<T> json_as_vector(boost::property_tree::ptree const &pt, boost::property_tree::ptree::key_type const &key) {
-    std::vector<T> r;
-    for (auto &item : pt.get_child(key))
-      r.push_back(item.second.get_value<T>());
-    return r;
+    pub_platooningOut.publish(p);
   }
 
-  template<typename T>
-  boost::property_tree::ptree vector_as_json(std::vector<T> const &v) {
-    boost::property_tree::ptree root;
+  void MessageDistribution::hndl_lv_accept(const platooning::lv_accept &msg) {
+    auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+    p->message_type = LV_ACCEPT;
+    p->payload = encode_message(msg);
 
-    for( auto &i : v) {
-      boost::property_tree::ptree leaf;
-      leaf.put("",i);
-      root.push_back(std::make_pair("",leaf));
-    }
-
-    return root;
+    pub_platooningOut.publish(p);
   }
 
-  void MessageDistribution::decode_json(const std::string &json, lv_broadcast &message) {
-    std::stringstream ss(json);
+  void MessageDistribution::hndl_lv_reject(const platooning::lv_reject &msg) {
+    auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+    p->message_type = LV_REJECT;
+    p->payload = encode_message(msg);
 
-    pt::ptree root;
-    pt::read_json(ss, root);
-
-    message.src_vehicle = root.get<uint32_t>("src_vehicle");
-    message.platoon_id = root.get<uint32_t>("platoon_id");
-    message.ipd = root.get<float>("ipd");
-    message.pd = root.get<float>("pd");
+    pub_platooningOut.publish(p);
   }
 
-  void MessageDistribution::decode_json(const std::string &json, lv_accept &message) {
-    std::stringstream ss(json);
+  void MessageDistribution::hndl_fv_heartbeat(const platooning::fv_heartbeat &msg) {
+    auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+    p->message_type = FV_HEARTBEAT;
+    p->payload = encode_message(msg);
 
-    pt::ptree root;
-    pt::read_json(ss, root);
-
-    message.src_vehicle = root.get<uint32_t>("src_vehicle");
-    message.platoon_id = root.get<uint32_t>("platoon_id");
-    message.dst_vehicle = root.get<uint32_t>("dst_vehicle");
-
+    pub_platooningOut.publish(p);
   }
 
-  void MessageDistribution::decode_json(const std::string &json, lv_reject &message) {
-    std::stringstream ss(json);
+  void MessageDistribution::hndl_fv_leave(const platooning::fv_leave &msg) {
+    auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+    p->message_type = FV_LEAVE;
+    p->payload = encode_message(msg);
 
-    pt::ptree root;
-    pt::read_json(ss, root);
-
-    message.src_vehicle = root.get<uint32_t>("src_vehicle");
-    message.platoon_id = root.get<uint32_t>("platoon_id");
-    message.dst_vehicle = root.get<uint32_t>("dst_vehicle");
-
+    pub_platooningOut.publish(p);
   }
 
-  void MessageDistribution::decode_json(const std::string &json, fv_request &message) {
-    std::stringstream ss(json);
+  void MessageDistribution::hndl_fv_request(const platooning::fv_request &msg) {
+    auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+    p->message_type = FV_REQUEST;
+    p->payload = encode_message(msg);
 
-    pt::ptree root;
-    pt::read_json(ss, root);
-
-    message.src_vehicle = root.get<uint32_t>("src_vehicle");
-    //msgfields.ipd = root.get<float>("ipd");
-    //msgfields.ipd = root.get<float>("pd");
-
+    pub_platooningOut.publish(p);
   }
 
-  void MessageDistribution::decode_json(const std::string &json, fv_heartbeat &message) {
-    std::stringstream ss(json);
-
-    pt::ptree root;
-    pt::read_json(ss, root);
-
-    message.src_vehicle = root.get<uint32_t>("src_vehicle");
-    message.platoon_id = root.get<uint32_t>("platoon_id");
-
-  }
-
-  void MessageDistribution::decode_json(const std::string &json, fv_leave &message) {
-    std::stringstream ss(json);
-
-    pt::ptree root;
-    pt::read_json(ss, root);
-
-    message.src_vehicle = root.get<uint32_t>("src_vehicle");
-    message.platoon_id = root.get<uint32_t>("platoon_id");
-
-  }
-
-  void MessageDistribution::decode_json(const std::string &json, remotecontrolInput &message) {
-    std::stringstream ss(json);
-
-    pt::ptree root;
-    pt::read_json(ss, root);
-
-    message.emergency_stop = root.get<bool>("emergency_stop");
-    message.remote_angle = root.get<bool>("remote_angle");
-    message.remote_speed = root.get<bool>("remote_speed");
-  }
-
-  void MessageDistribution::decode_json(const std::string &json, remotecontrolToggle &message) {
-    std::stringstream ss(json);
-
-    pt::ptree root;
-    pt::read_json(ss, root);
-
-    message.enable_remotecontrol = root.get<bool>("enable_remotecontrol");
-
-  }
-
-  void MessageDistribution::decode_json(const std::string &json, platooningToggle &message) {
-
-    std::stringstream ss(json);
-
-    pt::ptree root;
-    pt::read_json(ss, root);
-
-    message.enable_platooning = root.get<bool>("enable_platooning");
-
-  }
-
-  void MessageDistribution::decode_json(const std::string &json, userInterface &message) {
-
-    std::stringstream ss(json);
-
-    pt::ptree root;
-    pt::read_json(ss, root);
-
-    message.enable_remotecontrol = root.get<bool>("enable_remotecontrol");
-    message.leading_vehicle = root.get<bool>("leading_vehicle");
-    message.following_vehicle = root.get<bool>("following_vehicle");
-    message.platooning_state = root.get<std::string>("platooning_state");
-    message.src_vehicle = root.get<uint32_t>("src_vehicle");
-    message.platoon_members = json_as_vector<uint32_t>(root, "platoon_members");
-  }
-
-  std::string MessageDistribution::encode_message(const lv_broadcast &message) {
-
-    std::string json;
-    pt::ptree root;
-
-    root.put( "src_vehicle", message.src_vehicle);
-    root.add_child( "followers", vector_as_json<uint32_t>(message.followers));
-    root.put( "pd", message.pd);
-    root.put( "ipd", message.ipd);
-    root.put( "platoon_id", message.platoon_id);
-
-    std::stringstream ss;
-    boost::property_tree::write_json(ss,root, false);
-
-    return ss.str();
-  }
-
-  std::string MessageDistribution::encode_message(const lv_accept &message) {
-    std::string json;
-    pt::ptree root;
-
-    root.put( "platoon_id", message.platoon_id);
-    root.put( "src_vehicle", message.src_vehicle);
-    root.put( "dst_vehicle", message.dst_vehicle);
-
-    std::stringstream ss;
-    boost::property_tree::write_json(ss,root, false);
-
-    return ss.str();
-  }
-
-  std::string MessageDistribution::encode_message(const lv_reject &message) {
-    std::string json;
-    pt::ptree root;
-
-    root.put( "platoon_id", message.platoon_id);
-    root.put( "src_vehicle", message.src_vehicle);
-    root.put( "dst_vehicle", message.dst_vehicle);
-
-    std::stringstream ss;
-    boost::property_tree::write_json(ss,root, false);
-
-    return ss.str();
-  }
-
-  std::string MessageDistribution::encode_message(const fv_heartbeat &message) {
-    std::string json;
-    pt::ptree root;
-
-    root.put( "platoon_id", message.platoon_id);
-    root.put( "src_vehicle", message.src_vehicle);
-
-    std::stringstream ss;
-    boost::property_tree::write_json(ss,root, false);
-
-    return ss.str();
-  }
-
-  std::string MessageDistribution::encode_message(const fv_leave &message) {
-    std::string json;
-    pt::ptree root;
-
-    root.put( "platoon_id", message.platoon_id);
-    root.put( "src_vehicle", message.src_vehicle);
-
-    std::stringstream ss;
-    boost::property_tree::write_json(ss,root, false);
-
-    return ss.str();
-  }
-
-  std::string MessageDistribution::encode_message(const fv_request &message) {
-    std::string json;
-    pt::ptree root;
-
-    root.put( "src_vehicle", message.src_vehicle);
-
-    std::stringstream ss;
-    boost::property_tree::write_json(ss,root, false);
-
-    return ss.str();
-  }
-
-  std::string MessageDistribution::encode_message(const remotecontrolInput &message) {
-    std::string json;
-    pt::ptree root;
-
-    root.put( "remote_angle", message.remote_angle);
-    root.put( "remote_speed", message.remote_speed);
-    root.put( "emergency_stop", message.emergency_stop);
-
-    std::stringstream ss;
-    boost::property_tree::write_json(ss,root, false);
-
-    return ss.str();
-  }
-
-  std::string MessageDistribution::encode_message(const remotecontrolToggle &message) {
-    std::string json;
-    pt::ptree root;
-
-    root.put( "enable_remotecontrol", message.enable_remotecontrol);
-
-    std::stringstream ss;
-    boost::property_tree::write_json(ss,root, false);
-
-    return ss.str();
-  }
-
-
-  std::string MessageDistribution::encode_message(const platooningToggle &message) {
-    std::string json;
-    pt::ptree root;
-
-    root.put( "enable_platooning", message.enable_platooning);
-
-    std::stringstream ss;
-    boost::property_tree::write_json(ss,root, false);
-
-    return ss.str();
-  }
-
-  std::string MessageDistribution::encode_message(const userInterface &message) {
-    std::string json;
-    pt::ptree root;
-
-    root.put( "src_vehicle", message.src_vehicle);
-    root.put( "enable_remotecontrol", message.enable_remotecontrol);
-    root.add_child( "platoon_members", vector_as_json<uint32_t >(message.platoon_members));
-    root.put( "platooning_state", message.platooning_state);
-    root.put( "following_vehicle", message.following_vehicle);
-    root.put( "leading_vehicle", message.leading_vehicle);
-    root.put( "speed", message.speed);
-    root.put( "actual_distance", message.actual_distance);
-    root.put( "platoon_size", message.platoon_size);
-    root.put( "platoon_speed", message.platoon_speed);
-    root.put( "inner_platoon_distance", message.inner_platoon_distance);
-    root.put( "potential_following_vehicle", message.potential_following_vehicle);
-
-    std::stringstream ss;
-    boost::property_tree::write_json(ss,root, false);
-
-    return ss.str();
+  void MessageDistribution::hndl_ui(const platooning::userInterface &msg) {
+    auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+    p->message_type = REMOTE_USERINTERFACE;
+    p->payload = encode_message(msg);
+
+    pub_platooningOut.publish(p);
   }
 
 } // namespace platooning

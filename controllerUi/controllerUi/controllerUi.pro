@@ -35,12 +35,17 @@ FORMS += \
 
 #get UdpServer stuff
 unix:!macx: LIBS += -L$$PWD/../../catkin_ws/devel/lib/ -ludpserver
+unix:!macx: LIBS += -L$$PWD/../../catkin_ws/devel/lib/ -lmessagetypes
 
 INCLUDEPATH += $$PWD/../../catkin_ws/src/platooning/include
 DEPENDPATH += $$PWD/../../catkin_ws/src/platooning/include
 INCLUDEPATH += $$PWD/../../catkin_ws/devel/include/platooning
 DEPENDPATH += $$PWD/../../catkin_ws/devel/include/platooning
+INCLUDEPATH += $$PWD/../../catkin_ws/devel/include
+DEPENDPATH += $$PWD/../../catkin_ws/devel/include
 
+INCLUDEPATH += /opt/ros/lunar/include
+DEPENDPATH +=/opt/ros/lunar/include
 
 #BOOST shit
 INCLUDEPATH += /usr/include/boost

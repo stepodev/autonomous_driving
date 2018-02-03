@@ -6,12 +6,10 @@
 #include <QDebug>
 #include <boost/property_tree/ptree.hpp> //json parsing and generating
 #include <boost/property_tree/json_parser.hpp> //json parsing and generating
+#include <boost/algorithm/string/join.hpp>
 
 #include "UdpServer.hpp"
 #include "MessageTypes.hpp"
-#include "remotecontrolToggle.h"
-#include "platooningToggle.h"
-
 
 namespace Ui {
 class ControllerUi;

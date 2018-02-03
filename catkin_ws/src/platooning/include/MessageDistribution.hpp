@@ -33,21 +33,8 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include <boost/property_tree/ptree.hpp> //json parsing and generating
-#include <boost/property_tree/json_parser.hpp> //json parsing and generating
-#include <boost/uuid/uuid.hpp>
-#include <platooning/userInterface.h>
-#include <platooning/remotecontrolInput.h>
-#include <platooning/remotecontrolToggle.h>
 
-#include "platooning/platoonProtocol.h" //includes topic aka message
-#include "platooning/lv_broadcast.h" //includes topic aka message
-#include "platooning/lv_accept.h" //includes topic aka message
-#include "platooning/lv_reject.h" //includes topic aka message
-#include "platooning/fv_request.h" //includes topic aka message
-#include "platooning/fv_heartbeat.h" //includes topic aka message
-#include "platooning/fv_leave.h" //includes topic aka message
-#include "platooning/platooningToggle.h"
+#include <boost/uuid/uuid.hpp>
 #include "MessageTypes.hpp"
 #include "Topics.hpp"
 
@@ -98,53 +85,6 @@ namespace platooning {
 
     void onInit();
 
-  protected:
-    /**
-     * @brief takes json and decodes it
-     * @param msg protocol data
-     */
-    void decode_json(const std::string &json, lv_broadcast &message);
-
-    void decode_json(const std::string &json, lv_accept &message);
-
-    void decode_json(const std::string &json, lv_reject &message);
-
-    void decode_json(const std::string &json, fv_heartbeat &message);
-
-    void decode_json(const std::string &json, fv_leave &message);
-
-    void decode_json(const std::string &json, fv_request &message);
-
-    void decode_json(const std::string &json, remotecontrolInput &message);
-
-    void decode_json(const std::string &json, remotecontrolToggle &message);
-
-    void decode_json(const std::string &json, platooningToggle &message);
-
-    void decode_json(const std::string &json, userInterface &message);
-
-
-    std::string encode_message(const lv_broadcast &message);
-
-    std::string encode_message(const lv_accept &message);
-
-    std::string encode_message(const lv_reject &message);
-
-    std::string encode_message(const fv_heartbeat &message);
-
-    std::string encode_message(const fv_leave &message);
-
-    std::string encode_message(const fv_request &message);
-
-    std::string encode_message(const remotecontrolInput &message);
-
-    std::string encode_message(const remotecontrolToggle &message);
-
-    std::string encode_message(const platooningToggle &message);
-
-    std::string encode_message(const userInterface &message);
-
-
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_ = "MessageDistribution";
@@ -171,27 +111,30 @@ namespace platooning {
     ros::Publisher pub_fv_leave;
     ros::Publisher pub_fv_request;
 
+    ros::Publisher pub_platooning_toggle;
+    ros::Publisher pub_remotecontrol_toggle;
+    ros::Publisher pub_remotecontrol_input;
+
 
     /**
      * @brief receives json payloads from radiointerface, transforms them to messages
      * @param msg json payload
      */
-    void hndl_platooningIn(platooning::platoonProtocol msg);
+    void hndl_platooningIn(const platooning::platoonProtocol &msg);
 
-    void hndl_lv_broadcast(platooning::lv_broadcast msg);
+    void hndl_lv_broadcast(const lv_broadcast &msg);
 
-    void hndl_lv_accept(platooning::lv_accept msg);
+    void hndl_lv_accept(const platooning::lv_accept &msg);
 
-    void hndl_lv_reject(platooning::lv_reject msg);
+    void hndl_lv_reject(const platooning::lv_reject &msg);
 
-    void hndl_fv_heartbeat(platooning::fv_heartbeat msg);
+    void hndl_fv_heartbeat(const platooning::fv_heartbeat &msg);
 
-    void hndl_fv_leave(platooning::fv_leave msg);
+    void hndl_fv_leave(const platooning::fv_leave &msg);
 
-    void hndl_fv_request(platooning::fv_request msg);
+    void hndl_fv_request(const platooning::fv_request &msg);
 
-    void hndl_ui(platooning::userInterface msg);
-
+    void hndl_ui(const platooning::userInterface &msg);
   };
 
 
