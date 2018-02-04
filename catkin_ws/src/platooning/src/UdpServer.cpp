@@ -5,7 +5,7 @@
 
 #include "UdpServer.hpp"
 
-UdpServer::UdpServer(boost::function<void(std::pair<std::string, int32_t>)> receive_callback,
+UdpServer::UdpServer(boost::function<void(std::pair<std::string, uint32_t>)> receive_callback,
                      udp::endpoint bind_endpoint,
                      udp::endpoint remote_endpoint) {
 
@@ -30,13 +30,12 @@ UdpServer::UdpServer(boost::function<void(std::pair<std::string, int32_t>)> rece
     send_endpoint_ = std::move(remote_endpoint);
 
     find_own_ip();
-    std::cout << "i am " << myaddress_.to_string() << std::endl;
 
     callback_ = std::move(receive_callback);
 
     start_receive();
 
-    io_thread_ = boost::thread([this] { this->io_service_.run(); });
+    thread_pool_.create_thread([this] { this->io_service_.run(); });
   }catch (std::exception &e) {
     std::cerr << "[UdpServer][constructor] threw " << e.what() << std::endl;
   }
@@ -44,9 +43,19 @@ UdpServer::UdpServer(boost::function<void(std::pair<std::string, int32_t>)> rece
 
 
 UdpServer::~UdpServer() {
-  socket_ptr_->close();
-  io_service_.stop();
-  io_thread_.interrupt();
+  shutdown();
+}
+
+void UdpServer::shutdown() {
+  try {socket_ptr_->close(); } catch( std::exception &ex ) {
+    std::cerr << "[UdpServer] shutdown socket threw " << ex.what() << std::endl;
+  };
+  try {io_service_.stop(); } catch( std::exception &ex ) {
+    std::cerr << "[UdpServer] shutdown io_service_ threw " << ex.what() << std::endl;
+  };
+  try {thread_pool_.interrupt_all(); thread_pool_.join_all(); } catch( std::exception &ex ) {
+    std::cerr << "[UdpServer] shutdown threadpool threw " << ex.what() << std::endl;
+  };
 }
 
 void UdpServer::find_own_ip() {
@@ -57,7 +66,7 @@ void UdpServer::find_own_ip() {
   udp::endpoint myself( udp::v4(),54566);
   udp::socket mesock( io_service_, myself);
 
-  boost::thread t = boost::thread( [&mesock, &myself, &buf] {
+  thread_pool_.create_thread( [&mesock, &myself, &buf] {
     mesock.receive_from(boost::asio::buffer(buf), myself);
   });
 
@@ -72,14 +81,14 @@ void UdpServer::find_own_ip() {
 
 }
 
-size_t UdpServer::write_to_sendbuffer(const std::string &message, const int32_t &message_type) {
+size_t UdpServer::write_to_sendbuffer(const std::string &message, const uint32_t &message_type) {
 
   try {
     memcpy(send_buffer_.data(), &message_type, sizeof(message_type));
 
     memcpy(send_buffer_.data() + sizeof(message_type), message.c_str(), message.length());
 
-    send_buffer_[sizeof(int32_t) + message.length()] = '\0';
+    send_buffer_[sizeof(uint32_t) + message.length()] = '\0';
 
     return sizeof(message_type) + message.length();
   }catch (std::exception &e) {
@@ -87,20 +96,20 @@ size_t UdpServer::write_to_sendbuffer(const std::string &message, const int32_t 
   }
 }
 
-std::pair<std::string, int32_t> UdpServer::read_from_recvbuffer( size_t bytes_transferred) {
+std::pair<std::string, uint32_t> UdpServer::read_from_recvbuffer(size_t bytes_transferred) {
   try {
-    int32_t message_type;
-    memcpy(&message_type, recv_buffer_.data(), sizeof(int32_t));
+    uint32_t message_type;
+    memcpy(&message_type, recv_buffer_.data(), sizeof(uint32_t));
 
     //hopefully the whole string without the message
-    std::string str(recv_buffer_.begin() + sizeof(int32_t), bytes_transferred - sizeof(int32_t));
+    std::string str(recv_buffer_.begin() + sizeof(uint32_t), bytes_transferred - sizeof(uint32_t));
 
     std::cout << "[UdpServer] recvd message type " << message_type << "\nmessage:" << str << std::endl;
 
-    return std::pair<std::string, int32_t>(str.data(), message_type);
+    return std::pair<std::string, uint32_t>(str.data(), message_type);
   } catch (std::exception &e) {
     std::cerr << "[UdpServer][read_from_buffer] threw " << e.what() << std::endl;
-    return std::pair<std::string, int32_t>();
+    return std::pair<std::string, uint32_t>();
   }
 }
 
@@ -122,7 +131,7 @@ void UdpServer::start_receive() {
  **  @throws throws exception if msg to send is larger than max_recv_bytes
  **/
 
-void UdpServer::start_send(std::string message, int32_t message_type) {
+void UdpServer::start_send(std::string message, uint32_t message_type) {
 
   std::cout << "start send check len of msg \"" << message << "\" type " << message_type << std::endl;
 
@@ -170,7 +179,8 @@ void UdpServer::handle_receive(const boost::system::error_code &error,
 
     if (!error || error == boost::asio::error::message_size) {
 
-      callback_(read_from_recvbuffer(size));
+      std::pair<std::string, uint32_t > msgpair = read_from_recvbuffer(size);
+      callback_(msgpair);
 
       start_receive();
 

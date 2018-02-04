@@ -3,50 +3,103 @@
 //
 #include "Moduletest.hpp"
 
-Moduletest::Moduletest(std::list<std::string> testcases) {
-
-  testcases_to_register_ = std::move(testcases);
-  register_testcases();
+Moduletest::Moduletest() : testcase_timer_(io_) {
+  timeout_ = boost::posix_time::seconds(10);
 }
 
-void Moduletest::register_testcases() {
+Moduletest::~Moduletest() {
+  try {
+    NODELET_WARN( std::string("[" + name_ + "] killing " + std::to_string(threadpool_.size()) + " threads").c_str());
 
-  if( testcases_to_register_.empty() ) {
-    NODELET_FATAL(std::string("[" + name_ + "] no testcases to publish").c_str());
-    return;
+    threadpool_.interrupt_all();
+    threadpool_.join_all();
+  } catch (std::exception &ex){
+    NODELET_ERROR( std::string("[" + name_ + "] threw " + ex.what()).c_str());
   }
-  std::unique_ptr<boost::thread> registerthread ( new boost::thread([this] {
-    ros::Publisher pub = this->nh_.advertise<platooning::registerTestcases>("registerTestcases", 10);
-
-    int cntr = 0;
-    while (pub.getNumSubscribers() == 0 && cntr++ < 10) {
-      NODELET_INFO(std::string("[" + name_ + "] no subscribers found. waiting.").c_str());
-      boost::this_thread::sleep_for(boost::chrono::seconds(1));
-    }
-
-    if (pub.getNumSubscribers() == 0) {
-      NODELET_FATAL(std::string("[" + name_ + "] couldnt publish testcases").c_str());
-      return;
-    }
-
-    if(pub.getNumSubscribers() != 0 ) {
-      NODELET_INFO(std::string("[" + name_ + "] subscribers found. publishing.").c_str());
-
-      for (auto &x : this->testcases_to_register_) {
-        boost::shared_ptr<platooning::registerTestcases> msgptr = boost::shared_ptr<platooning::registerTestcases>(
-            new platooning::registerTestcases());
-
-        msgptr->testcase = x;
-
-        pub.publish(msgptr);
-      }
-      pub.shutdown();
-
-      NODELET_INFO(std::string("[" + name_ + "] stopped publishing testcases.").c_str());
-      return;
-    }
-
-    NODELET_FATAL(std::string("[" + name_ + "] shouldnt be here").c_str());
-  }));
 
 }
+
+void Moduletest::register_testcases(boost::function<void()> test_case_fun) {
+  testcases_to_run_.emplace_back(test_case_fun);
+}
+
+void Moduletest::finalize_test(TestResult result) {
+
+  try {
+    testcase_timer_.cancel();
+
+    std::stringstream ss;
+    std::ofstream of;
+    of.open(test_result_filepath_, std::ios::app);
+
+    std::time_t t = std::time(nullptr);
+    std::put_time(std::localtime(&t), "%c %Z");
+    ss << "[" << name_ << "]["
+       << (result.success ? "SUCCESS" : "FAILURE") << "] "
+       <<  current_test_
+       << result.comment << std::endl;
+
+    if (!result.success) {
+      NODELET_ERROR(ss.str().c_str());
+    } else {
+      NODELET_WARN(ss.str().c_str());
+    }
+
+    of << "[" << t << "]" << ss.str();
+
+    of.close();
+
+    start_tests();
+  }catch (std::exception &ex ) {
+    NODELET_FATAL( (std::string( "[" + name_ + "] threw ") + ex.what() ).c_str() );
+  }
+}
+
+void Moduletest::hndl_testcase_timeout(const boost::system::error_code &ec) {
+
+  try {
+    if (ec == boost::asio::error::operation_aborted) {
+      return;
+    }
+
+    if (!ec) {
+      TestResult res;
+      res.success = false;
+      res.comment = "testcase timeout";
+
+      finalize_test(res);
+    }
+
+  } catch (std::exception &ex) {
+    NODELET_FATAL((std::string("[" + name_ + "] threw ") + ex.what()).c_str());
+  }
+
+}
+
+void Moduletest::start_tests() {
+
+  try {
+    if (testcases_to_run_.empty()) {
+      ros::shutdown();
+      return;
+    }
+
+    boost::function<void()> test_case_fun = testcases_to_run_.front();
+    testcases_to_run_.pop_front();
+
+    threadpool_.create_thread([test_case_fun] {
+      test_case_fun();
+    });
+
+    testcase_timer_.expires_from_now(timeout_);
+    testcase_timer_.async_wait(boost::bind(&Moduletest::hndl_testcase_timeout, this,
+                                           boost::asio::placeholders::error));
+
+    threadpool_.create_thread([this] {
+      this->io_.run();
+    });
+  } catch (std::exception &ex) {
+    NODELET_FATAL((std::string("[" + name_ + "] threw ") + ex.what()).c_str());
+  }
+}
+

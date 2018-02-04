@@ -234,16 +234,16 @@ add_dependencies(moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_
 target_link_libraries(moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_messagedistribution testing/include/Moduletest_messagedistribution.hpp testing/src/Moduletest_messagedistribution.cpp)
-add_dependencies(moduletest_messagedistribution moduletest udpserver messagedistribution ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
-target_link_libraries(moduletest_messagedistribution moduletest udpserver ${catkin_LIBRARIES})
+add_dependencies(moduletest_messagedistribution topics messagetypes moduletest messagedistribution ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_messagedistribution topics messagetypes moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_radiointerface testing/include/Moduletest_radiointerface.hpp testing/src/Moduletest_radiointerface.cpp)
-add_dependencies(moduletest_radiointerface moduletest udpserver radiointerface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(moduletest_radiointerface moduletest udpserver ${catkin_LIBRARIES})
+add_dependencies(moduletest_radiointerface topics moduletest udpserver radiointerface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(moduletest_radiointerface topics moduletest udpserver ${catkin_LIBRARIES})
 
-add_library(testrunner testing/src/testrunner.cpp)
-add_dependencies(testrunner ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(testrunner ${catkin_LIBRARIES})
+add_library(moduletest_template testing/include/Moduletest_template.hpp testing/src/Moduletest_template.cpp)
+add_dependencies(moduletest_template messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_template messagetypes moduletest ${catkin_LIBRARIES})
 
 #add_library(pcap test/Pcap.hpp test/Pcap.cpp)
 #target_link_libraries(pcap libpcap.so)

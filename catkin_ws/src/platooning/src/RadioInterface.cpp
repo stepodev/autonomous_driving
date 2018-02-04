@@ -51,21 +51,21 @@ namespace platooning {
     name_ = "radiointerface";
 
     //subscribers of protocol nodelet
-    sub_platoonProtocolOut_ = nh_.subscribe("out/platoonProtocol", 100,
+    sub_platoonProtocolOut_ = nh_.subscribe(topics::OUT_PLATOONING_MSG, 100,
                                             &RadioInterface::hndl_platoonProtocolOut, this);
 
-    pub_platoonProtocolIn_ = nh_.advertise<platoonProtocol>("in/platoonProtocol", 100);
+    pub_platoonProtocolIn_ = nh_.advertise<platoonProtocol>(topics::IN_PLATOONING_MSG, 100);
 
     try {
       //bind to local 10000 port, broadcast to 10000 port
-      boost::function<void (std::pair<std::string, int32_t>)> cbfun( boost::bind( boost::mem_fn(
+      boost::function<void (std::pair<std::string, uint32_t>)> cbfun( boost::bind( boost::mem_fn(
           &RadioInterface::hndl_radio_receive), this, _1 ) );
 
       server_ptr_ = std::unique_ptr<UdpServer>( new UdpServer( cbfun
                                                  , udp::endpoint(udp::v4(),10000)
                                                  , udp::endpoint(ip::address_v4::broadcast(),10000)));
     } catch (std::exception &e) {
-      NODELET_FATAL( std::string("[WIFI] udpserver init failed\n" + std::string(e.what())).c_str());
+      NODELET_FATAL( std::string("[" + name_ + "] udpserver init failed\n" + std::string(e.what())).c_str());
     }
 
     NODELET_INFO(std::string("[" + name_ + "] init done").c_str());
@@ -88,7 +88,7 @@ namespace platooning {
    * @brief handles received messages from the network
    * @param message_pair with message_type and payload
    */
-  void RadioInterface::hndl_radio_receive(std::pair<std::string, int32_t> message_pair)  {
+  void RadioInterface::hndl_radio_receive(std::pair<std::string, uint32_t> message_pair)  {
     std::cout << "handling radiointerface receive" << std::endl;
 
     boost::shared_ptr<platooning::platoonProtocol> outmsg
@@ -101,10 +101,13 @@ namespace platooning {
       case LV_ACCEPT:
       case LV_REJECT:
       case FV_LEAVE:
+      case REMOTE_PLATOONINGTOGGLE:
+      case REMOTE_CONTROLTOGGLE:
+      case REMOTE_CONTROLINPUT:
+      case REMOTE_USERINTERFACE:
         outmsg->payload = message_pair.first;
+        outmsg->message_type = message_pair.second;
         pub_platoonProtocolIn_.publish(outmsg);
-        break;
-
       case REMOTE_CMD:
         break;
       case REMOTE_CUSTOM:

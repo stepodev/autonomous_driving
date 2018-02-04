@@ -38,7 +38,7 @@
 #include <functional>
 #include <utility>
 
-#include "platooning/platoonProtocol.h"
+#include "Topics.hpp"
 #include "MessageTypes.hpp"
 #include "UdpServer.hpp"
 
@@ -104,7 +104,7 @@ namespace platooning {
      * @param msg incoming topic message
      */
     void hndl_platoonProtocolOut(platooning::platoonProtocol msg);
-    void hndl_radio_receive(std::pair<std::string, int32_t> message_tup);
+    void hndl_radio_receive(std::pair<std::string, uint32_t> message_tup);
 
   };
 

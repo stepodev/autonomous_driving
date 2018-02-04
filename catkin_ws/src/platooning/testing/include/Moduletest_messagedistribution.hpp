@@ -15,8 +15,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_MODULETEST_PROTOCOL_HPP
-#define PLATOONING_MODULETEST_PROTOCOL_HPP
+#ifndef PLATOONING_MODULETEST_MESSAGEDISTRIBUTION_HPP
+#define PLATOONING_MODULETEST_MESSAGEDISTRIBUTION_HPP
 
 /*****************************************************************************
 ** Includes
@@ -25,19 +25,11 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <platooning/runTestCommand.h>
-#include <platooning/testResult.h>
 #include <sstream>
 
-#include "platooning/platoonProtocol.h" //includes topic aka message
-#include "platooning/testResult.h" //includes topic aka message
-#include "platooning/registerTestcases.h"
-#include "MessageDistribution.hpp"
 #include "Moduletest.hpp"
-
-namespace pt = boost::property_tree;
+#include "Topics.hpp"
+#include "MessageTypes.hpp"
 
 namespace platooning {
 
@@ -78,29 +70,23 @@ namespace platooning {
 
   class Moduletest_messagedistribution : public Moduletest {
   public:
-    virtual void onInit();
+    void onInit();
 
     Moduletest_messagedistribution();
 
     ~Moduletest_messagedistribution();
 
   private:
-    ros::Subscriber sub_fv_request;
-    ros::Subscriber sub_runTestCmd;
-
-    ros::Publisher pub_platoonProtocolIn;
-    ros::Publisher pub_testResult;
-
     /**
-     * @brief to achieve X does Y
-     * @param msg incoming topic message
-     */
-    void hndl_fv_request(platooning::fv_request msg);
-    void hndl_runTestCmd(platooning::runTestCommand msg);
+    * @brief publishes FV_REQUEST on topic in/platoonMsg and expects that message to be translated
+    * and published as on the in/fv_request topic
+    */
+    void pub_in_platoonMsg_recv_fv_request();
 
+    void hndl_pub_in_platoonMsg_recv_fv_request(platooning::fv_request msg);
   };
 
 
 } // namespace platooning
 
-#endif //PLATOONING_MODULETEST_PROTOCOL_HPP
+#endif //PLATOONING_MODULETEST_MESSAGEDISTRIBUTION_HPP

@@ -27,13 +27,10 @@
 #include <ros/ros.h>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <platooning/runTestCommand.h>
-#include <platooning/testResult.h>
-#include <platooning/platoonProtocol.h>
 #include <sstream>
 
-#include "platooning/platoonProtocol.h" //includes topic aka message
-#include "platooning/testResult.h" //includes topic aka message
+#include "Topics.hpp"
+#include "MessageTypes.hpp"
 #include "UdpServer.hpp"
 #include "Moduletest.hpp"
 
@@ -88,28 +85,18 @@ namespace platooning {
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_ = "Moduletest_radiointerface";
     std::unique_ptr<UdpServer> server_;
-    boost::asio::io_service io_service_;
-    std::string current_test_;
-    boost::thread iothread;
-
-    ros::Subscriber sub_platoonProtocolIn;
-    ros::Subscriber sub_runTestCmd;
-
-    ros::Publisher pub_testResult;
-    ros::Publisher pub_platoonProtocolOut;
 
     /**
-     * @brief to achieve X does Y
+     * @brief sends upd datagram, expects to get a platoonprotocol on IN_PLATOONMSG channel
      * @param msg incoming topic message
      */
-    void hndl_platoonProtocolIn(platooning::platoonProtocol msg);
-    void hndl_runTestCmd(platooning::runTestCommand msg);
-
     void test_send_udp_recv_protocolIn();
+    void hndl_recv_udp_dummy(std::pair<std::string, uint32_t> msg);
+    void hndl_recv_in_protocol(platooning::platoonProtocol msg);
+
 
     void test_send_protocolOut_recv_udp();
-
-    void handl_udp_recvd(std::pair<std::string, int32_t> msg);
+    void handl_test_udp_recvd( std::pair<std::string, uint32_t> msg);
   };
 
 

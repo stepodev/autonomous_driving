@@ -15,7 +15,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include "../include/Template.hpp"
+#include "Template.hpp"
 
 namespace platooning {
 
@@ -55,7 +55,7 @@ namespace platooning {
 
     //publisher of forced driving vector
 
-    pub_templateTopic = nh_.advertise< platooning::templateMsg >("templateMsg", 10);
+    pub_templateTopic = nh_.advertise< platooning::templateMsg >(topics::TEMPLATETOPIC, 10);
 
 
   };
@@ -68,7 +68,7 @@ namespace platooning {
   /*
    * handling an event and publishing something
    */
-  void Template::hndl_templateTopic(const platooning::templateMsg msg) {
+  void Template::hndl_templateTopic(const platooning::templateMsg &msg) {
 
     NODELET_DEBUG("handling a template");
 

@@ -83,7 +83,6 @@
     <rosdoc config="rosdoc.yaml" />
 
     <!-- testing -->
-    <nodelet plugin="${prefix}/testing/plugins/testrunner.xml" />
     <nodelet plugin="${prefix}/testing/plugins/moduletest_messagedistribution.xml" />
     <nodelet plugin="${prefix}/testing/plugins/moduletest_radiointerface.xml" />
   </export>

@@ -24,9 +24,7 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-  Moduletest_messagedistribution::Moduletest_messagedistribution()
-  : Moduletest( {"moduleTest_messagedistributiton_fv_request"} ){}
-
+  Moduletest_messagedistribution::Moduletest_messagedistribution() = default;
 
 
 /*****************************************************************************
@@ -48,86 +46,66 @@ namespace platooning {
 
     name_ = "Moduletest_messagedistribution";
 
-    //subscribers of protocol nodelet
-    sub_fv_request = nh_.subscribe("fv_request", 10,
-                                       &Moduletest_messagedistribution::hndl_fv_request, this);
+    register_testcases(boost::bind(&Moduletest_messagedistribution::pub_in_platoonMsg_recv_fv_request, this));
 
-    sub_runTestCmd = nh_.subscribe("runTestCommand", 10,
-                                   &Moduletest_messagedistribution::hndl_runTestCmd, this);
+    NODELET_INFO(std::string("[" + name_ + "] init done").c_str());
 
-    pub_platoonProtocolIn = nh_.advertise< platooning::platoonProtocol >("in/platoonProtocol", 10);
-
-    pub_testResult = nh_.advertise<platooning::testResult>("testResult",10);
-
-    NODELET_INFO("Moduletest_messagedistribution init done");
+    start_tests();
   };
 
 
 /*****************************************************************************
-** Handlers
+** Testcases
 *****************************************************************************/
 
-  /*
-   * handling an event and publishing something
-   */
-  void Moduletest_messagedistribution::hndl_fv_request(platooning::fv_request msg) {
+  void Moduletest_messagedistribution::pub_in_platoonMsg_recv_fv_request() {
 
-    std::cout << "[moduletest MessageDistribution]: handlin fv_request?" << std::endl;
+    set_current_test("pub_in_platoonMsg_recv_fv_request");
+    NODELET_INFO(std::string("[" + name_ + "] started testcase " + get_current_test()).c_str());
 
-    boost::shared_ptr<platooning::testResult> resmsg
-        = boost::shared_ptr<platooning::testResult>( new platooning::testResult);
-        resmsg->success = true;
+    //mockup publishers
+    pub_map_.clear();
+    pub_map_.emplace(topics::IN_PLATOONING_MSG, ros::Publisher());
+    pub_map_[topics::IN_PLATOONING_MSG] = nh_.advertise<platooning::platoonProtocol>(topics::IN_PLATOONING_MSG, 1);
 
-    if( msg.src_vehicle != 3 ) {
-      resmsg->success = false;
-      std::stringstream resstr;
-      resstr << "src_vehicle:3 == " << msg.src_vehicle << "=" << (msg.src_vehicle == 2);
+    //mockup subscribers
+    sub_map_.clear();
+    sub_map_.emplace(topics::IN_FV_REQUEST, ros::Subscriber());
+    sub_map_[topics::IN_FV_LEAVE] = nh_.subscribe(topics::IN_FV_REQUEST, 1,
+                                                  &Moduletest_messagedistribution::hndl_pub_in_platoonMsg_recv_fv_request,
+                                                  this);
 
-      resmsg->comment = resstr.str();
-    }
+    boost::shared_ptr<platoonProtocol> inmsg = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
 
-    if( resmsg->success ) {
-      NODELET_ERROR( (std::string("[") + name_ + "] error with " + resmsg->comment).c_str());
-    }
-
-    pub_testResult.publish(resmsg);
-
-  }
-
-  void Moduletest_messagedistribution::hndl_runTestCmd(platooning::runTestCommand msg) {
-
-    std::cout << "MessageDistribution: ya talkin to me?" << std::endl;
-
-    if( msg.testToRun != "moduleTest_messagedistributiton_fv_request") {
-      return;
-    }
-
-    pt::ptree root;
-
-    root.put("src_vehicle",(unsigned int) 2 );
-    root.put("platoon_id",(unsigned int) 3 );
-    root.put("ipd",(float) 4 );
-    root.put("ps",(float) 5 );
-
-    if( !boost::property_tree::json_parser::verify_json(root,1)) {
-      NODELET_ERROR("moduletest_messagedistributiton invalid json");
-    }
-
-    std::stringstream os;
-
-    pt::write_json(os,root,false);
-
-    std::cout << os.str();
-
-    boost::shared_ptr<platoonProtocol> inmsg = boost::shared_ptr<platoonProtocol>( new platoonProtocol);
+    fv_request msg;
+    msg.src_vehicle = 3;
 
     inmsg->message_type = FV_REQUEST;
-    inmsg->payload = os.str();
+    inmsg->payload = encode_message(msg);
 
-    pub_platoonProtocolIn.publish(inmsg);
+    pub_map_[topics::IN_PLATOONING_MSG].publish(inmsg);
 
   }
 
+  void Moduletest_messagedistribution::hndl_pub_in_platoonMsg_recv_fv_request(platooning::fv_request msg) {
+
+    TestResult res;
+    res.success = true;
+
+    if (msg.src_vehicle != 3) {
+      res.success = false;
+      res.comment = std::string("pub_in_platoonMsg_recv_fv_request:") + "src_vehicle:3 == "
+                    + std::to_string(msg.src_vehicle)
+                    + "=" + std::to_string(msg.src_vehicle == 3);
+    }
+
+    if( msg.src_vehicle == 3) {
+      res.success = true;
+    }
+
+    finalize_test(res);
+
+  }
 
 } // namespace platooning
 

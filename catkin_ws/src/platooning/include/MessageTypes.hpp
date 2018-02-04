@@ -32,6 +32,8 @@
 #include "platooning/fv_leave.h"
 #include "platooning/platooningToggle.h"
 
+#include "platooning/templateMsg.h"
+
 namespace platooning {
 
 /**

@@ -1,5 +1,5 @@
-<library path="lib/libprotocol">
-    <class name="platooning/protocol"
+<library path="lib/libmessagedistribution">
+    <class name="platooning/messagedistribution"
 	         type="platooning::MessageDistribution"
             base_class_type="nodelet::Nodelet">
         <description>

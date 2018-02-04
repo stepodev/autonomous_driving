@@ -32,9 +32,7 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-  Moduletest_radiointerface::Moduletest_radiointerface()
-      : Moduletest( { "moduletest_radiointerface_send_udp_recv_protocolIn"
-                        , "moduletest_radiointerface_send_protocolOut_recv_udp"}) {};
+  Moduletest_radiointerface::Moduletest_radiointerface() = default;
 
 
 /*****************************************************************************
@@ -54,190 +52,179 @@ namespace platooning {
   */
   void Moduletest_radiointerface::onInit() {
 
-    name_ = "Moduletest_radiointerface";
+    name_ = Moduletest::name_ = "Moduletest_radiointerface";
 
-    sub_runTestCmd = nh_.subscribe("runTestCommand", 10,
-                                   &Moduletest_radiointerface::hndl_runTestCmd, this);
-
-    sub_platoonProtocolIn = nh_.subscribe("in/platoonProtocol", 10,
-                                   &Moduletest_radiointerface::hndl_platoonProtocolIn, this);
-
-    pub_testResult = nh_.advertise<platooning::testResult>("testResult", 10);
-
-    std::list<std::string> testcases_to_register = {
-
-    };
+    register_testcases(boost::bind(&Moduletest_radiointerface::test_send_udp_recv_protocolIn, this));
+    register_testcases(boost::bind(&Moduletest_radiointerface::test_send_protocolOut_recv_udp, this));
 
     NODELET_INFO(std::string("[" + name_ + "] init done").c_str());
+
+    start_tests();
   };
 
 
 /*****************************************************************************
-** Handlers
+** Testcases
 *****************************************************************************/
 
-  /*
-   * @brief Handles RadioInterface published messages to our graph
-   */
-
-  void Moduletest_radiointerface::hndl_platoonProtocolIn(platooning::platoonProtocol msg) {
-
-    NODELET_INFO(std::string("[" + name_ + "] moduletest_radiointerface] recvd in/protocol").c_str());
-
-    if( current_test_ != "moduletest_radiointerface_send_udp_recv_protocolIn") {
-      return;
-    }
-
-    std::cout << "Moduletest_radiointerface handl in/platoonProtocol " << std::endl;
-
-    boost::shared_ptr<testResult> outmsg = boost::shared_ptr<testResult>( new testResult);
-
-    outmsg->success = true;
-
-    if (msg.payload != current_test_) {
-      outmsg->comment = std::string("[moduletest_radiointerface] payload mismatch.\nought:\"")
-                       + current_test_ + "\"\nwas   \"" + msg.payload + "\"";
-      NODELET_WARN( outmsg->comment.c_str());
-      outmsg->success = false;
-    } else {
-      NODELET_INFO(std::string("[" + name_ + "] GREATU SUCCESSU " + current_test_).c_str());
-    }
-
-    pub_testResult.publish(outmsg);
-
-    server_ = nullptr;
-  }
-
-  void Moduletest_radiointerface::handl_udp_recvd( std::pair<std::string, int32_t> msg_pair ) {
-
-    if( current_test_ != "moduletest_radiointerface_send_protocolOut_recv_udp") {
-      std::cout << "HELLOE" << std::endl;
-      return;
-    }
-
-    std::cout << "Moduletest_radiointerface handl udp recvd " << std::endl;
-
-    boost::shared_ptr<testResult> outmsg = boost::shared_ptr<testResult>( new testResult);
-
-    outmsg->success = true;
-
-    if (msg_pair.first != current_test_) {
-      outmsg->comment = std::string("[moduletest_radiointerface] payload mismatch.\nought:\"")
-                        + current_test_ + "\"\nwas   \"" + msg_pair.first + "\"";
-      NODELET_WARN( outmsg->comment.c_str());
-      outmsg->success = false;
-    }
-
-    if (msg_pair.first != current_test_) {
-      outmsg->comment += std::string("\n[moduletest_radiointerface] message_type mismatch.\nought:\"")
-                        + std::to_string(FV_LEAVE)
-                        + "\"\nwas   \"" + std::to_string(msg_pair.second) + "\"";
-      NODELET_WARN( outmsg->comment.c_str());
-      outmsg->success = false;
-    }
-
-    pub_testResult.publish(outmsg);
-
-    pub_platoonProtocolOut.shutdown();
-
-    server_ = nullptr;
-
-    if( outmsg->success ) {
-      NODELET_INFO(std::string("[" + name_ + "] GREATU SUCCESSU " + current_test_).c_str());
-    }
-
-  }
-
   /**
- * @brief tests radiointerface to receive an udp datagram and convert and publish that as a message
- */
+* @brief tests radiointerface to receive an udp datagram and convert and publish that as a message
+*/
   void Moduletest_radiointerface::test_send_udp_recv_protocolIn() {
+
+    set_current_test("test_send_udp_recv_protocolIn");
 
     NODELET_INFO(std::string("[" + name_ + "] test_send_udp_recv_protocolIn").c_str());
 
+    //prepare subscriber
+    sub_map_.clear();
+    sub_map_.emplace(topics::IN_PLATOONING_MSG, ros::Subscriber());
+    sub_map_[topics::IN_PLATOONING_MSG] = nh_.subscribe(topics::IN_PLATOONING_MSG, 1,
+                                                        &Moduletest_radiointerface::hndl_recv_in_protocol,
+                                                        this);
+
+    while(sub_map_[topics::IN_PLATOONING_MSG].getNumPublishers() == 0 ) {
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
+    //setup server to send udp from
     try {
-      boost::function<void (std::pair<std::string, int32_t>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_radiointerface::handl_udp_recvd), this, _1 ) );
+      boost::function<void (std::pair<std::string, uint32_t>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_radiointerface::hndl_recv_udp_dummy), this, _1 ) );
 
       server_ = std::unique_ptr<UdpServer>(
           new UdpServer(
               cbfun
-            , udp::endpoint(udp::v4(),10001)
-            , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
+              , udp::endpoint(udp::v4(),10001)
+              , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
       server_->set_filter_own_broadcasts(false);
     } catch (std::exception &e) {
-      NODELET_FATAL( std::string("[" + name_ + "] udpserver init failed\n" + std::string(e.what())).c_str());
+      TestResult res;
+      res.success = false;
+      res.comment = std::string("udpserver init failed ") + e.what();
+
+      finalize_test(res);
     }
 
+    //send msg through our server
     try {
       platooning::platoonProtocol outmsg;
       outmsg.message_type = FV_REQUEST;
-      outmsg.payload = current_test_;
+      outmsg.payload = get_current_test();
 
       server_->start_send(outmsg.payload, outmsg.message_type);
+
     } catch ( std::exception &e) {
-      NODELET_FATAL( std::string("[" + name_ + "] udpserver start_send failed\n" + std::string(e.what())).c_str());
+      TestResult res;
+      res.success = false;
+      res.comment = std::string("udpsudpserver start_send failed ") + e.what();
+
+      finalize_test(res);
     }
   }
 
+  void Moduletest_radiointerface::hndl_recv_udp_dummy(std::pair<std::string, uint32_t> msg) {
+    NODELET_WARN( std::string("[" + name_ + "][hndl_recv_udp_dummy] unexpectedly received msg\n"
+                             + "type " + std::to_string(msg.second) + " payload\n" + msg.first).c_str() );
+  }
+
+  void Moduletest_radiointerface::hndl_recv_in_protocol(platooning::platoonProtocol msg) {
+
+    TestResult res;
+
+    if( msg.payload == get_current_test() && msg.message_type == FV_REQUEST) {
+      res.success = true;
+      res.comment = "";
+    }
+
+    if (msg.payload != get_current_test()) {
+      res.comment = std::string("[ test_send_udp_recv_protocolIn ] payload mismatch.\nought:\"")
+                       + get_current_test() + "\"\nwas   \"" + msg.payload + "\"";
+      res.success = false;
+    }
+
+    if (msg.message_type != FV_REQUEST) {
+      res.comment += std::string("\n[ test_send_udp_recv_protocolIn ] message type mismatch. ought:\"")
+                    + std::to_string(FV_REQUEST) + "\"\nwas\"" + std::to_string(msg.message_type) + "\"";
+      res.success = false;
+    }
+
+    finalize_test(res);
+  }
+
   /**
- * @brief tests radiointerface to receive a message and send as udp datagram
- */
+  * @brief tests radiointerface to receive a message and send as udp datagram
+  */
+
   void Moduletest_radiointerface::test_send_protocolOut_recv_udp() {
 
-    NODELET_INFO(std::string("[" + name_ + "] test_send_protocolOut_recv_udp").c_str());
+    set_current_test("test_send_protocolOut_recv_udp");
+    set_timeout( boost::posix_time::seconds(5));
 
+   //prepare server
     try {
-      boost::function<void (std::pair<std::string, int32_t>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_radiointerface::handl_udp_recvd), this, _1 ) );
+      boost::function<void (std::pair<std::string, uint32_t>)> cbfun( boost::bind( boost::mem_fn(&Moduletest_radiointerface::handl_test_udp_recvd), this, _1 ) );
 
       server_ = std::unique_ptr<UdpServer>( new UdpServer(
-            cbfun
+          cbfun
           , udp::endpoint(udp::v4(),10000)
           , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
       server_->set_filter_own_broadcasts(false);
     } catch (std::exception &e) {
-      NODELET_FATAL( std::string("[" + name_ + "]udpserver init failed\n" + std::string(e.what())).c_str());
+      TestResult res;
+      res.success = false;
+      res.comment = std::string("udpserver init failed ") + e.what();
+
+      finalize_test(res);
+      return;
     }
 
-    NODELET_INFO(std::string("[" + name_ + "] preparing message").c_str());
+    //prepare publisher
+    pub_map_.clear();
+    pub_map_.emplace( topics::OUT_PLATOONING_MSG, ros::Publisher());
+    pub_map_[topics::OUT_PLATOONING_MSG] = nh_.advertise<platooning::platoonProtocol>(topics::OUT_PLATOONING_MSG, 10);
 
-    pub_platoonProtocolOut = nh_.advertise<platooning::platoonProtocol>("out/platoonProtocol", 10);
+    while(pub_map_[topics::OUT_PLATOONING_MSG].getNumSubscribers() == 0 ) {
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
 
-    if( pub_platoonProtocolOut.getNumSubscribers() == 0 ) {
-      NODELET_FATAL(std::string("[" + name_ + "] test_send_protocolOut_recv_udp: no subscribers to platoonProtocolOut").c_str());
-      boost::shared_ptr<platooning::testResult> msg = boost::shared_ptr<platooning::testResult>( new platooning::testResult);
-      msg->success = false;
-      msg->comment = "[" + name_ + " ] test_send_protocolOut_recv_udp: no subscribers to platoonProtocolOut";
-      pub_testResult.publish(msg);
+    if( pub_map_[topics::OUT_PLATOONING_MSG].getNumSubscribers() == 0 ) {
+      TestResult res;
+      res.success = false;
+      res.comment = "test_send_protocolOut_recv_udp: no subscribers to topics::OUT_PLATOONING_MSG";
+      finalize_test(res);
       return;
     }
 
     boost::shared_ptr<platooning::platoonProtocol> msg = boost::shared_ptr<platooning::platoonProtocol>( new platooning::platoonProtocol);
 
-    msg->payload = current_test_;
+    msg->payload = get_current_test();
     msg->message_type = FV_LEAVE;
 
-    pub_platoonProtocolOut.publish(msg);
-
-    NODELET_INFO(std::string("[" + name_ + "] test_send_protocolOut_recv_udp published").c_str());
-
+    pub_map_[topics::OUT_PLATOONING_MSG].publish(msg);
   }
 
-  void Moduletest_radiointerface::hndl_runTestCmd(platooning::runTestCommand msg) {
+  void Moduletest_radiointerface::handl_test_udp_recvd( std::pair<std::string, uint32_t> msg_pair ) {
 
+    TestResult res;
 
-    if (msg.testToRun == "moduletest_radiointerface_send_udp_recv_protocolIn") {
-      current_test_ = "moduletest_radiointerface_send_udp_recv_protocolIn";
-      test_send_udp_recv_protocolIn();
+    if( msg_pair.first == get_current_test() && msg_pair.second == FV_LEAVE) {
+      res.success = true;
+    } else if (msg_pair.first != get_current_test()) {
+      res.comment = std::string(" payload mismatch.\nought:\"")
+                        + get_current_test() + "\"\nwas   \"" + msg_pair.first + "\"";
+
+      res.success = false;
+    } else if (msg_pair.second != FV_LEAVE) {
+      res.comment += std::string("\nmessage_type mismatch.\nought:\"")
+                        + std::to_string(FV_LEAVE)
+                        + "\"\nwas   \"" + std::to_string(msg_pair.second) + "\"";
+      res.success = false;
+    } else {
+      res.success = false;
+      res.comment = "handl_test_udp_recvd: unknown failure";
     }
-
-
-    if (msg.testToRun == "moduletest_radiointerface_send_protocolOut_recv_udp") {
-      current_test_ = "moduletest_radiointerface_send_protocolOut_recv_udp";
-      test_send_protocolOut_recv_udp();
-    }
-
+    finalize_test(res);
   }
-
 } // namespace platooning
 
 PLUGINLIB_EXPORT_CLASS(platooning::Moduletest_radiointerface, nodelet::Nodelet);

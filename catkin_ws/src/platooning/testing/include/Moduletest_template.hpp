@@ -1,7 +1,3 @@
-//
-// Created by stepo on 12/16/17.
-//
-
 /**
  * @file doxygen_c.h
  * @author My Self
@@ -19,8 +15,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_TEMPLATE_HPP
-#define PLATOONING_TEMPLATE_HPP
+#ifndef PLATOONING_MODULETEST_TEMPLATE_HPP
+#define PLATOONING_MODULETEST_TEMPLATE_HPP
 
 /*****************************************************************************
 ** Includes
@@ -30,6 +26,7 @@
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 
+#include "Moduletest.hpp"
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
 
@@ -70,30 +67,26 @@ namespace platooning {
  * @warning Warning.
  */
 
-  class Template : public nodelet::Nodelet {
+  class Moduletest_template : public Moduletest {
   public:
     void onInit();
 
-    Template();
+    Moduletest_template();
 
-    ~Template();
+    ~Moduletest_template();
 
   private:
-    ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-    std::string name_ = "Template";
-    ros::Subscriber sub_templateTopic;
-    ros::Publisher pub_templateTopic;
-
-
     /**
-     * @brief to achieve X does Y
-     * @param msg incoming topic message
-     */
-    void hndl_templateTopic(const platooning::templateMsg &msg);
+    * @brief template_testcase does x,y,z and expects a,b,c
+    */
+    void pub_templatemsg_recv_othermsg();
+
+    void hndl_recv_othermsg(const platooning::templateMsg &msg);
+
 
   };
 
 
 } // namespace platooning
 
-#endif //PLATOONING_TEMPLATE_HPP
+#endif //PLATOONING_MODULETEST_TEMPLATE_HPP

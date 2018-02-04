@@ -9,7 +9,7 @@ ControllerUi::ControllerUi(QWidget *parent) :
     QWidget::grabKeyboard(); //only this widget get keypresses
 
     //start server
-    boost::function<void (std::pair<std::string, int32_t>)> cbfun( boost::bind( boost::mem_fn(&ControllerUi::receive_message), this, _1 ) );
+    boost::function<void (std::pair<std::string, uint32_t>)> cbfun( boost::bind( boost::mem_fn(&ControllerUi::receive_message), this, _1 ) );
 
     server_ptr_ = std::unique_ptr<UdpServer>( new UdpServer( cbfun
                                                   , udp::endpoint(udp::v4(),10000)
@@ -30,11 +30,11 @@ void ControllerUi::on_startPlatooning_clicked()
     server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLTOGGLE);
 }
 
-void ControllerUi::add_slave_vehicle( int32_t vehicle_id) {
+void ControllerUi::add_slave_vehicle( uint32_t vehicle_id) {
     slave_vehicle_ids_.emplace_back(vehicle_id);
 }
 
-void ControllerUi::receive_message( std::pair<std::string, int32_t> msgpair )
+void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
 {
     try {
         if( msgpair.first.empty()) {
