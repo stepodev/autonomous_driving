@@ -41,10 +41,11 @@ void ControllerUi::receive_message( std::pair<std::string, int32_t> msgpair )
             return;
         }
 
+        platooning::userInterface msg;
         switch( msgpair.second ) {
 
             case REMOTE_USERINTERFACE:
-            platooning::userInterface msg;
+
             platooning::decode_json(msgpair.first, msg);
 
             try { ui->info_actual_distance->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) {}
@@ -53,15 +54,20 @@ void ControllerUi::receive_message( std::pair<std::string, int32_t> msgpair )
             try { ui->info_lvfv->setText( msg.following_vehicle ? "FV" : "" );} catch( std::exception &ex ) {}
             try { ui->info_lvfv->setText( msg.leading_vehicle ? "FV" : "" );} catch( std::exception &ex ) {}
             try { ui->info_platooningstate->setText( msg.platooning_state.c_str() );} catch( std::exception &ex ) {}
-            try { ui->info_platoonmembers->setText( boost::algorithm::join(msg.platoon_members),',').c_str();} catch( std::exception &ex ) {}
+            try { ui->info_platoonsize->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) {}
+            try { ui->info_ps->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) {}
+            try { ui->info_vehicle_id->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) {}
 
+            try { std::stringstream followerlist;
+                std::copy(msg.platoon_members.begin(), msg.platoon_members.end(), std::ostream_iterator<uint32_t>(followerlist, " "));
+                    ui->info_platoonmembers->setText( followerlist.str().c_str());}catch( std::exception &ex ) {}
 
             break;
         default:
             break;
         }
 
-        std::find(slave_vehicle_ids_.begin(), slave_vehicle_ids_.end(), remotevehicle_id) != slave_vehicle_ids_.end();
+        //std::find(slave_vehicle_ids_.begin(), slave_vehicle_ids_.end(), remotevehicle_id) != slave_vehicle_ids_.end();
 
 
     } catch( std::exception &ex ) {

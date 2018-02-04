@@ -218,9 +218,9 @@ set_target_properties(topics PROPERTIES LINKER_LANGUAGE CXX)
 add_dependencies(topics ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(topics ${catkin_LIBRARIES})
 
-add_library(MessageTypes include/MessageTypes.hpp src/MessageTypes.cpp)
-add_dependencies(MessageTypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(MessageTypes ${catkin_LIBRARIES})
+add_library(messagetypes include/MessageTypes.hpp src/MessageTypes.cpp)
+add_dependencies(messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(messagetypes ${catkin_LIBRARIES})
 
 add_library(template include/Template.hpp src/Template.cpp)
 add_dependencies(template ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
