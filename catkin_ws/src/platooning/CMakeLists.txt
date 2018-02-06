@@ -161,7 +161,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
         INCLUDE_DIRS include
-        LIBRARIES environment_mapping lanekeeping priorization protocol userinterface vehiclecontrol radiointerface template
+        LIBRARIES environment_mapping lanekeeping priorization protocol userinterface vehiclecontrol radiointerface template platooningnode
         CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
         #  DEPENDS system_lib
 )
@@ -226,6 +226,10 @@ add_library(template include/Template.hpp src/Template.cpp)
 add_dependencies(template ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(template ${catkin_LIBRARIES})
 
+add_library(platooningnode include/PlatooningNode.hpp src/PlatooningNode.cpp)
+add_dependencies(platooningnode ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(platooningnode ${catkin_LIBRARIES})
+
 ##############################################
 #### platooning tests
 ##############################################
@@ -283,6 +287,9 @@ target_link_libraries(template-unit-test ${catkin_LIBRARIES})
 
 add_rostest_gtest(messagedistribution-unit-test launch/protocol.launch testing/src/unittest_messagedistribution.cpp)
 target_link_libraries(messagedistribution-unit-test messagedistribution ${catkin_LIBRARIES})
+
+#add_rostest_gtest(platooningnode-unit-test testing/src/unittest_platooningnode.cpp)
+#target_link_libraries(platooningnode-unit-test platooningnode ${catkin_LIBRARIES})
 
 #if (TARGET ${PROJECT_NAME}-test)
 #    target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES})
