@@ -88,6 +88,7 @@ namespace platooning {
     ros::Publisher publisher;
     turtlesim::PoseConstPtr g_pose;
     platooning::prioritisationDrivingVector g_prioDrivingVector;
+    geometry_msgs::Twist twist;
 
 
     /**

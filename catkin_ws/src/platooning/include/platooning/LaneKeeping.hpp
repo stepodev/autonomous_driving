@@ -29,7 +29,11 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
+#include <turtlesim/Pose.h>
+#include <turtlesim/Spawn.h>
+#include "platooning/prioritisationDrivingVector.h"
 #include "platooning/templateMsg.h" //includes topic aka message
+#include <math.h>
 
 namespace platooning {
 
@@ -68,32 +72,47 @@ namespace platooning {
  * @warning Warning.
  */
 
-  class LaneKeeping : public nodelet::Nodelet {
-  public:
-    virtual void onInit();
+    class LaneKeeping : public nodelet::Nodelet {
+    public:
+        virtual void onInit();
 
-    LaneKeeping(ros::NodeHandle &nh, std::string &name);
+        LaneKeeping(ros::NodeHandle &nh, std::string &name);
 
-    LaneKeeping();
+        LaneKeeping();
 
-    ~LaneKeeping();
+        ~LaneKeeping();
 
-  private:
-    ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-    std::string name_;
-    ros::Subscriber templateSubscriber;
-    ros::Publisher templatePublisher;
+    private:
+        ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
+        std::string name_;
+        ros::Subscriber pose_subscriber;
+        ros::Publisher pdv_publisher;
+        turtlesim::Pose current_position;
+        turtlesim::Pose corner;
+        turtlesim::Pose point_on_lane;
+        turtlesim::Pose upper_left;
+        turtlesim::Pose lower_left;
+        turtlesim::Pose upper_right;
+        turtlesim::Pose lower_right;
+        double distance_tolerance;
+        platooning::prioritisationDrivingVector current_vector;
 
 
-    /**
-     * @brief to achieve X does Y
-     * @param msg incoming topic message
-     */
-    void templateTopicHandler(const platooning::templateMsg msg);
+        void PoseHandler(const turtlesim::Pose poseMsg);
 
-  };
+        void PublishPrioritizationDrivingVector();
+
+        void DriveToNextCorner();
+
+        double GetDistance(turtlesim::Pose goal, turtlesim::Pose current);
+
+        double CalculateSteeringAngle(turtlesim::Pose point);
+
+        void CalculatePointOnLane(double tolerance);
 
 
-} // namespace platooning
+
+    };
+}// namespace platooning
 
 #endif //PLATOONING_TEMPLATE_HPP
