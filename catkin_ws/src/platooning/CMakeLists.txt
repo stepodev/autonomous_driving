@@ -285,7 +285,7 @@ target_link_libraries(udpserver-unit-test udpserver ${catkin_LIBRARIES})
 catkin_add_gtest(template-unit-test testing/src/unittest_template.cpp)
 target_link_libraries(template-unit-test ${catkin_LIBRARIES})
 
-add_rostest_gtest(messagedistribution-unit-test launch/protocol.launch testing/src/unittest_messagedistribution.cpp)
+add_rostest_gtest(messagedistribution-unit-test launch/messagedistribution.launch testing/src/unittest_messagedistribution.cpp)
 target_link_libraries(messagedistribution-unit-test messagedistribution ${catkin_LIBRARIES})
 
 #add_rostest_gtest(platooningnode-unit-test testing/src/unittest_platooningnode.cpp)
