@@ -2,8 +2,8 @@
 // Created by stepo on 1/21/18.
 //
 
-#ifndef PLATOONING_UDP_SERVER_HPP
-#define PLATOONING_UDP_SERVER_HPP
+#ifndef PLATOONING_UDPSERVER_HPP
+#define PLATOONING_UDPSERVER_HPP
 
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
@@ -60,4 +60,4 @@ private:
 };
 
 
-#endif //PLATOONING_UDP_SERVER_HPP
+#endif //PLATOONING_UDPSERVER_HPP

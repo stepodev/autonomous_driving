@@ -19,8 +19,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_WIFI_HPP
-#define PLATOONING_WIFI_HPP
+#ifndef PLATOONING_RADIOINTERFACE_HPP
+#define PLATOONING_RADIOINTERFACE_HPP
 
 /*****************************************************************************
 ** Includes
@@ -111,4 +111,4 @@ namespace platooning {
 
 } // namespace platooning
 
-#endif //PLATOONING_WIFI_HPP
+#endif //PLATOONING_RADIOINTERFACE_HPP

@@ -19,8 +19,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_PROTOCOL_HPP
-#define PLATOONING_PROTOCOL_HPP
+#ifndef PLATOONING_MESSAGEDISTRIBUTION_HPP
+#define PLATOONING_MESSAGEDISTRIBUTION_HPP
 
 /*****************************************************************************
 ** DEFINES
@@ -140,4 +140,4 @@ namespace platooning {
 
 } // namespace platooning
 
-#endif //PLATOONING_PROTOCOL_HPP
+#endif //PLATOONING_MESSAGEDISTRIBUTION_HPP
