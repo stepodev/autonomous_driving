@@ -8,6 +8,9 @@
  * @author jonas
  **/
 
+#ifndef PLATOONING_ENVIRONMENTMAPPING_HPP
+#define PLATOONING_ENVIRONMENTMAPPING_HPP
+
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include "ros/ros.h"
@@ -24,3 +27,5 @@ namespace platooning {
     ros::Publisher pub;
   };
 }
+
+#endif //PLATOONING_ENVIRONMENTMAPPING_HPP
