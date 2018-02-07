@@ -31,6 +31,7 @@
 #include "platooning/fv_heartbeat.h"
 #include "platooning/fv_leave.h"
 #include "platooning/platooningToggle.h"
+#include "platooning/platooningState.h"
 
 #include "platooning/templateMsg.h"
 

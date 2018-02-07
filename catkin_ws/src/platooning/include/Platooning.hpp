@@ -7,18 +7,37 @@
 
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
-#include "platooning/platooningState.h"
 
 namespace platooning {
 
-	class PlatooningNode: public nodelet::Nodelet {
+	enum PlatooningState {
+		IDLE,
+		RUNNING,
+		CREATING
+	};
+
+	static std::string PlatooningStateStrings[] = {
+			"IDLE", "RUNNING", "CREATING"
+	};
+
+	class PlatoonData {
+	public:
+		std::vector<uint32_t> followers;
+		float platoon_speed;
+		float inner_platoon_distance;
+		uint32_t platoon_id;
+		uint32_t src_vehicle;
+	};
+
+	class Platooning: public nodelet::Nodelet {
 		public:
 			void onInit();
-			PlatooningNode();
-			~PlatooningNode();
+			Platooning();
+			~Platooning();
 
 		private:
 			ros::NodeHandle nh_;
+		  std::string name_ = "Platooning";
 
 			ros::Subscriber sub_fv_leave;
 			ros::Subscriber sub_lv_accept;
@@ -35,6 +54,16 @@ namespace platooning {
 			ros::Publisher pub_lv_broadcast;
 			ros::Publisher pub_fv_heartbeat;
 			ros::Publisher pub_platooning_state;
+
+			uint32_t vehicle_id_ = 3; //saved vehicle id. hardcoded for now
+
+		  //our role in the platoon. hardcoded for now
+		  bool is_leader_vehicle_ = true;
+		  bool is_follower_vehicle_ = !is_leader_vehicle_;
+
+		  //state vars
+			PlatooningState platooning_state_ = IDLE;
+		  PlatoonData platoon_data_;
 
 			void hndl_fv_leave(const platooning::fv_leave& msg);
 			void hndl_lv_accept(const platooning::lv_accept& msg);
