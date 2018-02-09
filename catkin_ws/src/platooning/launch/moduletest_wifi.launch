@@ -1,4 +1,0 @@
-<launch>
-    <node pkg="nodelet" type="nodelet" name="moduletest_wifi" args="load platooning/moduletest_wifi nodeletmanager">
-    </node>
-</launch>

@@ -1,9 +1,0 @@
-<library path="lib/libmoduletest_protocol">
-    <class name="platooning/moduletest_protocol"
-	         type="platooning::Moduletest_protocol"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Template Nodelet
-        </description>
-    </class>
-</library>

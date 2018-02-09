@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="nodelet" type="nodelet" name="radiointerface" args="load platooning/radiointerface nodeletmanager">
+    </node>
+</launch>

@@ -74,15 +74,18 @@
   <export>
     <!-- Other tools can request additional information be placed here -->
     <nodelet plugin="${prefix}/plugins/environment_mapping.xml" />
-    <nodelet plugin="${prefix}/plugins/lanekeeping.xml" />
+    <nodelet plugin="${prefix}/plugins/lanedetect.xml" />
     <nodelet plugin="${prefix}/plugins/priorization.xml" />
-    <nodelet plugin="${prefix}/plugins/protocol.xml" />
+    <nodelet plugin="${prefix}/plugins/messagedistribution.xml" />
     <nodelet plugin="${prefix}/plugins/userinterface.xml" />
     <nodelet plugin="${prefix}/plugins/vehiclecontrol.xml" />
-    <nodelet plugin="${prefix}/plugins/wifi.xml" />
-    <nodelet plugin="${prefix}/plugins/moduletest_protocol.xml" />
-    <nodelet plugin="${prefix}/plugins/moduletest_wifi.xml" />
-    <nodelet plugin="${prefix}/plugins/testrunner.xml" />
+      <nodelet plugin="${prefix}/plugins/radiointerface.xml" />
+      <nodelet plugin="${prefix}/plugins/platooning.xml" />
     <rosdoc config="rosdoc.yaml" />
+
+    <!-- testing -->
+    <nodelet plugin="${prefix}/testing/plugins/moduletest_messagedistribution.xml" />
+      <nodelet plugin="${prefix}/testing/plugins/moduletest_radiointerface.xml" />
+      <nodelet plugin="${prefix}/testing/plugins/moduletest_platooning.xml" />
   </export>
 </package>

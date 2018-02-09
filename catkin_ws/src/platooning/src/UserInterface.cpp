@@ -1,88 +1,166 @@
-//
-// Created by stepo on 12/16/17.
-//
+#include <boost/thread/thread.hpp>
+#include "../include/UserInterface.hpp"
 
-
-/**
- * @file /platooning/src/platooning.cpp
- *
- * @brief Nodelet implementation of RemoteContol
- *
- * @author stepo
- **/
-
-/*****************************************************************************
-** Includes
-*****************************************************************************/
-// %Tag(FULLTEXT)%
-#include "UserInterface.hpp"
-
-namespace platooning {
-
-
-/*****************************************************************************
-** Constructors
-*****************************************************************************/
-
-
-/**
- * @brief Template Nodelet
- */
-
-  UserInterface::UserInterface() {};
-
-
-
-/*****************************************************************************
-** Destructors
-*****************************************************************************/
-
-  UserInterface::~UserInterface() {};
-
-
-/*****************************************************************************
-** Initializers
-*****************************************************************************/
-
-  /**
-  * Set-up necessary publishers/subscribers
-  * @return true, if successful
-  */
-  void UserInterface::onInit() {
-
-    //subscribers of protocol nodelet
-    templateSubscriber = nh_.subscribe("templateMsg", 10,
-                                                  &UserInterface::templateTopicHandler, this);
-
-    //publisher of forced driving vector
-    templatePublisher = nh_.advertise< platooning::templateMsg >("commands/templateMsg", 10);
-
-
+namespace platooning
+{
+	UserInterface::UserInterface() {};
+	UserInterface::~UserInterface() {
+    spin_report_ = false;
+    report_spinner_thread_.interrupt();
   };
 
+	void UserInterface::onInit() {
 
-/*****************************************************************************
-** Handlers
-*****************************************************************************/
+    ui_msg_ = boost::shared_ptr<platooning::userInterface>( new platooning::userInterface );
 
-  /*
-   * handling an event and publishing something
-   */
-  void UserInterface::templateTopicHandler(const platooning::templateMsg msg) {
+		pub_userinterface_ = nh_.advertise<userInterface>(topics::USERINTERFACE, 1,true);
 
-    NODELET_DEBUG("handling a template");
+    sub_in_lv_broadcast_ = nh_.subscribe(topics::IN_LV_BROADCAST, 1,
+                                                  &UserInterface::hndl_in_lv_broadcast, this);
+    sub_in_lv_accept_ = nh_.subscribe(topics::IN_LV_ACCEPT, 1,
+                                                  &UserInterface::hndl_in_lv_accept, this);
+    sub_in_lv_reject_ = nh_.subscribe(topics::IN_LV_REJECT, 1,
+                                                  &UserInterface::hndl_in_lv_reject, this);
+    sub_out_lv_broadcast_ = nh_.subscribe(topics::OUT_LV_BROADCAST, 1,
+                                                  &UserInterface::hndl_out_lv_broadcast, this);
+    sub_out_lv_accept_ = nh_.subscribe(topics::OUT_LV_ACCEPT, 1,
+                                                  &UserInterface::hndl_out_lv_accept, this);
+    sub_out_lv_reject_ = nh_.subscribe(topics::OUT_LV_REJECT, 1,
+                                                  &UserInterface::hndl_out_lv_reject, this);
+    sub_in_fv_request = nh_.subscribe(topics::IN_FV_REQUEST, 1,
+                                                  &UserInterface::hndl_in_fv_request, this);
+    sub_in_fv_heartbeat = nh_.subscribe(topics::IN_FV_HEARTBEAT, 1,
+                                                  &UserInterface::hndl_in_fv_heartbeat, this);
+    sub_in_fv_leave = nh_.subscribe(topics::IN_FV_LEAVE, 1,
+                                                  &UserInterface::hndl_in_fv_leave, this);
+    sub_out_fv_request = nh_.subscribe(topics::OUT_FV_REQUEST, 1,
+                                                  &UserInterface::hndl_out_fv_request, this);
+    sub_out_fv_heartbeat = nh_.subscribe(topics::OUT_FV_HEARTBEAT, 1,
+                                                  &UserInterface::hndl_out_fv_heartbeat, this);
+    sub_out_fv_leave = nh_.subscribe(topics::OUT_FV_LEAVE, 1,
+                                                  &UserInterface::hndl_out_fv_leave, this);
+    sub_toggle_remotecontrol = nh_.subscribe(topics::TOGGLE_REMOTECONTROL, 1,
+                                                  &UserInterface::hndl_remotecontrol_toggle, this);
+    sub_toggle_platooning = nh_.subscribe(topics::TOGGLE_PLATOONING, 1,
+                                                  &UserInterface::hndl_platooning_toggle, this);
+    sub_remotecontrol_input = nh_.subscribe(topics::REMOTECONTROLINPUT, 1,
+                                                  &UserInterface::hndl_remotecontrol_input, this);
+    sub_speed = nh_.subscribe(topics::SPEED, 1,
+                                                  &UserInterface::hndl_speed, this);
+    sub_distance_to_obj = nh_.subscribe(topics::DISTANCE_TO_OBJECT, 1,
+                                                  &UserInterface::hndl_distance_to_obj, this);
+    sub_vehiclecontrol = nh_.subscribe(topics::VEHICLECONTROL, 1,
+                                                  &UserInterface::hndl_vehicle_control, this);
+    sub_steeringangle = nh_.subscribe(topics::STEERINGANGLE, 1,
+                                                  &UserInterface::hndl_steering_angle, this);
+    sub_acceleration = nh_.subscribe(topics::ACCELERATION, 1,
+                                                  &UserInterface::hndl_acceleration, this);
+    sub_platooning_state = nh_.subscribe(topics::PLATOONINGSTATE, 1,
+                                         &UserInterface::hndl_platooningState, this);
 
-    if( msg.templatebool || !msg.templatebool ) {
-      templatePublisher.publish(msg);
-    } else {
-      NODELET_WARN("warning you of stuff");
-    }
+    report_spinner_thread_ = boost::thread( [this] {
+      try {
+        while( this->spin_report_) {
+          if( pub_userinterface_.getNumSubscribers() > 0 ) {
+            this->pub_userinterface_.publish(this->ui_msg_);
+          }
+          boost::this_thread::sleep_for(boost::chrono::milliseconds(500));
+        }
+      }catch( std::exception &ex ) {
+        std::cerr << "[" + this->name_ + "] reportthread crash with " << ex.what() << std::endl;
+      }
+    });
+  };
+
+  void UserInterface::hndl_in_lv_broadcast(const lv_broadcast &msg) {
+    ui_msg_->inner_platoon_distance = msg.ipd;
+    ui_msg_->platoon_speed = msg.ps;
+    std::copy(msg.followers.begin(), msg.followers.end(), std::back_inserter(ui_msg_->platoon_members));
+    ui_msg_->platoon_size = msg.followers.size();
+  }
+
+  void UserInterface::hndl_in_lv_accept(const lv_accept &msg) {
 
   }
 
+  void UserInterface::hndl_in_lv_reject(const lv_reject &msg) {
 
+  }
 
-} // namespace platooning
+  void UserInterface::hndl_in_fv_request(const fv_request &msg) {
+
+  }
+
+  void UserInterface::hndl_in_fv_leave(const fv_leave &msg) {
+
+  }
+
+  void UserInterface::hndl_in_fv_heartbeat(const fv_heartbeat &msg) {
+
+  }
+
+  void UserInterface::hndl_out_lv_broadcast(const lv_broadcast &msg) {
+
+  }
+
+  void UserInterface::hndl_out_lv_accept(const lv_accept &msg) {
+
+  }
+
+  void UserInterface::hndl_out_lv_reject(const lv_reject &msg) {
+
+  }
+
+  void UserInterface::hndl_out_fv_request(const fv_request &msg) {
+
+  }
+
+  void UserInterface::hndl_out_fv_leave(const fv_leave &msg) {
+
+  }
+
+  void UserInterface::hndl_out_fv_heartbeat(const fv_heartbeat &msg) {
+
+  }
+
+  void UserInterface::hndl_remotecontrol_toggle(const remotecontrolToggle &msg) {
+    ui_msg_->enable_remotecontrol = msg.enable_remotecontrol;
+  }
+
+  void UserInterface::hndl_platooning_toggle(const platooningToggle &msg) {
+
+  }
+
+  void UserInterface::hndl_remotecontrol_input(const remotecontrolInput &msg) {
+
+  }
+
+  void UserInterface::hndl_distance_to_obj(const distanceToObj &msg) {
+    ui_msg_->actual_distance = msg.distance_to_obj;
+  }
+
+  void UserInterface::hndl_speed(const speed &msg) {
+    ui_msg_->speed = msg.speed;
+  }
+
+  void UserInterface::hndl_vehicle_control(const vehiclecontrol &msg) {
+
+  }
+
+  void UserInterface::hndl_steering_angle(const steeringAngle &msg) {
+
+  }
+
+  void UserInterface::hndl_acceleration(const acceleration &msg) {
+
+  }
+
+  void UserInterface::hndl_platooningState(const platooningState &msg) {
+    ui_msg_->src_vehicle = msg.vehicle_id;
+    ui_msg_->platooning_state = msg.platooning_state;
+    ui_msg_->following_vehicle = msg.i_am_FV;
+    ui_msg_->leading_vehicle = msg.i_am_LV;
+  }
+}
 
 PLUGINLIB_EXPORT_CLASS(platooning::UserInterface, nodelet::Nodelet);
-// %EndTag(FULLTEXT)%

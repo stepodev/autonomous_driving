@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="nodelet" type="nodelet" name="lanedetect" args="load platooning/lanedetect standalone_nodelet">
+    </node>
+</launch>
