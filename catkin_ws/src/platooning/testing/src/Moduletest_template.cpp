@@ -10,7 +10,6 @@
 ** Includes
 *****************************************************************************/
 
-#include <Moduletest_messagedistribution.hpp>
 #include "Moduletest_template.hpp"
 
 // %Tag(FULLTEXT)%

@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="nodelet" type="nodelet" name="moduletest_platooning" args="load platooning/moduletest_platooning nodeletmanager">
+    </node>
+</launch>

@@ -39,7 +39,7 @@ namespace platooning {
     message.src_vehicle = root.get<uint32_t>("src_vehicle");
     message.platoon_id = root.get<uint32_t>("platoon_id");
     message.ipd = root.get<float>("ipd");
-    message.pd = root.get<float>("pd");
+    message.ps = root.get<float>("ps");
   }
 
   void decode_json(const std::string &json, lv_accept &message) {
@@ -74,7 +74,7 @@ namespace platooning {
 
     message.src_vehicle = root.get<uint32_t>("src_vehicle");
     //msgfields.ipd = root.get<float>("ipd");
-    //msgfields.ipd = root.get<float>("pd");
+    //msgfields.ps = root.get<float>("ps");
 
   }
 
@@ -154,7 +154,7 @@ namespace platooning {
 
     root.put("src_vehicle", message.src_vehicle);
     root.add_child("followers", vector_as_json<uint32_t>(message.followers));
-    root.put("pd", message.pd);
+    root.put("ps", message.ps);
     root.put("ipd", message.ipd);
     root.put("platoon_id", message.platoon_id);
 

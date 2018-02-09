@@ -35,8 +35,8 @@ void Moduletest::finalize_test(TestResult result) {
     std::time_t t = std::time(nullptr);
     std::put_time(std::localtime(&t), "%c %Z");
     ss << "[" << name_ << "]["
+       <<  current_test_ << "]["
        << (result.success ? "SUCCESS" : "FAILURE") << "] "
-       <<  current_test_
        << result.comment << std::endl;
 
     if (!result.success) {

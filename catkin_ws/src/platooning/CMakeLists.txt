@@ -245,6 +245,10 @@ add_library(moduletest_radiointerface testing/include/Moduletest_radiointerface.
 add_dependencies(moduletest_radiointerface topics moduletest udpserver radiointerface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_radiointerface topics moduletest udpserver ${catkin_LIBRARIES})
 
+add_library(moduletest_platooning testing/include/Moduletest_platooning.hpp testing/src/Moduletest_platooning.cpp)
+add_dependencies(moduletest_platooning messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_platooning messagetypes moduletest ${catkin_LIBRARIES})
+
 add_library(moduletest_template testing/include/Moduletest_template.hpp testing/src/Moduletest_template.cpp)
 add_dependencies(moduletest_template messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
 target_link_libraries(moduletest_template messagetypes moduletest ${catkin_LIBRARIES})

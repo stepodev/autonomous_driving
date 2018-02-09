@@ -1,4 +1,4 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="platooning" args="load platooning/platooning platooning">
+    <node pkg="nodelet" type="nodelet" name="platooning" args="load platooning/platooning nodeletmanager">
     </node>
 </launch>

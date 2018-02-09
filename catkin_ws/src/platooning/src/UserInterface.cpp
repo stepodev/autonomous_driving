@@ -74,7 +74,7 @@ namespace platooning
 
   void UserInterface::hndl_in_lv_broadcast(const lv_broadcast &msg) {
     ui_msg_->inner_platoon_distance = msg.ipd;
-    ui_msg_->platoon_speed = msg.pd;
+    ui_msg_->platoon_speed = msg.ps;
     std::copy(msg.followers.begin(), msg.followers.end(), std::back_inserter(ui_msg_->platoon_members));
     ui_msg_->platoon_size = msg.followers.size();
   }

@@ -1,6 +1,6 @@
-<library path="lib/libtestrunner">
-    <class name="platooning/testrunner"
-	         type="platooning::Testrunner"
+<library path="lib/libplatooning">
+    <class name="platooning/platooning"
+	         type="platooning::Platooning"
             base_class_type="nodelet::Nodelet">
         <description>
             Template Nodelet
