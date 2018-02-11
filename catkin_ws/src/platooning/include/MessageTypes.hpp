@@ -19,10 +19,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp> //json parsing and generating
 
-#include <platooning/userInterface.h>
-#include <platooning/remotecontrolInput.h>
-#include <platooning/remotecontrolToggle.h>
-
+#include "platooning/remotecontrolToggle.h"
+#include "platooning/userInterface.h"
 #include "platooning/platoonProtocol.h"
 #include "platooning/lv_broadcast.h"
 #include "platooning/lv_accept.h"
@@ -32,6 +30,7 @@
 #include "platooning/fv_leave.h"
 #include "platooning/platooningToggle.h"
 #include "platooning/platooningState.h"
+#include "platooning/remotecontrolInput.h"
 
 #include "platooning/templateMsg.h"
 

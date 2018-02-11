@@ -44,7 +44,7 @@ protected:
   std::list<boost::function<void()>> testcases_to_run_;
 
   void set_result_filepath(std::string str) { test_result_filepath_ = std::move(str); }
-  void set_current_test(std::string str) { current_test_ = std::move(str); }
+  void set_current_test(std::string str);
   std::string get_current_test() { return current_test_; }
   void set_timeout( boost::posix_time::time_duration s) { timeout_ = s;};
 

@@ -202,8 +202,6 @@ void Platooning::hndl_msg_lv_reject(const platooning::lv_reject &msg) {
 void Platooning::hndl_msg_fv_request(const platooning::fv_request &msg) {
 	NODELET_WARN("handling fv_request");
 
-	std::cout << "ASDFASDF" << std::endl;
-
 	if (platooning_state_ == IDLE) {
 		return;
 	}
@@ -312,6 +310,7 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 	if( !msg.enable_platooning ) {
 		//turn off platooning as FV
 		if ( platoon_role_ == FV) {
+
 			platooning_state_ = IDLE;
 			fv_heartbeat_sender_.cancel();
 
@@ -337,7 +336,6 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 		}
 	} // end msg.enable == false
 
-
 	if( msg.enable_platooning) {
 		//received platooning enable, start in creating.
 		//if other state than IDLE, error
@@ -360,7 +358,7 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 			platoon_data_.ps = msg.platoon_speed;
 			platoon_data_.platooning_state = PlatooningStateStrings[platooning_state_];
 
-			auto msg_to_send = boost::shared_ptr<platooning::platooningState>(new platooning::platooningState());
+			auto msg_to_send = boost::shared_ptr<platooningState>(new platooningState());
 			//does this really copy?
 			*msg_to_send = platoon_data_;
 			pub_platooning_state.publish(msg_to_send);

@@ -103,6 +103,8 @@ void Moduletest_platooning::hndl_recv_othermsg(const platooning::templateMsg &ms
 
 void Moduletest_platooning::send_platoontoggle_recv_platoonstate_creating() {
 
+	set_current_test("send_platoontoggle_recv_platoonstate_creating");
+
 	pub_map_.clear();
 	pub_map_.emplace(topics::TOGGLE_PLATOONING, ros::Publisher());
 	pub_map_[topics::TOGGLE_PLATOONING] = nh_.advertise<platooningToggle>(topics::TOGGLE_PLATOONING, 1);
@@ -113,7 +115,10 @@ void Moduletest_platooning::send_platoontoggle_recv_platoonstate_creating() {
 	                                                &Moduletest_platooning::hndl_testcase_send_platoontoggle_recv_platoonstate_creating,
 	                                                this);
 
-
+	//wait for platooning nodelet to subscribe
+	while(pub_map_[topics::TOGGLE_PLATOONING].getNumSubscribers() < 1 ) {
+		boost::this_thread::sleep_for( boost::chrono::milliseconds(200));
+	}
 
 	auto msg = boost::shared_ptr<platooningToggle>( new platooningToggle);
 	msg->enable_platooning = true;
@@ -121,8 +126,6 @@ void Moduletest_platooning::send_platoontoggle_recv_platoonstate_creating() {
 	msg->inner_platoon_distance = 4;
 
 	pub_map_[topics::TOGGLE_PLATOONING].publish(msg);
-
-	std::cout << "hello" << std::endl;
 
 }
 
@@ -165,19 +168,36 @@ void Moduletest_platooning::hndl_testcase_send_platoontoggle_recv_platoonstate_c
 }
 
 void Moduletest_platooning::send_fv_request_recv_lv_accept() {
+
+	set_current_test("send_fv_request_recv_lv_accept");
+
 	pub_map_.clear();
 	pub_map_.emplace(topics::TOGGLE_PLATOONING, ros::Publisher());
 	pub_map_[topics::TOGGLE_PLATOONING] = nh_.advertise<platooningToggle>(topics::TOGGLE_PLATOONING, 1);
 
-	pub_map_.clear();
 	pub_map_.emplace(topics::IN_FV_REQUEST, ros::Publisher());
-	pub_map_[topics::IN_FV_REQUEST] = nh_.advertise<platooningToggle>(topics::IN_FV_REQUEST, 1);
+	pub_map_[topics::IN_FV_REQUEST] = nh_.advertise<fv_request>(topics::IN_FV_REQUEST, 1);
 
 	sub_map_.clear();
 	sub_map_.emplace(topics::OUT_LV_ACCEPT, ros::Subscriber());
 	sub_map_[topics::OUT_LV_ACCEPT] = nh_.subscribe(topics::OUT_LV_ACCEPT, 1,
 	                                                  &Moduletest_platooning::hndl_tc_send_fv_request_recv_lv_accept,
 	                                                  this);
+
+	//wait for platooning nodelet to subscribe
+	while(pub_map_[topics::TOGGLE_PLATOONING].getNumSubscribers() < 1 ) {
+		boost::this_thread::sleep_for( boost::chrono::milliseconds(200));
+	}
+
+	//wait for platooning nodelet to subscribe
+	while(pub_map_[topics::IN_FV_REQUEST].getNumSubscribers() < 1 ) {
+		boost::this_thread::sleep_for( boost::chrono::milliseconds(200));
+	}
+
+	//wait for platooning nodelet to subscribe
+	while(sub_map_[topics::OUT_LV_ACCEPT].getNumPublishers() < 1 ) {
+		boost::this_thread::sleep_for( boost::chrono::milliseconds(200));
+	}
 
 	auto toggle_msg = boost::shared_ptr<platooningToggle>( new platooningToggle);
 	toggle_msg->enable_platooning = true;
