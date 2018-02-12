@@ -68,7 +68,7 @@ add_message_files(
         ## environment mapping messages
         distanceToObj.msg
         ########################
-        ## priorization messages
+        ## prioritization messages
         oughtData.msg
         ########################
         ## protocol messages
@@ -189,9 +189,9 @@ add_library(lanedetect include/LaneDetect.hpp src/LaneDetect.cpp)
 add_dependencies(lanedetect ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(lanedetect ${catkin_LIBRARIES})
 
-add_library(priorization include/Priorization.hpp src/Priorization.cpp)
-add_dependencies(priorization ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(priorization ${catkin_LIBRARIES})
+add_library(prioritization include/Prioritization.hpp src/Prioritization.cpp)
+add_dependencies(prioritization ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(prioritization ${catkin_LIBRARIES})
 
 add_library(messagedistribution include/MessageTypes.hpp include/MessageDistribution.hpp src/MessageDistribution.cpp)
 add_dependencies(messagedistribution ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
@@ -325,7 +325,7 @@ target_link_libraries(messagedistribution-unit-test messagedistribution ${catkin
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-install(TARGETS environment_mapping lanedetect priorization messagedistribution userinterface vehiclecontrol radiointerface template
+install(TARGETS environment_mapping lanedetect prioritization messagedistribution userinterface vehiclecontrol radiointerface template
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

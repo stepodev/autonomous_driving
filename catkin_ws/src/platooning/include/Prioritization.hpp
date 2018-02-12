@@ -19,8 +19,9 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_PRIORISATION_HPP
-#define PLATOONING_PRIORISATION_HPP
+#ifndef PLATOONING_PRIORITIZATION_HPP
+#define PLATOONING_PRIORITIZATION_HPP
+
 
 /*****************************************************************************
 ** Includes
@@ -29,7 +30,6 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include "platooning/templateMsg.h" //includes topic aka message
 
 namespace platooning {
 
@@ -68,32 +68,46 @@ namespace platooning {
  * @warning Warning.
  */
 
-  class Priorization : public nodelet::Nodelet {
-  public:
-    virtual void onInit();
+    class Prioritization : public nodelet::Nodelet {
+    public:
+        virtual void onInit();
 
-    Priorization(ros::NodeHandle &nh, std::string &name);
+        Prioritization(ros::NodeHandle &nh, std::string &name);
 
-    Priorization();
+        Prioritization();
 
-    ~Priorization();
+        ~Prioritization();
 
-  private:
-    ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-    std::string name_;
-    ros::Subscriber templateSubscriber;
-    ros::Publisher templatePublisher;
+    private:
+        ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
+        std::string name_;
 
+        //Subscribers
+        ros::Subscriber environtmentMappingSubscriber;
+        ros::Subscriber laneKeepingSubscriber;
+        ros::Subscriber platooningSubscriber;
+        ros::Subscriber remoteControlSubscriber;
 
-    /**
-     * @brief to achieve X does Y
-     * @param msg incoming topic message
-     */
-    void templateTopicHandler(const platooning::templateMsg msg);
+        //Publishers
+        ros::Publisher platooningPublisher;
+        ros::Publisher userInterfacePublisher;
+        ros::Publisher vehicleControlPublisher;
 
-  };
+        /**
+         * @brief to achieve X does Y
+         * @param msg incoming topic message
+         */
+        void environmentMappingHandler(int distanceToObject);
+
+        void laneKeepingHandler(float steeringAngle);
+
+        void remoteControlHandler(int remoteDrivingVector, bool remoteControlOn);
+
+        void platooningHandler();
+
+    };
 
 
 } // namespace platooning
 
-#endif //PLATOONING_PRIORISATION_HPP
+#endif //PLATOONING_PRIORITIZATION_HPP
