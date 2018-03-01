@@ -17,48 +17,52 @@
 #include <ros/ros.h>
 
 class TestResult {
-public:
-  bool success = false;
-  std::string comment = "";
+  public:
+	bool success = false;
+	std::string comment = "";
 };
 
 class Moduletest : public nodelet::Nodelet {
 
-public:
-  Moduletest();
+  public:
+	Moduletest();
 
-  ~Moduletest();
+	~Moduletest();
 
-protected:
-  std::string name_;
-  std::string test_result_filepath_ = "test1.txt";
-  ros::NodeHandle nh_;
+  protected:
+	std::string name_;
+	std::string test_result_filepath_ = "test1.txt";
+	ros::NodeHandle nh_;
 
-  boost::asio::io_service io_;
-  boost::asio::deadline_timer testcase_timer_;
-  boost::posix_time::time_duration timeout_;
-  boost::thread_group threadpool_;
+	boost::asio::io_service io_;
+	boost::asio::deadline_timer testcase_timer_;
+	boost::posix_time::time_duration timeout_;
+	boost::thread_group threadpool_;
 
-  std::map<std::string, ros::Publisher> pub_map_;
-  std::map<std::string, ros::Subscriber> sub_map_;
-  std::list<boost::function<void()>> testcases_to_run_;
+	std::map<std::string, ros::Publisher> pub_map_;
+	std::map<std::string, ros::Subscriber> sub_map_;
+	std::list<boost::function<void()>> testcases_to_run_;
 
-  void set_result_filepath(std::string str) { test_result_filepath_ = std::move(str); }
-  void set_current_test(std::string str);
-  std::string get_current_test() { return current_test_; }
-  void set_timeout( boost::posix_time::time_duration s) { timeout_ = s;};
+	boost::function<void()> timeout_callback_;
+	bool expects_timeout_;
 
-  void register_testcases(boost::function<void()> test_case_fun);
+	void set_result_filepath(std::string str) { test_result_filepath_ = std::move(str); }
+	void set_current_test(std::string str);
+	std::string get_current_test() { return current_test_; }
+	void set_timeout(boost::posix_time::time_duration s) { timeout_ = s; };
 
-  void finalize_test(TestResult result);
+	void register_testcases(boost::function<void()> test_case_fun);
 
-  void hndl_testcase_timeout( const boost::system::error_code & );
+	void finalize_test(TestResult result);
 
-  void start_tests();
+	void hndl_testcase_timeout(const boost::system::error_code &);
 
-private:
-  std::string current_test_;
+	void start_tests();
+
+	void register_timeout_callback( boost::function<void()> cb, bool is_expected );
+
+  private:
+	std::string current_test_;
 };
-
 
 #endif //PLATOONING_MODULETEST_HPP

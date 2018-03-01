@@ -30,9 +30,10 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
+#include "MessageTypes.hpp"
+#include "Topics.hpp"
 
 namespace platooning {
-
 
 /**
  * @brief Example showing how to document a function with Doxygen.
@@ -68,45 +69,52 @@ namespace platooning {
  * @warning Warning.
  */
 
-    class Prioritization : public nodelet::Nodelet {
-    public:
-        virtual void onInit();
+enum PrioritizationState {
+	NONE,
+	REMOTECONTROL,
+	PLATOONING,
+};
 
-        Prioritization(ros::NodeHandle &nh, std::string &name);
+const std::string PrioritizationStateString[] {
+	"NONE",
+	"REMOTECONTROL",
+	"PLATOONING"
+};
 
-        Prioritization();
+class Prioritization : public nodelet::Nodelet {
+  public:
+	virtual void onInit();
 
-        ~Prioritization();
+	Prioritization();
 
-    private:
-        ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-        std::string name_;
+	~Prioritization();
 
-        //Subscribers
-        ros::Subscriber environtmentMappingSubscriber;
-        ros::Subscriber laneKeepingSubscriber;
-        ros::Subscriber platooningSubscriber;
-        ros::Subscriber remoteControlSubscriber;
+  private:
+	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
+	std::string name_;
+	platooning::oughtData current_oughtData_;
+	PrioritizationState state_;
 
-        //Publishers
-        ros::Publisher platooningPublisher;
-        ros::Publisher userInterfacePublisher;
-        ros::Publisher vehicleControlPublisher;
+	//Subscribers
+	ros::Subscriber sub_remotecontrolInput;
+	ros::Subscriber sub_remotecontrolToggle;
+	ros::Subscriber sub_platooningToggle;
+	ros::Subscriber sub_platooningState;
 
-        /**
-         * @brief to achieve X does Y
-         * @param msg incoming topic message
-         */
-        void environmentMappingHandler(int distanceToObject);
+	//Publishers
+	ros::Publisher pub_oughtData;
 
-        void laneKeepingHandler(float steeringAngle);
+	/**
+	 * @brief to achieve X does Y
+	 * @param msg incoming topic message
+	 */
 
-        void remoteControlHandler(int remoteDrivingVector, bool remoteControlOn);
+	void hndl_remotecontrolInput(platooning::remotecontrolInput);
+	void hndl_remotecontrolToggle(platooning::remotecontrolToggle);
+	void hndl_platooningToggle(platooning::platooningToggle);
+	void hndl_platooningState(platooning::platooningState);
 
-        void platooningHandler();
-
-    };
-
+};
 
 } // namespace platooning
 

@@ -44,6 +44,9 @@ const std::string VEHICLECONTROL = "vehiclecontrol";
 const std::string STEERINGANGLE = "steeringangle";
 const std::string ACCELERATION = "acceleration";
 
+//prioritziation topics
+const std::string OUGHTDATA = "oughtData";
+
 //template
 const std::string TEMPLATETOPIC = "templateTopic";
 

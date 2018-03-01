@@ -10,7 +10,7 @@
 ** Includes
 *****************************************************************************/
 
-#include "Moduletest_template.hpp"
+#include "Moduletest_prioritization.hpp"
 
 // %Tag(FULLTEXT)%
 namespace platooning {
@@ -24,13 +24,13 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-Moduletest_template::Moduletest_template() = default;
+Moduletest_prioritization::Moduletest_prioritization() = default;
 
 /*****************************************************************************
 ** Destructors
 *****************************************************************************/
 
-Moduletest_template::~Moduletest_template() = default;
+Moduletest_prioritization::~Moduletest_prioritization() = default;
 
 
 /*****************************************************************************
@@ -41,11 +41,11 @@ Moduletest_template::~Moduletest_template() = default;
 * Set-up necessary publishers/subscribers
 * @return true, if successful
 */
-void Moduletest_template::onInit() {
+void Moduletest_prioritization::onInit() {
 
-	name_ = "Moduletest_template";
+	name_ = "Moduletest_prioritization";
 
-	register_testcases(boost::bind(&Moduletest_template::pub_templatemsg_recv_othermsg, this));
+	register_testcases(boost::bind(&Moduletest_prioritization::pub_platooningState_recv_oughtData, this));
 
 	NODELET_INFO(std::string("[" + name_ + "] init done").c_str());
 
@@ -56,37 +56,38 @@ void Moduletest_template::onInit() {
 ** Testcases
 *****************************************************************************/
 
-void Moduletest_template::pub_templatemsg_recv_othermsg() {
+void Moduletest_prioritization::pub_platooningState_recv_oughtData() {
 
-	set_current_test("pub_templatemsg_recv_othermsg");
+	set_current_test("pub_platooningState_recv_oughtData");
 	NODELET_INFO(std::string("[" + name_ + "] started testcase " + get_current_test()).c_str());
 
 	//mockup publishers
 	pub_map_.clear();
-	pub_map_.emplace(topics::TEMPLATETOPIC, ros::Publisher());
-	pub_map_[topics::TEMPLATETOPIC] = nh_.advertise<templateMsg>(topics::TEMPLATETOPIC, 1);
+	pub_map_.emplace(topics::PLATOONINGSTATE, ros::Publisher());
+	pub_map_[topics::PLATOONINGSTATE] = nh_.advertise<templateMsg>(topics::PLATOONINGSTATE, 1);
 
 	//mockup subscribers
 	sub_map_.clear();
-	sub_map_.emplace(topics::TEMPLATETOPIC, ros::Subscriber());
-	sub_map_[topics::TEMPLATETOPIC] = nh_.subscribe(topics::TEMPLATETOPIC, 1,
-	                                                &Moduletest_template::hndl_recv_othermsg,
-	                                                this);
+	sub_map_.emplace(topics::OUGHTDATA, ros::Subscriber());
+	sub_map_[topics::OUGHTDATA] = nh_.subscribe(topics::OUGHTDATA, 1,
+	                                            &Moduletest_prioritization::hndl_recv_oughtData,
+	                                            this);
 
-	boost::shared_ptr<templateMsg> inmsg = boost::shared_ptr<templateMsg>(new templateMsg);
+	boost::shared_ptr<platooningState> inmsg = boost::shared_ptr<platooningState>(new platooningState);
 
-	inmsg->templatebool = true;
+	inmsg->ipd = 3;
+	inmsg->ps = 4;
 
-	pub_map_[topics::TEMPLATETOPIC].publish(inmsg);
+	pub_map_[topics::PLATOONINGSTATE].publish(inmsg);
 
 }
 
-void Moduletest_template::hndl_recv_othermsg(const platooning::templateMsg &msg) {
+void Moduletest_prioritization::hndl_recv_oughtData(platooning::oughtData msg) {
 
 	TestResult res;
 	res.success = true;
 
-	if (msg.templatebool != true) {
+	if (msg.distance != 3 || msg.speed != 4) {
 		res.success = false;
 		res.comment = "this is a useful comment what happened and why";
 	}
@@ -101,5 +102,5 @@ void Moduletest_template::hndl_recv_othermsg(const platooning::templateMsg &msg)
 
 } // namespace platooning
 
-PLUGINLIB_EXPORT_CLASS(platooning::Moduletest_template, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(platooning::Moduletest_prioritization, nodelet::Nodelet);
 // %EndTag(FULLTEXT)%

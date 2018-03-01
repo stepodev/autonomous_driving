@@ -32,7 +32,6 @@
 
 namespace platooning {
 
-
 /**
  * @brief Example showing how to document a function with Doxygen.
  *
@@ -67,25 +66,23 @@ namespace platooning {
  * @warning Warning.
  */
 
-  class Moduletest_template : public Moduletest {
+class Moduletest_template : public Moduletest {
   public:
-    void onInit();
+	void onInit();
 
-    Moduletest_template();
+	Moduletest_template();
 
-    ~Moduletest_template();
+	~Moduletest_template();
 
   private:
-    /**
-    * @brief template_testcase does x,y,z and expects a,b,c
-    */
-    void pub_templatemsg_recv_othermsg();
+	/**
+	* @brief template_testcase does x,y,z and expects a,b,c
+	*/
+	void pub_templatemsg_recv_othermsg();
 
-    void hndl_recv_othermsg(const platooning::templateMsg &msg);
+	void hndl_recv_othermsg(const platooning::templateMsg &msg);
 
-
-  };
-
+};
 
 } // namespace platooning
 

@@ -17,10 +17,17 @@ Moduletest::~Moduletest() {
 		NODELET_ERROR(std::string("[" + name_ + "] threw " + ex.what()).c_str());
 	}
 
+	expects_timeout_ = false;
+
 }
 
 void Moduletest::register_testcases(boost::function<void()> test_case_fun) {
 	testcases_to_run_.emplace_back(test_case_fun);
+}
+
+void Moduletest::register_timeout_callback( boost::function<void()> cb, bool is_expected ) {
+	timeout_callback_ = std::move(cb);
+	expects_timeout_ = true;
 }
 
 void Moduletest::finalize_test(TestResult result) {
@@ -49,6 +56,8 @@ void Moduletest::finalize_test(TestResult result) {
 
 		of.close();
 
+		expects_timeout_ = false;
+
 		start_tests();
 	} catch (std::exception &ex) {
 		NODELET_FATAL((std::string("[" + name_ + "] threw ") + ex.what()).c_str());
@@ -62,10 +71,21 @@ void Moduletest::hndl_testcase_timeout(const boost::system::error_code &ec) {
 			return;
 		}
 
-		if (!ec) {
+		if (ec == boost::asio::error::timed_out && timeout_callback_ == nullptr ) {
 			TestResult res;
 			res.success = false;
 			res.comment = "testcase timeout";
+
+			finalize_test(res);
+		}
+
+		if( ec == boost::asio::error::timed_out && timeout_callback_ != nullptr ) {
+
+			timeout_callback_();
+
+			TestResult res;
+			res.success = true;
+			res.comment = "expected testcase timeout";
 
 			finalize_test(res);
 		}

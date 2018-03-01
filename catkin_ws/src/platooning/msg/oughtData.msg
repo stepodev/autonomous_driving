@@ -1,2 +1,2 @@
-float32 steeringAngle
+float32 distance
 float32 speed

@@ -29,105 +29,109 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-    Prioritization::Prioritization() {};
+Prioritization::Prioritization() {};
 
 /*****************************************************************************
 ** Destructors
 *****************************************************************************/
-    Prioritization::~Prioritization() {};
+Prioritization::~Prioritization() {};
+
 
 /*****************************************************************************
-** Structures
-*****************************************************************************/
-
-    struct drivingVector {
-        int velocity = 0;
-        float steeringAngle = 0;
-        int distanceToObject = 0;
-    } currentDrivingVector;
-
-    /*****************************************************************************
 ** Class Variables
 *****************************************************************************/
 
-    bool remoteControlMode = false;
 
 /*****************************************************************************
 ** Initializers
 *****************************************************************************/
 
-    /**
-    * Set-up necessary publishers/subscribers
-    * @return true, if successful
-    */
-    void Prioritization::onInit() {
+/**
+* Set-up necessary publishers/subscribers
+* @return true, if successful
+*/
+void Prioritization::onInit() {
 
-	    /*
-        //Subscriptions
-        environtmentMappingSubscriber = nh_.subscribe("distanceToObject", 10, environmentMappingHandler,
-                                                      this);
-        laneKeepingSubscriber = nh_.subscribe("steeringAngle", 10, laneKeepingHandler, this);
-        //platooningSubscriber = nh_.subscribe("templateMsg", 10, platooningHandler, this);
-        remoteControlSubscriber = nh_.subscribe("remoteDrivingVector/remoteControlOn-Off", 10, remoteControlHandler, this);
+	sub_remotecontrolToggle = nh_.subscribe(topics::TOGGLE_REMOTECONTROL, 1,
+	                                        &Prioritization::hndl_remotecontrolToggle, this);
+	sub_remotecontrolInput = nh_.subscribe(topics::REMOTECONTROLINPUT, 1,
+	                                       &Prioritization::hndl_remotecontrolInput, this);
+	sub_platooningToggle = nh_.subscribe(topics::TOGGLE_PLATOONING, 1,
+	                                     &Prioritization::hndl_platooningToggle, this);
+	sub_platooningState = nh_.subscribe(topics::PLATOONINGSTATE, 1,
+	                                    &Prioritization::hndl_platooningState, this);
 
-        //Publications
-        platooningPublisher = nh_.advertise<int>("prioritizationDrivingVector", 10);
-        userInterfacePublisher = nh_.advertise<int>("stateData", 10);
-        vehicleControlPublisher = nh_.advertise<int>("prioritizationDrivingVector", 10);
-        */
-    };
+	pub_oughtData = nh_.advertise<platooning::oughtData>(topics::OUGHTDATA, 100);
 
+	state_ = PrioritizationState::NONE;
+
+	current_oughtData_.speed = 0;
+	current_oughtData_.distance = 0;
+}
 
 /*****************************************************************************
 ** Handlers
 *****************************************************************************/
 
-    /*
-     * handling an event and publishing something
-     */
-    void Prioritization::environmentMappingHandler(int distanceToObject) {
-        if (distanceToObject < 10) {
-            currentDrivingVector.velocity = 0;
-        } else {
+void Prioritization::hndl_remotecontrolToggle(platooning::remotecontrolToggle msg) {
 
-        }
-        //vehicleControlPublisher.publish()
-    }
+	if (state_ != PrioritizationState::REMOTECONTROL && msg.enable_remotecontrol) {
+		state_ = PrioritizationState::REMOTECONTROL;
+	}
 
-    void Prioritization::laneKeepingHandler(float steeringAngle) {
-        if (remoteControlMode == false ) {
-            currentDrivingVector.steeringAngle = steeringAngle;
-        }
-        //vehicleControlPublisher.publish();
-    }
+}
 
-    void Prioritization::remoteControlHandler(int remoteDrivingVector, bool remoteControlOn) {
-        if (remoteControlOn == true) {
-            remoteControlMode = true;
-            //Set currentDrivingVector to the received remoteDrivingVector
-        } else {
-            remoteControlMode = false;
-        }
-    }
+void Prioritization::hndl_remotecontrolInput(platooning::remotecontrolInput msg) {
+	if (state_ != PrioritizationState::REMOTECONTROL) {
+		NODELET_ERROR(std::string("[" + name_ + "] received remotecontrol input while in mode "
+			                          + PrioritizationStateString[state_]).c_str());
+	}
 
-/*
-    void Prioritization::remoteControlHandler(platooning::drivingVector msg) {
+	if (state_ == PrioritizationState::REMOTECONTROL) {
 
-    }
+		current_oughtData_.speed = msg.remote_speed;
+		current_oughtData_.distance = msg.remote_angle;
 
-    void Prioritization::platooningHandler(int velocity, int innerPlatoonDistance) {
-        //Geschwindigkeit erhöhen, solange Distanz zu klein?
-        if(currentDrivingVector.distanceToObject > innerPlatoonDistance) {
-            currentDrivingVector.velocity += 1;
-        } else if (currentDrivingVector.distanceToObject > innerPlatoonDistance) {
-            currentDrivingVector.velocity -= 1;
-        } else {
-            currentDrivingVector.velocity = velocity;
-        }
+		if (msg.emergency_stop) {
+			current_oughtData_.speed = 0;
+		}
 
-        //platooningPublisher.publish();
-    }
-*/
+		auto outmsg = boost::make_shared<oughtData>(current_oughtData_);
+		outmsg->speed = current_oughtData_.speed;
+		outmsg->distance = current_oughtData_.distance;
+
+		pub_oughtData.publish(outmsg);
+	}
+}
+
+void Prioritization::hndl_platooningToggle(platooning::platooningToggle msg) {
+
+	if (state_ != PrioritizationState::PLATOONING && msg.enable_platooning) {
+		state_ = PrioritizationState::PLATOONING;
+		current_oughtData_.speed = msg.platoon_speed;
+		current_oughtData_.distance = msg.inner_platoon_distance;
+	}
+}
+
+void Prioritization::hndl_platooningState(platooning::platooningState msg) {
+
+	if (state_ != PrioritizationState::PLATOONING) {
+		NODELET_ERROR(std::string("[" + name_ + "] received remotecontrol input while in mode "
+			                          + PrioritizationStateString[state_]).c_str());
+	}
+
+	if (state_ == PrioritizationState::PLATOONING) {
+		current_oughtData_.speed = msg.ps;
+		current_oughtData_.distance = msg.ipd;
+
+		auto outmsg = boost::make_shared<oughtData>(current_oughtData_);
+		outmsg->speed = current_oughtData_.speed;
+		outmsg->distance = current_oughtData_.distance;
+
+		pub_oughtData.publish(outmsg);
+	}
+
+};
 
 } // namespace platooning
 

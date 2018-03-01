@@ -15,8 +15,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_MODULETEST_MESSAGEDISTRIBUTION_HPP
-#define PLATOONING_MODULETEST_MESSAGEDISTRIBUTION_HPP
+#ifndef PLATOONING_MODULETEST_PRIORITIZATION_HPP
+#define PLATOONING_MODULETEST_PRIORITIZATION_HPP
 
 /*****************************************************************************
 ** Includes
@@ -25,22 +25,12 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-<<<<<<< HEAD:catkin_ws/src/platooning/testing/include/Moduletest_messagedistribution.hpp
-#include <sstream>
 
 #include "Moduletest.hpp"
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
-=======
-#include <turtlesim/Pose.h>
-#include <turtlesim/Spawn.h>
-#include "platooning/prioritisationDrivingVector.h"
-#include "platooning/templateMsg.h" //includes topic aka message
-#include <math.h>
->>>>>>> vehicleControl:catkin_ws/src/platooning/include/platooning/LaneKeeping.hpp
 
 namespace platooning {
-
 
 /**
  * @brief Example showing how to document a function with Doxygen.
@@ -76,67 +66,23 @@ namespace platooning {
  * @warning Warning.
  */
 
-<<<<<<< HEAD:catkin_ws/src/platooning/testing/include/Moduletest_messagedistribution.hpp
-  class Moduletest_messagedistribution : public Moduletest {
+class Moduletest_prioritization : public Moduletest {
   public:
-    void onInit();
+	void onInit();
 
-    Moduletest_messagedistribution();
+	Moduletest_prioritization();
 
-    ~Moduletest_messagedistribution();
+	~Moduletest_prioritization();
 
   private:
-    /**
-    * @brief publishes FV_REQUEST on topic in/platoonMsg and expects that message to be translated
-    * and published as on the in/fv_request topic
-    */
-    void pub_in_platoonMsg_recv_fv_request();
+	/**
+	* @brief template_testcase does x,y,z and expects a,b,c
+	*/
+	void pub_platooningState_recv_oughtData();
+	void hndl_recv_oughtData(platooning::oughtData msg);
 
-    void hndl_pub_in_platoonMsg_recv_fv_request(platooning::fv_request msg);
-  };
-=======
-    class LaneKeeping : public nodelet::Nodelet {
-    public:
-        virtual void onInit();
+};
 
-        LaneKeeping(ros::NodeHandle &nh, std::string &name);
+} // namespace platooning
 
-        LaneKeeping();
-
-        ~LaneKeeping();
-
-    private:
-        ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-        std::string name_;
-        ros::Subscriber pose_subscriber;
-        ros::Publisher pdv_publisher;
-        turtlesim::Pose current_position;
-        turtlesim::Pose corner;
-        turtlesim::Pose point_on_lane;
-        turtlesim::Pose upper_left;
-        turtlesim::Pose lower_left;
-        turtlesim::Pose upper_right;
-        turtlesim::Pose lower_right;
-        double distance_tolerance;
-        platooning::prioritisationDrivingVector current_vector;
-
-
-        void PoseHandler(const turtlesim::Pose poseMsg);
-
-        void PublishPrioritizationDrivingVector();
->>>>>>> vehicleControl:catkin_ws/src/platooning/include/platooning/LaneKeeping.hpp
-
-        void DriveToNextCorner();
-
-        double GetDistance(turtlesim::Pose goal, turtlesim::Pose current);
-
-        double CalculateSteeringAngle(turtlesim::Pose point);
-
-        void CalculatePointOnLane(double tolerance);
-
-
-
-    };
-}// namespace platooning
-
-#endif //PLATOONING_MODULETEST_MESSAGEDISTRIBUTION_HPP
+#endif //PLATOONING_MODULETEST_PRIORITIZATION_HPP
