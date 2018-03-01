@@ -15,6 +15,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
+#include <Topics.hpp>
 #include "../include/VehicleControl.hpp"
 
 namespace platooning {
@@ -49,7 +50,8 @@ namespace platooning {
     */
     void VehicleControl::onInit() {
         //subscriber_pose = nh_.subscribe("turtle1/pose", 10, poseCallback);
-        subscriber = nh_.subscribe("prioritisationDrivingVector", 10, &VehicleControl::prioritisationDrivingVectorCallback, this);
+	    subscriber = nh_.subscribe(topics::ACCELERATION, 10, &VehicleControl::accelerationCallback, this);
+	    subscriber = nh_.subscribe(topics::STEERINGANGLE, 10, &VehicleControl::steeringAngleCallback, this);
         publisher = nh_.advertise<geometry_msgs::Twist>("turtle1/cmd_vel", 10);
     };
 
@@ -64,18 +66,25 @@ namespace platooning {
         g_pose = pose;
     }*/
 
-    void VehicleControl::prioritisationDrivingVectorCallback(platooning::prioritisationDrivingVector prioDrivingVector) {
-        NODELET_DEBUG("Getting prioritisationDrivingVector message");
-        NODELET_INFO("Getting prioritisationDrivingVector message");
-        g_prioDrivingVector = prioDrivingVector;
+    void VehicleControl::steeringAngleCallback(platooning::steeringAngle angle){
+	    NODELET_DEBUG("Getting angle message");
+	    NODELET_INFO("Getting angle message");
+	    g_steeringAngle = angle;
+	    commandTurtle();
+    }
+
+    void VehicleControl::accelerationCallback(platooning::acceleration accel) {
+        NODELET_DEBUG("Getting accel message");
+        NODELET_INFO("Getting accel message");
+        g_acceleration.accelleration += accel.accelleration;
         commandTurtle();
     }
 
     void VehicleControl::commandTurtle() {
         NODELET_DEBUG("Publishing turtlesim/twist message");
         NODELET_INFO("Publishing turtlesim/twist message");
-        twist.linear.x = g_prioDrivingVector.speed;
-        twist.angular.z = g_prioDrivingVector.steering_angle;
+        twist.linear.x = g_acceleration.accelleration;
+        twist.angular.z = g_steeringAngle.steering_angle;
         publisher.publish(twist);
     }
 

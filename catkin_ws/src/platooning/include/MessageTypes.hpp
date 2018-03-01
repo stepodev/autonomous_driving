@@ -31,6 +31,8 @@
 #include "platooning/platooningToggle.h"
 #include "platooning/platooningState.h"
 #include "platooning/remotecontrolInput.h"
+#include "platooning/acceleration.h"
+#include "platooning/steeringAngle.h"
 
 #include "platooning/templateMsg.h"
 

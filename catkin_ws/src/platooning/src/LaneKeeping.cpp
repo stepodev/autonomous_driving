@@ -10,6 +10,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
+#include <Topics.hpp>
 #include "LaneKeeping.hpp"
 
 namespace platooning {
@@ -60,10 +61,11 @@ namespace platooning {
         corner.theta = 0;
 
         distance_tolerance = 1;
-        current_vector.speed = 2;
+        current_speed.accelleration = 2;
 
         NODELET_INFO("Creating LaneKeeping Publisher");
-        pdv_publisher = nh_.advertise<platooning::prioritisationDrivingVector>("prioritisationDrivingVector", 10);
+	    angle_publisher = nh_.advertise<platooning::steeringAngle>(topics::STEERINGANGLE, 10);
+	    accel_publisher = nh_.advertise<platooning::steeringAngle>(topics::ACCELERATION, 10);
         NODELET_INFO("Creating LaneKeeping Subscriber");
         pose_subscriber = nh_.subscribe("turtle1/pose", 10, &LaneKeeping::PoseHandler, this);
     };
@@ -85,13 +87,13 @@ namespace platooning {
 
         if ( distance_to_corner < distance_tolerance){
             DriveToNextCorner();
-            current_vector.steering_angle = CalculateSteeringAngle(corner);
+            current_steering_angle.steering_angle = CalculateSteeringAngle(corner);
         } else {
-            current_vector.steering_angle = CalculateSteeringAngle(point_on_lane);
+	        current_steering_angle.steering_angle = CalculateSteeringAngle(point_on_lane);
         }
-        pdv_publisher.publish(current_vector);
+        angle_publisher.publish(current_steering_angle);
         ROS_DEBUG("distance_corner(%.2f) distance_lane(%.2f) position(%.2f,%.2f) lenkwinkel(%.2f) goal(%.2f,%.2f), lanepoint(%.2f,%.2f)",
-                 distance_to_corner, distance_to_lane_point, current_position.x, current_position.y, current_vector.steering_angle, corner.x, corner.y, point_on_lane.x, point_on_lane.y);
+                 distance_to_corner, distance_to_lane_point, current_position.x, current_position.y, current_steering_angle.steering_angle, corner.x, corner.y, point_on_lane.x, point_on_lane.y);
     }
 
     /**

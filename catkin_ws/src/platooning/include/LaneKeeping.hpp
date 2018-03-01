@@ -19,8 +19,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_VEHICLECONTROL_HPP
-#define PLATOONING_VEHICLECONTROL_HPP
+#ifndef PLATOONING_LANEKEEPING_HPP
+#define PLATOONING_LANEKEEPING_HPP
 
 /*****************************************************************************
 ** Includes
@@ -29,11 +29,16 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
+
 #include "MessageTypes.hpp"
+
 #include <turtlesim/Pose.h>
-#include <geometry_msgs/Twist.h>
+#include <turtlesim/Spawn.h>
+#include <math.h>
+
 
 namespace platooning {
+
 
 /**
  * @brief Example showing how to document a function with Doxygen.
@@ -69,37 +74,49 @@ namespace platooning {
  * @warning Warning.
  */
 
-class VehicleControl : public nodelet::Nodelet {
-  public:
-	virtual void onInit();
+    class LaneKeeping : public nodelet::Nodelet {
+    public:
+        virtual void onInit();
 
-	VehicleControl();
+        LaneKeeping(ros::NodeHandle &nh, std::string &name);
 
-	~VehicleControl();
+        LaneKeeping();
 
-  private:
-	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-	std::string name_;
-	ros::Subscriber subscriber_pose;
-	ros::Subscriber subscriber;
-	ros::Publisher publisher;
-	turtlesim::PoseConstPtr g_pose;
-	platooning::acceleration g_acceleration;
-	platooning::steeringAngle g_steeringAngle;
-	geometry_msgs::Twist twist;
+        ~LaneKeeping();
+
+    private:
+        ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
+        std::string name_;
+        ros::Subscriber pose_subscriber;
+	    ros::Publisher accel_publisher;
+	    ros::Publisher angle_publisher;
+        turtlesim::Pose current_position;
+        turtlesim::Pose corner;
+        turtlesim::Pose point_on_lane;
+        turtlesim::Pose upper_left;
+        turtlesim::Pose lower_left;
+        turtlesim::Pose upper_right;
+        turtlesim::Pose lower_right;
+        double distance_tolerance;
+	    platooning::acceleration current_speed;
+	    platooning::steeringAngle current_steering_angle;
 
 
-	/**
-	 * @brief to achieve X does Y
-	 * @param msg incoming topic message
-	 */
-	//void poseCallback(const turtlesim::PoseConstPtr& pose);
-	void accelerationCallback(platooning::acceleration prioDrivingVector);
-	void steeringAngleCallback(platooning::steeringAngle prioDrivingVector);
-	void commandTurtle();
+        void PoseHandler(const turtlesim::Pose poseMsg);
 
-};
+        void PublishPrioritizationDrivingVector();
 
-} // namespace platooning
+        void DriveToNextCorner();
 
-#endif //PLATOONING_VEHICLECONTROL_HPP
+        double GetDistance(turtlesim::Pose goal, turtlesim::Pose current);
+
+        double CalculateSteeringAngle(turtlesim::Pose point);
+
+        void CalculatePointOnLane(double tolerance);
+
+
+
+    };
+}// namespace platooning
+
+#endif //PLATOONING_LANEKEEPING_HPP

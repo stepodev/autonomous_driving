@@ -62,6 +62,7 @@ namespace platooning {
     */
     void Prioritization::onInit() {
 
+	    /*
         //Subscriptions
         environtmentMappingSubscriber = nh_.subscribe("distanceToObject", 10, environmentMappingHandler,
                                                       this);
@@ -73,6 +74,7 @@ namespace platooning {
         platooningPublisher = nh_.advertise<int>("prioritizationDrivingVector", 10);
         userInterfacePublisher = nh_.advertise<int>("stateData", 10);
         vehicleControlPublisher = nh_.advertise<int>("prioritizationDrivingVector", 10);
+        */
     };
 
 
@@ -108,6 +110,7 @@ namespace platooning {
         }
     }
 
+/*
     void Prioritization::remoteControlHandler(platooning::drivingVector msg) {
 
     }
@@ -124,7 +127,7 @@ namespace platooning {
 
         //platooningPublisher.publish();
     }
-
+*/
 
 } // namespace platooning
 
