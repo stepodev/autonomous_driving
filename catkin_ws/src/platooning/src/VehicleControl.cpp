@@ -29,57 +29,55 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-  VehicleControl::VehicleControl() {};
-
+    VehicleControl::VehicleControl() {};
 
 
 /*****************************************************************************
 ** Destructors
 *****************************************************************************/
 
-  VehicleControl::~VehicleControl() {};
+    VehicleControl::~VehicleControl() {};
 
 
 /*****************************************************************************
 ** Initializers
 *****************************************************************************/
 
-  /**
-  * Set-up necessary publishers/subscribers
-  * @return true, if successful
-  */
-  void VehicleControl::onInit() {
-
-    //subscribers of protocol nodelet
-    templateSubscriber = nh_.subscribe("templateMsg", 10,
-                                                  &VehicleControl::templateTopicHandler, this);
-
-    //publisher of forced driving vector
-    templatePublisher = nh_.advertise< platooning::templateMsg >("commands/templateMsg", 10);
-
-
-  };
+    /**
+    * Set-up necessary publishers/subscribers
+    * @return true, if successful
+    */
+    void VehicleControl::onInit() {
+        //subscriber_pose = nh_.subscribe("turtle1/pose", 10, poseCallback);
+        subscriber = nh_.subscribe("prioritisationDrivingVector", 10, &VehicleControl::prioritisationDrivingVectorCallback, this);
+        publisher = nh_.advertise<geometry_msgs::Twist>("turtle1/cmd_vel", 10);
+    };
 
 
 /*****************************************************************************
 ** Handlers
 *****************************************************************************/
 
-  /*
-   * handling an event and publishing something
-   */
-  void VehicleControl::templateTopicHandler(const platooning::templateMsg msg) {
 
-    NODELET_DEBUG("handling a template");
+    /*void VehicleControl::poseCallback(const turtlesim::PoseConstPtr &pose) {
+        NODELET_DEBUG("Getting turtlesim/pose message");
+        g_pose = pose;
+    }*/
 
-    if( msg.templatebool || !msg.templatebool ) {
-      templatePublisher.publish(msg);
-    } else {
-      NODELET_WARN("warning you of stuff");
+    void VehicleControl::prioritisationDrivingVectorCallback(platooning::prioritisationDrivingVector prioDrivingVector) {
+        NODELET_DEBUG("Getting prioritisationDrivingVector message");
+        NODELET_INFO("Getting prioritisationDrivingVector message");
+        g_prioDrivingVector = prioDrivingVector;
+        commandTurtle();
     }
 
-  }
-
+    void VehicleControl::commandTurtle() {
+        NODELET_DEBUG("Publishing turtlesim/twist message");
+        NODELET_INFO("Publishing turtlesim/twist message");
+        twist.linear.x = g_prioDrivingVector.speed;
+        twist.angular.z = g_prioDrivingVector.steering_angle;
+        publisher.publish(twist);
+    }
 
 
 } // namespace platooning

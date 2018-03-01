@@ -79,8 +79,9 @@
     <nodelet plugin="${prefix}/plugins/messagedistribution.xml" />
     <nodelet plugin="${prefix}/plugins/userinterface.xml" />
     <nodelet plugin="${prefix}/plugins/vehiclecontrol.xml" />
-      <nodelet plugin="${prefix}/plugins/radiointerface.xml" />
-      <nodelet plugin="${prefix}/plugins/platooning.xml" />
+    <nodelet plugin="${prefix}/plugins/radiointerface.xml" />
+    <nodelet plugin="${prefix}/plugins/platooning.xml" />
+    <nodelet plugin="${prefix}/plugins/lanekeeping.xml" />
     <rosdoc config="rosdoc.yaml" />
 
     <!-- testing -->

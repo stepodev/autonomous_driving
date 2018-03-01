@@ -161,7 +161,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
         INCLUDE_DIRS include
-        LIBRARIES environment_mapping lanedetect priorization messagedistribution userinterface vehiclecontrol radiointerface template platooning
+        LIBRARIES environment_mapping lanedetect lanekeeping priorization messagedistribution userinterface vehiclecontrol radiointerface template platooning
         CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
         #  DEPENDS system_lib
 )
@@ -188,6 +188,10 @@ target_link_libraries(environment_mapping ${catkin_LIBRARIES})
 add_library(lanedetect include/LaneDetect.hpp src/LaneDetect.cpp)
 add_dependencies(lanedetect ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(lanedetect ${catkin_LIBRARIES})
+
+add_library(lanekeeping include/LaneKeeping.hpp src/LaneKeeping.cpp)
+add_dependencies(lanekeeping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(lanekeeping ${catkin_LIBRARIES})
 
 add_library(prioritization include/Prioritization.hpp src/Prioritization.cpp)
 add_dependencies(prioritization ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)

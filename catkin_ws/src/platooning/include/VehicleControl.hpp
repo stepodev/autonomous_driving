@@ -29,7 +29,9 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include "platooning/templateMsg.h" //includes topic aka message
+#include "platooning/prioritisationDrivingVector.h"
+#include <turtlesim/Pose.h>
+#include <geometry_msgs/Twist.h>
 
 namespace platooning {
 
@@ -81,15 +83,21 @@ namespace platooning {
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
-    ros::Subscriber templateSubscriber;
-    ros::Publisher templatePublisher;
+    ros::Subscriber subscriber_pose;
+    ros::Subscriber subscriber;
+    ros::Publisher publisher;
+    turtlesim::PoseConstPtr g_pose;
+    platooning::prioritisationDrivingVector g_prioDrivingVector;
+    geometry_msgs::Twist twist;
 
 
     /**
      * @brief to achieve X does Y
      * @param msg incoming topic message
      */
-    void templateTopicHandler(const platooning::templateMsg msg);
+    //void poseCallback(const turtlesim::PoseConstPtr& pose);
+    void prioritisationDrivingVectorCallback(platooning::prioritisationDrivingVector prioDrivingVector);
+    void commandTurtle();
 
   };
 
