@@ -10,26 +10,24 @@ add_compile_options(-std=c++11 -Wall -g)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-    ## GENERAL
-    roscpp
-    rospy
-    nodelet
-    roslint
-    ## MESSAGE GEN
-    message_generation
-    )
+        ## GENERAL
+        roscpp
+        rospy
+        nodelet
+        roslint
+        ## MESSAGE GEN
+        message_generation
+        )
 
 find_package(rostest REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS
-    ## DUNNO LOL
-    thread
-    system
-    )
+        ## DUNNO LOL
+        thread
+        system
+        )
 
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
-
+######################################################
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -97,19 +95,17 @@ add_message_files(
         remotecontrol/remotecontrolInput.msg
         remotecontrol/remotecontrolToggle.msg
         ########################
-        ## test messages
-        testing/runTestCommand.msg
-        testing/testResult.msg
-        testing/registerTestcases.msg
-        ########################
         ## stm messages
         stm/distance.msg
         stm/speed.msg
-        stm/vehiclecontrol.msg
+        stm/camera.msg
+        ########################
+        ## templateMessages
+        sim/stmupdate.msg
+        sim/gazupdate.msg
         ########################
         ## templateMessages
         templateMsg.msg
-
 )
 
 ## Generate services in the 'srv' folder
@@ -163,7 +159,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
         INCLUDE_DIRS include
-        LIBRARIES environment_mapping lanedetect lanekeeping priorization messagedistribution userinterface vehiclecontrol radiointerface template platooning
+        LIBRARIES environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics
         CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
         #  DEPENDS system_lib
 )
@@ -175,7 +171,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-        include testing/include
+        include testing/include sim/include
         ${catkin_INCLUDE_DIRS}
 )
 #######################
@@ -244,7 +240,7 @@ add_dependencies(moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_
 target_link_libraries(moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_messagedistribution testing/include/Moduletest_messagedistribution.hpp testing/src/Moduletest_messagedistribution.cpp)
-add_dependencies(moduletest_messagedistribution topics messagetypes moduletest messagedistribution ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+add_dependencies(moduletest_messagedistribution topics messagetypes moduletest messagedistribution ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_messagedistribution topics messagetypes moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_radiointerface testing/include/Moduletest_radiointerface.hpp testing/src/Moduletest_radiointerface.cpp)
@@ -252,11 +248,11 @@ add_dependencies(moduletest_radiointerface topics moduletest udpserver radiointe
 target_link_libraries(moduletest_radiointerface topics moduletest udpserver ${catkin_LIBRARIES})
 
 add_library(moduletest_platooning testing/include/Moduletest_platooning.hpp testing/src/Moduletest_platooning.cpp)
-add_dependencies(moduletest_platooning messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+add_dependencies(moduletest_platooning messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_platooning messagetypes moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_template testing/include/Moduletest_template.hpp testing/src/Moduletest_template.cpp)
-add_dependencies(moduletest_template messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+add_dependencies(moduletest_template messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_template messagetypes moduletest ${catkin_LIBRARIES})
 
 #add_library(pcap test/Pcap.hpp test/Pcap.cpp)
@@ -331,7 +327,7 @@ target_link_libraries(messagedistribution-unit-test messagedistribution ${catkin
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-install(TARGETS environment_mapping lanedetect prioritization messagedistribution userinterface vehiclecontrol radiointerface template
+install(TARGETS environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -359,6 +355,7 @@ install(DIRECTORY testing/launch/
 install(DIRECTORY testing/plugins/
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/plugins
         PATTERN ".svn" EXCLUDE)
+
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 #install(FILES launch/environment_mapping.launch launch/lanedetect.launch launch/priorization.launch  messagedistribution.launch  userinterface.launch  vehiclecontrol.launch  radiointerface.launch  template.launch

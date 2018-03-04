@@ -21,7 +21,6 @@
 #include <platooning/remotecontrolToggle.h>
 #include <platooning/acceleration.h>
 #include <platooning/steeringAngle.h>
-#include <platooning/vehiclecontrol.h>
 #include <platooning/distanceToObj.h>
 #include <platooning/speed.h>
 #include <platooning/platooningState.h>
@@ -91,7 +90,6 @@ namespace platooning {
     void hndl_remotecontrol_input( const remotecontrolInput &msg );
     void hndl_distance_to_obj( const distanceToObj &msg );
     void hndl_speed( const speed &msg );
-    void hndl_vehicle_control( const vehiclecontrol &msg );
     void hndl_steering_angle( const steeringAngle &msg );
     void hndl_acceleration( const acceleration &msg );
     void hndl_platooningState( const platooningState &msg );

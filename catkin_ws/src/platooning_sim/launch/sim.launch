@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find platooning_sim)/launch/gazebo.launch"/>
+    <include file="$(find platooning_sim)/launch/gazeboadapter.launch"/>
+</launch>
