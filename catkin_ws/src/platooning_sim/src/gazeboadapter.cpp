@@ -13,15 +13,14 @@ gazeboadapter::gazeboadapter() {
 	}
 }
 
-void gazeboadapter::onInit() {
+gazeboadapter::~gazeboadapter() {
 
-	std::cout << "HEEELLLLOOOOOO1" << std::endl;
+}
+
+void gazeboadapter::onInit() {
 
 	pub_ = nh_.advertise<platooning::platoonProtocol>(topics::IN_PLATOONING_MSG, 100);
 
-	std::cout << "HEEELLLLOOOOOO1" << std::endl;
-
-	/*
 	boost::function<void(std::pair<std::string, uint32_t>)>
 		cbfun(boost::bind(boost::mem_fn(&gazeboadapter::hndl_recv_udp), this, _1));
 
@@ -29,14 +28,6 @@ void gazeboadapter::onInit() {
 		new UdpServer(
 			cbfun, udp::endpoint(udp::v4(), 13000), udp::endpoint(boost::asio::ip::address_v4::broadcast(), 13001)));
 	server_->set_filter_own_broadcasts(false);
-*/
-	std::cout << "HEEELLLLOOOOOO2" << std::endl;
-
-	std::cout << "HEEELLLLOOOOOO" << std::endl;
-
-}
-gazeboadapter::~gazeboadapter() {
-
 }
 
 void gazeboadapter::hndl_recv_udp(std::pair<std::string, uint32_t> packet) {
@@ -45,11 +36,6 @@ void gazeboadapter::hndl_recv_udp(std::pair<std::string, uint32_t> packet) {
 
 	switch (packet.second) {
 		case STMSIM_UPDATE: platooning::decode_json(packet.first, msg);
-
-			if (msg.id > MAXVEHICLES) {
-				NODELET_ERROR(std::string("[" + name_ + "] id exceeds max simulated vehicles").c_str());
-				break;
-			}
 
 			break;
 		default: break;

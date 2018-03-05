@@ -42,7 +42,7 @@ add_library(PriusHybridPlugin SHARED plugins/PriusHybridPlugin.cc)
 target_link_libraries(PriusHybridPlugin ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES})
 
 add_library(gazeboadapter include/gazeboadapter.hpp src/gazeboadapter.cpp)
-target_link_libraries(gazeboadapter ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES})
+target_link_libraries(gazeboadapter udpserver ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES})
 
 catkin_install_python(PROGRAMS nodes/joystick_translator
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

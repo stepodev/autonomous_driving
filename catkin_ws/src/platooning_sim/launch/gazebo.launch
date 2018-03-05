@@ -1,20 +1,17 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="model" default="$(find prius_description)/urdf/prius.urdf"/>
-  <arg name="rvizconfig" default="$(find car_demo)/rviz/world.rviz" />
 
-  <param name="robot_description" textfile="$(arg model)"/>
+<arg name="rvizconfig" default="$(find platooning_sim)/rviz/world.rviz" />
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="verbose" value="true"/>
-    <arg name="world_name" value="$(find car_demo)/worlds/mcity.world"/>
+    <arg name="world_name" value="$(find platooning_sim)/worlds/mcity.world"/>
   </include>
 
-    <node name="spawn_urdf0" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 3 -y -12 -z 0.5 -model prius0 -namespace p0"/>
 
-    <node name="spawn_urdf1" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x -10 -y -12 -z 0.5 -model prius1 -namespace p1"/>
-
-    <node name="spawn_urdf2" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x -23 -y -12 -z 0.5 -model prius2 -namespace p2"/>
+  <arg name="model" default="$(find prius_description)/urdf/prius1.urdf"/>
+  <param name="robot_description" textfile="$(arg model)"/>
+  <node name="spawn_urdf1" pkg="gazebo_ros" type="spawn_model" args="-namespace p0 -param robot_description -urdf -x 3 -y -12 -z 0.5 -model prius"/>
 
 
 </launch>

@@ -37,8 +37,8 @@ class gazeboadapter : public nodelet::Nodelet {
 
 	void hndl_recv_udp(std::pair<std::string, uint32_t> packet);
 	ros::Publisher pub_;
-	//std::unique_ptr<UdpServer> server_;
 	boost::thread_group thread_pool_;
+	std::unique_ptr<UdpServer> server_;
 };
 
 }
