@@ -49,8 +49,6 @@ namespace platooning
                                                   &UserInterface::hndl_speed, this);
     sub_distance_to_obj = nh_.subscribe(topics::DISTANCE_TO_OBJECT, 1,
                                                   &UserInterface::hndl_distance_to_obj, this);
-    sub_vehiclecontrol = nh_.subscribe(topics::VEHICLECONTROL, 1,
-                                                  &UserInterface::hndl_vehicle_control, this);
     sub_steeringangle = nh_.subscribe(topics::STEERINGANGLE, 1,
                                                   &UserInterface::hndl_steering_angle, this);
     sub_acceleration = nh_.subscribe(topics::ACCELERATION, 1,
@@ -141,10 +139,6 @@ namespace platooning
 
   void UserInterface::hndl_speed(const speed &msg) {
     ui_msg_->speed = msg.speed;
-  }
-
-  void UserInterface::hndl_vehicle_control(const vehiclecontrol &msg) {
-
   }
 
   void UserInterface::hndl_steering_angle(const steeringAngle &msg) {

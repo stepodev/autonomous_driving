@@ -1,4 +1,4 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="template" args="load platooning/template template">
+    <node pkg="nodelet" type="nodelet" name="template" args="load platooning/template nodeletmanager">
     </node>
 </launch>

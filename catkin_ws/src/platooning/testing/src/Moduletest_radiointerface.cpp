@@ -16,7 +16,6 @@
 *****************************************************************************/
 
 #include <thread>
-#include <platooning/registerTestcases.h>
 #include <boost/thread/thread.hpp>
 #include "Moduletest_radiointerface.hpp"
 
