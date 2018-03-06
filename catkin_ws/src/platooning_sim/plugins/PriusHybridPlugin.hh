@@ -27,6 +27,7 @@
 #include <gazebo/common/Plugin.hh>
 
 #include <prius_msgs/Control.h>
+#include <prius_msgs/Speed.h>
 
 namespace gazebo
 {

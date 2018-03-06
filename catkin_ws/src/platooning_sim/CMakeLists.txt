@@ -1,19 +1,25 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(platooning_sim)
 
+enable_language(CXX)
+
+## Compile as C++11, supported in ROS Kinetic and newer
+add_compile_options(-std=c++11 -Wall -g)
+
 set(PRIUSCUP_MAJOR_VERSION 0)
 set(PRIUSCUP_MINOR_VERSION 1)
 set(PRIUSCUP_PATCH_VERSION 0)
 set(PRIUSCUP_VERSION_FULL ${PRIUSCUP_MAJOR_VERSION}.${PRIUSCUP_MINOR_VERSION}.${PRIUSCUP_PATCH_VERSION})
 
-set(prius_msgs_DIR "../../install/share/prius_msgs/cmake/")
-set(platooning_DIR "../../install/share/platooning/cmake/")
+set(prius_msgs_DIR ../../install/share/prius_msgs/cmake)
+set(platooning_DIR ../../install/share/platooning/cmake)
 
 find_package(catkin REQUIRED COMPONENTS
         roscpp
         nodelet
         gazebo_ros
         prius_msgs
+        sensor_msgs
         )
 
 find_package(platooning REQUIRED COMPONENTS
@@ -36,16 +42,17 @@ catkin_package(
         #  DEPENDS system_lib
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${SDFormat_INCLUDE_DIRS})
+include_directories(include ../platooning/include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${SDFormat_INCLUDE_DIRS})
 
 add_library(PriusHybridPlugin SHARED plugins/PriusHybridPlugin.cc)
 target_link_libraries(PriusHybridPlugin ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES})
 
-add_library(gazeboadapter include/gazeboadapter.hpp src/gazeboadapter.cpp)
-target_link_libraries(gazeboadapter udpserver ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES})
+add_library(priustopics include/topics.hpp ${catkin_LIBRARIES})
+set_target_properties(priustopics PROPERTIES LINKER_LANGUAGE CXX)
 
-catkin_install_python(PROGRAMS nodes/joystick_translator
-        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+add_library(gazeboadapter include/gazeboadapter.hpp src/gazeboadapter.cpp)
+add_dependencies(gazeboadapter priustopics)
+target_link_libraries(gazeboadapter udpserver messagetypes topics priustopics ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES})
 
 install(TARGETS PriusHybridPlugin gazeboadapter
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

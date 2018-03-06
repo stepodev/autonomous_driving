@@ -534,6 +534,10 @@ void Platooning::hndl_timeout_lv_broadcast(const boost::system::error_code &e) {
  */
 void Platooning::send_fv_heartbeat(const boost::system::error_code &e) {
 
+	if (boost::asio::error::operation_aborted == e) {
+		return;
+	}
+
 	//send fv_heartbeat
 	auto msg_to_send = boost::shared_ptr<fv_heartbeat>(new fv_heartbeat);
 	msg_to_send->src_vehicle = vehicle_id_;
@@ -560,6 +564,10 @@ void Platooning::send_fv_heartbeat(const boost::system::error_code &e) {
  * @param const boost::system::error_code &
  */
 void Platooning::send_lv_broadcast(const boost::system::error_code &e) {
+
+	if (boost::asio::error::operation_aborted == e) {
+		return;
+	}
 
 	lv_broadcast_sender_.expires_from_now(BROADCAST_FREQ);
 	lv_broadcast_sender_.async_wait(boost::bind(&Platooning::send_lv_broadcast, this,

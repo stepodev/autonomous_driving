@@ -12,14 +12,17 @@
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
 
-#include "gazebo_msgs/SpawnModel.h"
-#include "platooning/include/MessageTypes.hpp"
-#include "platooning/include/Topics.hpp"
-#include "platooning/include/UdpServer.hpp"
+#include "MessageTypes.hpp"
+#include "Topics.hpp"
+#include "UdpServer.hpp"
+#include "prius_msgs/Control.h"
+#include "prius_msgs/Speed.h"
+#include "sensor_msgs/Image.h"
+#include "sensor_msgs/Range.h"
+
+const boost::posix_time::milliseconds BROADCAST_FREQ(50);
 
 namespace platooning_sim {
-
-const uint32_t MAXVEHICLES = 3;
 
 class gazeboadapter : public nodelet::Nodelet {
   public:
@@ -32,13 +35,49 @@ class gazeboadapter : public nodelet::Nodelet {
   private:
 	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
 	std::string name_ = "gazeboadapter";
+	platooning::gazupdate p1gazupdate;
+	platooning::gazupdate p2gazupdate;
+	platooning::gazupdate p3gazupdate;
 
-	std::array<bool, 3> vehicles_enabled_;
-
-	void hndl_recv_udp(std::pair<std::string, uint32_t> packet);
-	ros::Publisher pub_;
 	boost::thread_group thread_pool_;
 	std::unique_ptr<UdpServer> server_;
+
+	ros::Publisher pub_p1_control_;
+	ros::Publisher pub_p2_control_;
+	ros::Publisher pub_p3_control_;
+
+	ros::Subscriber sub_p1_speed_;
+	ros::Subscriber sub_p2_speed_;
+	ros::Subscriber sub_p3_speed_;
+
+	ros::Subscriber sub_p1_sonar_front_;
+	ros::Subscriber sub_p2_sonar_front_;
+	ros::Subscriber sub_p3_sonar_front_;
+
+	ros::Subscriber sub_p1_camera_front_;
+	ros::Subscriber sub_p2_camera_front_;
+	ros::Subscriber sub_p3_camera_front_;
+
+	boost::asio::io_service io_service_;
+	bool keep_spinning_;
+	boost::asio::deadline_timer gazupdate_send_timer_;
+
+	void hndl_recv_udp(std::pair<std::string, uint32_t> packet);
+
+	void hndl_p1_speed( const prius_msgs::Speed& msg);
+	void hndl_p1_sonar( const sensor_msgs::Range& msg );
+	void hndl_p1_camera(const sensor_msgs::Image& msg );
+
+	void hndl_p2_speed( const prius_msgs::Speed& msg);
+	void hndl_p2_sonar( const sensor_msgs::Range& msg );
+	void hndl_p2_camera(const sensor_msgs::Image& msg );
+
+	void hndl_p3_speed( const prius_msgs::Speed& msg);
+	void hndl_p3_sonar( const sensor_msgs::Range& msg );
+	void hndl_p3_camera(const sensor_msgs::Image& msg );
+
+	void send_gazupdate(const boost::system::error_code &e);
+	void process_stmsim(const platooning::stmupdate &stmupdate_);
 };
 
 }

@@ -45,6 +45,9 @@ class PriusHybridPluginPrivate {
 	ros::NodeHandle nh;
 
   public:
+	std::string robotname = "prius";
+
+  public:
 	ros::Subscriber controlSub;
 
 	/// \brief Pointer to the world
@@ -70,6 +73,9 @@ class PriusHybridPluginPrivate {
 	/// \brief Ignition transport console pub
   public:
 	ignition::transport::Node::Publisher consolePub;
+
+  public:
+	ros::Publisher speedPub;
 
 	/// \brief Physics update event connection
   public:
@@ -524,11 +530,20 @@ void PriusHybridPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) {
 	std::string paramName;
 	double paramDefault;
 
+	paramName = "robotname";
+	if (_sdf->HasElement(paramName)) {
+		this->dataPtr->robotname = _sdf->Get<std::string>(paramName);
+	}
+	std::string speedpubtopic = "/" + this->dataPtr->robotname + "/speed";
+	this->dataPtr->speedPub = this->dataPtr->nh.advertise<prius_msgs::Speed>(speedpubtopic, 1);
+
 	paramName = "control_topic_name";
 	if (_sdf->HasElement(paramName)) {
 		this->dataPtr->controlSub.shutdown();
-		this->dataPtr->controlSub = this->dataPtr->nh.subscribe(_sdf->Get<std::string>(paramName)
-			, 10, &PriusHybridPlugin::OnPriusCommand, this);
+		this->dataPtr->controlSub = this->dataPtr->nh.subscribe(_sdf->Get<std::string>(paramName),
+		                                                        10,
+		                                                        &PriusHybridPlugin::OnPriusCommand,
+		                                                        this);
 	}
 
 	paramName = "chassis_aero_force_gain";
@@ -734,6 +749,9 @@ void PriusHybridPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) {
 
 /////////////////////////////////////////////////
 void PriusHybridPlugin::OnCmdVel(const ignition::msgs::Pose &_msg) {
+
+	ROS_ERROR("OnCmdVel called");
+
 	std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
 
 	this->dataPtr->gasPedalPercent = std::min(_msg.position().x(), 1.0);
@@ -745,6 +763,9 @@ void PriusHybridPlugin::OnCmdVel(const ignition::msgs::Pose &_msg) {
 }
 /////////////////////////////////////////////////
 void PriusHybridPlugin::OnCmdGear(const ignition::msgs::Int32 &_msg) {
+
+	ROS_ERROR("OnCmdGear called");
+
 	std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
 
 	// -1 reverse, 0 neutral, 1 forward
@@ -757,6 +778,7 @@ void PriusHybridPlugin::OnCmdGear(const ignition::msgs::Int32 &_msg) {
 
 /////////////////////////////////////////////////
 void PriusHybridPlugin::OnCmdMode(const ignition::msgs::Boolean &/*_msg*/) {
+	ROS_ERROR("OnCmdMode called");
 	// toggle ev mode
 	std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
 	this->dataPtr->evMode = !this->dataPtr->evMode;
@@ -1021,6 +1043,7 @@ void PriusHybridPlugin::Update() {
 	dPtr->brWheelAngularVelocity = dPtr->brWheelJoint->GetVelocity(0);
 
 	dPtr->chassisLinearVelocity = dPtr->chassisLink->WorldCoGLinearVel();
+
 	// Convert meter/sec to miles/hour
 	double linearVel = dPtr->chassisLinearVelocity.Length() * 2.23694;
 
@@ -1256,6 +1279,13 @@ void PriusHybridPlugin::Update() {
 	if ((curTime - this->dataPtr->lastMsgTime) > .5) {
 		this->dataPtr->posePub.Publish(
 			ignition::msgs::Convert(this->dataPtr->model->WorldPose()));
+
+		boost::shared_ptr<prius_msgs::Speed> speedmsg = boost::shared_ptr<prius_msgs::Speed>(new prius_msgs::Speed);
+		speedmsg->speed = this->dataPtr->chassisLinearVelocity.Length();
+		if (this->dataPtr->directionState == PriusHybridPluginPrivate::REVERSE) {
+			speedmsg->speed *= -1;
+		}
+		this->dataPtr->speedPub.publish(speedmsg);
 
 		ignition::msgs::Double_V consoleMsg;
 
