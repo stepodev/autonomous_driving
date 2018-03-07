@@ -1,50 +1,270 @@
 \documentclass[a4paper, 12pt, titlepage]{scrartcl}  
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman]{babel}
+\usepackage[toc,title,page]{appendix} % Anhang 
+
+\usepackage{listings}  % zum Codeeinbinden, Doku: http://users.ecs.soton.ac.uk/srg/softwaretools/document/start/listings.pdf
+\lstdefinestyle{customcpp}{
+	belowcaptionskip=1\baselineskip,
+	title=\lstname,
+	breaklines=true,
+	keepspaces=true, 
+	flexiblecolumns=true,
+	tabsize=2, % ein tab = 2 spaces
+	numbers=left,
+	frame=leftline,
+	language=C++,
+	showstringspaces=false 
+}
 
 \pagenumbering{arabic} 
 \usepackage{graphicx}
 \usepackage[onehalfspacing]{setspace}
-\usepackage[left=3cm,right=3cm,top=2cm,bottom=2cm,includeheadfoot]{geometry}
+\usepackage[left=3cm,right=3cm,top=2.5cm,bottom=2.5cm,includeheadfoot]{geometry}
 
-\begin{document}
+\begin{document}	
 \author{Supercoole Kinder}
 \title{Projektdokumentation} 
 \publishers{Humboldt-Universit\"at zu Berlin}
 \maketitle
 \tableofcontents
 
-\section{Projektdokumentation}
-	\subsection{Projektbeschreibung} % Ziele und Motivation, warum das alles so toll ist. (umweltfreundlich, super Auslastung, weniger Unfälle... besonderes feature: car2car kommunikation)
-	\subsection{Lastenheft} %(nicht-)funktionale anforderungen, was liefern wir am ende, use cases. nur grob erwähnen und dann im anhang auf das lastenheft verweisen??
-	\subsection{Projekt-Organisation und Umfeld} % 3 teams arbeiten parallel, zusammenarbeit mit assystem und frauenhofer, wir: agiler Ansatz, clion, gitlab, slack, meistertask; späterer Umschwung auf gitlab issues
+\part{Projektdokumentation}
+	\section{Projektbeschreibung} % Ziele und Motivation, warum das alles so toll ist. (umweltfreundlich, super Auslastung, weniger Unfälle... besonderes feature: car2car kommunikation)
+	\section{Lastenheft} %(nicht-)funktionale anforderungen, was liefern wir am ende, use cases. nur grob erwähnen und dann im anhang auf das lastenheft verweisen??
+	\section{Projekt-Organisation und Umfeld} % 3 teams arbeiten parallel, zusammenarbeit mit assystem und frauenhofer, wir: agiler Ansatz, clion, gitlab, slack, meistertask; späterer Umschwung auf gitlab issues
 	% ros, turtle sim
 	% externer Bau der autos plus betreuung durch externen studenten/frauenhofer/assystems
 	% Räumlichkeiten: wo fand was statt
-	\subsection{Projektplan} % vgl. project charter http://sce2.umkc.edu/BIT/burrise/pl/appendix/Software_Documentation_Templates/Project_Charter_Template.html
+	\section{Projektplan} % vgl. project charter http://sce2.umkc.edu/BIT/burrise/pl/appendix/Software_Documentation_Templates/Project_Charter_Template.html
 	%Meilensteine, Routinen, Treffen, Planänderungen (mal gucken was die anderen Gruppe da haben), Designänderungen der Architektur nach treffen mit assystem?
-	\subsection{Projektablauf} %vergleich ist-zustand mit soll-zustand? was wurde bei den wöchentlichen treffen mit schlingloff etc besprochen, Lieferprobleme...
+	\section{Projektablauf} %vergleich ist-zustand mit soll-zustand? was wurde bei den wöchentlichen treffen mit schlingloff etc besprochen, Lieferprobleme...
 	% eventuell sind Projektmetriken interessant: Diagram zur Visualsierung der Zeitverteilung auf verschiedene Aspekte des Projekts (wie viel Zeit für's Coden, in ros einarbeiten etc)
-\section{Produktdokumentation}
-	\subsection{Systemvoraussetzungen} % ubuntu, SW von assystems, ros. im prinzip beschreibung unserer vm + welche Schritte wurden unternommen ums zum laufen zu bringen und kurze erläuterung dass sw von assystems aufs board geschmissen wurde. und catkin zeugs
-	\subsection{Fahrzeug-Architektur}
-		\subsubsection{Hardware} % sensoren, boards, teile ausm 3d drucker, datenblätter im anhang? erläuterung von joe(?) wie er die boards zum laufen gebracht hat
-		\subsubsection{Fahrzeugzusammenbau} % tutorial zum zusammenbau, fotos
-	\subsection{Software-Architektur}
-		\subsubsection{Architekturübersicht} % grafische Darstellung der Beziehung der module zueinander, uml?
-		\subsubsection{Coding-Standard} % C++, Mix aus Google Style Guide und anderen Conventions, version control
-		\subsubsection{Modulebeschreibung} % Beschreibung der Nodes und diagramm 
-	\subsection{Tests}
-		\subsubsection{Test-Standard} % warum haben wir uns auf google test festgelegt; Designentscheidung
-		\subsubsection{Test-Cases}
-		\subsubsection{Testergebnisse}
-	\subsection{Nutzerhandbuch} %brumm brumm auto fahren (wie lasse ich=schlingloff die autos fahren/kann ich die simulation starten? was kann ich alles anstellen und wie? steuerung, hindernisse...)
-\section{Beschreibung der Eigenleistung} % alphabetisch nach Namen
-	\subsection{Cooles Kind 1}
-	\subsection{Cooles Kind 2}
+\newpage
+\part{Produktdokumentation}
+	\section{Systemvoraussetzungen} % ubuntu, SW von assystems, ros. im prinzip beschreibung unserer vm + welche Schritte wurden unternommen ums zum laufen zu bringen und kurze erläuterung dass sw von assystems aufs board geschmissen wurde. und catkin zeugs
+	\section{Fahrzeug-Architektur}
+		\subsection{Hardware} % sensoren, boards, teile ausm 3d drucker, datenblätter im anhang? erläuterung von joe(?) wie er die boards zum laufen gebracht hat
+		\subsection{Fahrzeugzusammenbau} % tutorial zum zusammenbau, fotos
+	\section{Software-Architektur}
+		\subsection{Architekturübersicht} % grafische Darstellung der Beziehung der module zueinander, uml?
+		\subsection{Coding-Standard} % C++, Mix aus Google Style Guide und anderen Conventions, version control
+		\subsection{Modulbeschreibung} % Beschreibung der Nodes inkl. (Aktivitäts-)Diagramme
+			\subsubsection{Beispielnode A}
+			\label{node_a}
+				\paragraph{Aufgabe} Node A sammlet Daten bezüglich der aktuellen Radierfähigkeit verschiedener Radiergummis. Die Daten werden kontinuierlich ausgewertet, sodass bei Überschreitung von bestimmten, festgelegter Werte andere Nodes über die Änderung informiert werden. Der Quellcode ist im Anhang \ref{appendix:abcnode} hinterlegt. 
+				
+				\paragraph{Assoziationen} Zu den Subscribern gehören Node B (vgl. dazu \ref{node_b}) und Node C (ich tue so als ob ich hier eine Referenz einfüge). Die Publisher sind Node X, Y, und Z (Referenz und so, ne?).
+				\begin{figure}[h!]
+					\centering
+					\includegraphics*[width=0.55\textwidth, height=0.5\textwidth]{node_a_diagram}
+					\caption{Prozesse von Node A, hat nicht unbedingt viel mit der vorhergehenden Beschreibung zu tun}
+					\label{fig:node_a}
+				\end{figure}
+				
+				\paragraph{Attribute} % nur die, die eurer Meinung nach relevant sind um die Methoden besser erklären zu können, auf jeden Fall kurz halten
+				\begin{itemize}
+					\item \textbf{A-Wert:} Speichert im Integer-Format den vorletzten, vom Topic \emph{Nieder mit den Tintenkillern} erhaltenen Wert.
+					\item \textbf{B-Wert:} Speichert im Integer-Format den aktuellen, vom Topic \emph{Nieder mit den Tintenkillern} erhaltenen Wert.
+				\end{itemize} 
+				
+				\paragraph{Methoden}
+				
+					\subparagraph{Z-Methode} Berechnet die Differenz zwischen dem A- und dem B-Wert. Überschreitet diese den Wert 7, wird ein String generiert und an die Subscriber des Topics \emph{Bleistiftgeflüster} geschickt, vlg. dazu Output von Node A.
+					\subparagraph{Y-Methode} Sofern von der Z-Methode keine Überschreitung festgestellt worden ist, überschreibt die Y-Methode den A-Wert mit dem B-Wert und setzt an Stelle des B-Wertes den neu eingetroffenen Wert des Topics \emph{Nieder mit den Tintenkillern} ein. 
+				
+				\paragraph{Input} Node A ist Subscriber zum Topic \emph{Nieder mit den Tintenkillern} und empfängt im Integer-Format einen kontinuierlichen Datenstrom über die aktuelle Radierleistung. Die Daten werden von Sensor X geliefert. 
+				
+				% es werden sich vmtl. Themen aus dem Bereich 'Methoden' ueberschneiden
+				\paragraph{Output} Node A ist Publisher zum Topic \emph{Bleistiftgeflüster} und verschickt Daten, die von der Z-Methode berechnet worden sind und einen bestimmten Wert überschritten haben. Die ausgehende Nachricht erfolgt im String-Format und kann von folgender Form sein:
+				\begin{itemize}
+					\item STR\_ACC
+					\item STR\_ERR
+					\item STR\_DEF
+				\end{itemize}
+				
+			\subsubsection{Beispielnode B}
+			\label{node_b}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Vehicle Control}
+			\label{vehicle_control}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Distance Processing}
+			\label{distance_processing}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Lane Detect}
+			\label{lane_detect}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Longitudal Processing}
+			\label{longitudal_processing}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Lateral Processing}
+			\label{lateral_processing}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+				
+			\subsubsection{Prioritization}
+			\label{prioritization}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+				
+			\subsubsection{Platooning}
+			\label{platooning}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{User Interface Data}
+			\label{user_interface_data}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Message Translation}
+			\label{message_translation}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Radio Interface}
+			\label{radio_interface}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Controller UI}
+			\label{controller_ui}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+	\section{Tests}
+		\subsection{Test-Standard} % warum haben wir uns auf google test festgelegt; Designentscheidung
+		\subsection{Test-Cases}
+		\subsection{Testergebnisse}
+	\section{Nutzerhandbuch} %brumm brumm auto fahren (wie lasse ich=schlingloff die autos fahren/kann ich die simulation starten? was kann ich alles anstellen und wie? steuerung, hindernisse...)
+\newpage
+\part{Beschreibung der Eigenleistung}
+	\section{Cooles Kind 1}
+		Für nähere Informationen siehe Anhang \ref{appendix:xynode}.
+	\section{Falco Becker}
+	\section{Yannick Boerner}
+	\section{Anne Borchard}
+	\section{Franz Eichberg}
+	\section{Jonas Heyden}
+	\section{Benjamin Lorenz}
+	\section{Stephan Orlowsky}
+
 %Anhang: 
 %Datenblätter
 %Code
 %Spezifikationen aus dem Orga Repo
 %
+\renewcommand\appendixtocname{Anhang} % sonst stünde da 'appendices'
+\renewcommand\appendixpagename{Anhang}
+\renewcommand\appendixname{Anhang}
+
+\begin{appendices}
+
+\section{XY-Node Code}
+\label{appendix:xynode}
+	Hier der Code zum Node XY...
+
+\section{Code in Latex-Dokument kopiert}
+\label{appendix:abcnode}  
+	\begin{lstlisting}[style=customcpp]
+	class Animal 
+	{
+		int x_value;
+	public:
+		int y_value;
+		int x = 42;
+	};
+	
+	class Dog : public Animal 
+	{}; \end{lstlisting}
+
+% cpp-file befindet sich im gleichen Ordner wie das tex-file
+% der Stil wird global definiert, siehe oben customcpp
+\section{Code per File importiert}
+\label{appendix:importcode}
+	\lstinputlisting[style=customcpp]{lambda_test.cpp}
+\end{appendices}
 \end{document}
