@@ -52,7 +52,7 @@
 		\subsection{Modulbeschreibung} % Beschreibung der Nodes inkl. (Aktivitäts-)Diagramme
 			\subsubsection{Beispielnode A}
 			\label{node_a}
-				\paragraph{Aufgabe} Node A sammlet Daten bezüglich der aktuellen Radierfähigkeit verschiedener Radiergummis. Die Daten werden kontinuierlich ausgewertet, sodass bei Überschreitung von bestimmten, festgelegter Werte andere Nodes über die Änderung informiert werden. 
+				\paragraph{Aufgabe} Node A sammlet Daten bezüglich der aktuellen Radierfähigkeit verschiedener Radiergummis. Die Daten werden kontinuierlich ausgewertet, sodass bei Überschreitung von bestimmten, festgelegter Werte andere Nodes über die Änderung informiert werden. Der Quellcode ist im Anhang \ref{appendix:abcnode} hinterlegt. 
 				
 				\paragraph{Assoziationen} Zu den Subscribern gehören Node B (vgl. dazu \ref{node_b}) und Node C (ich tue so als ob ich hier eine Referenz einfüge). Die Publisher sind Node X, Y, und Z (Referenz und so, ne?).
 				\begin{figure}[h!]
@@ -75,6 +75,7 @@
 				
 				\paragraph{Input} Node A ist Subscriber zum Topic \emph{Nieder mit den Tintenkillern} und empfängt im Integer-Format einen kontinuierlichen Datenstrom über die aktuelle Radierleistung. Die Daten werden von Sensor X geliefert. 
 				
+				% es werden sich vmtl. Themen aus dem Bereich 'Methoden' ueberschneiden
 				\paragraph{Output} Node A ist Publisher zum Topic \emph{Bleistiftgeflüster} und verschickt Daten, die von der Z-Methode berechnet worden sind und einen bestimmten Wert überschritten haben. Die ausgehende Nachricht erfolgt im String-Format und kann von folgender Form sein:
 				\begin{itemize}
 					\item STR\_ACC
@@ -92,14 +93,135 @@
 					\subparagraph{Tolle Methode A}
 				\paragraph{Input}
 				\paragraph{Output}
-		
+			
+			\subsubsection{Vehicle Control}
+			\label{vehicle_control}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Distance Processing}
+			\label{distance_processing}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Lane Detect}
+			\label{lane_detect}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Longitudal Processing}
+			\label{longitudal_processing}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Lateral Processing}
+			\label{lateral_processing}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+				
+			\subsubsection{Prioritization}
+			\label{prioritization}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+				
+			\subsubsection{Platooning}
+			\label{platooning}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{User Interface Data}
+			\label{user_interface_data}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Message Translation}
+			\label{message_translation}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Radio Interface}
+			\label{radio_interface}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
+			\subsubsection{Controller UI}
+			\label{controller_ui}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+			
 	\section{Tests}
 		\subsection{Test-Standard} % warum haben wir uns auf google test festgelegt; Designentscheidung
 		\subsection{Test-Cases}
 		\subsection{Testergebnisse}
 	\section{Nutzerhandbuch} %brumm brumm auto fahren (wie lasse ich=schlingloff die autos fahren/kann ich die simulation starten? was kann ich alles anstellen und wie? steuerung, hindernisse...)
 \newpage
-\part{Beschreibung der Eigenleistung} % alphabetisch nach Namen
+\part{Beschreibung der Eigenleistung}
 	\section{Cooles Kind 1}
 		Für nähere Informationen siehe Anhang \ref{appendix:xynode}.
 	\section{Falco Becker}
