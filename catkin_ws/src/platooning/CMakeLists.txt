@@ -70,9 +70,6 @@ add_message_files(
         ## environment mapping messages
         distanceToObj.msg
         ########################
-        ## prioritization messages
-        oughtData.msg
-        ########################
         ## protocol messages
         platooning/fv_heartbeat.msg
         platooning/fv_leave.msg
@@ -85,9 +82,12 @@ add_message_files(
         ## userinterface messages
         userInterface.msg
         ########################
-        ## vehiclecontrol messages
-        acceleration.msg
+        ## lateralControl messages
         steeringAngle.msg
+        ########################
+        ## longitudalControl messages
+        targetSpeed.msg
+        targetDistance.msg
         ########################
         ## radiointerface messages
         platoonProtocol.msg
