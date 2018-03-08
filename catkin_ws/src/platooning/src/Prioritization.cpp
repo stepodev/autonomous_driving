@@ -90,7 +90,7 @@ void Prioritization::hndl_remotecontrolInput(platooning::remotecontrolInput msg)
 	if (state_ == PrioritizationState::REMOTECONTROL) {
 
 		current_oughtData_.speed = msg.remote_speed;
-		current_oughtData_.distance = msg.remote_angle;
+		current_oughtData_.steeringAngle = msg.remote_angle;
 
 		if (msg.emergency_stop) {
 			current_oughtData_.speed = 0;
@@ -98,7 +98,7 @@ void Prioritization::hndl_remotecontrolInput(platooning::remotecontrolInput msg)
 
 		auto outmsg = boost::make_shared<oughtData>(current_oughtData_);
 		outmsg->speed = current_oughtData_.speed;
-		outmsg->distance = current_oughtData_.distance;
+		outmsg->steeringAngle = current_oughtData_.steeringAngle;
 
 		pub_oughtData.publish(outmsg);
 	}
