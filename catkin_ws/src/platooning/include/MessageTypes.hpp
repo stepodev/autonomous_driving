@@ -38,7 +38,9 @@
 #include "platooning/steeringAngle.h"
 #include "platooning/gazupdate.h"
 #include "platooning/stmupdate.h"
-
+#include "platooning/targetSpeed.h"
+#include "platooning/targetAngle.h"
+#include "platooning/targetDistance.h"
 #include "platooning/templateMsg.h"
 
 namespace platooning {

@@ -92,7 +92,9 @@ class Prioritization : public nodelet::Nodelet {
   private:
 	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
 	std::string name_;
-	platooning::oughtData current_oughtData_;
+	float target_speed_;
+	float target_distance_;
+	float target_angle_;
 	PrioritizationState state_;
 
 	//Subscribers
@@ -102,7 +104,9 @@ class Prioritization : public nodelet::Nodelet {
 	ros::Subscriber sub_platooningState;
 
 	//Publishers
-	ros::Publisher pub_oughtData;
+	ros::Publisher pub_targetAngle;
+	ros::Publisher pub_targetSpeed;
+	ros::Publisher pub_targetDistance;
 
 	/**
 	 * @brief to achieve X does Y

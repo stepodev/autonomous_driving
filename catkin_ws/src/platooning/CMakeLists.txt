@@ -84,8 +84,6 @@ add_message_files(
         steeringAngle.msg
         ########################
         ## longitudalControl messages
-        targetSpeed.msg
-        targetDistance.msg
         ########################
         ## radiointerface messages
         platoonProtocol.msg
@@ -103,6 +101,11 @@ add_message_files(
         ## templateMessages
         sim/stmupdate.msg
         sim/gazupdate.msg
+        ########################
+        ## prioritization msgs
+        targetSpeed.msg
+        targetDistance.msg
+        targetAngle.msg
         ########################
         ## templateMessages
         templateMsg.msg

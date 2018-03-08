@@ -45,7 +45,7 @@ void Moduletest_prioritization::onInit() {
 
 	name_ = "Moduletest_prioritization";
 
-	register_testcases(boost::bind(&Moduletest_prioritization::pub_platooningState_recv_oughtData, this));
+	register_testcases(boost::bind(&Moduletest_prioritization::pub_platooningState_recv_targetSpeed, this));
 
 	NODELET_INFO(std::string("[" + name_ + "] init done").c_str());
 
@@ -56,7 +56,7 @@ void Moduletest_prioritization::onInit() {
 ** Testcases
 *****************************************************************************/
 
-void Moduletest_prioritization::pub_platooningState_recv_oughtData() {
+void Moduletest_prioritization::pub_platooningState_recv_targetSpeed() {
 
 	set_current_test("pub_platooningState_recv_oughtData");
 	NODELET_INFO(std::string("[" + name_ + "] started testcase " + get_current_test()).c_str());
@@ -68,9 +68,9 @@ void Moduletest_prioritization::pub_platooningState_recv_oughtData() {
 
 	//mockup subscribers
 	sub_map_.clear();
-	sub_map_.emplace(topics::OUGHTDATA, ros::Subscriber());
-	sub_map_[topics::OUGHTDATA] = nh_.subscribe(topics::OUGHTDATA, 1,
-	                                            &Moduletest_prioritization::hndl_recv_oughtData,
+	sub_map_.emplace(topics::TARGET_SPEED, ros::Subscriber());
+	sub_map_[topics::TARGET_SPEED] = nh_.subscribe(topics::TARGET_SPEED, 1,
+	                                            &Moduletest_prioritization::hndl_recv_targetSpeed,
 	                                            this);
 
 	boost::shared_ptr<platooningState> inmsg = boost::shared_ptr<platooningState>(new platooningState);
@@ -82,12 +82,12 @@ void Moduletest_prioritization::pub_platooningState_recv_oughtData() {
 
 }
 
-void Moduletest_prioritization::hndl_recv_oughtData(platooning::oughtData msg) {
+void Moduletest_prioritization::hndl_recv_targetSpeed(platooning::targetSpeed msg) {
 
 	TestResult res;
 	res.success = true;
 
-	if (msg.distance != 3 || msg.speed != 4) {
+	if ( msg.target_speed != 4) {
 		res.success = false;
 		res.comment = "this is a useful comment what happened and why";
 	}

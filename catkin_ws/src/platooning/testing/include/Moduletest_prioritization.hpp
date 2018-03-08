@@ -78,9 +78,8 @@ class Moduletest_prioritization : public Moduletest {
 	/**
 	* @brief template_testcase does x,y,z and expects a,b,c
 	*/
-	void pub_platooningState_recv_oughtData();
-	void hndl_recv_oughtData(platooning::oughtData msg);
-
+	void pub_platooningState_recv_targetSpeed();
+	void hndl_recv_targetSpeed(targetSpeed msg);
 };
 
 } // namespace platooning

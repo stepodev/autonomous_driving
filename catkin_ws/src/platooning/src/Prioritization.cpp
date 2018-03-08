@@ -61,12 +61,15 @@ void Prioritization::onInit() {
 	sub_platooningState = nh_.subscribe(topics::PLATOONINGSTATE, 1,
 	                                    &Prioritization::hndl_platooningState, this);
 
-	pub_oughtData = nh_.advertise<platooning::oughtData>(topics::OUGHTDATA, 100);
+	pub_targetAngle = nh_.advertise<platooning::targetAngle>(topics::TARGET_ANGLE, 1);
+	pub_targetSpeed = nh_.advertise<platooning::targetSpeed>(topics::TARGET_SPEED, 1);
+	pub_targetDistance = nh_.advertise<platooning::targetDistance>(topics::TARGET_DISTANCE, 1);
 
 	state_ = PrioritizationState::NONE;
 
-	current_oughtData_.speed = 0;
-	current_oughtData_.distance = 0;
+	target_angle_ = 0;
+	target_distance_ = 0;
+	target_speed_ = 0;
 }
 
 /*****************************************************************************
@@ -89,18 +92,27 @@ void Prioritization::hndl_remotecontrolInput(platooning::remotecontrolInput msg)
 
 	if (state_ == PrioritizationState::REMOTECONTROL) {
 
-		current_oughtData_.speed = msg.remote_speed;
-		current_oughtData_.steeringAngle = msg.remote_angle;
-
-		if (msg.emergency_stop) {
-			current_oughtData_.speed = 0;
+		//always send emergencystop
+		if( msg.emergency_stop ) {
+			target_speed_ = 0;
+			auto outmsg = boost::shared_ptr<platooning::targetSpeed>(new targetSpeed);
+			outmsg->target_speed = target_speed_;
+			pub_targetSpeed.publish(outmsg);
 		}
 
-		auto outmsg = boost::make_shared<oughtData>(current_oughtData_);
-		outmsg->speed = current_oughtData_.speed;
-		outmsg->steeringAngle = current_oughtData_.steeringAngle;
+		if( msg.remote_speed != target_speed_ ) {
+			target_speed_ = msg.remote_speed;
+			auto outmsg = boost::shared_ptr<platooning::targetSpeed>(new targetSpeed);
+			outmsg->target_speed = target_speed_;
+			pub_targetSpeed.publish(outmsg);
+		}
 
-		pub_oughtData.publish(outmsg);
+		if( msg.remote_angle != target_angle_ ) {
+			target_angle_ = msg.remote_angle;
+			auto outmsg = boost::shared_ptr<platooning::targetAngle>(new targetAngle);
+			outmsg->steering_angle = target_angle_;
+			pub_targetAngle.publish(outmsg);
+		}
 	}
 }
 
@@ -108,8 +120,10 @@ void Prioritization::hndl_platooningToggle(platooning::platooningToggle msg) {
 
 	if (state_ != PrioritizationState::PLATOONING && msg.enable_platooning) {
 		state_ = PrioritizationState::PLATOONING;
-		current_oughtData_.speed = msg.platoon_speed;
-		current_oughtData_.distance = msg.inner_platoon_distance;
+		//needs to be turned off so we dont start driving on toggle
+
+		//target_speed_ = msg.platoon_speed;
+		//target_distance_ = msg.inner_platoon_distance;
 	}
 }
 
@@ -121,14 +135,20 @@ void Prioritization::hndl_platooningState(platooning::platooningState msg) {
 	}
 
 	if (state_ == PrioritizationState::PLATOONING) {
-		current_oughtData_.speed = msg.ps;
-		current_oughtData_.distance = msg.ipd;
 
-		auto outmsg = boost::make_shared<oughtData>(current_oughtData_);
-		outmsg->speed = current_oughtData_.speed;
-		outmsg->distance = current_oughtData_.distance;
+		if( target_speed_ != msg.ps ) {
+			target_speed_ = msg.ps;
+			auto outmsg = boost::shared_ptr<platooning::targetSpeed>( new targetSpeed );
+			outmsg->target_speed = target_speed_;
+			pub_targetSpeed.publish(outmsg);
+		}
 
-		pub_oughtData.publish(outmsg);
+		if( target_distance_ != msg.ipd ) {
+			target_distance_ = msg.ipd;
+			auto outmsg = boost::shared_ptr<platooning::targetDistance>(new targetDistance);
+			outmsg->distance = target_distance_;
+			pub_targetDistance.publish(outmsg);
+		}
 	}
 
 };
