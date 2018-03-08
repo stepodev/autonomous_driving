@@ -146,7 +146,7 @@ void gazeboadapter::process_stmsim(const platooning::stmupdate &stmupdate) {
 	//we dont reverse
 	c->shift_gears = prius_msgs::Control::FORWARD;
 
-	//maybe between +-0.87? handwheelhigh +-7.85? 
+	//maybe between +-0.87? handwheelhigh +-7.85?
 	c->steer = stmupdate.steeringAngle;
 
 	//assumes accel between -1 and 1
