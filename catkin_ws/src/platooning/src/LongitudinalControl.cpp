@@ -60,7 +60,7 @@ void LongitudinalControl::onInit() {
 	                                     &LongitudinalControl::hndl_target_distance, this);
 
 
-	pub_acceleration_ = nh_.advertise<platooning::acceleration_>(topics::ACCELERATION, 1);
+	pub_acceleration_ = nh_.advertise<platooning::acceleration>(topics::ACCELERATION, 1);
 
 	current_distance_ = 0;
 	current_speed_ = 0;
