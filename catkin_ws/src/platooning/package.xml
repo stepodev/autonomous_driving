@@ -51,6 +51,8 @@
         <nodelet plugin="${prefix}/plugins/radiointerface.xml"/>
         <nodelet plugin="${prefix}/plugins/platooning.xml"/>
         <nodelet plugin="${prefix}/plugins/lanedetect.xml"/>
+        <nodelet plugin="${prefix}/plugins/longitudinalcontrol.xml"/>
+        <nodelet plugin="${prefix}/plugins/stmsim.xml"/>
         <rosdoc config="rosdoc.yaml"/>
 
         <!-- testing -->

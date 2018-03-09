@@ -162,7 +162,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
         INCLUDE_DIRS include
-        LIBRARIES environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics
+        LIBRARIES environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalcontrol
         CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
         #  DEPENDS system_lib
 )
@@ -238,6 +238,10 @@ target_link_libraries(platooning ${catkin_LIBRARIES})
 add_library(stmsim include/platooning/StmSim.hpp src/StmSim.cpp)
 add_dependencies(stmsim udpserver topics messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(stmsim udpserver ${catkin_LIBRARIES})
+
+add_library(longitudinalcontrol include/platooning/LongitudinalControl.hpp src/LongitudinalControl.cpp)
+add_dependencies(longitudinalcontrol topics messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(longitudinalcontrol topics messagetypes ${catkin_LIBRARIES})
 
 ##############################################
 #### platooning tests
@@ -338,7 +342,7 @@ target_link_libraries(messagedistribution-unit-test messagedistribution ${catkin
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-install(TARGETS environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics
+install(TARGETS environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalcontrol
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

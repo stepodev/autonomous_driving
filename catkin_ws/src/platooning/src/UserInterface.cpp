@@ -45,9 +45,9 @@ namespace platooning
                                                   &UserInterface::hndl_platooning_toggle, this);
     sub_remotecontrol_input = nh_.subscribe(topics::REMOTECONTROLINPUT, 1,
                                                   &UserInterface::hndl_remotecontrol_input, this);
-    sub_speed = nh_.subscribe(topics::SPEED, 1,
+    sub_speed = nh_.subscribe(topics::CURRENTSPEED, 1,
                                                   &UserInterface::hndl_speed, this);
-    sub_distance_to_obj = nh_.subscribe(topics::DISTANCE_TO_OBJECT, 1,
+    sub_distance_to_obj = nh_.subscribe(topics::SENSOR_DISTANCE_TO_OBJ, 1,
                                                   &UserInterface::hndl_distance_to_obj, this);
     sub_steeringangle = nh_.subscribe(topics::STEERINGANGLE, 1,
                                                   &UserInterface::hndl_steering_angle, this);
