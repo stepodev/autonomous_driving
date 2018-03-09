@@ -38,16 +38,16 @@ const std::string TOGGLE_PLATOONING = "toggle_platooning";
 const std::string REMOTECONTROLINPUT = "remotecontrolinput";
 
 //control topics
-const std::string DISTANCE_TO_OBJECT = "distanceToObj";
-const std::string SPEED = "speed";
+const std::string SENSOR_DISTANCE_TO_OBJ = "sensor_distance_to_obj";
+const std::string CURRENTSPEED = "current_speed";
 const std::string VEHICLECONTROL = "vehiclecontrol";
 const std::string STEERINGANGLE = "steeringangle";
 const std::string ACCELERATION = "acceleration";
 
 //prioritziation topics
-const std::string TARGET_SPEED = "targetspeed";
-const std::string TARGET_DISTANCE = "targetdistance";
-const std::string TARGET_ANGLE = "targetangle";
+const std::string TARGET_SPEED = "target_speed";
+const std::string TARGET_DISTANCE = "target_distance";
+const std::string TARGET_ANGLE = "target_angle";
 
 //lanedetect
 const std::string CAMERA = "camera";

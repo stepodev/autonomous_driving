@@ -54,8 +54,8 @@ void StmSim::onInit() {
 	sub_targetSpeed_ = nh_.subscribe(topics::TARGET_SPEED, 1,
 	                                 &StmSim::hndl_targetSpeed, this);
 
-	pub_current_speed_ = nh_.advertise<platooning::speed>(topics::SPEED, 1);
-	pub_distanceToObj_ = nh_.advertise<platooning::distance>(topics::DISTANCE_TO_OBJECT, 1);
+	pub_current_speed_ = nh_.advertise<platooning::speed>(topics::CURRENTSPEED, 1);
+	pub_distanceToObj_ = nh_.advertise<platooning::distance>(topics::SENSOR_DISTANCE_TO_OBJ, 1);
 
 
 	try {
