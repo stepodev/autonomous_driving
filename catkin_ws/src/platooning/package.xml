@@ -44,7 +44,7 @@
         <!-- Other tools can request additional information be placed here -->
         <nodelet plugin="${prefix}/plugins/environment_mapping.xml"/>
         <nodelet plugin="${prefix}/plugins/lanedetect.xml"/>
-        <nodelet plugin="${prefix}/plugins/priorization.xml"/>
+        <nodelet plugin="${prefix}/plugins/prioritization.xml"/>
         <nodelet plugin="${prefix}/plugins/messagedistribution.xml"/>
         <nodelet plugin="${prefix}/plugins/userinterface.xml"/>
         <nodelet plugin="${prefix}/plugins/vehiclecontrol.xml"/>

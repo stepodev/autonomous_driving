@@ -383,7 +383,7 @@ install(DIRECTORY testing/plugins/
 
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-#install(FILES launch/environment_mapping.launch launch/lanedetect.launch launch/priorization.launch  messagedistribution.launch  userinterface.launch  vehiclecontrol.launch  radiointerface.launch  template.launch
+#install(FILES launch/environment_mapping.launch launch/lanedetect.launch launch/prioritization.launch  messagedistribution.launch  userinterface.launch  vehiclecontrol.launch  radiointerface.launch  template.launch
 #        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 #        )
 #install(FILES environment_mapping.xml lanedetect.xml  priorization.xml  messagedistribution.xml  userinterface.xml  vehiclecontrol.xml  radiointerface.xml  template.xml

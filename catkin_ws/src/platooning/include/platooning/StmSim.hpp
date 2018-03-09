@@ -29,11 +29,14 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
+#include <boost/thread.hpp>
+#include <boost/asio.hpp>
 
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
 #include "UdpServer.hpp"
-#include "boost/asio.hpp"
+#include "ServiceTypes.hpp"
+#include "Services.hpp"
 
 namespace platooning {
 
@@ -84,6 +87,7 @@ class StmSim : public nodelet::Nodelet {
 	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
 	std::string name_ = "StmSim";
 	std::unique_ptr<UdpServer> server_ptr_;
+	boost::thread_group thread_pool_;
 
 	ros::Subscriber sub_targetSpeed_;
 	ros::Subscriber sub_targetAngle_;
