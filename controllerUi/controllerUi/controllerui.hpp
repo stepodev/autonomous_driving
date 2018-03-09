@@ -52,7 +52,7 @@ private:
     float remote_lat_angle_v2_ = 0;
     float remote_speed_v2_ = 0;
 
-    void receive_message( std::pair<std::string, int32_t> msgpair ) ;
+    void receive_message( std::pair<std::string, uint32_t> msgpair ) ;
     void keypresspoll();
 };
 

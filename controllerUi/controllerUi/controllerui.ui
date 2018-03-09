@@ -333,7 +333,7 @@
        <item row="2" column="0">
         <widget class="QLabel" name="idp_label_v1_9">
          <property name="text">
-          <string>platoon distance</string>
+          <string>LV or FV</string>
          </property>
         </widget>
        </item>
@@ -628,7 +628,7 @@
        <item row="2" column="0">
         <widget class="QLabel" name="idp_label_v2_2">
          <property name="text">
-          <string>platoon distance</string>
+          <string>LV or FV</string>
          </property>
         </widget>
        </item>

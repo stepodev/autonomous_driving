@@ -30,8 +30,12 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
+#include <boost/thread.hpp>
+
 #include "MessageTypes.hpp"
 #include "Topics.hpp"
+#include "Services.hpp"
+#include "ServiceTypes.hpp"
 
 namespace platooning {
 
@@ -95,7 +99,9 @@ class Prioritization : public nodelet::Nodelet {
 	float target_speed_;
 	float target_distance_;
 	float target_angle_;
+	uint32_t vehicle_id_ = 1;
 	PrioritizationState state_;
+	boost::thread_group thread_pool_;
 
 	//Subscribers
 	ros::Subscriber sub_remotecontrolInput;

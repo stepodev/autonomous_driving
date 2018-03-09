@@ -315,6 +315,10 @@ void Platooning::hndl_msg_fv_heartbeat(const platooning::fv_heartbeat &msg) {
 * @param const platooning::platooningToggle &
 */
 void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &msg) {
+	if( msg.vehicle_id != vehicle_id_ ) {
+		return;
+	}
+
 	NODELET_WARN("handling platooning_toggle");
 
 	if( !msg.enable_platooning ) {

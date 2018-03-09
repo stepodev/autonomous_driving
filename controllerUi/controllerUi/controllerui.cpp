@@ -6,7 +6,6 @@ ControllerUi::ControllerUi(QWidget *parent) :
     ui(new Ui::ControllerUi)
 {
     ui->setupUi(this);
-    QWidget::grabKeyboard(); //only this widget get keypresses
 
     //start server
     boost::function<void (std::pair<std::string, uint32_t>)> cbfun( boost::bind( boost::mem_fn(&ControllerUi::receive_message), this, _1 ) );
@@ -197,19 +196,19 @@ void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
             }
 
             if( msg.src_vehicle == 2 ) {
-                try { ui->info_actual_distance_v2_->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_actual_speed_v2_->setText( std::to_string(msg.speed).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_ipd_v2_->setText( std::to_string(msg.inner_platoon_distance).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_lvfv_v2_->setText( msg.following_vehicle ? "FV" : "LV" );} catch( std::exception &ex ) {}
-                try { ui->info_lvfv_v2_->setText( msg.leading_vehicle ? "LV" : "FV" );} catch( std::exception &ex ) {}
-                try { ui->info_platooningstate_v2_->setText( msg.platooning_state.c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_platoonsize_v2_->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_ps_v2_->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_vehicle_id_v2_->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_actual_distance_v2->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_actual_speed_v2->setText( std::to_string(msg.speed).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_ipd_v2->setText( std::to_string(msg.inner_platoon_distance).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_lvfv_v2->setText( msg.following_vehicle ? "FV" : "LV" );} catch( std::exception &ex ) {}
+                try { ui->info_lvfv_v2->setText( msg.leading_vehicle ? "LV" : "FV" );} catch( std::exception &ex ) {}
+                try { ui->info_platooningstate_v2->setText( msg.platooning_state.c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_platoonsize_v2->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_ps_v2->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_vehicle_id_v2->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) {}
 
                 try { std::stringstream followerlist;
                     std::copy(msg.platoon_members.begin(), msg.platoon_members.end(), std::ostream_iterator<uint32_t>(followerlist, " "));
-                        ui->info_platoonmembers_v2_->setText( followerlist.str().c_str());}catch( std::exception &ex ) {}
+                        ui->info_platoonmembers_v2->setText( followerlist.str().c_str());}catch( std::exception &ex ) {}
             }
 
 
@@ -232,6 +231,7 @@ void ControllerUi::on_toggleRemote_v1_clicked()
     try {
         if( !remoteEnabled_v1_ ) {
             remoteEnabled_v1_ = true;
+            QWidget::grabKeyboard(); //only this widget get keypresses
             ui->toggleRemote_v1->setStyleSheet("background-color: red");
             ui->cursorDown_v1->setFlat(false);
             ui->cursorUp_v1->setFlat(false);
@@ -240,12 +240,13 @@ void ControllerUi::on_toggleRemote_v1_clicked()
             ui->info_remote_lat_v1->setDisabled(false);
             ui->info_remote_speed_v1->setDisabled(false);
             keypollthread_ = boost::thread([this] {
-                while(remoteEnabled_) {
+                while(remoteEnabled_v1_) {
                     keypresspoll();
                 }
             });
         } else {
             remoteEnabled_v1_ = false;
+            QWidget::releaseKeyboard(); //only this widget get keypresses
             ui->toggleRemote_v1->setStyleSheet("background-color: lightgrey");
             ui->cursorDown_v1->setFlat(true);
             ui->cursorUp_v1->setFlat(true);
@@ -270,35 +271,37 @@ void ControllerUi::on_toggleRemote_v1_clicked()
 void ControllerUi::on_toggleRemote_v2_clicked()
 {
     try {
-        if( !remoteEnabled_v2__ ) {
-            remoteEnabled_v2__ = true;
-            ui->toggleRemote_v2_->setStyleSheet("background-color: red");
-            ui->cursorDown_v2_->setFlat(false);
-            ui->cursorUp_v2_->setFlat(false);
-            ui->cursorLeft_v2_->setFlat(false);
-            ui->cursorRight_v2_->setFlat(false);
-            ui->info_remote_lat_v2_->setDisabled(false);
-            ui->info_remote_speed_v2_->setDisabled(false);
+        if( !remoteEnabled_v2_ ) {
+            remoteEnabled_v2_ = true;
+            QWidget::grabKeyboard(); //only this widget get keypresses
+            ui->toggleRemote_v2->setStyleSheet("background-color: red");
+            ui->cursorDown_v2->setFlat(false);
+            ui->cursorUp_v2->setFlat(false);
+            ui->cursorLeft_v2->setFlat(false);
+            ui->cursorRight_v2->setFlat(false);
+            ui->info_remote_lat_v2->setDisabled(false);
+            ui->info_remote_speed_v2->setDisabled(false);
             keypollthread_ = boost::thread([this] {
-                while(remoteEnabled_) {
+                while(remoteEnabled_v2_) {
                     keypresspoll();
                 }
             });
         } else {
-            remoteEnabled_v2__ = false;
-            ui->toggleRemote_v2_->setStyleSheet("background-color: lightgrey");
-            ui->cursorDown_v2_->setFlat(true);
-            ui->cursorUp_v2_->setFlat(true);
-            ui->cursorLeft_v2_->setFlat(true);
-            ui->cursorRight_v2_->setFlat(true);
-            ui->info_remote_lat_v2_->setText("");
-            ui->info_remote_speed_v2_->setText("");
-            ui->info_remote_lat_v2_->setDisabled(true);
-            ui->info_remote_speed_v2_->setDisabled(true);
+            remoteEnabled_v2_ = false;
+            QWidget::releaseKeyboard(); //only this widget get keypresses
+            ui->toggleRemote_v2->setStyleSheet("background-color: lightgrey");
+            ui->cursorDown_v2->setFlat(true);
+            ui->cursorUp_v2->setFlat(true);
+            ui->cursorLeft_v2->setFlat(true);
+            ui->cursorRight_v2->setFlat(true);
+            ui->info_remote_lat_v2->setText("");
+            ui->info_remote_speed_v2->setText("");
+            ui->info_remote_lat_v2->setDisabled(true);
+            ui->info_remote_speed_v2->setDisabled(true);
         }
 
         platooning::remotecontrolToggle msg;
-        msg.enable_remotecontrol = remoteEnabled_v2__;
+        msg.enable_remotecontrol = remoteEnabled_v2_;
         server_ptr_->start_send(platooning::encode_message(msg), REMOTE_CONTROLTOGGLE);
 
     } catch( std::exception &ex) {

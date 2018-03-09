@@ -129,6 +129,10 @@ void decode_json(const std::string &json, platooningToggle &message) {
 	pt::read_json(ss, root);
 
 	message.enable_platooning = root.get<bool>("enable_platooning");
+	message.vehicle_id = root.get<uint32_t>("vehicle_id");
+	message.inner_platoon_distance = root.get<float>("inner_platoon_distance");
+	message.platoon_speed = root.get<float>("platoon_speed");
+	message.lvfv = root.get<float>("lvfv");
 
 }
 
@@ -288,7 +292,11 @@ std::string encode_message(const platooningToggle &message) {
 	std::string json;
 	pt::ptree root;
 
+	root.put("vehicle_id", message.vehicle_id);
 	root.put("enable_platooning", message.enable_platooning);
+	root.put("inner_platoon_distance", message.inner_platoon_distance);
+	root.put("platoon_speed", message.platoon_speed);
+	root.put("lvfv", message.lvfv);
 
 	std::stringstream ss;
 	boost::property_tree::write_json(ss, root, false);
