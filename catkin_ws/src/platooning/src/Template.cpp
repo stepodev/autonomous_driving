@@ -29,58 +29,53 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-  Template::Template() {};
-
-
+Template::Template() {};
 
 /*****************************************************************************
 ** Destructors
 *****************************************************************************/
 
-  Template::~Template() {};
+Template::~Template() {};
 
 
 /*****************************************************************************
 ** Initializers
 *****************************************************************************/
 
-  /**
-  * Set-up necessary publishers/subscribers
-  */
-  void Template::onInit() {
+/**
+* Set-up necessary publishers/subscribers
+*/
+void Template::onInit() {
 
-    //subscribers of protocol nodelet
-    sub_templateTopic = nh_.subscribe(topics::TEMPLATETOPIC, 10,
-                                                  &Template::hndl_templateTopic, this);
+	//subscribers of protocol nodelet
+	sub_templateTopic = nh_.subscribe(topics::TEMPLATETOPIC, 10,
+	                                  &Template::hndl_templateTopic, this);
 
-    //publisher of forced driving vector
+	//publisher of forced driving vector
 
-    pub_templateTopic = nh_.advertise< platooning::templateMsg >(topics::TEMPLATETOPIC, 10);
+	pub_templateTopic = nh_.advertise<platooning::templateMsg>(topics::TEMPLATETOPIC, 10);
 
-
-  };
+};
 
 
 /*****************************************************************************
 ** Handlers
 *****************************************************************************/
 
-  /*
-   * handling an event and publishing something
-   */
-  void Template::hndl_templateTopic(const platooning::templateMsg &msg) {
+/*
+ * handling an event and publishing something
+ */
+void Template::hndl_templateTopic(const platooning::templateMsg &msg) {
 
-    NODELET_DEBUG("handling a template");
+	NODELET_DEBUG("handling a template");
 
-    if( msg.templatebool || !msg.templatebool ) {
-      pub_templateTopic.publish(msg);
-    } else {
-      NODELET_WARN("warning you of stuff");
-    }
+	if (msg.templatebool || !msg.templatebool) {
+		pub_templateTopic.publish(msg);
+	} else {
+		NODELET_WARN("warning you of stuff");
+	}
 
-  }
-
-
+}
 
 } // namespace platooning
 

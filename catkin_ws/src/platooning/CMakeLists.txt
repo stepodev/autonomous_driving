@@ -235,6 +235,10 @@ add_library(platooning include/Platooning.hpp src/Platooning.cpp)
 add_dependencies(platooning ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(platooning ${catkin_LIBRARIES})
 
+add_library(stmsim include/StmSim.hpp src/StmSim.cpp)
+add_dependencies(stmsim udpserver topics messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(stmsim udpserver ${catkin_LIBRARIES})
+
 ##############################################
 #### platooning tests
 ##############################################

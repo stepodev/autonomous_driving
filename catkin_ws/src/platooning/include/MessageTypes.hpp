@@ -41,6 +41,8 @@
 #include "platooning/targetSpeed.h"
 #include "platooning/targetAngle.h"
 #include "platooning/targetDistance.h"
+#include "platooning/speed.h"
+#include "platooning/distance.h"
 #include "platooning/templateMsg.h"
 
 namespace platooning {

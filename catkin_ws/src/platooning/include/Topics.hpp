@@ -49,6 +49,9 @@ const std::string TARGET_SPEED = "targetspeed";
 const std::string TARGET_DISTANCE = "targetdistance";
 const std::string TARGET_ANGLE = "targetangle";
 
+//lanedetect
+const std::string CAMERA = "camera";
+
 //template
 const std::string TEMPLATETOPIC = "templateTopic";
 
