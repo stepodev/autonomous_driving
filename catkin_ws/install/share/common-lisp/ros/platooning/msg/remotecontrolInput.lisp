@@ -7,7 +7,12 @@
 ;//! \htmlinclude remotecontrolInput.msg.html
 
 (cl:defclass <remotecontrolInput> (roslisp-msg-protocol:ros-message)
-  ((remote_speed
+  ((vehicle_id
+    :reader vehicle_id
+    :initarg :vehicle_id
+    :type cl:integer
+    :initform 0)
+   (remote_speed
     :reader remote_speed
     :initarg :remote_speed
     :type cl:float
@@ -32,6 +37,11 @@
   (cl:unless (cl:typep m 'remotecontrolInput)
     (roslisp-msg-protocol:msg-deprecation-warning "using old message class name platooning-msg:<remotecontrolInput> is deprecated: use platooning-msg:remotecontrolInput instead.")))
 
+(cl:ensure-generic-function 'vehicle_id-val :lambda-list '(m))
+(cl:defmethod vehicle_id-val ((m <remotecontrolInput>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader platooning-msg:vehicle_id-val is deprecated.  Use platooning-msg:vehicle_id instead.")
+  (vehicle_id m))
+
 (cl:ensure-generic-function 'remote_speed-val :lambda-list '(m))
 (cl:defmethod remote_speed-val ((m <remotecontrolInput>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader platooning-msg:remote_speed-val is deprecated.  Use platooning-msg:remote_speed instead.")
@@ -48,6 +58,10 @@
   (emergency_stop m))
 (cl:defmethod roslisp-msg-protocol:serialize ((msg <remotecontrolInput>) ostream)
   "Serializes a message object of type '<remotecontrolInput>"
+  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'vehicle_id)) ostream)
+  (cl:write-byte (cl:ldb (cl:byte 8 8) (cl:slot-value msg 'vehicle_id)) ostream)
+  (cl:write-byte (cl:ldb (cl:byte 8 16) (cl:slot-value msg 'vehicle_id)) ostream)
+  (cl:write-byte (cl:ldb (cl:byte 8 24) (cl:slot-value msg 'vehicle_id)) ostream)
   (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'remote_speed))))
     (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
@@ -62,6 +76,10 @@
 )
 (cl:defmethod roslisp-msg-protocol:deserialize ((msg <remotecontrolInput>) istream)
   "Deserializes a message object of type '<remotecontrolInput>"
+    (cl:setf (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'vehicle_id)) (cl:read-byte istream))
+    (cl:setf (cl:ldb (cl:byte 8 8) (cl:slot-value msg 'vehicle_id)) (cl:read-byte istream))
+    (cl:setf (cl:ldb (cl:byte 8 16) (cl:slot-value msg 'vehicle_id)) (cl:read-byte istream))
+    (cl:setf (cl:ldb (cl:byte 8 24) (cl:slot-value msg 'vehicle_id)) (cl:read-byte istream))
     (cl:let ((bits 0))
       (cl:setf (cl:ldb (cl:byte 8 0) bits) (cl:read-byte istream))
       (cl:setf (cl:ldb (cl:byte 8 8) bits) (cl:read-byte istream))
@@ -85,18 +103,19 @@
   "platooning/remotecontrolInput")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<remotecontrolInput>)))
   "Returns md5sum for a message object of type '<remotecontrolInput>"
-  "893b90aabdb4526f8be41f8f7b297e01")
+  "48eff1d5f037dfb934e32ce687673a3f")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'remotecontrolInput)))
   "Returns md5sum for a message object of type 'remotecontrolInput"
-  "893b90aabdb4526f8be41f8f7b297e01")
+  "48eff1d5f037dfb934e32ce687673a3f")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<remotecontrolInput>)))
   "Returns full string definition for message of type '<remotecontrolInput>"
-  (cl:format cl:nil "float32 remote_speed~%float32 remote_angle~%bool emergency_stop~%~%"))
+  (cl:format cl:nil "uint32 vehicle_id~%float32 remote_speed~%float32 remote_angle~%bool emergency_stop~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'remotecontrolInput)))
   "Returns full string definition for message of type 'remotecontrolInput"
-  (cl:format cl:nil "float32 remote_speed~%float32 remote_angle~%bool emergency_stop~%~%"))
+  (cl:format cl:nil "uint32 vehicle_id~%float32 remote_speed~%float32 remote_angle~%bool emergency_stop~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <remotecontrolInput>))
   (cl:+ 0
+     4
      4
      4
      1
@@ -104,6 +123,7 @@
 (cl:defmethod roslisp-msg-protocol:ros-message-to-list ((msg <remotecontrolInput>))
   "Converts a ROS message object to a list"
   (cl:list 'remotecontrolInput
+    (cl:cons ':vehicle_id (vehicle_id msg))
     (cl:cons ':remote_speed (remote_speed msg))
     (cl:cons ':remote_angle (remote_angle msg))
     (cl:cons ':emergency_stop (emergency_stop msg))

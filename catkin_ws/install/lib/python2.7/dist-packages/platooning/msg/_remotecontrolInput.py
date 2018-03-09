@@ -7,14 +7,15 @@ import struct
 
 
 class remotecontrolInput(genpy.Message):
-  _md5sum = "893b90aabdb4526f8be41f8f7b297e01"
+  _md5sum = "48eff1d5f037dfb934e32ce687673a3f"
   _type = "platooning/remotecontrolInput"
   _has_header = False #flag to mark the presence of a Header object
-  _full_text = """float32 remote_speed
+  _full_text = """uint32 vehicle_id
+float32 remote_speed
 float32 remote_angle
 bool emergency_stop"""
-  __slots__ = ['remote_speed','remote_angle','emergency_stop']
-  _slot_types = ['float32','float32','bool']
+  __slots__ = ['vehicle_id','remote_speed','remote_angle','emergency_stop']
+  _slot_types = ['uint32','float32','float32','bool']
 
   def __init__(self, *args, **kwds):
     """
@@ -24,7 +25,7 @@ bool emergency_stop"""
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       remote_speed,remote_angle,emergency_stop
+       vehicle_id,remote_speed,remote_angle,emergency_stop
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -33,6 +34,8 @@ bool emergency_stop"""
     if args or kwds:
       super(remotecontrolInput, self).__init__(*args, **kwds)
       #message fields cannot be None, assign default values for those that are
+      if self.vehicle_id is None:
+        self.vehicle_id = 0
       if self.remote_speed is None:
         self.remote_speed = 0.
       if self.remote_angle is None:
@@ -40,6 +43,7 @@ bool emergency_stop"""
       if self.emergency_stop is None:
         self.emergency_stop = False
     else:
+      self.vehicle_id = 0
       self.remote_speed = 0.
       self.remote_angle = 0.
       self.emergency_stop = False
@@ -57,7 +61,7 @@ bool emergency_stop"""
     """
     try:
       _x = self
-      buff.write(_get_struct_2fB().pack(_x.remote_speed, _x.remote_angle, _x.emergency_stop))
+      buff.write(_get_struct_I2fB().pack(_x.vehicle_id, _x.remote_speed, _x.remote_angle, _x.emergency_stop))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -70,8 +74,8 @@ bool emergency_stop"""
       end = 0
       _x = self
       start = end
-      end += 9
-      (_x.remote_speed, _x.remote_angle, _x.emergency_stop,) = _get_struct_2fB().unpack(str[start:end])
+      end += 13
+      (_x.vehicle_id, _x.remote_speed, _x.remote_angle, _x.emergency_stop,) = _get_struct_I2fB().unpack(str[start:end])
       self.emergency_stop = bool(self.emergency_stop)
       return self
     except struct.error as e:
@@ -86,7 +90,7 @@ bool emergency_stop"""
     """
     try:
       _x = self
-      buff.write(_get_struct_2fB().pack(_x.remote_speed, _x.remote_angle, _x.emergency_stop))
+      buff.write(_get_struct_I2fB().pack(_x.vehicle_id, _x.remote_speed, _x.remote_angle, _x.emergency_stop))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -100,8 +104,8 @@ bool emergency_stop"""
       end = 0
       _x = self
       start = end
-      end += 9
-      (_x.remote_speed, _x.remote_angle, _x.emergency_stop,) = _get_struct_2fB().unpack(str[start:end])
+      end += 13
+      (_x.vehicle_id, _x.remote_speed, _x.remote_angle, _x.emergency_stop,) = _get_struct_I2fB().unpack(str[start:end])
       self.emergency_stop = bool(self.emergency_stop)
       return self
     except struct.error as e:
@@ -111,9 +115,9 @@ _struct_I = genpy.struct_I
 def _get_struct_I():
     global _struct_I
     return _struct_I
-_struct_2fB = None
-def _get_struct_2fB():
-    global _struct_2fB
-    if _struct_2fB is None:
-        _struct_2fB = struct.Struct("<2fB")
-    return _struct_2fB
+_struct_I2fB = None
+def _get_struct_I2fB():
+    global _struct_I2fB
+    if _struct_I2fB is None:
+        _struct_I2fB = struct.Struct("<I2fB")
+    return _struct_I2fB

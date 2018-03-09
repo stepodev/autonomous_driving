@@ -26,4 +26,5 @@ from ._targetSpeed import *
 from ._templateMsg import *
 from ._testResult import *
 from ._userInterface import *
+from ._vehicleId import *
 from ._vehiclecontrol import *

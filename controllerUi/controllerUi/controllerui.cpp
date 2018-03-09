@@ -23,12 +23,144 @@ ControllerUi::~ControllerUi()
     delete ui;
 }
 
-void ControllerUi::on_startPlatooning_clicked()
+void ControllerUi::on_togglePlatooning_v1_clicked()
 {
-    platooning::platooningToggle msg;
-    msg.enable_platooning = remoteEnabled_;
-    server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLTOGGLE);
+    try {
+        platooningEnabled_v1_ = !platooningEnabled_v1_;
+        float ipd;
+        float ps;
+        std::string lvfv;
+
+        if( platooningEnabled_v1_ ) {
+            if( ui->info_set_platoonspeed_v1->text() == "") {
+                platooningEnabled_v1_ = !platooningEnabled_v1_;
+                QMessageBox msgBox;
+                msgBox.setText("IPD cannot be empty.");
+                msgBox.exec();
+                return;
+            }
+
+            try {
+                ipd = std::stof(ui->info_set_platoonspeed_v1->text().toStdString() );
+            } catch( std::invalid_argument &ex ) {
+                platooningEnabled_v1_ = !platooningEnabled_v1_;
+                QMessageBox msgBox;
+                msgBox.setText("IPD cannot be whatever you wrote in it.");
+                msgBox.exec();
+                return;
+            }
+
+            if( ui->info_set_platoon_distance_v1->text() == "") {
+                platooningEnabled_v1_ = !platooningEnabled_v1_;
+                QMessageBox msgBox;
+                msgBox.setText("PS cannot be empty.");
+                msgBox.exec();
+                return;
+            }
+
+            try {
+                ps = std::stof(ui->info_set_platoonspeed_v1->text().toStdString() );
+            } catch( std::invalid_argument &ex ) {
+                platooningEnabled_v1_ = !platooningEnabled_v1_;
+                QMessageBox msgBox;
+                msgBox.setText("PS cannot be whatever you wrote in it.");
+                msgBox.exec();
+                return;
+            }
+
+            if( ui->info_set_lvfv_v1->text() == ""
+                    || ( ui->info_set_lvfv_v1->text() != "LV" && ui->info_set_lvfv_v1->text() != "FV" )) {
+                platooningEnabled_v1_ = !platooningEnabled_v1_;
+                QMessageBox msgBox;
+                msgBox.setText("LVFV must be set.");
+                msgBox.exec();
+                return;
+            }
+        }
+
+        platooning::platooningToggle msg;
+        msg.enable_platooning = platooningEnabled_v1_;
+        msg.vehicle_id = 1;
+        msg.inner_platoon_distance = ipd;
+        msg.platoon_speed = ps;
+        msg.lvfv = ui->info_set_lvfv_v1->text().toStdString();
+        server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLTOGGLE);
+
+    } catch( std::exception &ex ) {
+        std::cerr << "toggleplatooning crash with " << ex.what() << std::endl;
+    }
+
 }
+
+void ControllerUi::on_togglePlatooning_v2_clicked()
+{
+    try {
+        platooningEnabled_v2_ = !platooningEnabled_v2_;
+        float ipd;
+        float ps;
+        std::string lvfv = "";
+
+        if( platooningEnabled_v2_ ) {
+            if( ui->info_set_platoonspeed_v2->text() == "") {
+                platooningEnabled_v2_ = !platooningEnabled_v2_;
+                QMessageBox msgBox;
+                msgBox.setText("IPD cannot be empty.");
+                msgBox.exec();
+                return;
+            }
+
+            try {
+                ipd = std::stof(ui->info_set_platoonspeed_v2->text().toStdString() );
+            } catch( std::invalid_argument &ex ) {
+                platooningEnabled_v2_ = !platooningEnabled_v2_;
+                QMessageBox msgBox;
+                msgBox.setText("IPD cannot be whatever you wrote in it.");
+                msgBox.exec();
+                return;
+            }
+
+            if( ui->info_set_platoon_distance_v2->text() == "") {
+                platooningEnabled_v2_ = !platooningEnabled_v2_;
+                QMessageBox msgBox;
+                msgBox.setText("PS cannot be empty.");
+                msgBox.exec();
+                return;
+            }
+
+            try {
+                ps = std::stof(ui->info_set_platoonspeed_v2->text().toStdString() );
+            } catch( std::invalid_argument &ex ) {
+                platooningEnabled_v2_ = !platooningEnabled_v2_;
+                QMessageBox msgBox;
+                msgBox.setText("PS cannot be whatever you wrote in it.");
+                msgBox.exec();
+                return;
+            }
+
+            if( ui->info_set_lvfv_v2->text() == ""
+                    || ( ui->info_set_lvfv_v2->text() != "LV" && ui->info_set_lvfv_v2->text() != "FV" )) {
+                platooningEnabled_v2_ = !platooningEnabled_v2_;
+                QMessageBox msgBox;
+                msgBox.setText("LVFV must be set.");
+                msgBox.exec();
+                return;
+            }
+        }
+
+        platooning::platooningToggle msg;
+        msg.enable_platooning = platooningEnabled_v2_;
+        msg.vehicle_id = 1;
+        msg.inner_platoon_distance = ipd;
+        msg.platoon_speed = ps;
+        msg.lvfv = ui->info_set_lvfv_v2->text().toStdString();
+        server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLTOGGLE);
+
+    } catch( std::exception &ex ) {
+        std::cerr << "toggleplatooning crash with " << ex.what() << std::endl;
+    }
+
+}
+
 
 void ControllerUi::add_slave_vehicle( uint32_t vehicle_id) {
     slave_vehicle_ids_.emplace_back(vehicle_id);
@@ -48,19 +180,39 @@ void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
 
             platooning::decode_json(msgpair.first, msg);
 
-            try { ui->info_actual_distance->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) {}
-            try { ui->info_actual_speed->setText( std::to_string(msg.speed).c_str() );} catch( std::exception &ex ) {}
-            try { ui->info_ipd->setText( std::to_string(msg.inner_platoon_distance).c_str() );} catch( std::exception &ex ) {}
-            try { ui->info_lvfv->setText( msg.following_vehicle ? "FV" : "" );} catch( std::exception &ex ) {}
-            try { ui->info_lvfv->setText( msg.leading_vehicle ? "FV" : "" );} catch( std::exception &ex ) {}
-            try { ui->info_platooningstate->setText( msg.platooning_state.c_str() );} catch( std::exception &ex ) {}
-            try { ui->info_platoonsize->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) {}
-            try { ui->info_ps->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) {}
-            try { ui->info_vehicle_id->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) {}
+            if( msg.src_vehicle == 1 ) {
+                try { ui->info_actual_distance_v1->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_actual_speed_v1->setText( std::to_string(msg.speed).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_ipd_v1->setText( std::to_string(msg.inner_platoon_distance).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_lvfv_v1->setText( msg.following_vehicle ? "FV" : "LV" );} catch( std::exception &ex ) {}
+                try { ui->info_lvfv_v1->setText( msg.leading_vehicle ? "LV" : "FV" );} catch( std::exception &ex ) {}
+                try { ui->info_platooningstate_v1->setText( msg.platooning_state.c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_platoonsize_v1->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_ps_v1->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_vehicle_id_v1->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) {}
 
-            try { std::stringstream followerlist;
-                std::copy(msg.platoon_members.begin(), msg.platoon_members.end(), std::ostream_iterator<uint32_t>(followerlist, " "));
-                    ui->info_platoonmembers->setText( followerlist.str().c_str());}catch( std::exception &ex ) {}
+                try { std::stringstream followerlist;
+                    std::copy(msg.platoon_members.begin(), msg.platoon_members.end(), std::ostream_iterator<uint32_t>(followerlist, " "));
+                        ui->info_platoonmembers_v1->setText( followerlist.str().c_str());}catch( std::exception &ex ) {}
+            }
+
+            if( msg.src_vehicle == 2 ) {
+                try { ui->info_actual_distance_v2_->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_actual_speed_v2_->setText( std::to_string(msg.speed).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_ipd_v2_->setText( std::to_string(msg.inner_platoon_distance).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_lvfv_v2_->setText( msg.following_vehicle ? "FV" : "LV" );} catch( std::exception &ex ) {}
+                try { ui->info_lvfv_v2_->setText( msg.leading_vehicle ? "LV" : "FV" );} catch( std::exception &ex ) {}
+                try { ui->info_platooningstate_v2_->setText( msg.platooning_state.c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_platoonsize_v2_->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_ps_v2_->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_vehicle_id_v2_->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) {}
+
+                try { std::stringstream followerlist;
+                    std::copy(msg.platoon_members.begin(), msg.platoon_members.end(), std::ostream_iterator<uint32_t>(followerlist, " "));
+                        ui->info_platoonmembers_v2_->setText( followerlist.str().c_str());}catch( std::exception &ex ) {}
+            }
+
+
 
             break;
         default:
@@ -75,38 +227,78 @@ void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
     }
 }
 
-void ControllerUi::on_toggleRemote_clicked()
+void ControllerUi::on_toggleRemote_v1_clicked()
 {
     try {
-        if( !remoteEnabled_ ) {
-            remoteEnabled_ = true;
-            ui->toggleRemote->setStyleSheet("background-color: red");
-            ui->cursorDown->setFlat(false);
-            ui->cursorUp->setFlat(false);
-            ui->cursorLeft->setFlat(false);
-            ui->cursorRight->setFlat(false);
-            ui->info_remote_lat->setDisabled(false);
-            ui->info_remote_speed->setDisabled(false);
+        if( !remoteEnabled_v1_ ) {
+            remoteEnabled_v1_ = true;
+            ui->toggleRemote_v1->setStyleSheet("background-color: red");
+            ui->cursorDown_v1->setFlat(false);
+            ui->cursorUp_v1->setFlat(false);
+            ui->cursorLeft_v1->setFlat(false);
+            ui->cursorRight_v1->setFlat(false);
+            ui->info_remote_lat_v1->setDisabled(false);
+            ui->info_remote_speed_v1->setDisabled(false);
             keypollthread_ = boost::thread([this] {
                 while(remoteEnabled_) {
                     keypresspoll();
                 }
             });
         } else {
-            remoteEnabled_ = false;
-            ui->toggleRemote->setStyleSheet("background-color: lightgrey");
-            ui->cursorDown->setFlat(true);
-            ui->cursorUp->setFlat(true);
-            ui->cursorLeft->setFlat(true);
-            ui->cursorRight->setFlat(true);
-            ui->info_remote_lat->setText("");
-            ui->info_remote_speed->setText("");
-            ui->info_remote_lat->setDisabled(true);
-            ui->info_remote_speed->setDisabled(true);
+            remoteEnabled_v1_ = false;
+            ui->toggleRemote_v1->setStyleSheet("background-color: lightgrey");
+            ui->cursorDown_v1->setFlat(true);
+            ui->cursorUp_v1->setFlat(true);
+            ui->cursorLeft_v1->setFlat(true);
+            ui->cursorRight_v1->setFlat(true);
+            ui->info_remote_lat_v1->setText("");
+            ui->info_remote_speed_v1->setText("");
+            ui->info_remote_lat_v1->setDisabled(true);
+            ui->info_remote_speed_v1->setDisabled(true);
         }
 
         platooning::remotecontrolToggle msg;
-        msg.enable_remotecontrol = remoteEnabled_;
+        msg.enable_remotecontrol = remoteEnabled_v1_;
+        server_ptr_->start_send(platooning::encode_message(msg), REMOTE_CONTROLTOGGLE);
+
+    } catch( std::exception &ex) {
+        std::cerr << "toggleremote crash with " << ex.what() << std::endl;
+    }
+
+}
+
+void ControllerUi::on_toggleRemote_v2_clicked()
+{
+    try {
+        if( !remoteEnabled_v2__ ) {
+            remoteEnabled_v2__ = true;
+            ui->toggleRemote_v2_->setStyleSheet("background-color: red");
+            ui->cursorDown_v2_->setFlat(false);
+            ui->cursorUp_v2_->setFlat(false);
+            ui->cursorLeft_v2_->setFlat(false);
+            ui->cursorRight_v2_->setFlat(false);
+            ui->info_remote_lat_v2_->setDisabled(false);
+            ui->info_remote_speed_v2_->setDisabled(false);
+            keypollthread_ = boost::thread([this] {
+                while(remoteEnabled_) {
+                    keypresspoll();
+                }
+            });
+        } else {
+            remoteEnabled_v2__ = false;
+            ui->toggleRemote_v2_->setStyleSheet("background-color: lightgrey");
+            ui->cursorDown_v2_->setFlat(true);
+            ui->cursorUp_v2_->setFlat(true);
+            ui->cursorLeft_v2_->setFlat(true);
+            ui->cursorRight_v2_->setFlat(true);
+            ui->info_remote_lat_v2_->setText("");
+            ui->info_remote_speed_v2_->setText("");
+            ui->info_remote_lat_v2_->setDisabled(true);
+            ui->info_remote_speed_v2_->setDisabled(true);
+        }
+
+        platooning::remotecontrolToggle msg;
+        msg.enable_remotecontrol = remoteEnabled_v2__;
         server_ptr_->start_send(platooning::encode_message(msg), REMOTE_CONTROLTOGGLE);
 
     } catch( std::exception &ex) {
@@ -120,41 +312,80 @@ void ControllerUi::keypresspoll() {
         boost::property_tree::ptree root;
         std::stringstream os;
 
-        while(remoteEnabled_) {
-            if(ui->cursorUp->isDown() && remote_speed < 2.8) {
-                remote_speed += 0.1f;
+        int tabix = ui->tabWidget->currentIndex();
 
-                ui->info_remote_speed->insert( std::to_string( remote_speed).c_str());
+        while(remoteEnabled_v1_ && tabix == 0) {
+            if(ui->cursorUp_v1->isDown() && remote_speed_v1_ < 2.8) {
+                remote_speed_v1_ += 0.1f;
+
+                ui->info_remote_speed_v1->insert( std::to_string( remote_speed_v1_).c_str());
             }
 
-            if(ui->cursorDown->isDown() && remote_speed >= 0) {
-                remote_speed -= 0.1f;
+            if(ui->cursorDown_v1->isDown() && remote_speed_v1_ >= 0) {
+                remote_speed_v1_ -= 0.1f;
 
-                if( remote_speed < 0 ) {
-                    remote_speed = 0;
+                if( remote_speed_v1_ < 0 ) {
+                    remote_speed_v1_ = 0;
                 }
 
-                ui->info_remote_speed->insert( std::to_string( remote_speed).c_str());
+                ui->info_remote_speed_v1->insert( std::to_string( remote_speed_v1_).c_str());
             }
 
-            if(ui->cursorLeft->isDown() && remote_lat_angle > -70 ) {
-                remote_lat_angle -= 3;
-                ui->info_remote_lat->insert( std::to_string( remote_lat_angle).c_str());
+            if(ui->cursorLeft_v1->isDown() && remote_lat_angle_v1_ > -70 ) {
+                remote_lat_angle_v1_ -= 3;
+                ui->info_remote_lat_v1->insert( std::to_string( remote_lat_angle_v1_).c_str());
             }
 
-            if(ui->cursorRight->isDown() && remote_lat_angle < 70 ) {
-                remote_lat_angle += 3;
-                ui->info_remote_lat->insert( std::to_string( remote_lat_angle).c_str());
+            if(ui->cursorRight_v1->isDown() && remote_lat_angle_v1_ < 70 ) {
+                remote_lat_angle_v1_ += 3;
+                ui->info_remote_lat_v1->insert( std::to_string( remote_lat_angle_v1_).c_str());
             }
 
             platooning::remotecontrolInput msg;
 
-            msg.remote_speed = remote_speed;
-            msg.remote_angle = remote_lat_angle;
+            msg.remote_speed = remote_speed_v1_;
+            msg.remote_angle = remote_lat_angle_v1_;
             msg.emergency_stop = false;
             server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLINPUT);
             boost::this_thread::sleep_for(boost::chrono::milliseconds(1500));
         }
+
+        while(remoteEnabled_v2_ && tabix == 1) {
+            if(ui->cursorUp_v2->isDown() && remote_speed_v2_ < 2.8) {
+                remote_speed_v2_ += 0.1f;
+
+                ui->info_remote_speed_v2->insert( std::to_string( remote_speed_v2_).c_str());
+            }
+
+            if(ui->cursorDown_v2->isDown() && remote_speed_v2_ >= 0) {
+                remote_speed_v2_ -= 0.1f;
+
+                if( remote_speed_v2_ < 0 ) {
+                    remote_speed_v2_ = 0;
+                }
+
+                ui->info_remote_speed_v2->insert( std::to_string( remote_speed_v2_).c_str());
+            }
+
+            if(ui->cursorLeft_v2->isDown() && remote_lat_angle_v2_ > -70 ) {
+                remote_lat_angle_v2_ -= 3;
+                ui->info_remote_lat_v2->insert( std::to_string( remote_lat_angle_v2_).c_str());
+            }
+
+            if(ui->cursorRight_v2->isDown() && remote_lat_angle_v2_ < 70 ) {
+                remote_lat_angle_v2_ += 3;
+                ui->info_remote_lat_v2->insert( std::to_string( remote_lat_angle_v2_).c_str());
+            }
+
+            platooning::remotecontrolInput msg;
+
+            msg.remote_speed = remote_speed_v2_;
+            msg.remote_angle = remote_lat_angle_v2_;
+            msg.emergency_stop = false;
+            server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLINPUT);
+            boost::this_thread::sleep_for(boost::chrono::milliseconds(1500));
+        }
+
     } catch( std::exception &ex) {
         std::cerr << "keypresspoll crash with " << ex.what() << std::endl;
     }
@@ -162,46 +393,102 @@ void ControllerUi::keypresspoll() {
 
 void ControllerUi::keyPressEvent(QKeyEvent *event)
 {
-    if(!remoteEnabled_) {
+    if(!remoteEnabled_v1_ && ! remoteEnabled_v2_) {
         return;
     }
 
+    int tabix = ui->tabWidget->currentIndex();
+
     if(event->key() == Qt::Key_Left ) {
-        ui->cursorLeft->setDown(true);
+        if( tabix == 0 ) {
+            ui->cursorLeft_v1->setDown(true);
+        }
+
+        if( tabix == 1 ) {
+            ui->cursorLeft_v2->setDown(true);
+        }
     }
 
     if(event->key() == Qt::Key_Right ) {
-        ui->cursorRight->setDown(true);
+        if( tabix == 0 ) {
+            ui->cursorRight_v1->setDown(true);
+        }
+
+        if( tabix == 1 ) {
+            ui->cursorRight_v2->setDown(true);
+        }
     }
 
     if(event->key() == Qt::Key_Up ) {
-        ui->cursorUp->setDown(true);
+        if( tabix == 0 ) {
+            ui->cursorUp_v1->setDown(true);
+        }
+
+        if( tabix == 1 ) {
+            ui->cursorUp_v2->setDown(true);
+        }
+
     }
 
     if(event->key() == Qt::Key_Down ) {
-        ui->cursorDown->setDown(true);
+        if( tabix == 0 ) {
+            ui->cursorDown_v1->setDown(true);
+        }
+
+        if( tabix == 1 ) {
+            ui->cursorDown_v2->setDown(true);
+        }
+
     }
 }
 
 void ControllerUi::keyReleaseEvent(QKeyEvent *event)
 {
-    if(!remoteEnabled_) {
+    if(!remoteEnabled_v1_ && ! remoteEnabled_v2_) {
         return;
     }
 
+    int tabix = ui->tabWidget->currentIndex();
+
     if(event->key() == Qt::Key_Left ) {
-        ui->cursorLeft->setDown(false);
+        if( tabix == 0 ) {
+            ui->cursorLeft_v1->setDown(false);
+        }
+
+        if( tabix == 1 ) {
+            ui->cursorLeft_v2->setDown(false);
+        }
     }
 
     if(event->key() == Qt::Key_Right ) {
-        ui->cursorRight->setDown(false);
+        if( tabix == 0 ) {
+            ui->cursorRight_v1->setDown(false);
+        }
+
+        if( tabix == 1 ) {
+            ui->cursorRight_v2->setDown(false);
+        }
     }
 
     if(event->key() == Qt::Key_Up ) {
-        ui->cursorUp->setDown(false);
+        if( tabix == 0 ) {
+            ui->cursorUp_v1->setDown(false);
+        }
+
+        if( tabix == 1 ) {
+            ui->cursorUp_v2->setDown(false);
+        }
+
     }
 
     if(event->key() == Qt::Key_Down ) {
-        ui->cursorDown->setDown(false);
+        if( tabix == 0 ) {
+            ui->cursorDown_v1->setDown(false);
+        }
+
+        if( tabix == 1 ) {
+            ui->cursorDown_v2->setDown(false);
+        }
+
     }
 }

@@ -29,11 +29,11 @@
     <property name="currentIndex">
      <number>0</number>
     </property>
-    <widget class="QWidget" name="tab">
+    <widget class="QWidget" name="tab_vehicle_1">
      <attribute name="title">
-      <string>Tab 1</string>
+      <string>Vehicle1</string>
      </attribute>
-     <widget class="QPushButton" name="startPlatooning">
+     <widget class="QPushButton" name="togglePlatooning_v1">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -43,7 +43,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Start Platooning</string>
+       <string>Toggle Platooning</string>
       </property>
       <property name="default">
        <bool>false</bool>
@@ -52,11 +52,11 @@
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="toggleRemote">
+     <widget class="QPushButton" name="toggleRemote_v1">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>90</y>
+        <y>320</y>
         <width>181</width>
         <height>61</height>
        </rect>
@@ -68,7 +68,7 @@
      <widget class="Line" name="line_2">
       <property name="geometry">
        <rect>
-        <x>203</x>
+        <x>330</x>
         <y>0</y>
         <width>20</width>
         <height>191</height>
@@ -78,7 +78,7 @@
        <enum>Qt::Vertical</enum>
       </property>
      </widget>
-     <widget class="QPushButton" name="cursorUp">
+     <widget class="QPushButton" name="cursorUp_v1">
       <property name="geometry">
        <rect>
         <x>800</x>
@@ -94,7 +94,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="cursorLeft">
+     <widget class="QPushButton" name="cursorLeft_v1">
       <property name="geometry">
        <rect>
         <x>760</x>
@@ -116,7 +116,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="cursorRight">
+     <widget class="QPushButton" name="cursorRight_v1">
       <property name="geometry">
        <rect>
         <x>840</x>
@@ -132,7 +132,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="cursorDown">
+     <widget class="QPushButton" name="cursorDown_v1">
       <property name="geometry">
        <rect>
         <x>800</x>
@@ -151,7 +151,7 @@
      <widget class="QWidget" name="formLayoutWidget">
       <property name="geometry">
        <rect>
-        <x>220</x>
+        <x>360</x>
         <y>0</y>
         <width>381</width>
         <height>381</height>
@@ -176,16 +176,6 @@
         <widget class="QLabel" name="label">
          <property name="text">
           <string>LV/FV:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="info_lvfv">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string/>
          </property>
         </widget>
        </item>
@@ -232,28 +222,31 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="info_ipd"/>
+        <widget class="QLineEdit" name="info_ipd_v1"/>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="info_actual_distance"/>
+        <widget class="QLineEdit" name="info_actual_distance_v1"/>
        </item>
        <item row="3" column="1">
-        <widget class="QLineEdit" name="info_ps"/>
+        <widget class="QLineEdit" name="info_ps_v1"/>
        </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="info_actual_speed"/>
+        <widget class="QLineEdit" name="info_actual_speed_v1"/>
        </item>
        <item row="5" column="1">
-        <widget class="QLineEdit" name="info_platooningstate"/>
+        <widget class="QLineEdit" name="info_platooningstate_v1"/>
        </item>
        <item row="6" column="1">
-        <widget class="QLineEdit" name="info_vehicle_id"/>
+        <widget class="QLineEdit" name="info_vehicle_id_v1"/>
        </item>
        <item row="7" column="1">
-        <widget class="QLineEdit" name="info_platoonsize"/>
+        <widget class="QLineEdit" name="info_platoonsize_v1"/>
        </item>
        <item row="8" column="1">
-        <widget class="QLineEdit" name="info_platoonmembers"/>
+        <widget class="QLineEdit" name="info_platoonmembers_v1"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="info_lvfv_v1"/>
        </item>
       </layout>
      </widget>
@@ -275,7 +268,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="info_remote_speed">
+        <widget class="QLineEdit" name="info_remote_speed_v1">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -292,7 +285,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="info_remote_lat">
+        <widget class="QLineEdit" name="info_remote_lat_v1">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -300,11 +293,369 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="formLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>60</y>
+        <width>341</width>
+        <height>131</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout_3">
+       <item row="0" column="0">
+        <widget class="QLabel" name="ps_label_v1">
+         <property name="text">
+          <string>platoon speed</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="info_set_platoonspeed_v1">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="idp_label_v1">
+         <property name="text">
+          <string>platoon distance</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="info_set_platoon_distance_v1"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="idp_label_v1_9">
+         <property name="text">
+          <string>platoon distance</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="info_set_lvfv_v1"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
-    <widget class="QWidget" name="tab_2">
+    <widget class="QWidget" name="tab_vehicle_2">
      <attribute name="title">
-      <string>Tab 2</string>
+      <string>Vehicle2</string>
      </attribute>
+     <widget class="QPushButton" name="togglePlatooning_v2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>181</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Toggle Platooning</string>
+      </property>
+      <property name="default">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cursorUp_v2">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>10</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Up</string>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QWidget" name="formLayoutWidget_7">
+      <property name="geometry">
+       <rect>
+        <x>890</x>
+        <y>10</y>
+        <width>178</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout_25">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_89">
+         <property name="text">
+          <string>speed</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="info_remote_speed_v2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_90">
+         <property name="text">
+          <string>lat_angle</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="info_remote_lat_v2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QPushButton" name="cursorDown_v2">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>50</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Down</string>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QWidget" name="formLayoutWidget_8">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>0</y>
+        <width>381</width>
+        <height>381</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout_26">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_91">
+         <property name="text">
+          <string>inner platoon distance:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_92">
+         <property name="text">
+          <string>actual platoon distance:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_93">
+         <property name="text">
+          <string>LV/FV:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_94">
+         <property name="text">
+          <string>platoon speed:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_95">
+         <property name="text">
+          <string>actual speed:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_96">
+         <property name="text">
+          <string>platooning state:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_97">
+         <property name="text">
+          <string>vehicle_id:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_98">
+         <property name="text">
+          <string>platoon_size:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_99">
+         <property name="text">
+          <string>platoon members:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="info_ipd_v2"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="info_actual_distance_v2"/>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="info_ps_v2"/>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="info_actual_speed_v2"/>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="info_platooningstate_v2"/>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="info_vehicle_id_v2"/>
+       </item>
+       <item row="7" column="1">
+        <widget class="QLineEdit" name="info_platoonsize_v2"/>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLineEdit" name="info_platoonmembers_v2"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="info_lvfv_v2"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="Line" name="line_4">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>0</y>
+        <width>20</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="toggleRemote_v2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>320</y>
+        <width>181</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Toggle RemoteControl</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cursorRight_v2">
+      <property name="geometry">
+       <rect>
+        <x>840</x>
+        <y>50</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Right</string>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QWidget" name="formLayoutWidget_9">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>60</y>
+        <width>341</width>
+        <height>131</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout_27">
+       <item row="0" column="0">
+        <widget class="QLabel" name="ps_label_v2">
+         <property name="text">
+          <string>platoon speed</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="info_set_platoonspeed_v2">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="idp_label_v2">
+         <property name="text">
+          <string>platoon distance</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="info_set_platoon_distance_v2"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="info_set_lvfv_v2"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="idp_label_v2_2">
+         <property name="text">
+          <string>platoon distance</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QPushButton" name="cursorLeft_v2">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>50</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Left</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="default">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>

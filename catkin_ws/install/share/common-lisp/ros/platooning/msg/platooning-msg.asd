@@ -22,4 +22,6 @@
     (:file "_package_templateMsg" :depends-on ("_package"))
     (:file "userInterface" :depends-on ("_package_userInterface"))
     (:file "_package_userInterface" :depends-on ("_package"))
+    (:file "vehicleId" :depends-on ("_package_vehicleId"))
+    (:file "_package_vehicleId" :depends-on ("_package"))
   ))

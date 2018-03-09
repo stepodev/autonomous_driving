@@ -24,14 +24,19 @@ struct remotecontrolToggle_
   typedef remotecontrolToggle_<ContainerAllocator> Type;
 
   remotecontrolToggle_()
-    : enable_remotecontrol(false)  {
+    : vehicle_id(0)
+    , enable_remotecontrol(false)  {
     }
   remotecontrolToggle_(const ContainerAllocator& _alloc)
-    : enable_remotecontrol(false)  {
+    : vehicle_id(0)
+    , enable_remotecontrol(false)  {
   (void)_alloc;
     }
 
 
+
+   typedef uint32_t _vehicle_id_type;
+  _vehicle_id_type vehicle_id;
 
    typedef uint8_t _enable_remotecontrol_type;
   _enable_remotecontrol_type enable_remotecontrol;
@@ -114,12 +119,12 @@ struct MD5Sum< ::platooning::remotecontrolToggle_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "dba02a7ea23346dfdb6c9a3c2e957b7d";
+    return "8f56e4c7d94d4f505d773a5b64c0ffed";
   }
 
   static const char* value(const ::platooning::remotecontrolToggle_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xdba02a7ea23346dfULL;
-  static const uint64_t static_value2 = 0xdb6c9a3c2e957b7dULL;
+  static const uint64_t static_value1 = 0x8f56e4c7d94d4f50ULL;
+  static const uint64_t static_value2 = 0x5d773a5b64c0ffedULL;
 };
 
 template<class ContainerAllocator>
@@ -138,7 +143,8 @@ struct Definition< ::platooning::remotecontrolToggle_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "bool enable_remotecontrol\n\
+    return "uint32 vehicle_id\n\
+bool enable_remotecontrol\n\
 ";
   }
 
@@ -157,6 +163,7 @@ namespace serialization
   {
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
+      stream.next(m.vehicle_id);
       stream.next(m.enable_remotecontrol);
     }
 
@@ -176,6 +183,8 @@ struct Printer< ::platooning::remotecontrolToggle_<ContainerAllocator> >
 {
   template<typename Stream> static void stream(Stream& s, const std::string& indent, const ::platooning::remotecontrolToggle_<ContainerAllocator>& v)
   {
+    s << indent << "vehicle_id: ";
+    Printer<uint32_t>::stream(s, indent + "  ", v.vehicle_id);
     s << indent << "enable_remotecontrol: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.enable_remotecontrol);
   }

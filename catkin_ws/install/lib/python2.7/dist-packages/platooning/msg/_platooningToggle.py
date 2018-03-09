@@ -7,14 +7,16 @@ import struct
 
 
 class platooningToggle(genpy.Message):
-  _md5sum = "d873b59209a1794389a9e491f37fe75f"
+  _md5sum = "0b95d94536aba6d55c50abe7d1619f57"
   _type = "platooning/platooningToggle"
   _has_header = False #flag to mark the presence of a Header object
-  _full_text = """bool enable_platooning
+  _full_text = """uint32 vehicle_id
+bool enable_platooning
 float32 inner_platoon_distance
-float32 platoon_speed"""
-  __slots__ = ['enable_platooning','inner_platoon_distance','platoon_speed']
-  _slot_types = ['bool','float32','float32']
+float32 platoon_speed
+string lvfv"""
+  __slots__ = ['vehicle_id','enable_platooning','inner_platoon_distance','platoon_speed','lvfv']
+  _slot_types = ['uint32','bool','float32','float32','string']
 
   def __init__(self, *args, **kwds):
     """
@@ -24,7 +26,7 @@ float32 platoon_speed"""
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       enable_platooning,inner_platoon_distance,platoon_speed
+       vehicle_id,enable_platooning,inner_platoon_distance,platoon_speed,lvfv
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -33,16 +35,22 @@ float32 platoon_speed"""
     if args or kwds:
       super(platooningToggle, self).__init__(*args, **kwds)
       #message fields cannot be None, assign default values for those that are
+      if self.vehicle_id is None:
+        self.vehicle_id = 0
       if self.enable_platooning is None:
         self.enable_platooning = False
       if self.inner_platoon_distance is None:
         self.inner_platoon_distance = 0.
       if self.platoon_speed is None:
         self.platoon_speed = 0.
+      if self.lvfv is None:
+        self.lvfv = ''
     else:
+      self.vehicle_id = 0
       self.enable_platooning = False
       self.inner_platoon_distance = 0.
       self.platoon_speed = 0.
+      self.lvfv = ''
 
   def _get_types(self):
     """
@@ -57,7 +65,13 @@ float32 platoon_speed"""
     """
     try:
       _x = self
-      buff.write(_get_struct_B2f().pack(_x.enable_platooning, _x.inner_platoon_distance, _x.platoon_speed))
+      buff.write(_get_struct_IB2f().pack(_x.vehicle_id, _x.enable_platooning, _x.inner_platoon_distance, _x.platoon_speed))
+      _x = self.lvfv
+      length = len(_x)
+      if python3 or type(_x) == unicode:
+        _x = _x.encode('utf-8')
+        length = len(_x)
+      buff.write(struct.pack('<I%ss'%length, length, _x))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -70,9 +84,18 @@ float32 platoon_speed"""
       end = 0
       _x = self
       start = end
-      end += 9
-      (_x.enable_platooning, _x.inner_platoon_distance, _x.platoon_speed,) = _get_struct_B2f().unpack(str[start:end])
+      end += 13
+      (_x.vehicle_id, _x.enable_platooning, _x.inner_platoon_distance, _x.platoon_speed,) = _get_struct_IB2f().unpack(str[start:end])
       self.enable_platooning = bool(self.enable_platooning)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.lvfv = str[start:end].decode('utf-8')
+      else:
+        self.lvfv = str[start:end]
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -86,7 +109,13 @@ float32 platoon_speed"""
     """
     try:
       _x = self
-      buff.write(_get_struct_B2f().pack(_x.enable_platooning, _x.inner_platoon_distance, _x.platoon_speed))
+      buff.write(_get_struct_IB2f().pack(_x.vehicle_id, _x.enable_platooning, _x.inner_platoon_distance, _x.platoon_speed))
+      _x = self.lvfv
+      length = len(_x)
+      if python3 or type(_x) == unicode:
+        _x = _x.encode('utf-8')
+        length = len(_x)
+      buff.write(struct.pack('<I%ss'%length, length, _x))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -100,9 +129,18 @@ float32 platoon_speed"""
       end = 0
       _x = self
       start = end
-      end += 9
-      (_x.enable_platooning, _x.inner_platoon_distance, _x.platoon_speed,) = _get_struct_B2f().unpack(str[start:end])
+      end += 13
+      (_x.vehicle_id, _x.enable_platooning, _x.inner_platoon_distance, _x.platoon_speed,) = _get_struct_IB2f().unpack(str[start:end])
       self.enable_platooning = bool(self.enable_platooning)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.lvfv = str[start:end].decode('utf-8')
+      else:
+        self.lvfv = str[start:end]
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -111,9 +149,9 @@ _struct_I = genpy.struct_I
 def _get_struct_I():
     global _struct_I
     return _struct_I
-_struct_B2f = None
-def _get_struct_B2f():
-    global _struct_B2f
-    if _struct_B2f is None:
-        _struct_B2f = struct.Struct("<B2f")
-    return _struct_B2f
+_struct_IB2f = None
+def _get_struct_IB2f():
+    global _struct_IB2f
+    if _struct_IB2f is None:
+        _struct_IB2f = struct.Struct("<IB2f")
+    return _struct_IB2f

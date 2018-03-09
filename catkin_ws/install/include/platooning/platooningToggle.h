@@ -24,18 +24,25 @@ struct platooningToggle_
   typedef platooningToggle_<ContainerAllocator> Type;
 
   platooningToggle_()
-    : enable_platooning(false)
+    : vehicle_id(0)
+    , enable_platooning(false)
     , inner_platoon_distance(0.0)
-    , platoon_speed(0.0)  {
+    , platoon_speed(0.0)
+    , lvfv()  {
     }
   platooningToggle_(const ContainerAllocator& _alloc)
-    : enable_platooning(false)
+    : vehicle_id(0)
+    , enable_platooning(false)
     , inner_platoon_distance(0.0)
-    , platoon_speed(0.0)  {
+    , platoon_speed(0.0)
+    , lvfv(_alloc)  {
   (void)_alloc;
     }
 
 
+
+   typedef uint32_t _vehicle_id_type;
+  _vehicle_id_type vehicle_id;
 
    typedef uint8_t _enable_platooning_type;
   _enable_platooning_type enable_platooning;
@@ -45,6 +52,9 @@ struct platooningToggle_
 
    typedef float _platoon_speed_type;
   _platoon_speed_type platoon_speed;
+
+   typedef std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other >  _lvfv_type;
+  _lvfv_type lvfv;
 
 
 
@@ -80,7 +90,7 @@ namespace message_traits
 
 
 
-// BOOLTRAITS {'IsFixedSize': True, 'IsMessage': True, 'HasHeader': False}
+// BOOLTRAITS {'IsFixedSize': False, 'IsMessage': True, 'HasHeader': False}
 // {'std_msgs': ['/opt/ros/lunar/share/std_msgs/cmake/../msg'], 'platooning': ['/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/src/platooning/msg']}
 
 // !!!!!!!!!!! ['__class__', '__delattr__', '__dict__', '__doc__', '__eq__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_parsed_fields', 'constants', 'fields', 'full_name', 'has_header', 'header_present', 'names', 'package', 'parsed_fields', 'short_name', 'text', 'types']
@@ -90,12 +100,12 @@ namespace message_traits
 
 template <class ContainerAllocator>
 struct IsFixedSize< ::platooning::platooningToggle_<ContainerAllocator> >
-  : TrueType
+  : FalseType
   { };
 
 template <class ContainerAllocator>
 struct IsFixedSize< ::platooning::platooningToggle_<ContainerAllocator> const>
-  : TrueType
+  : FalseType
   { };
 
 template <class ContainerAllocator>
@@ -124,12 +134,12 @@ struct MD5Sum< ::platooning::platooningToggle_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "d873b59209a1794389a9e491f37fe75f";
+    return "0b95d94536aba6d55c50abe7d1619f57";
   }
 
   static const char* value(const ::platooning::platooningToggle_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xd873b59209a17943ULL;
-  static const uint64_t static_value2 = 0x89a9e491f37fe75fULL;
+  static const uint64_t static_value1 = 0x0b95d94536aba6d5ULL;
+  static const uint64_t static_value2 = 0x5c50abe7d1619f57ULL;
 };
 
 template<class ContainerAllocator>
@@ -148,9 +158,11 @@ struct Definition< ::platooning::platooningToggle_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "bool enable_platooning\n\
+    return "uint32 vehicle_id\n\
+bool enable_platooning\n\
 float32 inner_platoon_distance\n\
 float32 platoon_speed\n\
+string lvfv\n\
 ";
   }
 
@@ -169,9 +181,11 @@ namespace serialization
   {
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
+      stream.next(m.vehicle_id);
       stream.next(m.enable_platooning);
       stream.next(m.inner_platoon_distance);
       stream.next(m.platoon_speed);
+      stream.next(m.lvfv);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -190,12 +204,16 @@ struct Printer< ::platooning::platooningToggle_<ContainerAllocator> >
 {
   template<typename Stream> static void stream(Stream& s, const std::string& indent, const ::platooning::platooningToggle_<ContainerAllocator>& v)
   {
+    s << indent << "vehicle_id: ";
+    Printer<uint32_t>::stream(s, indent + "  ", v.vehicle_id);
     s << indent << "enable_platooning: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.enable_platooning);
     s << indent << "inner_platoon_distance: ";
     Printer<float>::stream(s, indent + "  ", v.inner_platoon_distance);
     s << indent << "platoon_speed: ";
     Printer<float>::stream(s, indent + "  ", v.platoon_speed);
+    s << indent << "lvfv: ";
+    Printer<std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other > >::stream(s, indent + "  ", v.lvfv);
   }
 };
 

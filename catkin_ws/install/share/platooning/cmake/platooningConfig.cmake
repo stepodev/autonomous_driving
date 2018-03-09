@@ -116,7 +116,7 @@ if(NOT "include " STREQUAL " ")
   endforeach()
 endif()
 
-set(libraries "environment_mapping;lanedetect;lanekeeping;prioritization;messagedistribution;userinterface;vehiclecontrol;radiointerface;template;platooning;udpserver;messagetypes;topics")
+set(libraries "environment_mapping;lanedetect;lanekeeping;prioritization;messagedistribution;userinterface;vehiclecontrol;radiointerface;template;platooning;udpserver;messagetypes;topics;longitudinalcontrol;services;servicetypes")
 foreach(library ${libraries})
   # keep build configuration keywords, target names and absolute libraries as-is
   if("${library}" MATCHES "^(debug|optimized|general)$")

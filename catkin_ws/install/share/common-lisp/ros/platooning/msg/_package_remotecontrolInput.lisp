@@ -1,5 +1,7 @@
 (cl:in-package platooning-msg)
-(cl:export '(REMOTE_SPEED-VAL
+(cl:export '(VEHICLE_ID-VAL
+          VEHICLE_ID
+          REMOTE_SPEED-VAL
           REMOTE_SPEED
           REMOTE_ANGLE-VAL
           REMOTE_ANGLE

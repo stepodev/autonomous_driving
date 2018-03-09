@@ -4,12 +4,13 @@
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <QDebug>
+#include <QMessageBox>
 #include <boost/property_tree/ptree.hpp> //json parsing and generating
 #include <boost/property_tree/json_parser.hpp> //json parsing and generating
 #include <boost/algorithm/string/join.hpp>
 
-#include "UdpServer.hpp"
-#include "MessageTypes.hpp"
+#include "platooning/UdpServer.hpp"
+#include "platooning/MessageTypes.hpp"
 
 namespace Ui {
 class ControllerUi;
@@ -23,26 +24,33 @@ public:
     explicit ControllerUi(QWidget *parent = 0);
     ~ControllerUi();
 
-    void add_slave_vehicle( int32_t vehicle_id);
+    void add_slave_vehicle( uint32_t vehicle_id);
 
 protected:
     void keyPressEvent(QKeyEvent *);
     void keyReleaseEvent(QKeyEvent *);
 
 private slots:
-    void on_startPlatooning_clicked();
+    void on_togglePlatooning_v1_clicked();
+    void on_toggleRemote_v1_clicked();
 
-    void on_toggleRemote_clicked();
+    void on_togglePlatooning_v2_clicked();
+    void on_toggleRemote_v2_clicked();
 
 private:
     Ui::ControllerUi *ui;
-    bool remoteEnabled_ = false;
+    bool remoteEnabled_v1_ = false;
+    bool remoteEnabled_v2_ = false;
+    bool platooningEnabled_v1_ = false;
+    bool platooningEnabled_v2_ = false;
     std::unique_ptr<UdpServer> server_ptr_;
     std::list<int32_t> slave_vehicle_ids_;
     boost::thread keypollthread_;
 
-    float remote_lat_angle = 0;
-    float remote_speed = 0;
+    float remote_lat_angle_v1_ = 0;
+    float remote_speed_v1_ = 0;
+    float remote_lat_angle_v2_ = 0;
+    float remote_speed_v2_ = 0;
 
     void receive_message( std::pair<std::string, int32_t> msgpair ) ;
     void keypresspoll();

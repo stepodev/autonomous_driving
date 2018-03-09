@@ -76,6 +76,7 @@ add_message_files(
         platooning/lv_reject.msg
         platooning/lv_broadcast.msg
         platooning/platooningState.msg
+        platooning/vehicleId.msg
         ########################
         ## userinterface messages
         userInterface.msg
@@ -112,11 +113,10 @@ add_message_files(
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+ add_service_files(
+   FILES
+   getVehicleId.srv
+ )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -162,7 +162,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
         INCLUDE_DIRS include
-        LIBRARIES environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalcontrol
+        LIBRARIES environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalcontrol services servicetypes
         CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
         #  DEPENDS system_lib
 )
@@ -226,6 +226,16 @@ target_link_libraries(topics ${catkin_LIBRARIES})
 add_library(messagetypes include/platooning/MessageTypes.hpp src/MessageTypes.cpp)
 add_dependencies(messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(messagetypes ${catkin_LIBRARIES})
+
+add_library(services include/platooning/Services.hpp)
+set_target_properties(services PROPERTIES LINKER_LANGUAGE CXX)
+add_dependencies(services ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(services ${catkin_LIBRARIES})
+
+add_library(servicetypes include/platooning/ServiceTypes.hpp)
+set_target_properties(servicetypes PROPERTIES LINKER_LANGUAGE CXX)
+add_dependencies(servicetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(servicetypes ${catkin_LIBRARIES})
 
 add_library(template include/platooning/Template.hpp src/Template.cpp)
 add_dependencies(template ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
@@ -342,7 +352,7 @@ target_link_libraries(messagedistribution-unit-test messagedistribution ${catkin
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-install(TARGETS environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalcontrol
+install(TARGETS environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalcontrol services servicetypes
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

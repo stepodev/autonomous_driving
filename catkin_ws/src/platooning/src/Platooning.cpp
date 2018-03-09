@@ -22,6 +22,8 @@ Platooning::~Platooning() {}
 
 void Platooning::onInit() {
 
+	service_ = nh_.advertiseService(platooning_services::VEHICLE_ID, &Platooning::provide_vehicle_id, this );
+
 	// subscribers nh_.subscribe("Topic", Rate, &Callback, this)
 	sub_platooning_toggle =
 		nh_.subscribe(topics::TOGGLE_PLATOONING, 100, &Platooning::hndl_msg_platooning_toggle, this);
@@ -73,6 +75,14 @@ void Platooning::onInit() {
 	NODELET_INFO( std::string( "[" + name_ + "] init done").c_str());
 
 };
+
+bool Platooning::provide_vehicle_id( platooning::getVehicleId::Request &req,
+									platooning::getVehicleId::Response &res ) {
+
+	res.vehicle_id = vehicle_id_;
+
+	return true;
+}
 
 void Platooning::reset_state() {
 	thread_pool_.interrupt_all();

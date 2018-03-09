@@ -24,18 +24,23 @@ struct remotecontrolInput_
   typedef remotecontrolInput_<ContainerAllocator> Type;
 
   remotecontrolInput_()
-    : remote_speed(0.0)
+    : vehicle_id(0)
+    , remote_speed(0.0)
     , remote_angle(0.0)
     , emergency_stop(false)  {
     }
   remotecontrolInput_(const ContainerAllocator& _alloc)
-    : remote_speed(0.0)
+    : vehicle_id(0)
+    , remote_speed(0.0)
     , remote_angle(0.0)
     , emergency_stop(false)  {
   (void)_alloc;
     }
 
 
+
+   typedef uint32_t _vehicle_id_type;
+  _vehicle_id_type vehicle_id;
 
    typedef float _remote_speed_type;
   _remote_speed_type remote_speed;
@@ -124,12 +129,12 @@ struct MD5Sum< ::platooning::remotecontrolInput_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "893b90aabdb4526f8be41f8f7b297e01";
+    return "48eff1d5f037dfb934e32ce687673a3f";
   }
 
   static const char* value(const ::platooning::remotecontrolInput_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x893b90aabdb4526fULL;
-  static const uint64_t static_value2 = 0x8be41f8f7b297e01ULL;
+  static const uint64_t static_value1 = 0x48eff1d5f037dfb9ULL;
+  static const uint64_t static_value2 = 0x34e32ce687673a3fULL;
 };
 
 template<class ContainerAllocator>
@@ -148,7 +153,8 @@ struct Definition< ::platooning::remotecontrolInput_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "float32 remote_speed\n\
+    return "uint32 vehicle_id\n\
+float32 remote_speed\n\
 float32 remote_angle\n\
 bool emergency_stop\n\
 ";
@@ -169,6 +175,7 @@ namespace serialization
   {
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
+      stream.next(m.vehicle_id);
       stream.next(m.remote_speed);
       stream.next(m.remote_angle);
       stream.next(m.emergency_stop);
@@ -190,6 +197,8 @@ struct Printer< ::platooning::remotecontrolInput_<ContainerAllocator> >
 {
   template<typename Stream> static void stream(Stream& s, const std::string& indent, const ::platooning::remotecontrolInput_<ContainerAllocator>& v)
   {
+    s << indent << "vehicle_id: ";
+    Printer<uint32_t>::stream(s, indent + "  ", v.vehicle_id);
     s << indent << "remote_speed: ";
     Printer<float>::stream(s, indent + "  ", v.remote_speed);
     s << indent << "remote_angle: ";

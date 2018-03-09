@@ -10,6 +10,8 @@
 
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
+#include "ServiceTypes.hpp"
+#include "Services.hpp"
 
 namespace platooning {
 
@@ -48,6 +50,8 @@ class Platooning : public nodelet::Nodelet {
 	std::string name_ = "Platooning";
 
 	boost::thread_group thread_pool_;
+
+	ros::ServiceServer service_;
 
 	ros::Subscriber sub_fv_leave;
 	ros::Subscriber sub_lv_accept;
@@ -93,15 +97,17 @@ class Platooning : public nodelet::Nodelet {
 	void hndl_msg_fv_heartbeat(const platooning::fv_heartbeat &msg);
 	void hndl_msg_platooning_toggle(const platooning::platooningToggle &msg);
 
-	void send_fv_heartbeat(const boost::system::error_code &e);
-	void send_lv_broadcast(const boost::system::error_code &e);
-
 	void hndl_timeout_fv_heartbeat(const boost::system::error_code &e);
 	void hndl_timeout_lv_broadcast(const boost::system::error_code &e);
+
+	void send_fv_heartbeat(const boost::system::error_code &e);
+	void send_lv_broadcast(const boost::system::error_code &e);
 
 	void update_platoonState(lv_broadcast bc);
 
 	void reset_state();
+
+	bool provide_vehicle_id(getVehicleId::Request &res, getVehicleId::Response& );
 };
 }
 
