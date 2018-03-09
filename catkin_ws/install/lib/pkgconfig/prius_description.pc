@@ -1,0 +1,8 @@
+prefix=/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/install
+
+Name: prius_description
+Description: Description of prius_description
+Version: 0.0.1
+Cflags: 
+Libs: -L/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/install/lib 
+Requires: 

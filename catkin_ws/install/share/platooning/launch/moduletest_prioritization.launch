@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="nodelet" type="nodelet" name="moduletest_prioritization" args="load platooning/moduletest_prioritization nodeletmanager">
+    </node>
+</launch>

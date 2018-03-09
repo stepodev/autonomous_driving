@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="nodelet" type="nodelet" name="priorization" args="load platooning/Priorization nodeletmanager">
+    </node>
+</launch>

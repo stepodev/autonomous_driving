@@ -45,9 +45,9 @@
 devel/
 logs/
 build/
-install/
 bin/
 lib/
+!catkin_ws/install/lib
 msg_gen/
 srv_gen/
 
