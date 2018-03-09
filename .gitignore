@@ -48,6 +48,7 @@ build/
 bin/
 lib/
 !catkin_ws/install/lib
+!catkin_ws/install/lib/*.so
 msg_gen/
 srv_gen/
 
