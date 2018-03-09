@@ -12,9 +12,9 @@
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
 
-#include "MessageTypes.hpp"
-#include "Topics.hpp"
-#include "UdpServer.hpp"
+#include "platooning/MessageTypes.hpp"
+#include "platooning/Topics.hpp"
+#include "platooning/UdpServer.hpp"
 #include "prius_msgs/Control.h"
 #include "prius_msgs/Speed.h"
 #include "sensor_msgs/Image.h"

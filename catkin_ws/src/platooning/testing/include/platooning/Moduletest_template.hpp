@@ -1,7 +1,3 @@
-//
-// Created by stepo on 12/16/17.
-//
-
 /**
  * @file doxygen_c.h
  * @author My Self
@@ -19,8 +15,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_MODULETEST_MESSAGEDISTRIBUTION_HPP
-#define PLATOONING_MODULETEST_MESSAGEDISTRIBUTION_HPP
+#ifndef PLATOONING_MODULETEST_TEMPLATE_HPP
+#define PLATOONING_MODULETEST_TEMPLATE_HPP
 
 /*****************************************************************************
 ** Includes
@@ -29,14 +25,12 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include <sstream>
 
 #include "Moduletest.hpp"
-#include "Topics.hpp"
-#include "MessageTypes.hpp"
+#include "platooning/Topics.hpp"
+#include "platooning/MessageTypes.hpp"
 
 namespace platooning {
-
 
 /**
  * @brief Example showing how to document a function with Doxygen.
@@ -72,25 +66,24 @@ namespace platooning {
  * @warning Warning.
  */
 
-  class Moduletest_messagedistribution : public Moduletest {
+class Moduletest_template : public Moduletest {
   public:
-    void onInit();
+	void onInit();
 
-    Moduletest_messagedistribution();
+	Moduletest_template();
 
-    ~Moduletest_messagedistribution();
+	~Moduletest_template();
 
   private:
-    /**
-    * @brief publishes FV_REQUEST on topic in/platoonMsg and expects that message to be translated
-    * and published as on the in/fv_request topic
-    */
-    void pub_in_platoonMsg_recv_fv_request();
+	/**
+	* @brief template_testcase does x,y,z and expects a,b,c
+	*/
+	void pub_templatemsg_recv_othermsg();
 
-    void hndl_pub_in_platoonMsg_recv_fv_request(platooning::fv_request msg);
-  };
+	void hndl_recv_othermsg(const platooning::templateMsg &msg);
 
+};
 
 } // namespace platooning
 
-#endif //PLATOONING_MODULETEST_MESSAGEDISTRIBUTION_HPP
+#endif //PLATOONING_MODULETEST_TEMPLATE_HPP

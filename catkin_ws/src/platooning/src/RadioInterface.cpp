@@ -15,7 +15,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include "RadioInterface.hpp"
+#include "platooning/RadioInterface.hpp"
 
 namespace platooning {
 

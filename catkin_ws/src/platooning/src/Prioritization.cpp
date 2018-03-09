@@ -15,7 +15,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include "Prioritization.hpp"
+#include "platooning/Prioritization.hpp"
 
 namespace platooning {
 

@@ -10,7 +10,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include "../include/LaneDetect.hpp"
+#include "platooning/LaneDetect.hpp"
 
 namespace platooning {
 

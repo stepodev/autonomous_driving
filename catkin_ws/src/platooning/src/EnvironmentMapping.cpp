@@ -1,5 +1,5 @@
 
-#include "../include/EnvironmentMapping.hpp"
+#include "platooning/EnvironmentMapping.hpp"
 
 
 namespace platooning

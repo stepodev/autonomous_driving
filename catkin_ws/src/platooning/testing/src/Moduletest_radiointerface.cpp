@@ -17,7 +17,7 @@
 
 #include <thread>
 #include <boost/thread/thread.hpp>
-#include "Moduletest_radiointerface.hpp"
+#include "platooning/Moduletest_radiointerface.hpp"
 
 // %Tag(FULLTEXT)%
 namespace platooning {

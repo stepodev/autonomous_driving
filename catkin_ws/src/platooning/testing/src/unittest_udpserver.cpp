@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 #include <boost/asio.hpp>
-#include "../../include/UdpServer.hpp"
+#include "platooning/UdpServer.hpp"
 
 class UdpServerTester : public UdpServer {
  public:

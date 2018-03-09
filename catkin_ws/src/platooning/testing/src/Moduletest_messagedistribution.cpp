@@ -10,7 +10,7 @@
 ** Includes
 *****************************************************************************/
 
-#include "Moduletest_messagedistribution.hpp"
+#include "platooning/Moduletest_messagedistribution.hpp"
 
 // %Tag(FULLTEXT)%
 namespace platooning {

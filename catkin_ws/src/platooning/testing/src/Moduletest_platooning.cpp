@@ -10,8 +10,8 @@
 ** Includes
 *****************************************************************************/
 
-#include "Moduletest_platooning.hpp"
-#include "Platooning.hpp"
+#include "platooning/Moduletest_platooning.hpp"
+#include "platooning/Platooning.hpp"
 
 // %Tag(FULLTEXT)%
 namespace platooning {

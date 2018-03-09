@@ -15,7 +15,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include "Template.hpp"
+#include "platooning/Template.hpp"
 
 namespace platooning {
 

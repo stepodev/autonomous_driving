@@ -1,5 +1,5 @@
 #include <boost/thread/thread.hpp>
-#include "../include/UserInterface.hpp"
+#include "platooning/UserInterface.hpp"
 
 namespace platooning
 {

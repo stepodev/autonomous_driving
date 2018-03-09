@@ -16,7 +16,7 @@
 *****************************************************************************/
 // %Tag(FULLTEXT)%
 #include <platooning/distanceToObj.h>
-#include "StmSim.hpp"
+#include "platooning/StmSim.hpp"
 
 namespace platooning {
 

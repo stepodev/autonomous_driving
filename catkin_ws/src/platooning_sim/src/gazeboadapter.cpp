@@ -2,8 +2,8 @@
 // Created by stepo on 3/4/18.
 //
 
-#include <topics.hpp>
-#include "gazeboadapter.hpp"
+#include <platooning_sim/topics.hpp>
+#include "platooning_sim/gazeboadapter.hpp"
 
 namespace platooning_sim {
 

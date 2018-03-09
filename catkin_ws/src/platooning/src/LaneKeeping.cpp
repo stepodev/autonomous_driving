@@ -10,8 +10,8 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include <Topics.hpp>
-#include "LaneKeeping.hpp"
+#include <platooning/Topics.hpp>
+#include "platooning/LaneKeeping.hpp"
 
 namespace platooning {
 

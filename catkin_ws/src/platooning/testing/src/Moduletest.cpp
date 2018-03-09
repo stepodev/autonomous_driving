@@ -1,7 +1,7 @@
 //
 // Created by stepo on 1/22/18.
 //
-#include "Moduletest.hpp"
+#include "platooning/Moduletest.hpp"
 
 Moduletest::Moduletest() : testcase_timer_(io_) {
 	timeout_ = boost::posix_time::seconds(10);

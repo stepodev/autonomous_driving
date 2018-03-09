@@ -27,8 +27,8 @@
 #include <ros/ros.h>
 
 #include "Moduletest.hpp"
-#include "Topics.hpp"
-#include "MessageTypes.hpp"
+#include "platooning/Topics.hpp"
+#include "platooning/MessageTypes.hpp"
 
 namespace platooning {
 

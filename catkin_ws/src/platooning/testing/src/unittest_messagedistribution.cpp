@@ -7,7 +7,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "../../include/MessageDistribution.hpp"
+#include "platooning/MessageDistribution.hpp"
 
 class Testprotocol : platooning::MessageDistribution {
 

@@ -15,7 +15,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include "MessageDistribution.hpp"
+#include "platooning/MessageDistribution.hpp"
 
 namespace pt = boost::property_tree;
 

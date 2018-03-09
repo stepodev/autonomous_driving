@@ -47,10 +47,10 @@ include_directories(include ../platooning/include ${catkin_INCLUDE_DIRS} ${GAZEB
 add_library(PriusHybridPlugin SHARED plugins/PriusHybridPlugin.cc)
 target_link_libraries(PriusHybridPlugin ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES})
 
-add_library(priustopics include/topics.hpp ${catkin_LIBRARIES})
+add_library(priustopics include/platooning_sim/topics.hpp ${catkin_LIBRARIES})
 set_target_properties(priustopics PROPERTIES LINKER_LANGUAGE CXX)
 
-add_library(gazeboadapter include/gazeboadapter.hpp src/gazeboadapter.cpp)
+add_library(gazeboadapter include/platooning_sim/gazeboadapter.hpp src/gazeboadapter.cpp)
 add_dependencies(gazeboadapter priustopics)
 target_link_libraries(gazeboadapter udpserver messagetypes topics priustopics ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES})
 

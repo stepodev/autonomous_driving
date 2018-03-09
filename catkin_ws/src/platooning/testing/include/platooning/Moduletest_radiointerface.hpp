@@ -15,8 +15,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_MODULETEST_PLATOONING_HPP
-#define PLATOONING_MODULETEST_PLATOONING_HPP
+#ifndef PLATOONING_MODULETEST_RADIOINTERFACE_HPP
+#define PLATOONING_MODULETEST_RADIOINTERFACE_HPP
 
 /*****************************************************************************
 ** Includes
@@ -25,12 +25,19 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <sstream>
 
+#include "platooning/Topics.hpp"
+#include "platooning/MessageTypes.hpp"
+#include "platooning/UdpServer.hpp"
 #include "Moduletest.hpp"
-#include "Topics.hpp"
-#include "MessageTypes.hpp"
+
+using boost::asio::ip::udp;
 
 namespace platooning {
+
 
 /**
  * @brief Example showing how to document a function with Doxygen.
@@ -66,67 +73,33 @@ namespace platooning {
  * @warning Warning.
  */
 
-class Moduletest_platooning : public Moduletest {
+  class Moduletest_radiointerface : public Moduletest {
   public:
-	void onInit();
+    virtual void onInit();
 
-	Moduletest_platooning();
+    Moduletest_radiointerface();
 
-	~Moduletest_platooning();
+    ~Moduletest_radiointerface();
 
   private:
-	/**
-	* @brief template_testcase does x,y,z and expects a,b,c
-	*/
-	void pub_templatemsg_recv_othermsg();
+    ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
+    std::string name_ = "Moduletest_radiointerface";
+    std::unique_ptr<UdpServer> server_;
 
-	void hndl_recv_othermsg(const platooning::templateMsg &msg);
+    /**
+     * @brief sends upd datagram, expects to get a platoonprotocol on IN_PLATOONMSG channel
+     * @param msg incoming topic message
+     */
+    void test_send_udp_recv_protocolIn();
+    void hndl_recv_udp_dummy(std::pair<std::string, uint32_t> msg);
+    void hndl_recv_in_protocol(platooning::platoonProtocol msg);
 
-	//test rc
-	void send_platoontoggle_recv_platoonstate_creating();
-	void hndl_testcase_send_platoontoggle_recv_platoonstate_creating(platooningState msg);
 
-	void send_platoontoggle_recv_error_lv();
+    void test_send_protocolOut_recv_udp();
+    void handl_test_udp_recvd( std::pair<std::string, uint32_t> msg);
+  };
 
-	//test timeouts
-	void send_heartbeats_dont_recv_platoonstate_timeout();
-	void send_broadcast_dont_recv_platoonstate_timeout();
-	void lv_broadcast_timeout_recv_platoonstate_idle();
-	void fv_heartbeat_timeout_recv_platoonstate_without_member_timedout();
-	void fv_heartbeat_timeout_recv_platoonstate_idle();
-
-	//test join
-	void send_fv_request_recv_lv_accept();
-	void hndl_tc_send_fv_request_recv_lv_accept( lv_accept msg );
-
-	void send_fv_request_recv_platoonstate_running();
-	void send_fv_request_recv_broadcast();
-
-	//test accept
-	void send_lv_accept_recv_heartbeat();
-
-	//send to wrong role
-	void send_broadcast_to_lv_recv_nothing();
-	void send_heartbeat_to_fv_recv_nothing();
-
-	//send to idle
-	void send_heartbeat_to_idle_recv_nothing();
-	void send_fv_request_to_idle_recv_nothing();
-	void send_fv_leave_to_idle_recv_nothing();
-	void send_fv_heartbeat_to_idle_recv_nothing();
-
-	void send_lv_accept_to_idle_recv_nothing();
-	void send_lv_reject_to_idle_recv_nothing();
-	void send_lv_broadcast_to_idle_recv_nothing();
-
-	//send wrong source
-	void send_fv_leave_non_member_recv_nothing();
-
-	//send duplicates
-	void send_fv_request_receive_two_lv_accept();
-
-};
 
 } // namespace platooning
 
-#endif //PLATOONING_MODULETEST_PLATOONING_HPP
+#endif //PLATOONING_MODULETEST_RADIOINTERFACE_HPP

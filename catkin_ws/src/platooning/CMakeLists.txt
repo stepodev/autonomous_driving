@@ -182,87 +182,87 @@ include_directories(
 #######################
 
 ## Declare a C++ library
-add_library(environment_mapping include/EnvironmentMapping.hpp src/EnvironmentMapping.cpp src/UdpServer.cpp include/UdpServer.hpp)
+add_library(environment_mapping include/platooning/EnvironmentMapping.hpp src/EnvironmentMapping.cpp src/UdpServer.cpp include/platooning/UdpServer.hpp)
 add_dependencies(environment_mapping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(environment_mapping ${catkin_LIBRARIES})
 
-add_library(lanedetect include/LaneDetect.hpp src/LaneDetect.cpp)
+add_library(lanedetect include/platooning/LaneDetect.hpp src/LaneDetect.cpp)
 add_dependencies(lanedetect ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(lanedetect ${catkin_LIBRARIES})
 
-add_library(lanekeeping include/LaneKeeping.hpp src/LaneKeeping.cpp)
+add_library(lanekeeping include/platooning/LaneKeeping.hpp src/LaneKeeping.cpp)
 add_dependencies(lanekeeping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(lanekeeping ${catkin_LIBRARIES})
 
-add_library(prioritization include/Prioritization.hpp src/Prioritization.cpp)
+add_library(prioritization include/platooning/Prioritization.hpp src/Prioritization.cpp)
 add_dependencies(prioritization ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(prioritization ${catkin_LIBRARIES})
 
-add_library(messagedistribution include/MessageTypes.hpp include/MessageDistribution.hpp src/MessageDistribution.cpp)
+add_library(messagedistribution include/platooning/MessageTypes.hpp include/platooning/MessageDistribution.hpp src/MessageDistribution.cpp)
 add_dependencies(messagedistribution ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(messagedistribution ${catkin_LIBRARIES})
 
-add_library(userinterface include/UserInterface.hpp src/UserInterface.cpp)
+add_library(userinterface include/platooning/UserInterface.hpp src/UserInterface.cpp)
 add_dependencies(userinterface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(userinterface ${catkin_LIBRARIES})
 
-add_library(vehiclecontrol include/VehicleControl.hpp src/VehicleControl.cpp)
+add_library(vehiclecontrol include/platooning/VehicleControl.hpp src/VehicleControl.cpp)
 add_dependencies(vehiclecontrol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(vehiclecontrol ${catkin_LIBRARIES})
 
-add_library(radiointerface include/MessageTypes.hpp include/UdpServer.hpp include/RadioInterface.hpp src/RadioInterface.cpp)
+add_library(radiointerface include/platooning/MessageTypes.hpp include/platooning/UdpServer.hpp include/platooning/RadioInterface.hpp src/RadioInterface.cpp)
 add_dependencies(radiointerface udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(radiointerface udpserver ${catkin_LIBRARIES})
 
-add_library(udpserver include/MessageTypes.hpp include/UdpServer.hpp src/UdpServer.cpp)
+add_library(udpserver include/platooning/MessageTypes.hpp include/platooning/UdpServer.hpp src/UdpServer.cpp)
 add_dependencies(udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(udpserver ${catkin_LIBRARIES})
 
-add_library(topics include/Topics.hpp)
+add_library(topics include/platooning/Topics.hpp)
 set_target_properties(topics PROPERTIES LINKER_LANGUAGE CXX)
 add_dependencies(topics ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(topics ${catkin_LIBRARIES})
 
-add_library(messagetypes include/MessageTypes.hpp src/MessageTypes.cpp)
+add_library(messagetypes include/platooning/MessageTypes.hpp src/MessageTypes.cpp)
 add_dependencies(messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(messagetypes ${catkin_LIBRARIES})
 
-add_library(template include/Template.hpp src/Template.cpp)
+add_library(template include/platooning/Template.hpp src/Template.cpp)
 add_dependencies(template ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(template ${catkin_LIBRARIES})
 
-add_library(platooning include/Platooning.hpp src/Platooning.cpp)
+add_library(platooning include/platooning/Platooning.hpp src/Platooning.cpp)
 add_dependencies(platooning ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(platooning ${catkin_LIBRARIES})
 
-add_library(stmsim include/StmSim.hpp src/StmSim.cpp)
+add_library(stmsim include/platooning/StmSim.hpp src/StmSim.cpp)
 add_dependencies(stmsim udpserver topics messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(stmsim udpserver ${catkin_LIBRARIES})
 
 ##############################################
 #### platooning tests
 ##############################################
-add_library(moduletest testing/include/Moduletest.hpp testing/src/Moduletest.cpp)
+add_library(moduletest testing/include/platooning/Moduletest.hpp testing/src/Moduletest.cpp)
 add_dependencies(moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest ${catkin_LIBRARIES})
 
-add_library(moduletest_messagedistribution testing/include/Moduletest_messagedistribution.hpp testing/src/Moduletest_messagedistribution.cpp)
+add_library(moduletest_messagedistribution testing/include/platooning/Moduletest_messagedistribution.hpp testing/src/Moduletest_messagedistribution.cpp)
 add_dependencies(moduletest_messagedistribution topics messagetypes moduletest messagedistribution ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_messagedistribution topics messagetypes moduletest ${catkin_LIBRARIES})
 
-add_library(moduletest_radiointerface testing/include/Moduletest_radiointerface.hpp testing/src/Moduletest_radiointerface.cpp)
+add_library(moduletest_radiointerface testing/include/platooning/Moduletest_radiointerface.hpp testing/src/Moduletest_radiointerface.cpp)
 add_dependencies(moduletest_radiointerface topics moduletest udpserver radiointerface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_radiointerface topics moduletest udpserver ${catkin_LIBRARIES})
 
-add_library(moduletest_platooning testing/include/Moduletest_platooning.hpp testing/src/Moduletest_platooning.cpp)
+add_library(moduletest_platooning testing/include/platooning/Moduletest_platooning.hpp testing/src/Moduletest_platooning.cpp)
 add_dependencies(moduletest_platooning messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_platooning messagetypes moduletest ${catkin_LIBRARIES})
 
-add_library(moduletest_prioritization testing/include/Moduletest_prioritization.hpp testing/src/Moduletest_prioritization.cpp)
+add_library(moduletest_prioritization testing/include/platooning/Moduletest_prioritization.hpp testing/src/Moduletest_prioritization.cpp)
 add_dependencies(moduletest_prioritization messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
 target_link_libraries(moduletest_prioritization messagetypes moduletest ${catkin_LIBRARIES})
 
-add_library(moduletest_template testing/include/Moduletest_template.hpp testing/src/Moduletest_template.cpp)
+add_library(moduletest_template testing/include/platooning/Moduletest_template.hpp testing/src/Moduletest_template.cpp)
 add_dependencies(moduletest_template messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_template messagetypes moduletest ${catkin_LIBRARIES})
 

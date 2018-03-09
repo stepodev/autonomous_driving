@@ -15,8 +15,8 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include <Topics.hpp>
-#include "../include/VehicleControl.hpp"
+#include <platooning/Topics.hpp>
+#include "platooning/VehicleControl.hpp"
 
 namespace platooning {
 

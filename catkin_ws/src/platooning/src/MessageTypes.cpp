@@ -2,7 +2,7 @@
 // Created by stepo on 2/3/18.
 //
 
-#include "MessageTypes.hpp"
+#include "platooning/MessageTypes.hpp"
 
 namespace pt = boost::property_tree;
 
