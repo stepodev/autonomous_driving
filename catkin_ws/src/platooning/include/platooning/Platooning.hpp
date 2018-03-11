@@ -27,6 +27,7 @@ enum PlatooningStateEnum {
 };
 
 enum PlatoonRole {
+	NONE,
 	LV,
 	FV
 };
@@ -36,7 +37,7 @@ const std::string PlatooningStateStrings[] = {
 };
 
 const std::string PlatoonRoleStrings[] = {
-	"LV", "FV"
+	"NONE", "LV", "FV"
 };
 
 class Platooning : public nodelet::Nodelet {
@@ -69,10 +70,9 @@ class Platooning : public nodelet::Nodelet {
 	ros::Publisher pub_fv_heartbeat;
 	ros::Publisher pub_platooning_state;
 
-	uint32_t vehicle_id_ = 3; //saved vehicle id. hardcoded for now
+	uint32_t vehicle_id_;
 
-	//our role in the platoon. hardcoded for now
-	PlatoonRole platoon_role_ = LV;
+	PlatoonRole platoon_role_ = NONE;
 
 	//state vars
 	PlatooningStateEnum platooning_state_ = IDLE;
@@ -106,6 +106,7 @@ class Platooning : public nodelet::Nodelet {
 	void update_platoonState(lv_broadcast bc);
 
 	void reset_state();
+	void get_vehicle_id_param();
 
 	bool provide_vehicle_id(getVehicleId::Request &res, getVehicleId::Response& );
 };

@@ -57,14 +57,15 @@ void StmSim::onInit() {
 	pub_current_speed_ = nh_.advertise<platooning::speed>(topics::CURRENT_SPEED, 1);
 	pub_distanceToObj_ = nh_.advertise<platooning::distance>(topics::SENSOR_DISTANCE_TO_OBJ, 1);
 
-
 	try {
 		boost::function<void(std::pair<std::string, uint32_t>)> cbfun(boost::bind(boost::mem_fn(
 			&StmSim::hndl_gazupdate), this, _1));
 
 		server_ptr_ = std::unique_ptr<UdpServer>(
 			new UdpServer(
-				cbfun, udp::endpoint(udp::v4(), 13001), udp::endpoint(boost::asio::ip::address_v4::broadcast(), 13000)));
+				cbfun,
+				udp::endpoint(udp::v4(), 13001),
+				udp::endpoint(boost::asio::ip::address_v4::broadcast(), 13000)));
 		server_ptr_->set_filter_own_broadcasts(false);
 
 	} catch (std::exception &e) {
@@ -75,19 +76,20 @@ void StmSim::onInit() {
 	target_speed_ = 0;
 	vehicle_id_ = 1;
 
-	thread_pool_.create_thread( [this] {
+	thread_pool_.create_thread([this] {
 
 		//Services
-		ros::ServiceClient srv_client_ = srv_client_ = nh_.serviceClient<platooning::getVehicleId>(platooning_services::VEHICLE_ID);
+		ros::ServiceClient
+			srv_client_ = nh_.serviceClient<platooning::getVehicleId>(platooning_services::VEHICLE_ID);
 
 		ros::Duration sec;
 		sec.sec = 20;
-		if( srv_client_.waitForExistence(ros::Duration(sec))) {
+		if (srv_client_.waitForExistence(ros::Duration(sec))) {
 
 			platooning::getVehicleId::Request req;
 			platooning::getVehicleId::Response res;
 
-			if( srv_client_.call(req, res)) {
+			if (srv_client_.call(req, res)) {
 				this->vehicle_id_ = res.vehicle_id;
 			}
 		}
@@ -96,23 +98,22 @@ void StmSim::onInit() {
 
 }
 
-
 /*****************************************************************************
 ** Handlers
 *****************************************************************************/
 void StmSim::hndl_gazupdate(std::pair<std::string, uint32_t> message_pair) {
 
-	if( message_pair.second == GAZ_UPDATE ) {
+	if (message_pair.second == GAZ_UPDATE) {
 
 		platooning::gazupdate gazmsg;
-		decode_json(message_pair.first, gazmsg);
+		MessageTypes::decode_json(message_pair.first, gazmsg);
 
-		if( gazmsg.id == vehicle_id_ ) {
-			auto speedmsg = boost::shared_ptr<platooning::speed>( new platooning::speed );
+		if (gazmsg.id == vehicle_id_) {
+			auto speedmsg = boost::shared_ptr<platooning::speed>(new platooning::speed);
 			speedmsg->speed = gazmsg.speed;
 			pub_current_speed_.publish(speedmsg);
 
-			auto distancemsg = boost::shared_ptr<platooning::distanceToObj>( new platooning::distanceToObj );
+			auto distancemsg = boost::shared_ptr<platooning::distanceToObj>(new platooning::distanceToObj);
 			distancemsg->distance_to_obj = gazmsg.distance;
 			pub_distanceToObj_.publish(distancemsg);
 		}
@@ -120,29 +121,29 @@ void StmSim::hndl_gazupdate(std::pair<std::string, uint32_t> message_pair) {
 
 }
 void StmSim::hndl_targetSpeed(const platooning::targetSpeed &msg) {
-	if( msg.target_speed != target_speed_ ) {
+	if (msg.target_speed != target_speed_) {
 		platooning::stmupdate outmsg;
 		outmsg.id = vehicle_id_;
 		outmsg.steeringAngle = target_angle_;
 		outmsg.acceleration = target_speed_;
 
-		std::string msgstr = encode_message( outmsg );
+		std::string msgstr = MessageTypes::encode_message(outmsg);
 
-		server_ptr_->start_send(msgstr, STMSIM_UPDATE );
+		server_ptr_->start_send(msgstr, STMSIM_UPDATE);
 	}
 
 }
 
 void StmSim::hndl_targetAngle(const platooning::targetAngle &msg) {
-	if( msg.steering_angle != target_angle_ ) {
+	if (msg.steering_angle != target_angle_) {
 		platooning::stmupdate outmsg;
 		outmsg.id = vehicle_id_;
 		outmsg.steeringAngle = target_angle_;
 		outmsg.acceleration = target_speed_;
 
-		std::string msgstr = encode_message( outmsg );
+		std::string msgstr = MessageTypes::encode_message(outmsg);
 
-		server_ptr_->start_send(msgstr, STMSIM_UPDATE );
+		server_ptr_->start_send(msgstr, STMSIM_UPDATE);
 	}
 }
 

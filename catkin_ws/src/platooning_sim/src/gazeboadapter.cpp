@@ -67,7 +67,7 @@ void gazeboadapter::hndl_recv_udp(std::pair<std::string, uint32_t> packet) {
 	platooning::stmupdate msg;
 
 	switch (packet.second) {
-		case STMSIM_UPDATE: platooning::decode_json(packet.first, msg);
+		case STMSIM_UPDATE: platooning::MessageTypes::decode_json(packet.first, msg);
 			process_stmsim( msg );
 			break;
 		default: break;
@@ -118,13 +118,13 @@ void gazeboadapter::send_gazupdate(const boost::system::error_code &e) {
 		return;
 	}
 
-	std::string msg = platooning::encode_message(p1gazupdate);
+	std::string msg = platooning::MessageTypes::encode_message(p1gazupdate);
 	server_->start_send( msg, GAZ_UPDATE );
 
-	msg = platooning::encode_message(p2gazupdate);
+	msg = platooning::MessageTypes::encode_message(p2gazupdate);
 	server_->start_send( msg, GAZ_UPDATE );
 
-	msg = platooning::encode_message(p3gazupdate);
+	msg = platooning::MessageTypes::encode_message(p3gazupdate);
 	server_->start_send( msg, GAZ_UPDATE );
 
 	gazupdate_send_timer_.expires_from_now(BROADCAST_FREQ);

@@ -47,27 +47,17 @@ LongitudinalControl::~LongitudinalControl() {};
 */
 void LongitudinalControl::onInit() {
 
-	std::cout << "HELLO1" << std::endl;
-
 	sub_current_speed_ = nh_.subscribe(topics::CURRENT_SPEED, 1,
 	                                   &LongitudinalControl::hndl_current_speed, this);
-
-	std::cout << "HELLO2" << std::endl;
 
 	sub_target_speed_ = nh_.subscribe(topics::TARGET_SPEED, 1,
 	                                  &LongitudinalControl::hndl_targetSpeed, this);
 
-	std::cout << "HELLO3" << std::endl;
-
 	sub_distance_to_obj_ = nh_.subscribe(topics::SENSOR_DISTANCE_TO_OBJ, 1,
 	                                     &LongitudinalControl::hndl_distance_from_sensor, this);
 
-	std::cout << "HELLO4" << std::endl;
-
 	sub_target_distance_ = nh_.subscribe(topics::TARGET_DISTANCE, 1,
 	                                     &LongitudinalControl::hndl_target_distance, this);
-
-	std::cout << "FROM" << std::endl;
 
 	pub_acceleration_ = nh_.advertise<platooning::acceleration>(topics::ACCELERATION, 1);
 
@@ -76,7 +66,7 @@ void LongitudinalControl::onInit() {
 	target_distance_ = 0;
 	target_speed_ = 0;
 
-	NODELET_INFO( std::string( "[" + name_ + "] init done.").c_str());
+	NODELET_INFO( std::string("[" + name_ + "] init done").c_str());
 
 }
 

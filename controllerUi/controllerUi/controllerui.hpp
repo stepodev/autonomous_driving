@@ -43,7 +43,9 @@ private:
     bool remoteEnabled_v2_ = false;
     bool platooningEnabled_v1_ = false;
     bool platooningEnabled_v2_ = false;
+
     std::unique_ptr<UdpServer> server_ptr_;
+    boost::function<void (std::pair<std::string, uint32_t>)> recv_udp_msg_cb;
     std::list<int32_t> slave_vehicle_ids_;
     boost::thread keypollthread_;
 

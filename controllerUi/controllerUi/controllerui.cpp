@@ -8,13 +8,15 @@ ControllerUi::ControllerUi(QWidget *parent) :
     ui->setupUi(this);
 
     //start server
-    boost::function<void (std::pair<std::string, uint32_t>)> cbfun( boost::bind( boost::mem_fn(&ControllerUi::receive_message), this, _1 ) );
+    recv_udp_msg_cb = boost::bind( boost::mem_fn(&ControllerUi::receive_message), this, _1 );
 
-    server_ptr_ = std::unique_ptr<UdpServer>( new UdpServer( cbfun
+    server_ptr_ = std::unique_ptr<UdpServer>( new UdpServer( recv_udp_msg_cb
                                                   , udp::endpoint(udp::v4(),10000)
                                                   , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
 
-    server_ptr_->set_filter_own_broadcasts(false);
+    server_ptr_->set_filter_own_broadcasts(true);
+
+    std::cerr << "controllerUI LOADED" << std::endl;
 }
 
 ControllerUi::~ControllerUi()
@@ -83,12 +85,11 @@ void ControllerUi::on_togglePlatooning_v1_clicked()
         msg.inner_platoon_distance = ipd;
         msg.platoon_speed = ps;
         msg.lvfv = ui->info_set_lvfv_v1->text().toStdString();
-        server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLTOGGLE);
+        server_ptr_->start_send(platooning::MessageTypes::encode_message(msg),REMOTE_PLATOONINGTOGGLE);
 
     } catch( std::exception &ex ) {
         std::cerr << "toggleplatooning crash with " << ex.what() << std::endl;
     }
-
 }
 
 void ControllerUi::on_togglePlatooning_v2_clicked()
@@ -152,7 +153,7 @@ void ControllerUi::on_togglePlatooning_v2_clicked()
         msg.inner_platoon_distance = ipd;
         msg.platoon_speed = ps;
         msg.lvfv = ui->info_set_lvfv_v2->text().toStdString();
-        server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLTOGGLE);
+        server_ptr_->start_send(platooning::MessageTypes::encode_message(msg),REMOTE_PLATOONINGTOGGLE);
 
     } catch( std::exception &ex ) {
         std::cerr << "toggleplatooning crash with " << ex.what() << std::endl;
@@ -167,6 +168,7 @@ void ControllerUi::add_slave_vehicle( uint32_t vehicle_id) {
 
 void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
 {
+
     try {
         if( msgpair.first.empty()) {
             return;
@@ -174,10 +176,11 @@ void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
 
         platooning::userInterface msg;
         switch( msgpair.second ) {
-
             case REMOTE_USERINTERFACE:
 
-            platooning::decode_json(msgpair.first, msg);
+            platooning::MessageTypes::decode_json(msgpair.first, msg);
+
+                std::cout << msgpair.second << std::endl << msgpair.first << std::endl;
 
             if( msg.src_vehicle == 1 ) {
                 try { ui->info_actual_distance_v1->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) {}
@@ -260,7 +263,7 @@ void ControllerUi::on_toggleRemote_v1_clicked()
 
         platooning::remotecontrolToggle msg;
         msg.enable_remotecontrol = remoteEnabled_v1_;
-        server_ptr_->start_send(platooning::encode_message(msg), REMOTE_CONTROLTOGGLE);
+        server_ptr_->start_send(platooning::MessageTypes::encode_message(msg), REMOTE_CONTROLTOGGLE);
 
     } catch( std::exception &ex) {
         std::cerr << "toggleremote crash with " << ex.what() << std::endl;
@@ -302,7 +305,7 @@ void ControllerUi::on_toggleRemote_v2_clicked()
 
         platooning::remotecontrolToggle msg;
         msg.enable_remotecontrol = remoteEnabled_v2_;
-        server_ptr_->start_send(platooning::encode_message(msg), REMOTE_CONTROLTOGGLE);
+        server_ptr_->start_send(platooning::MessageTypes::encode_message(msg), REMOTE_CONTROLTOGGLE);
 
     } catch( std::exception &ex) {
         std::cerr << "toggleremote crash with " << ex.what() << std::endl;
@@ -349,7 +352,7 @@ void ControllerUi::keypresspoll() {
             msg.remote_speed = remote_speed_v1_;
             msg.remote_angle = remote_lat_angle_v1_;
             msg.emergency_stop = false;
-            server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLINPUT);
+            server_ptr_->start_send(platooning::MessageTypes::encode_message(msg),REMOTE_CONTROLINPUT);
             boost::this_thread::sleep_for(boost::chrono::milliseconds(1500));
         }
 
@@ -385,7 +388,7 @@ void ControllerUi::keypresspoll() {
             msg.remote_speed = remote_speed_v2_;
             msg.remote_angle = remote_lat_angle_v2_;
             msg.emergency_stop = false;
-            server_ptr_->start_send(platooning::encode_message(msg),REMOTE_CONTROLINPUT);
+            server_ptr_->start_send(platooning::MessageTypes::encode_message(msg),REMOTE_CONTROLINPUT);
             boost::this_thread::sleep_for(boost::chrono::milliseconds(1500));
         }
 

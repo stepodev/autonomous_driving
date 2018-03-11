@@ -31,28 +31,7 @@ void Platooning::onInit() {
 	//publishers nh_.advertise<MsgType>("Topic")
 	pub_platooning_state = nh_.advertise<platooning::platooningState>(topics::PLATOONINGSTATE, 100);
 
-	//take parameters that set role and vehicle_id if exist
-	if (nh_.hasParam("set_role_leader")) {
-		bool is_leader;
-		nh_.getParam("set_role_leader", is_leader);
-
-		if (is_leader) {
-			platoon_role_ = LV;
-		} else {
-			platoon_role_ = FV;
-		}
-	}
-
-	if (nh_.hasParam("vehicle_id")) {
-		int paramvehicleid = 0;
-		nh_.getParam("vehicle_id", paramvehicleid);
-
-		if (paramvehicleid < 1) {
-			NODELET_ERROR(std::string("[" + name_ + "] invalid vehicle id parameter").c_str());
-		} else {
-			vehicle_id_ = (uint32_t) paramvehicleid;
-		}
-	}
+	get_vehicle_id_param();
 
 	if (platoon_role_ == LV) {
 		sub_fv_request = nh_.subscribe(topics::IN_FV_REQUEST, 100, &Platooning::hndl_msg_fv_request, this);
@@ -102,10 +81,9 @@ void Platooning::reset_state() {
 	pub_fv_heartbeat.shutdown();
 	pub_platooning_state.shutdown();
 
-	vehicle_id_ = 3; //saved vehicle id. hardcoded for now
+	get_vehicle_id_param();
 
-	//our role in the platoon. hardcoded for now
-	platoon_role_ = LV;
+	platoon_role_ = NONE;
 
 	//state vars
 	platooning_state_ = IDLE;
@@ -319,7 +297,22 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 		return;
 	}
 
-	NODELET_WARN("handling platooning_toggle");
+	//allow role change only during idle or none
+	if( (platooning_state_ != NONE && platooning_state_ != IDLE )
+		&& (( msg.lvfv == "FV" && platoon_role_ != FV )
+			|| msg.lvfv == "LV" && platoon_role_ != LV )) {
+		NODELET_ERROR(std::string("[" + name_ + "] attempt to change role while state not idle or none").c_str());
+		return;
+	}
+
+	//change platoon role
+	if( msg.lvfv == "FV" ) {
+		platoon_role_ = FV;
+	} else if( msg.lvfv == "LV") {
+		platoon_role_ = LV;
+	}
+
+	NODELET_INFO(std::string("[" + name_ + "] received platooning toggle").c_str());
 
 	if( !msg.enable_platooning ) {
 		//turn off platooning as FV
@@ -593,6 +586,23 @@ void Platooning::send_lv_broadcast(const boost::system::error_code &e) {
 				io_service_.run();
 			}
 		});
+	}
+}
+
+void Platooning::get_vehicle_id_param() {
+	if (nh_.hasParam("vehicle_id")) {
+		int paramvehicleid = 0;
+		nh_.getParam("vehicle_id", paramvehicleid);
+
+		if (paramvehicleid < 1) {
+			NODELET_ERROR(std::string("[" + name_ + "] invalid vehicle id parameter. Defaulting to 1").c_str());
+			vehicle_id_ = 1;
+		} else {
+			vehicle_id_ = (uint32_t) paramvehicleid;
+		}
+	} else {
+		NODELET_ERROR(std::string("[" + name_ + "] invalid vehicle id parameter. Defaulting to 1").c_str());
+		vehicle_id_ = 1;
 	}
 }
 

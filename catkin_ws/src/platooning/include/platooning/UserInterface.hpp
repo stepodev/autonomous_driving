@@ -10,10 +10,13 @@
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
+#include <boost/thread.hpp>
 
 #include "platooning/userInterface.h"
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
+#include "Services.hpp"
+#include "ServiceTypes.hpp"
 
 namespace platooning {
 
@@ -28,6 +31,9 @@ class UserInterface : public nodelet::Nodelet {
   private:
 	ros::NodeHandle nh_;
 	std::string name_ = "UserInterface";
+	uint32_t vehicle_id_;
+	boost::thread_group thread_pool_;
+
 	ros::Publisher pub_userinterface_;
 
 	ros::Subscriber sub_in_lv_broadcast_;

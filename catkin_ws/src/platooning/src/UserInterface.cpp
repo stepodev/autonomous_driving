@@ -71,6 +71,28 @@ void UserInterface::onInit() {
 			std::cerr << "[" + this->name_ + "] reportthread crash with " << ex.what() << std::endl;
 		}
 	});
+
+	//grab vehicle_id from platooning node
+	thread_pool_.create_thread([this] {
+
+		//Services
+		ros::ServiceClient
+			srv_client_ = nh_.serviceClient<platooning::getVehicleId>(platooning_services::VEHICLE_ID);
+
+		ros::Duration sec;
+		sec.sec = 20;
+		if (srv_client_.waitForExistence(ros::Duration(sec))) {
+
+			platooning::getVehicleId::Request req;
+			platooning::getVehicleId::Response res;
+
+			if (srv_client_.call(req, res)) {
+				this->vehicle_id_ = res.vehicle_id;
+				ui_msg_->src_vehicle = this->vehicle_id_;
+			}
+		}
+
+	});
 };
 
 void UserInterface::hndl_in_lv_broadcast(const lv_broadcast &msg) {

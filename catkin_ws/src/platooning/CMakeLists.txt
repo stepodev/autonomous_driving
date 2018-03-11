@@ -167,7 +167,7 @@ catkin_package(
         INCLUDE_DIRS include
         LIBRARIES environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface
                 vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalcontrol
-                services servicetypes
+                services servicetypes stmsim
                 moduletest_platooning moduletest_prioritization moduletest_radiointerface moduletest_messagedistribution
                 moduletest_longitudinalcontrol
         CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
@@ -206,12 +206,12 @@ add_dependencies(prioritization ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_gener
 target_link_libraries(prioritization ${catkin_LIBRARIES})
 
 add_library(messagedistribution include/platooning/MessageTypes.hpp include/platooning/MessageDistribution.hpp src/MessageDistribution.cpp)
-add_dependencies(messagedistribution ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(messagedistribution ${catkin_LIBRARIES})
+add_dependencies(messagedistribution messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(messagedistribution messagetypes ${catkin_LIBRARIES})
 
 add_library(userinterface include/platooning/UserInterface.hpp src/UserInterface.cpp)
-add_dependencies(userinterface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(userinterface ${catkin_LIBRARIES})
+add_dependencies(userinterface services servicetypes messagetypes topics ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(userinterface services servicetypes messagetypes topics ${catkin_LIBRARIES})
 
 add_library(vehiclecontrol include/platooning/VehicleControl.hpp src/VehicleControl.cpp)
 add_dependencies(vehiclecontrol ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
@@ -366,7 +366,7 @@ target_link_libraries(messagedistribution-unit-test messagedistribution ${catkin
 install(TARGETS
             environment_mapping lanedetect lanekeeping prioritization messagedistribution
             userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes
-            topics longitudinalcontrol services servicetypes
+            topics longitudinalcontrol services servicetypes stmsim
             moduletest_platooning moduletest_prioritization moduletest_radiointerface moduletest_messagedistribution
             moduletest_longitudinalcontrol
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

@@ -47,72 +47,77 @@
 
 namespace platooning {
 
+class MessageTypes {
+
+  public:
 /**
  * @brief takes json and decodes it
  * @param msg protocol data
  */
-void decode_json(const std::string &json, lv_broadcast &message);
+	static void decode_json(const std::string &json, lv_broadcast &message);
 
-void decode_json(const std::string &json, lv_accept &message);
+	static void decode_json(const std::string &json, lv_accept &message);
 
-void decode_json(const std::string &json, lv_reject &message);
+	static void decode_json(const std::string &json, lv_reject &message);
 
-void decode_json(const std::string &json, fv_heartbeat &message);
+	static void decode_json(const std::string &json, fv_heartbeat &message);
 
-void decode_json(const std::string &json, fv_leave &message);
+	static void decode_json(const std::string &json, fv_leave &message);
 
-void decode_json(const std::string &json, fv_request &message);
+	static void decode_json(const std::string &json, fv_request &message);
 
-void decode_json(const std::string &json, remotecontrolInput &message);
+	static void decode_json(const std::string &json, remotecontrolInput &message);
 
-void decode_json(const std::string &json, remotecontrolToggle &message);
+	static void decode_json(const std::string &json, remotecontrolToggle &message);
 
-void decode_json(const std::string &json, platooningToggle &message);
+	static void decode_json(const std::string &json, platooningToggle &message);
 
-void decode_json(const std::string &json, userInterface &message);
+	static void decode_json(const std::string &json, userInterface &message);
 
-void decode_json(const std::string &json, steeringAngle &message);
+	static void decode_json(const std::string &json, steeringAngle &message);
 
-void decode_json(const std::string &json, acceleration &message);
+	static void decode_json(const std::string &json, acceleration &message);
 
-void decode_json(const std::string &json, gazupdate &message);
+	static void decode_json(const std::string &json, gazupdate &message);
 
-void decode_json(const std::string &json, stmupdate &message);
+	static void decode_json(const std::string &json, stmupdate &message);
 
-std::string encode_message(const lv_broadcast &message);
+	static std::string encode_message(const lv_broadcast &message);
 
-std::string encode_message(const lv_accept &message);
+	static std::string encode_message(const lv_accept &message);
 
-std::string encode_message(const lv_reject &message);
+	static std::string encode_message(const lv_reject &message);
 
-std::string encode_message(const fv_heartbeat &message);
+	static std::string encode_message(const fv_heartbeat &message);
 
-std::string encode_message(const fv_leave &message);
+	static std::string encode_message(const fv_leave &message);
 
-std::string encode_message(const fv_request &message);
+	static std::string encode_message(const fv_request &message);
 
-std::string encode_message(const remotecontrolInput &message);
+	static std::string encode_message(const remotecontrolInput &message);
 
-std::string encode_message(const remotecontrolToggle &message);
+	static std::string encode_message(const remotecontrolToggle &message);
 
-std::string encode_message(const platooningToggle &message);
+	static std::string encode_message(const platooningToggle &message);
 
-std::string encode_message(const userInterface &message);
+	static std::string encode_message(const userInterface &message);
 
-std::string encode_message(const steeringAngle &message);
+	static std::string encode_message(const steeringAngle &message);
 
-std::string encode_message(const acceleration &message);
+	static std::string encode_message(const acceleration &message);
 
-std::string encode_message(const gazupdate &message);
+	static std::string encode_message(const gazupdate &message);
 
-std::string encode_message(const stmupdate &message);
+	static std::string encode_message(const stmupdate &message);
 
-template<typename T>
-std::vector<T>
-json_as_vector(boost::property_tree::ptree const &pt, boost::property_tree::ptree::key_type const &key);
+  private:
+	template<typename T>
+	static std::vector<T>
+	json_as_vector(boost::property_tree::ptree const &pt, boost::property_tree::ptree::key_type const &key);
 
-template<typename T>
-boost::property_tree::ptree vector_as_json(std::vector<T> const &v);
+	template<typename T>
+	static boost::property_tree::ptree vector_as_json(std::vector<T> const &v);
+};
 
 }
 
