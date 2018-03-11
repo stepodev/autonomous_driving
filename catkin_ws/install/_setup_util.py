@@ -262,7 +262,7 @@ if __name__ == '__main__':
             sys.exit(1)
 
         # environment at generation time
-        CMAKE_PREFIX_PATH = '/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/devel;/home/stepo/workspace/autonomesfahren/rosgaz8/install;/opt/ros/lunar'.split(';')
+        CMAKE_PREFIX_PATH = '/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/install;/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/devel;/home/stepo/workspace/autonomesfahren/rosgaz8/install;/opt/ros/lunar'.split(';')
         # prepend current workspace if not already part of CPP
         base_path = os.path.dirname(__file__)
         if base_path not in CMAKE_PREFIX_PATH:

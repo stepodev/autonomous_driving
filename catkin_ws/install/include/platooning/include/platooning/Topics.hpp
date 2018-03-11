@@ -35,13 +35,13 @@ const std::string PLATOONINGSTATE = "platooningState";
 //remotecontrol topics
 const std::string TOGGLE_REMOTECONTROL = "toggle_remotecontrol";
 const std::string TOGGLE_PLATOONING = "toggle_platooning";
-const std::string REMOTECONTROLINPUT = "remotecontrolinput";
+const std::string REMOTECONTROL_INPUT = "remotecontrolinput";
 
 //control topics
 const std::string SENSOR_DISTANCE_TO_OBJ = "sensor_distance_to_obj";
-const std::string CURRENTSPEED = "current_speed";
-const std::string VEHICLECONTROL = "vehiclecontrol";
-const std::string STEERINGANGLE = "steeringangle";
+const std::string CURRENT_SPEED = "current_speed";
+const std::string VEHICLE_CONTROL = "vehiclecontrol";
+const std::string STEERING_ANGLE = "steeringangle";
 const std::string ACCELERATION = "acceleration";
 
 //prioritziation topics

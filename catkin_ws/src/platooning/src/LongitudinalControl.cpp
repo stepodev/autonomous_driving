@@ -47,18 +47,27 @@ LongitudinalControl::~LongitudinalControl() {};
 */
 void LongitudinalControl::onInit() {
 
-	sub_current_speed_ = nh_.subscribe(topics::CURRENTSPEED, 1,
+	std::cout << "HELLO1" << std::endl;
+
+	sub_current_speed_ = nh_.subscribe(topics::CURRENT_SPEED, 1,
 	                                   &LongitudinalControl::hndl_current_speed, this);
+
+	std::cout << "HELLO2" << std::endl;
 
 	sub_target_speed_ = nh_.subscribe(topics::TARGET_SPEED, 1,
 	                                  &LongitudinalControl::hndl_targetSpeed, this);
 
+	std::cout << "HELLO3" << std::endl;
+
 	sub_distance_to_obj_ = nh_.subscribe(topics::SENSOR_DISTANCE_TO_OBJ, 1,
 	                                     &LongitudinalControl::hndl_distance_from_sensor, this);
+
+	std::cout << "HELLO4" << std::endl;
 
 	sub_target_distance_ = nh_.subscribe(topics::TARGET_DISTANCE, 1,
 	                                     &LongitudinalControl::hndl_target_distance, this);
 
+	std::cout << "FROM" << std::endl;
 
 	pub_acceleration_ = nh_.advertise<platooning::acceleration>(topics::ACCELERATION, 1);
 
@@ -66,6 +75,9 @@ void LongitudinalControl::onInit() {
 	current_speed_ = 0;
 	target_distance_ = 0;
 	target_speed_ = 0;
+
+	NODELET_INFO( std::string( "[" + name_ + "] init done.").c_str());
+
 }
 
 /*****************************************************************************
@@ -73,6 +85,8 @@ void LongitudinalControl::onInit() {
 *****************************************************************************/
 
 void LongitudinalControl::hndl_distance_from_sensor(const platooning::distance &msg) {
+
+	NODELET_INFO( std::string( "[" + name_ + "] recv distance from sensor.").c_str());
 
 	//check if we received new data
 	if( msg.distance != current_distance_ ) {
@@ -82,6 +96,10 @@ void LongitudinalControl::hndl_distance_from_sensor(const platooning::distance &
 }
 
 void LongitudinalControl::hndl_target_distance(const platooning::targetDistance &msg) {
+
+	NODELET_INFO( std::string( "[" + name_ + "] recv targetDistance.").c_str());
+
+
 	if( msg.distance != target_distance_ ) {
 		target_distance_ = msg.distance;
 		calculate_acceleration();
@@ -89,6 +107,10 @@ void LongitudinalControl::hndl_target_distance(const platooning::targetDistance 
 };
 
 void LongitudinalControl::hndl_current_speed(const platooning::speed &msg) {
+
+	NODELET_INFO( std::string( "[" + name_ + "] recv speed.").c_str());
+
+
 	if( msg.speed != current_speed_ ) {
 		current_speed_ = msg.speed;
 		calculate_acceleration();
@@ -96,6 +118,10 @@ void LongitudinalControl::hndl_current_speed(const platooning::speed &msg) {
 }
 
 void LongitudinalControl::hndl_targetSpeed(const platooning::targetSpeed &msg) {
+
+	NODELET_INFO( std::string( "[" + name_ + "] recv targetSpeed.").c_str());
+
+
 	if( msg.target_speed != target_speed_ ) {
 		target_speed_ = msg.target_speed;
 		calculate_acceleration();
@@ -103,40 +129,73 @@ void LongitudinalControl::hndl_targetSpeed(const platooning::targetSpeed &msg) {
 }
 void LongitudinalControl::calculate_acceleration() {
 
-	calc_mutex_.lock();
+	//decel if we exceed target speeds
+	if( current_speed_ > target_speed_ * 1.05 ) {
+		calc_mutex_.lock();
 
-	float accel = current_speed_;
+		auto outmsg = boost::shared_ptr<platooning::acceleration>( new platooning::acceleration);
+		outmsg->accelleration = -1;
 
-	//check if we are too fast based on target distance
-	if( target_distance_ - current_distance_ > (target_distance_ * 1.05) ) {
-		accel = 1;
-	} else if( target_distance_ - current_distance_ < (target_distance_ * 1.05))  {
-		accel = -1;
-	} else {
-		NODELET_WARN( std::string("[" + name_ +"] target distance and current distance equal, yet we are calculating").c_str());
-		//is equal, do nothing
+		pub_acceleration_.publish(outmsg);
 		calc_mutex_.unlock();
 		return;
 	}
 
-	//check if we too fast
-	if( target_speed_ - current_speed_ > ( target_speed_ * 1.05 ) ) {
-		accel = 1;
-	} else if( target_speed_ - current_speed_ < ( target_speed_ * 1.05 ) ) {
-		accel = -1;
-	} else {
-		NODELET_WARN( std::string("[" + name_ +"] target speed and current speed equal, yet we are calculating").c_str());
-		//is equal, do nothing
+	//decel if we exceed target distance
+	if( current_distance_ < target_distance_ * 0.95 ) {
+		calc_mutex_.lock();
+
+		auto outmsg = boost::shared_ptr<platooning::acceleration>( new platooning::acceleration);
+		outmsg->accelleration = -1;
+
+		pub_acceleration_.publish(outmsg);
 		calc_mutex_.unlock();
 		return;
 	}
 
-	calc_mutex_.unlock();
+	//do nothing if target speed is current speed
+	if( abs( current_speed_ - target_speed_ ) <= target_speed_ * 1.05) {
+		calc_mutex_.lock();
 
-	auto outmsg = boost::shared_ptr<platooning::acceleration>( new platooning::acceleration);
-	outmsg->accelleration = accel;
+		auto outmsg = boost::shared_ptr<platooning::acceleration>( new platooning::acceleration);
+		outmsg->accelleration = 0;
 
-	pub_acceleration_.publish(outmsg);
+		pub_acceleration_.publish(outmsg);
+		calc_mutex_.unlock();
+		return;
+	}
+
+	//do nothing if target distance is current distance and we are in acceptable speed range
+	if( current_speed_ < target_speed_ *  1.05
+		&& abs( current_distance_ - target_distance_ ) < target_distance_ * 1.05) {
+		calc_mutex_.lock();
+
+		auto outmsg = boost::shared_ptr<platooning::acceleration>( new platooning::acceleration);
+		outmsg->accelleration = 0;
+
+		pub_acceleration_.publish(outmsg);
+		calc_mutex_.unlock();
+		return;
+	}
+
+	//accelerate if we need to keep up
+	if( current_speed_ < target_speed_
+		&& current_distance_ < target_distance_) {
+		calc_mutex_.lock();
+
+		auto outmsg = boost::shared_ptr<platooning::acceleration>( new platooning::acceleration);
+		outmsg->accelleration = 1;
+
+		pub_acceleration_.publish(outmsg);
+		calc_mutex_.unlock();
+		return;
+	}
+
+	NODELET_ERROR( std::string( "[" + name_ + "][calculate_acceleration] really shouldnt be here.\n"
+	             + "currentspeed:" + std::to_string(current_speed_) + " target speed:" + std::to_string(target_speed_)
+	             + "\ncurrentdistance:" + std::to_string(current_distance_) + " target distance:" + std::to_string(target_distance_)
+	             ).c_str());
+
 }
 
 } // namespace platooning

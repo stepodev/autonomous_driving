@@ -59,6 +59,7 @@
         <nodelet plugin="${prefix}/testing/plugins/moduletest_messagedistribution.xml"/>
         <nodelet plugin="${prefix}/testing/plugins/moduletest_radiointerface.xml"/>
         <nodelet plugin="${prefix}/testing/plugins/moduletest_platooning.xml"/>
+        <nodelet plugin="${prefix}/testing/plugins/moduletest_longitudinalcontrol.xml"/>
 
     </export>
 </package>

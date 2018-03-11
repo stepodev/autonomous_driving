@@ -77,6 +77,11 @@ void Moduletest_template::pub_templatemsg_recv_othermsg() {
 
 	inmsg->templatebool = true;
 
+	//wait for nodelet to subscribe to topic
+	while(pub_map_[topics::TEMPLATETOPIC].getNumSubscribers() < 1 ) {
+		boost::this_thread::sleep_for( boost::chrono::milliseconds(200));
+	}
+
 	pub_map_[topics::TEMPLATETOPIC].publish(inmsg);
 
 }

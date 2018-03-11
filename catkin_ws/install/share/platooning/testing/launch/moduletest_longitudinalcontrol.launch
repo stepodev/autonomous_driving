@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="nodelet" type="nodelet" name="moduletest_longitudinalcontrol" args="load platooning/moduletest_longitudinalcontrol nodeletmanager" required="true"></node>
+</launch>

@@ -104,7 +104,7 @@ std::pair<std::string, uint32_t> UdpServer::read_from_recvbuffer(size_t bytes_tr
     //hopefully the whole string without the message
     std::string str(recv_buffer_.begin() + sizeof(uint32_t), bytes_transferred - sizeof(uint32_t));
 
-    std::cout << "[UdpServer] recvd message type " << message_type << "\nmessage:" << str << std::endl;
+    //std::cout << "[UdpServer] recvd message type " << message_type << "\nmessage:" << str << std::endl;
 
     return std::pair<std::string, uint32_t>(str.data(), message_type);
   } catch (std::exception &e) {
@@ -120,7 +120,7 @@ void UdpServer::start_receive() {
         boost::bind(&UdpServer::handle_receive, this,
                     boost::asio::placeholders::error,
                     boost::asio::placeholders::bytes_transferred));
-    std::cout << "server started async recv" << std::endl;
+    //std::cout << "server started async recv" << std::endl;
   }catch (std::exception &e) {
     std::cerr << "[UdpServer][start_receive] threw " << e.what() << std::endl;
   }
@@ -133,7 +133,7 @@ void UdpServer::start_receive() {
 
 void UdpServer::start_send(std::string message, uint32_t message_type) {
 
-  std::cout << "start send check len of msg \"" << message << "\" type " << message_type << std::endl;
+  //std::cout << "start send check len of msg \"" << message << "\" type " << message_type << std::endl;
 
   if (message.length() + sizeof(message_type) + 1 > MAX_RECV_BYTES) {
     throw;
@@ -143,7 +143,7 @@ void UdpServer::start_send(std::string message, uint32_t message_type) {
   try {
     bytes_written = write_to_sendbuffer(message, message_type);
 
-    std::cout << "srv sending " << send_buffer_.data() << std::endl;
+    //std::cout << "srv sending " << send_buffer_.data() << std::endl;
   } catch (std::exception &ex) {
     std::cerr << "udpserver error stuffing sendbuffer " << ex.what() << std::endl;
   }
@@ -158,7 +158,7 @@ void UdpServer::start_send(std::string message, uint32_t message_type) {
   catch (std::exception &e) {
     std::cerr << "[UdpServer][start_send] threw " << e.what() << std::endl;
   }
-  std::cout << "srv send done" << std::endl;
+  //std::cout << "srv send done" << std::endl;
 
 }
 
@@ -174,8 +174,8 @@ void UdpServer::handle_receive(const boost::system::error_code &error,
   }
 
   try {
-    std::cout << "udpserv handl recv " << size << " bytes"
-              <<  "\n" << msg_src_endpoint_.address() << "==>" << socket_ptr_->local_endpoint().address() << std::endl;
+    //std::cout << "udpserv handl recv " << size << " bytes"
+    //          <<  "\n" << msg_src_endpoint_.address() << "==>" << socket_ptr_->local_endpoint().address() << std::endl;
 
     if (!error || error == boost::asio::error::message_size) {
 
@@ -184,7 +184,7 @@ void UdpServer::handle_receive(const boost::system::error_code &error,
 
       start_receive();
 
-      std::cout << "srv recv done" << std::endl;
+      //std::cout << "srv recv done" << std::endl;
     } else {
       std::cerr << "[udpserver] error during handling receive:" << error.message();
     }
@@ -199,7 +199,7 @@ void UdpServer::handle_send(const boost::system::error_code &error,
   if (error) {
     std::cerr << "server handlesend eror " << error.message() << std::endl;
   } else {
-    std::cout << "server sent " << bytes << " bytes" << std::endl;
+    //std::cout << "server sent " << bytes << " bytes" << std::endl;
   }
 }
 

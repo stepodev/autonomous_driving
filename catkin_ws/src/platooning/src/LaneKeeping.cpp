@@ -64,7 +64,7 @@ namespace platooning {
         current_speed.accelleration = 2;
 
         NODELET_INFO("Creating LaneKeeping Publisher");
-	    angle_publisher = nh_.advertise<platooning::steeringAngle>(topics::STEERINGANGLE, 10);
+	    angle_publisher = nh_.advertise<platooning::steeringAngle>(topics::STEERING_ANGLE, 10);
 	    accel_publisher = nh_.advertise<platooning::steeringAngle>(topics::ACCELERATION, 10);
         NODELET_INFO("Creating LaneKeeping Subscriber");
         pose_subscriber = nh_.subscribe("turtle1/pose", 10, &LaneKeeping::PoseHandler, this);

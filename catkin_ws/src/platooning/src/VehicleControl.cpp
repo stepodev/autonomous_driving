@@ -51,7 +51,7 @@ namespace platooning {
     void VehicleControl::onInit() {
         //subscriber_pose = nh_.subscribe("turtle1/pose", 10, poseCallback);
 	    subscriber = nh_.subscribe(topics::ACCELERATION, 10, &VehicleControl::accelerationCallback, this);
-	    subscriber = nh_.subscribe(topics::STEERINGANGLE, 10, &VehicleControl::steeringAngleCallback, this);
+	    subscriber = nh_.subscribe(topics::STEERING_ANGLE, 10, &VehicleControl::steeringAngleCallback, this);
         publisher = nh_.advertise<geometry_msgs::Twist>("turtle1/cmd_vel", 10);
     };
 

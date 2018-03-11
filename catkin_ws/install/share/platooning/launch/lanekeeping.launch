@@ -1,6 +1,4 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="standalone_nodelet"  args="manager" output="screen"/>
-
-    <node pkg="nodelet" type="nodelet" name="lanekeeping" args="load platooning/LaneKeeping standalone_nodelet">
+    <node pkg="nodelet" type="nodelet" name="lanekeeping" args="load platooning/LaneKeeping nodeletmanager">
     </node>
 </launch>

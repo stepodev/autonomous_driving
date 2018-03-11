@@ -1,4 +1,3 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="longitudinalcontrol" args="load platooning/longitudinalcontrol nodeletmanager">
-    </node>
+    <node pkg="nodelet" type="nodelet" name="longitudinalcontrol" args="load platooning/longitudinalcontrol nodeletmanager "></node>
 </launch>

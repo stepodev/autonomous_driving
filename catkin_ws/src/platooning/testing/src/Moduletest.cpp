@@ -4,7 +4,8 @@
 #include "platooning/Moduletest.hpp"
 
 Moduletest::Moduletest() : testcase_timer_(io_) {
-	timeout_ = boost::posix_time::seconds(10);
+	timeout_ = boost::posix_time::seconds(3);
+	timeout_callback_ = boost::function<void()>();
 }
 
 Moduletest::~Moduletest() {
@@ -71,7 +72,7 @@ void Moduletest::hndl_testcase_timeout(const boost::system::error_code &ec) {
 			return;
 		}
 
-		if (ec == boost::asio::error::timed_out && timeout_callback_ == nullptr ) {
+		if (ec == boost::system::errc::success && timeout_callback_.empty()) {
 			TestResult res;
 			res.success = false;
 			res.comment = "testcase timeout";
@@ -79,7 +80,7 @@ void Moduletest::hndl_testcase_timeout(const boost::system::error_code &ec) {
 			finalize_test(res);
 		}
 
-		if( ec == boost::asio::error::timed_out && timeout_callback_ != nullptr ) {
+		if( ec == boost::system::errc::success && !timeout_callback_.empty() ) {
 
 			timeout_callback_();
 
@@ -87,12 +88,17 @@ void Moduletest::hndl_testcase_timeout(const boost::system::error_code &ec) {
 			res.success = true;
 			res.comment = "expected testcase timeout";
 
+			timeout_callback_ = boost::function<void()>();
 			finalize_test(res);
 		}
 
 	} catch (std::exception &ex) {
 		NODELET_FATAL((std::string("[" + name_ + "] threw ") + ex.what()).c_str());
 	}
+
+	NODELET_FATAL((std::string("[" + name_ + "] we shouldnt be here. testcase timeout not caught. boost error was "
+	 + ec.message()).c_str()));
+	ros::shutdown();
 
 }
 

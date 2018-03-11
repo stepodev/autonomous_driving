@@ -108,6 +108,9 @@ add_message_files(
         targetDistance.msg
         targetAngle.msg
         ########################
+        ## vehicle control
+        acceleration.msg
+        ########################
         ## templateMessages
         templateMsg.msg
 )
@@ -162,7 +165,11 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
         INCLUDE_DIRS include
-        LIBRARIES environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalcontrol services servicetypes
+        LIBRARIES environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface
+                vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalcontrol
+                services servicetypes
+                moduletest_platooning moduletest_prioritization moduletest_radiointerface moduletest_messagedistribution
+                moduletest_longitudinalcontrol
         CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
         #  DEPENDS system_lib
 )
@@ -276,6 +283,10 @@ add_library(moduletest_prioritization testing/include/platooning/Moduletest_prio
 add_dependencies(moduletest_prioritization messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
 target_link_libraries(moduletest_prioritization messagetypes moduletest ${catkin_LIBRARIES})
 
+add_library(moduletest_longitudinalcontrol testing/include/platooning/Moduletest_longitudinalcontrol.hpp testing/src/Moduletest_longitudinalcontrol.cpp)
+add_dependencies(moduletest_longitudinalcontrol messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_longitudinalcontrol messagetypes moduletest ${catkin_LIBRARIES})
+
 add_library(moduletest_template testing/include/platooning/Moduletest_template.hpp testing/src/Moduletest_template.cpp)
 add_dependencies(moduletest_template messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_template messagetypes moduletest ${catkin_LIBRARIES})
@@ -352,7 +363,12 @@ target_link_libraries(messagedistribution-unit-test messagedistribution ${catkin
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-install(TARGETS environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalcontrol services servicetypes
+install(TARGETS
+            environment_mapping lanedetect lanekeeping prioritization messagedistribution
+            userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes
+            topics longitudinalcontrol services servicetypes
+            moduletest_platooning moduletest_prioritization moduletest_radiointerface moduletest_messagedistribution
+            moduletest_longitudinalcontrol
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -374,11 +390,11 @@ install(DIRECTORY plugins/
         PATTERN ".svn" EXCLUDE)
 
 install(DIRECTORY testing/launch/
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/testing/launch
         PATTERN ".svn" EXCLUDE)
 
 install(DIRECTORY testing/plugins/
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/plugins
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/testing/plugins
         PATTERN ".svn" EXCLUDE)
 
 
@@ -386,6 +402,6 @@ install(DIRECTORY testing/plugins/
 #install(FILES launch/environment_mapping.launch launch/lanedetect.launch launch/prioritization.launch  messagedistribution.launch  userinterface.launch  vehiclecontrol.launch  radiointerface.launch  template.launch
 #        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 #        )
-#install(FILES environment_mapping.xml lanedetect.xml  priorization.xml  messagedistribution.xml  userinterface.xml  vehiclecontrol.xml  radiointerface.xml  template.xml
+#install(FILES environment_mapping.xml lanedetect.xml  prioritization.xml  messagedistribution.xml  userinterface.xml  vehiclecontrol.xml  radiointerface.xml  template.xml
 #        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 

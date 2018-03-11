@@ -4,5 +4,5 @@ Name: platooning
 Description: Description of platooning
 Version: 0.0.1
 Cflags: -I/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/install/include
-Libs: -L/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/install/lib -lenvironment_mapping -llanedetect -llanekeeping -lprioritization -lmessagedistribution -luserinterface -lvehiclecontrol -lradiointerface -ltemplate -lplatooning -ludpserver -lmessagetypes -ltopics -llongitudinalcontrol -lservices -lservicetypes
+Libs: -L/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/install/lib -lenvironment_mapping -llanedetect -llanekeeping -lprioritization -lmessagedistribution -luserinterface -lvehiclecontrol -lradiointerface -ltemplate -lplatooning -ludpserver -lmessagetypes -ltopics -llongitudinalcontrol -lservices -lservicetypes -lmoduletest_platooning -lmoduletest_prioritization -lmoduletest_radiointerface -lmoduletest_messagedistribution -lmoduletest_longitudinalcontrol
 Requires: roscpp std_msgs message_runtime nodelet rospy
