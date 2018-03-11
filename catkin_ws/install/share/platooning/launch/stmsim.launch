@@ -1,4 +1,0 @@
-<launch>
-    <node pkg="nodelet" type="nodelet" name="stmsim" args="load platooning/stmsim nodeletmanager">
-    </node>
-</launch>

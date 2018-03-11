@@ -1,9 +1,0 @@
-<library path="lib/libmoduletest_platooning">
-    <class name="platooning/moduletest_platooning"
-	         type="platooning::Moduletest_platooning"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Moduletest Nodelet platooning
-        </description>
-    </class>
-</library>

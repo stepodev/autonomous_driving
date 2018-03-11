@@ -1,4 +1,0 @@
-uint32 vehicle_id
-float32 remote_speed
-float32 remote_angle
-bool emergency_stop

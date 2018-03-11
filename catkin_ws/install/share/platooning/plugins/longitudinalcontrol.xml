@@ -1,9 +1,0 @@
-<library path="lib/liblongitudinalcontrol">
-    <class name="platooning/longitudinalcontrol"
-	         type="platooning::LongitudinalControl"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Template Nodelet
-        </description>
-    </class>
-</library>

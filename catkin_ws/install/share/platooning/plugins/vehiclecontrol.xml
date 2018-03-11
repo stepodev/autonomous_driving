@@ -1,9 +1,0 @@
-<library path="lib/libvehiclecontrol">
-    <class name="platooning/vehiclecontrol"
-	         type="platooning::VehicleControl"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Template Nodelet
-        </description>
-    </class>
-</library>

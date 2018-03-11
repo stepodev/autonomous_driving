@@ -1,9 +1,0 @@
-<library path="lib/libradiointerface">
-    <class name="platooning/radiointerface"
-	         type="platooning::RadioInterface"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Template Nodelet
-        </description>
-    </class>
-</library>

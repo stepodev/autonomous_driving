@@ -1,9 +1,0 @@
-<library path="lib/liblanedetect">
-    <class name="platooning/lanedetect"
-	         type="platooning::LaneDetect"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            lanekeeping nodelet
-        </description>
-    </class>
-</library>

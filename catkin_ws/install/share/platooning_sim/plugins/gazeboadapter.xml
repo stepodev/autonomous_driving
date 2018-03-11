@@ -1,9 +1,0 @@
-<library path="lib/libgazeboadapter">
-    <class name="platooning_sim/gazeboadapter"
-	         type="platooning_sim::gazeboadapter"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Gazebo adapter Plugin for Platooning Simulation
-        </description>
-    </class>
-</library>

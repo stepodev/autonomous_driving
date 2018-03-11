@@ -1,9 +1,0 @@
-<library path="lib/libmessagedistribution">
-    <class name="platooning/messagedistribution"
-	         type="platooning::MessageDistribution"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Template Nodelet
-        </description>
-    </class>
-</library>

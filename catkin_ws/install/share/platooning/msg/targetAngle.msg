@@ -1,1 +1,0 @@
-float32 steering_angle

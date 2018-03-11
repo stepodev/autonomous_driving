@@ -1,9 +1,0 @@
-<library path="lib/libmoduletest_messagedistribution">
-    <class name="platooning/moduletest_messagedistribution"
-	         type="platooning::Moduletest_messagedistribution"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Template Nodelet
-        </description>
-    </class>
-</library>

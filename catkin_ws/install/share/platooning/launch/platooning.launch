@@ -1,6 +1,0 @@
-<launch>
-    <param name="vehicle_id" value="1" type="int" />
-
-    <node pkg="nodelet" type="nodelet" name="platooning" args="load platooning/platooning nodeletmanager">
-    </node>
-</launch>

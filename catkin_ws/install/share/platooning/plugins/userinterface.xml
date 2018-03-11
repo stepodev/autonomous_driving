@@ -1,9 +1,0 @@
-<library path="lib/libuserinterface">
-    <class name="platooning/userinterface"
-	         type="platooning::UserInterface"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Template Nodelet
-        </description>
-    </class>
-</library>

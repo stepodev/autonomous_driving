@@ -1,3 +1,0 @@
-uint32 id
-float32 acceleration
-float32 steeringAngle

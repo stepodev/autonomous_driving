@@ -1,4 +1,0 @@
-<launch>
-    <include file="$(find platooning)/launch/run_platoon.launch"/>
-    <include file="$(find platooning)/launch/stmsim.launch"/>
-</launch>

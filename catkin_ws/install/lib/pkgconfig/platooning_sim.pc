@@ -1,8 +1,0 @@
-prefix=/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/install
-
-Name: platooning_sim
-Description: Description of platooning_sim
-Version: 0.0.1
-Cflags: -I/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/install/include
-Libs: -L/home/stepo/workspace/autonomesfahren/Gruppe-C/catkin_ws/install/lib -lgazeboadapter
-Requires: gazebo_ros

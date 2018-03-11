@@ -1,9 +1,0 @@
-<library path="lib/libplatooning">
-    <class name="platooning/platooning"
-	         type="platooning::Platooning"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Template Nodelet
-        </description>
-    </class>
-</library>

@@ -1,9 +1,0 @@
-<library path="lib/libmoduletest_longitudinalcontrol">
-    <class name="platooning/moduletest_longitudinalcontrol"
-	         type="platooning::Moduletest_longitudinalcontrol"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Moduletest Nodelet longitudinalcontrol
-        </description>
-    </class>
-</library>

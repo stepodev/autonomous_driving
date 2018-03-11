@@ -1,9 +1,0 @@
-<library path="lib/libprioritization">
-    <class name="platooning/prioritization"
-	         type="platooning::Prioritization"
-            base_class_type="nodelet::Nodelet">
-        <description>
-            Template Nodelet
-        </description>
-    </class>
-</library>
