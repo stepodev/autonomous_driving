@@ -57,7 +57,6 @@
 				\paragraph{Assoziationen} Zu den Subscribern gehören Node B (vgl. dazu \ref{node_b}) und Node C (ich tue so als ob ich hier eine Referenz einfüge). Die Publisher sind Node X, Y, und Z (Referenz und so, ne?).
 				\begin{figure}[h!]
 					\centering
-					\includegraphics*[width=0.55\textwidth, height=0.5\textwidth]{node_a_diagram}
 					\caption{Prozesse von Node A, hat nicht unbedingt viel mit der vorhergehenden Beschreibung zu tun}
 					\label{fig:node_a}
 				\end{figure}
@@ -82,22 +81,11 @@
 					\item STR\_ERR
 					\item STR\_DEF
 				\end{itemize}
-				
-			\subsubsection{Beispielnode B}
-			\label{node_b}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
 			
 			\subsubsection{Vehicle Control}
 			\label{vehicle_control}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
+				\paragraph{Aufgabe} Der VehicleControl-Node ist dafür da, das Fahrzeug zu steuern. Dies tut er, in dem er konkrete Steuersignale an den Motor und die Lenkung schickt. 
+				\paragraph{Assoziationen} Der VehicleControl-Node ist Subscriber des LongitudinalProcessing-Node und des LateralProcessing-Node. Er steuert direkt den Motor und die Lenkung an. 
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
@@ -107,8 +95,8 @@
 			
 			\subsubsection{Distance Processing}
 			\label{distance_processing}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
+				\paragraph{Aufgabe} Der DistanceProcessing-Node misst, wie weit er von den nächstgelegenen Objekten entfernt ist und stellt diese Information anderen Knoten zur Verfügung. 
+				\paragraph{Assoziationen} Der DistanceProcessing-Node erhält seine Informationen von einem Ultraschall-Sensor. Er ist Publisher für den LongitudinalProcessing-Node.  
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
@@ -118,8 +106,8 @@
 			
 			\subsubsection{Lane Detect}
 			\label{lane_detect}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
+				\paragraph{Aufgabe} Der LaneDetect-Node erkennt die Fahrbahnmarkierungen und stellt Informationen über die Lage der Fahrbahn zur Verfügung. 
+				\paragraph{Assoziationen} Der LaneDetect-Node erhält ein Bild von der Kamera. Er ist Publisher für den LateralProcessing-Node. 
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
@@ -151,8 +139,8 @@
 				
 			\subsubsection{Prioritization}
 			\label{prioritization}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
+				\paragraph{Aufgabe} Der Prioritization-Node erhält Fahrdaten vom Platooning-Node und der MessageTranslation und entscheidet dann, wie sich das Fahrzeug zu verhalten hat. Er entscheidet also zwischen verschiedenen Steuersignalen, welches gerade benutzt werden soll. 
+				\paragraph{Assoziationen} Der Prioritization-Node ist Subscriber vom Platooning-Node und dem MessageTranslation-Node. Er ist Publisher für den LongitudinalProcessing-Node und den LateralProcessing-Node. 
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
