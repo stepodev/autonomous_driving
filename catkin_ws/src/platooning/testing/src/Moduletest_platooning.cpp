@@ -149,9 +149,9 @@ void Moduletest_platooning::hndl_testcase_send_platoontoggle_recv_platoonstate_c
 		res.comment += "\nps should be 3 was " + std::to_string( msg.ps);
 	}
 
-	if( msg.platooning_state != PlatooningStateStrings[CREATING] ) {
+	if( msg.platooning_state != to_string(PlatooningModeEnum::CREATING) ) {
 		res.success = false;
-		res.comment += "\nps should be CREATING, was " + PlatooningStateStrings[CREATING];
+		res.comment += "\nps should be CREATING, was " + to_string(PlatooningModeEnum::CREATING);
 	}
 
 	if (!res.success) {

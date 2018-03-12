@@ -123,7 +123,10 @@ void UserInterface::hndl_in_fv_heartbeat(const fv_heartbeat &msg) {
 }
 
 void UserInterface::hndl_out_lv_broadcast(const lv_broadcast &msg) {
-
+	ui_msg_->inner_platoon_distance = msg.ipd;
+	ui_msg_->platoon_speed = msg.ps;
+	std::copy(msg.followers.begin(), msg.followers.end(), std::back_inserter(ui_msg_->platoon_members));
+	ui_msg_->platoon_size = msg.followers.size();
 }
 
 void UserInterface::hndl_out_lv_accept(const lv_accept &msg) {
@@ -135,15 +138,15 @@ void UserInterface::hndl_out_lv_reject(const lv_reject &msg) {
 }
 
 void UserInterface::hndl_out_fv_request(const fv_request &msg) {
-
+	ui_msg_->platooning_state = "CREATING";
 }
 
 void UserInterface::hndl_out_fv_leave(const fv_leave &msg) {
-
+	ui_msg_->platooning_state = "IDLE";
 }
 
 void UserInterface::hndl_out_fv_heartbeat(const fv_heartbeat &msg) {
-
+	ui_msg_->platooning_state = "RUNNING";
 }
 
 void UserInterface::hndl_remotecontrol_toggle(const remotecontrolToggle &msg) {

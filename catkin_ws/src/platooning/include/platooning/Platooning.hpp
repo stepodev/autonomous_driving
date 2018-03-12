@@ -20,27 +20,101 @@ const boost::posix_time::milliseconds HEARTBEAT_TIMEOUT(1000);
 const boost::posix_time::milliseconds BROADCAST_FREQ(50);
 const boost::posix_time::milliseconds BROADCAST_TIMEOUT(1000);
 
-enum PlatooningStateEnum {
+enum class PlatooningModeEnum {
 	IDLE,
 	RUNNING,
 	CREATING
 };
 
-enum PlatoonRole {
+enum class PlatoonRoleEnum {
 	NONE,
 	LV,
 	FV
 };
 
-const std::string PlatooningStateStrings[] = {
-	"IDLE", "RUNNING", "CREATING"
-};
+std::string to_string( const PlatooningModeEnum& e ) {
+	switch ( e ) {
+		case PlatooningModeEnum::CREATING:
+			return "CREATING";
+		case PlatooningModeEnum::IDLE:
+			return "IDLE";
+		case PlatooningModeEnum::RUNNING:
+			return "RUNNING";
+	}
 
-const std::string PlatoonRoleStrings[] = {
-	"NONE", "LV", "FV"
-};
+	return "";
+}
+
+std::string to_string( const PlatoonRoleEnum& e ) {
+	switch ( e ) {
+		case PlatoonRoleEnum::NONE:
+			return "NONE";
+		case PlatoonRoleEnum::LV:
+			return "LV";
+		case PlatoonRoleEnum::FV:
+			return "FV";
+	}
+
+	return "";
+}
 
 class Platooning : public nodelet::Nodelet {
+
+  private:
+	class PlatooningState {
+	  private:
+		Platooning* parent_;
+		ros::NodeHandle nh_;
+		PlatoonRoleEnum role_;
+		PlatooningModeEnum current_mode_;
+		std::vector<uint32_t> members_;
+		uint32_t vehicle_id_;
+		uint32_t platoon_id_;
+		uint32_t leader_id_;
+		float platoon_speed_;
+		float platoon_distance_;
+
+		ros::Publisher pub_platooning_state_;
+
+	  public:
+
+		PlatooningState() = delete;
+		PlatooningState( Platooning* );
+
+		void reset();
+		void publish_state();
+
+		void set_role( const PlatoonRoleEnum& );
+		PlatoonRoleEnum get_role();
+
+		void set_mode( const PlatooningModeEnum& );
+		PlatooningModeEnum get_mode();
+
+		void add_member(const uint32_t&);
+		void remove_member(const uint32_t&);
+		bool is_member(const uint32_t&);
+		bool has_members();
+		size_t member_count();
+		void set_members(std::vector<uint32_t>::const_iterator iterator, std::vector<uint32_t>::const_iterator normal_iterator);
+		std::vector<uint32_t> get_members();
+
+		void set_vehicle_id( const uint32_t&);
+		uint32_t get_vehicle_id();
+
+		void set_platoon_id( const uint32_t&);
+		uint32_t get_platoon_id();
+
+		void set_leader_id(const uint32_t &vehicle_id);
+		uint32_t get_leader_id();
+
+		void set_platoon_speed(const float &d);
+		float get_platoon_speed();
+
+		void set_platoon_distance(const float& d);
+		float get_platoon_distance();
+
+	};
+
   public:
 	void onInit();
 	Platooning();
@@ -54,32 +128,27 @@ class Platooning : public nodelet::Nodelet {
 
 	ros::ServiceServer service_;
 
-	ros::Subscriber sub_fv_leave;
-	ros::Subscriber sub_lv_accept;
-	ros::Subscriber sub_lv_reject;
-	ros::Subscriber sub_fv_request;
-	ros::Subscriber sub_lv_broadcast;
-	ros::Subscriber sub_fv_heartbeat;
-	ros::Subscriber sub_platooning_toggle;
+	ros::Subscriber sub_fv_leave_;
+	ros::Subscriber sub_lv_accept_;
+	ros::Subscriber sub_lv_reject_;
+	ros::Subscriber sub_fv_request_;
+	ros::Subscriber sub_lv_broadcast_;
+	ros::Subscriber sub_fv_heartbeat_;
+	ros::Subscriber sub_platooning_toggle_;
 
-	ros::Publisher pub_fv_leave;
-	ros::Publisher pub_lv_accept;
-	ros::Publisher pub_lv_reject;
-	ros::Publisher pub_fv_request;
-	ros::Publisher pub_lv_broadcast;
-	ros::Publisher pub_fv_heartbeat;
-	ros::Publisher pub_platooning_state;
+	ros::Publisher pub_fv_leave_;
+	ros::Publisher pub_lv_accept_;
+	ros::Publisher pub_lv_reject_;
+	ros::Publisher pub_fv_request_;
+	ros::Publisher pub_lv_broadcast_;
+	ros::Publisher pub_fv_heartbeat_;
+	ros::Publisher pub_platooning_state_;
 
-	uint32_t vehicle_id_;
-
-	PlatoonRole platoon_role_ = NONE;
-
-	//state vars
-	PlatooningStateEnum platooning_state_ = IDLE;
-	platooningState platoon_data_;
+	PlatooningState state_;
 
 	//heartbeat timer
 	boost::asio::io_service io_service_;
+	boost::thread io_service_thread_;
 	boost::asio::deadline_timer fv_heartbeat_sender_;
 	boost::asio::deadline_timer fv_heartbeat_checker_;
 	boost::asio::deadline_timer lv_broadcast_sender_;
@@ -103,12 +172,12 @@ class Platooning : public nodelet::Nodelet {
 	void send_fv_heartbeat(const boost::system::error_code &e);
 	void send_lv_broadcast(const boost::system::error_code &e);
 
-	void update_platoonState(lv_broadcast bc);
-
 	void reset_state();
-	void get_vehicle_id_param();
-
+	uint32_t get_vehicle_id_param();
 	bool provide_vehicle_id(getVehicleId::Request &res, getVehicleId::Response& );
+	void set_subs_and_pubs(const PlatoonRoleEnum &anEnum);
+	void shutdown_pubs_and_subs();
+	void update_state(const lv_broadcast &bc);
 };
 }
 

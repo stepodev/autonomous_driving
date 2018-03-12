@@ -2,7 +2,7 @@
 #define PLATOONING_SERVICES_HPP
 
 namespace platooning_services {
-const std::string VEHICLE_ID= "srv/vehicle_id";
+const std::string VEHICLE_ID = "srv/vehicle_id";
 }
 
 

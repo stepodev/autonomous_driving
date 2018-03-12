@@ -14,21 +14,22 @@ UdpServer::UdpServer(boost::function<void(std::pair<std::string, uint32_t>)> rec
 		socket_ptr_ = std::unique_ptr<udp::socket>(new udp::socket(io_service_, udp::v4()));
 
 		//reuse port
-		typedef boost::asio::detail::socket_option::boolean<SOL_SOCKET, SO_REUSEPORT> reuse_port;
-		socket_ptr_->set_option(reuse_port(true));
+		//typedef boost::asio::detail::socket_option::boolean<SOL_SOCKET, SO_REUSEPORT> reuse_port;
+		//socket_ptr_->set_option(reuse_port(true));
 
 		//enable broadcast
 		boost::asio::socket_base::broadcast enable_broadcast(true);
 		socket_ptr_->set_option(enable_broadcast);
 
 		//reuse port
-		boost::asio::socket_base::reuse_address reuse_address(true);
-		socket_ptr_->set_option(reuse_address);
+		//boost::asio::socket_base::reuse_address reuse_address(true);
+		//socket_ptr_->set_option(reuse_address);
 
 		socket_ptr_->bind(bind_endpoint);
 
 		send_endpoint_ = std::move(remote_endpoint);
 
+		myport_ = bind_endpoint.port();
 		find_own_ip();
 
 		callback_ = std::move(receive_callback);
@@ -80,6 +81,8 @@ void UdpServer::find_own_ip() {
 	}
 	mesock.close();
 	myaddress_ = myself.address();
+
+	std::cout << "[UdpServer] bound to ip " << myaddress_.to_string() << ":" << myport_ << std::endl;
 
 }
 
@@ -170,7 +173,7 @@ void UdpServer::handle_receive(const boost::system::error_code &error,
 	//ignore my own broadcasts except from test port
 	if (filter_own_broadcasts_
 		&& msg_src_endpoint_.address() == myaddress_
-		&& msg_src_endpoint_.port() == 10000) { //testport
+		&& msg_src_endpoint_.port() == myport_) { //testport
 		//std::cout << "FILTERED" << msg_src_endpoint_.address() << ":" << msg_src_endpoint_.port() << std::endl;
 		start_receive();
 		return;

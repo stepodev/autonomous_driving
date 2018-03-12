@@ -100,9 +100,6 @@ void MessageDistribution::onInit() {
 * @return true, if successful
 */
 void MessageDistribution::hndl_platooningIn(const platooning::platoonProtocol &inmsg) {
-
-	NODELET_DEBUG("json payload received");
-
 	try {
 		switch (inmsg.message_type) {
 			case LV_BROADCAST: {
@@ -110,68 +107,75 @@ void MessageDistribution::hndl_platooningIn(const platooning::platoonProtocol &i
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_lv_broadcast.publish(outmsg);
 			}
-				break;
+				return;
 			case LV_REJECT: {
+				NODELET_INFO("[%s] received upd message LV_REJECT", name_.c_str());
 				boost::shared_ptr<lv_reject> outmsg = boost::shared_ptr<lv_reject>(new lv_reject);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_lv_reject.publish(outmsg);
 			}
-				break;
+				return;
 			case LV_ACCEPT: {
+				NODELET_INFO("[%s] received upd message LV_ACCEPT", name_.c_str());
 				boost::shared_ptr<lv_accept> outmsg = boost::shared_ptr<lv_accept>(new lv_accept);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_lv_accept.publish(outmsg);
 			}
-				break;
+				return;
 			case FV_LEAVE: {
+				NODELET_INFO("[%s] received upd message FV_LEAVE", name_.c_str());
 				boost::shared_ptr<fv_leave> outmsg = boost::shared_ptr<fv_leave>(new fv_leave);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_fv_leave.publish(outmsg);
 			}
-				break;
+				return;
 			case FV_REQUEST: {
+				NODELET_INFO("[%s] received upd message FV_REQUEST", name_.c_str());
 				boost::shared_ptr<fv_request> outmsg = boost::shared_ptr<fv_request>(new fv_request);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_fv_request.publish(outmsg);
 			}
-				break;
+				return;
 			case FV_HEARTBEAT: {
 				boost::shared_ptr<fv_heartbeat> outmsg = boost::shared_ptr<fv_heartbeat>(new fv_heartbeat);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_fv_heartbeat.publish(outmsg);
 			}
 			case REMOTE_CONTROLINPUT: {
+				NODELET_INFO("[%s] received upd message REMOTE_CONTROLINPUT", name_.c_str());
 				boost::shared_ptr<remotecontrolInput>
 					outmsg = boost::shared_ptr<remotecontrolInput>(new remotecontrolInput);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_remotecontrol_input.publish(outmsg);
+				return;
 			}
 			case REMOTE_CONTROLTOGGLE: {
+				NODELET_INFO("[%s] received upd message REMOTE_CONTROLTOGGLE", name_.c_str());
 				boost::shared_ptr<remotecontrolToggle> outmsg = boost::shared_ptr<remotecontrolToggle>(
 					new remotecontrolToggle);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_remotecontrol_toggle.publish(outmsg);
+				return;
 			}
 			case REMOTE_PLATOONINGTOGGLE: {
+				NODELET_INFO("[%s] received upd message REMOTE_PLATOONINGTOGGLE", name_.c_str());
 				boost::shared_ptr<platooningToggle> outmsg = boost::shared_ptr<platooningToggle>(new platooningToggle);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_platooning_toggle.publish(outmsg);
+				return;
 			}
-				break;
 			default:NODELET_ERROR("[MessageDistribution] unknown message type");
 				break;
 		}
 
 	} catch (pt::json_parser_error &ex) {
-		std::stringstream ss;
-
-		ss << "[MessageDistribution] incoming json parse error, json malformed\n"
-		   << ex.what() << " " << ex.line() << " " << ex.message();
-
-		NODELET_ERROR(ss.str().c_str());
+		NODELET_ERROR("[%s]incoming json parse error, json malformed\n%s %lu %s",
+		              name_.c_str(), ex.what(), ex.line(), ex.message().c_str());
 	} catch (std::exception &ex) {
-		NODELET_ERROR((std::string("[" + name_ + "] error in/platoonProtocolHandler\n") + ex.what()).c_str());
+		NODELET_ERROR("[%s] error in/platoonProtocolHandler\n %s", name_.c_str(), ex.what());
 	}
+
+	NODELET_ERROR("[%s] we received udp. we shouldnt be here", name_.c_str());
 }
 
 void MessageDistribution::hndl_lv_broadcast(const lv_broadcast &msg) {
@@ -183,6 +187,7 @@ void MessageDistribution::hndl_lv_broadcast(const lv_broadcast &msg) {
 }
 
 void MessageDistribution::hndl_lv_accept(const platooning::lv_accept &msg) {
+	NODELET_INFO("[%s] Sending upd message LV_ACCEPT", name_.c_str());
 	auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
 	p->message_type = LV_ACCEPT;
 	p->payload = MessageTypes::encode_message(msg);
@@ -191,6 +196,7 @@ void MessageDistribution::hndl_lv_accept(const platooning::lv_accept &msg) {
 }
 
 void MessageDistribution::hndl_lv_reject(const platooning::lv_reject &msg) {
+	NODELET_INFO("[%s] Sending upd message LV_REJECT", name_.c_str());
 	auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
 	p->message_type = LV_REJECT;
 	p->payload = MessageTypes::encode_message(msg);
@@ -207,6 +213,7 @@ void MessageDistribution::hndl_fv_heartbeat(const platooning::fv_heartbeat &msg)
 }
 
 void MessageDistribution::hndl_fv_leave(const platooning::fv_leave &msg) {
+	NODELET_INFO("[%s] Sending upd message FV_LEAVE", name_.c_str());
 	auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
 	p->message_type = FV_LEAVE;
 	p->payload = MessageTypes::encode_message(msg);
@@ -215,6 +222,7 @@ void MessageDistribution::hndl_fv_leave(const platooning::fv_leave &msg) {
 }
 
 void MessageDistribution::hndl_fv_request(const platooning::fv_request &msg) {
+	NODELET_INFO("[%s] Sending upd message FV_REQUEST", name_.c_str());
 	auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
 	p->message_type = FV_REQUEST;
 	p->payload = MessageTypes::encode_message(msg);
