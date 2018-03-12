@@ -187,6 +187,8 @@ void UserInterface::hndl_target_speed(const targetSpeed &msg) {
 void UserInterface::hndl_platooningState(const platooningState &msg) {
 	ui_msg_->src_vehicle = msg.vehicle_id;
 	ui_msg_->platooning_state = msg.platooning_state;
+	ui_msg_->platoon_speed = msg.ps;
+	ui_msg_->inner_platoon_distance = msg.ipd;
 	ui_msg_->following_vehicle = msg.i_am_FV;
 	ui_msg_->leading_vehicle = msg.i_am_LV;
 }

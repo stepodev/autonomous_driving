@@ -106,40 +106,41 @@ void MessageDistribution::hndl_platooningIn(const platooning::platoonProtocol &i
 				boost::shared_ptr<lv_broadcast> outmsg = boost::shared_ptr<lv_broadcast>(new lv_broadcast);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_lv_broadcast.publish(outmsg);
-			}
 				return;
+			}
 			case LV_REJECT: {
 				NODELET_INFO("[%s] received upd message LV_REJECT", name_.c_str());
 				boost::shared_ptr<lv_reject> outmsg = boost::shared_ptr<lv_reject>(new lv_reject);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_lv_reject.publish(outmsg);
-			}
 				return;
+			}
 			case LV_ACCEPT: {
 				NODELET_INFO("[%s] received upd message LV_ACCEPT", name_.c_str());
 				boost::shared_ptr<lv_accept> outmsg = boost::shared_ptr<lv_accept>(new lv_accept);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_lv_accept.publish(outmsg);
-			}
 				return;
+			}
 			case FV_LEAVE: {
 				NODELET_INFO("[%s] received upd message FV_LEAVE", name_.c_str());
 				boost::shared_ptr<fv_leave> outmsg = boost::shared_ptr<fv_leave>(new fv_leave);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_fv_leave.publish(outmsg);
-			}
 				return;
+			}
 			case FV_REQUEST: {
 				NODELET_INFO("[%s] received upd message FV_REQUEST", name_.c_str());
 				boost::shared_ptr<fv_request> outmsg = boost::shared_ptr<fv_request>(new fv_request);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_fv_request.publish(outmsg);
-			}
 				return;
+			}
 			case FV_HEARTBEAT: {
 				boost::shared_ptr<fv_heartbeat> outmsg = boost::shared_ptr<fv_heartbeat>(new fv_heartbeat);
 				MessageTypes::decode_json(inmsg.payload, *outmsg);
 				pub_fv_heartbeat.publish(outmsg);
+				return;
 			}
 			case REMOTE_CONTROLINPUT: {
 				NODELET_INFO("[%s] received upd message REMOTE_CONTROLINPUT", name_.c_str());
@@ -174,8 +175,6 @@ void MessageDistribution::hndl_platooningIn(const platooning::platoonProtocol &i
 	} catch (std::exception &ex) {
 		NODELET_ERROR("[%s] error in/platoonProtocolHandler\n %s", name_.c_str(), ex.what());
 	}
-
-	NODELET_ERROR("[%s] we received udp. we shouldnt be here", name_.c_str());
 }
 
 void MessageDistribution::hndl_lv_broadcast(const lv_broadcast &msg) {

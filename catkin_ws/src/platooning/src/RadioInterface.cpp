@@ -115,6 +115,7 @@ void RadioInterface::hndl_radio_receive(std::pair<std::string, uint32_t> message
 			break;
 		case LV_BROADCAST:
 		case FV_HEARTBEAT:
+			NODELET_INFO("[%s] received broadcast", name_.c_str());
 			outmsg->payload = message_pair.first;
 			outmsg->message_type = message_pair.second;
 			pub_platoonProtocolIn_.publish(outmsg);
