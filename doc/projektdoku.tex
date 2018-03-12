@@ -162,14 +162,24 @@
 				
 			\subsubsection{Platooning}
 			\label{platooning}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
+				\paragraph{Aufgabe} Der Platooning-Node kommuniziert mit den anderen Fahrzeugen und tauscht mit diesen Daten aus. Zu den Daten gehören Geschwindigkeit des Platoons, die im Platoon einzuhaltende Distanz, Heartbeats sowie Broadcasts. 
+				\paragraph{Assoziationen} Zu den Subscribern des Platooning-Node gehören der Prioritization-Node und der MessageTranslation-Node. Publisher für den Platooning-Node ist der MessageTranslation-Node. 
+
 				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
+					\subparagraph{PlatoonProtocolInHandler()} Diese Methode ist dafür da, eintreffende Messages zu verarbeiten. Sobald der Platooning-Node eine Message erhält, wird diese Methode aufgerufen. Anhand eines switch-cases wird erkannt, welche Art von Message erhalten wurde. Anschließend wird die passende DecodeIncomingJson-Methode aufgerufen. Nachdem die Nachricht dekodiert wurde, werden die dekodierten Daten an den entsprechenden Node gesendet. 
+					\subparagraph{DecodeIncomingJson()} Diese Methode ist eine Helfermethode für PlatoonProtocolInHandler. Sie wird überladen, denn die unterschiedlichen MessageTypes müssen unterschiedlich ausgelesen werden. Ihre Aufgabe ist es, die ankommende JSON-Nachricht richtig zu dekodieren und dem PlatoonProtocolInHandler dadurch Informationen bereitzustellen. 
+				\paragraph{Input} 
+				    \begin{itemize}
+    					\item platooningToggle von Node MessageTranslation
+    					\item in/FV\_REQUEST von Node MessageTranslation
+    					\item in/LV\_BROADCAST von Node MessageTranslation
+    				\end{itemize}
 				\paragraph{Output}
+					\begin{itemize}
+    					\item PlatooningState an Node Prioritization
+    					\item out/FV\_REQUEST an Node MessageTranslation
+    					\item out/LV\_BROADCAST an Node MessageTranslation
+    				\end{itemize}
 			
 			\subsubsection{User Interface Data}
 			\label{user_interface_data}
