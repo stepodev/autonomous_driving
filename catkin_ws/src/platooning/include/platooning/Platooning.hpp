@@ -6,6 +6,7 @@
 #include <pluginlib/class_list_macros.h>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <unordered_map>
 
 #include "Topics.hpp"
@@ -137,10 +138,10 @@ class Platooning : public nodelet::Nodelet, private PlatooningState {
 	ros::Publisher pub_platooning_state_;
 
 	//heartbeat timer
-	boost::posix_time::milliseconds HEARTBEAT_FREQ = boost::posix_time::milliseconds(200);
-	boost::posix_time::milliseconds HEARTBEAT_TIMEOUT = boost::posix_time::milliseconds(1000);
-	boost::posix_time::milliseconds BROADCAST_FREQ = boost::posix_time::milliseconds(50);
-	boost::posix_time::milliseconds BROADCAST_TIMEOUT = boost::posix_time::milliseconds(1000);
+	boost::posix_time::time_duration HEARTBEAT_FREQ = boost::posix_time::milliseconds(200);
+	boost::posix_time::time_duration HEARTBEAT_TIMEOUT = boost::posix_time::milliseconds(1000);
+	boost::posix_time::time_duration BROADCAST_FREQ = boost::posix_time::milliseconds(50);
+	boost::posix_time::time_duration BROADCAST_TIMEOUT = boost::posix_time::milliseconds(1000);
 	boost::asio::io_service io_service_;
 	boost::asio::io_service::work io_worker_;
 	boost::asio::deadline_timer fv_heartbeat_sender_;
@@ -149,8 +150,8 @@ class Platooning : public nodelet::Nodelet, private PlatooningState {
 	boost::asio::deadline_timer lv_broadcast_checker_;
 
 	//follower list and timeouts;
-	std::unordered_map<uint32_t, boost::chrono::system_clock::time_point> fv_heartbeat_timeout_tracker_;
-	std::pair<uint32_t, boost::chrono::system_clock::time_point> lv_broadcast_timeout_tracker_;
+	std::unordered_map<uint32_t, boost::posix_time::ptime> fv_heartbeat_timeout_tracker_;
+	std::pair<uint32_t, boost::posix_time::ptime> lv_broadcast_timeout_tracker_;
 
 	void hndl_msg_fv_leave(const platooning::fv_leave &msg);
 	void hndl_msg_lv_accept(const platooning::lv_accept &msg);

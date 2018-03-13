@@ -42,12 +42,20 @@ class UdpServer {
 
 	std::unique_ptr<udp::socket> socket_ptr_;
 	boost::asio::io_service io_service_;
+	boost::asio::io_service::work io_work_;
 	boost::thread_group thread_pool_;
 
 	udp::endpoint send_endpoint_;
 	udp::endpoint msg_src_endpoint_;
+
+	boost::mutex::scoped_lock recv_buffer_lock_;
+	boost::timed_mutex recv_buffer_mutex_;
 	boost::array<char, MAX_RECV_BYTES> recv_buffer_;
+
+	boost::mutex::scoped_lock send_buffer_lock_;
+	boost::timed_mutex send_buffer_mutex_;
 	boost::array<char, MAX_RECV_BYTES> send_buffer_;
+
 	boost::asio::ip::address myaddress_;
 	unsigned short myport_;
 	bool filter_own_broadcasts_ = true;

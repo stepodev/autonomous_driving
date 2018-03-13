@@ -55,7 +55,7 @@ void Moduletest_radiointerface::onInit() {
 	register_testcases(boost::bind(&Moduletest_radiointerface::test_send_udp_recv_protocolIn, this));
 	register_testcases(boost::bind(&Moduletest_radiointerface::test_send_protocolOut_recv_udp, this));
 
-	NODELET_INFO(std::string("[" + name_ + "] init done").c_str());
+	NODELET_INFO("[%s] init done", name_.c_str());
 
 	start_tests();
 };
@@ -72,7 +72,7 @@ void Moduletest_radiointerface::test_send_udp_recv_protocolIn() {
 
 	set_current_test("test_send_udp_recv_protocolIn");
 
-	NODELET_INFO(std::string("[" + name_ + "] test_send_udp_recv_protocolIn").c_str());
+	NODELET_INFO("[%s] test_send_udp_recv_protocolIn", name_.c_str());
 
 	//prepare subscriber
 	sub_map_.clear();
@@ -122,8 +122,9 @@ void Moduletest_radiointerface::test_send_udp_recv_protocolIn() {
 }
 
 void Moduletest_radiointerface::hndl_recv_udp_dummy(std::pair<std::string, uint32_t> msg) {
-	NODELET_WARN(std::string("[" + name_ + "][hndl_recv_udp_dummy] unexpectedly received msg\n"
-		                         + "type " + std::to_string(msg.second) + " payload\n" + msg.first).c_str());
+	NODELET_WARN("[%s][hndl_recv_udp_dummy] unexpectedly received msg\ntype %s\npayload %s",
+	             name_.c_str(), std::to_string(msg.second).c_str(),
+		         msg.first.c_str());
 }
 
 void Moduletest_radiointerface::hndl_recv_in_protocol(platooning::platoonProtocol msg) {

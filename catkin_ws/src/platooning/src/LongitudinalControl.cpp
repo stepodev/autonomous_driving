@@ -66,7 +66,7 @@ void LongitudinalControl::onInit() {
 	target_distance_ = 0;
 	target_speed_ = 0;
 
-	NODELET_INFO( std::string("[" + name_ + "] init done").c_str());
+	NODELET_INFO("[%s] init done", name_.c_str());
 
 }
 
@@ -75,22 +75,19 @@ void LongitudinalControl::onInit() {
 *****************************************************************************/
 
 void LongitudinalControl::hndl_distance_from_sensor(const platooning::distance &msg) {
-
-	NODELET_INFO( std::string( "[" + name_ + "] recv distance from sensor.").c_str());
+	//NODELET_INFO(  "[%s]  recv distance from sensor.", name_.c_str());
 
 	//check if we received new data
-	if( msg.distance != current_distance_ ) {
+	if (msg.distance != current_distance_) {
 		current_distance_ = msg.distance;
 		calculate_acceleration();
 	}
 }
 
 void LongitudinalControl::hndl_target_distance(const platooning::targetDistance &msg) {
+	//NODELET_INFO( "[%s] recv targetDistance.", name_.c_str());
 
-	NODELET_INFO( std::string( "[" + name_ + "] recv targetDistance.").c_str());
-
-
-	if( msg.distance != target_distance_ ) {
+	if (msg.distance != target_distance_) {
 		target_distance_ = msg.distance;
 		calculate_acceleration();
 	}
@@ -98,94 +95,97 @@ void LongitudinalControl::hndl_target_distance(const platooning::targetDistance 
 
 void LongitudinalControl::hndl_current_speed(const platooning::speed &msg) {
 
-	NODELET_INFO( std::string( "[" + name_ + "] recv speed.").c_str());
+	//NODELET_INFO( "[%s] recv speed.", name_.c_str());
 
-
-	if( msg.speed != current_speed_ ) {
+	if (msg.speed != current_speed_) {
 		current_speed_ = msg.speed;
 		calculate_acceleration();
 	}
 }
 
 void LongitudinalControl::hndl_targetSpeed(const platooning::targetSpeed &msg) {
+	//NODELET_INFO( "[%s] recv targetSpeed.", name_.c_str());
 
-	NODELET_INFO( std::string( "[" + name_ + "] recv targetSpeed.").c_str());
-
-
-	if( msg.target_speed != target_speed_ ) {
+	if (msg.target_speed != target_speed_) {
 		target_speed_ = msg.target_speed;
 		calculate_acceleration();
 	}
 }
 void LongitudinalControl::calculate_acceleration() {
 
-	//decel if we exceed target speeds
-	if( current_speed_ > target_speed_ * 1.05 ) {
-		calc_mutex_.lock();
+	return;
+	NODELET_WARN("[%s] calculate_acceleration \nspeed: %f targetspeed %f\ndistance %f targetdistance %f",
+	              name_.c_str(), current_speed_, target_speed_, current_distance_, target_distance_);
 
-		auto outmsg = boost::shared_ptr<platooning::acceleration>( new platooning::acceleration);
-		outmsg->accelleration = -1;
+	try {
+		//decel if we exceed target speeds
+		if (current_speed_ > target_speed_ * 1.05) {
+			calc_mutex_.lock();
 
-		pub_acceleration_.publish(outmsg);
-		calc_mutex_.unlock();
-		return;
+			auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
+			outmsg->accelleration = -1;
+
+			pub_acceleration_.publish(outmsg);
+			calc_mutex_.unlock();
+			return;
+		}
+
+		//decel if we exceed target distance
+		if (current_distance_ < target_distance_ * 0.95) {
+			calc_mutex_.lock();
+
+			auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
+			outmsg->accelleration = -1;
+
+			pub_acceleration_.publish(outmsg);
+			calc_mutex_.unlock();
+			return;
+		}
+
+		//do nothing if target speed is current speed
+		if (abs(current_speed_ - target_speed_) <= target_speed_ * 1.05) {
+			calc_mutex_.lock();
+
+			auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
+			outmsg->accelleration = 0;
+
+			pub_acceleration_.publish(outmsg);
+			calc_mutex_.unlock();
+			return;
+		}
+
+		//do nothing if target distance is current distance and we are in acceptable speed range
+		if (current_speed_ < target_speed_ * 1.05
+			&& abs(current_distance_ - target_distance_) < target_distance_ * 1.05) {
+			calc_mutex_.lock();
+
+			auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
+			outmsg->accelleration = 0;
+
+			pub_acceleration_.publish(outmsg);
+			calc_mutex_.unlock();
+			return;
+		}
+
+		//accelerate if we need to keep up
+		if (current_speed_ < target_speed_
+			&& current_distance_ < target_distance_) {
+			calc_mutex_.lock();
+
+			auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
+			outmsg->accelleration = 1;
+
+			pub_acceleration_.publish(outmsg);
+			calc_mutex_.unlock();
+			return;
+		}
+
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] calculate failed with %s\nspeed: %f targetspeed %f\ndistance %f targetdistance %f",
+		              name_.c_str(), ex.what(), current_speed_, target_speed_, current_distance_, target_distance_);
 	}
 
-	//decel if we exceed target distance
-	if( current_distance_ < target_distance_ * 0.95 ) {
-		calc_mutex_.lock();
-
-		auto outmsg = boost::shared_ptr<platooning::acceleration>( new platooning::acceleration);
-		outmsg->accelleration = -1;
-
-		pub_acceleration_.publish(outmsg);
-		calc_mutex_.unlock();
-		return;
-	}
-
-	//do nothing if target speed is current speed
-	if( abs( current_speed_ - target_speed_ ) <= target_speed_ * 1.05) {
-		calc_mutex_.lock();
-
-		auto outmsg = boost::shared_ptr<platooning::acceleration>( new platooning::acceleration);
-		outmsg->accelleration = 0;
-
-		pub_acceleration_.publish(outmsg);
-		calc_mutex_.unlock();
-		return;
-	}
-
-	//do nothing if target distance is current distance and we are in acceptable speed range
-	if( current_speed_ < target_speed_ *  1.05
-		&& abs( current_distance_ - target_distance_ ) < target_distance_ * 1.05) {
-		calc_mutex_.lock();
-
-		auto outmsg = boost::shared_ptr<platooning::acceleration>( new platooning::acceleration);
-		outmsg->accelleration = 0;
-
-		pub_acceleration_.publish(outmsg);
-		calc_mutex_.unlock();
-		return;
-	}
-
-	//accelerate if we need to keep up
-	if( current_speed_ < target_speed_
-		&& current_distance_ < target_distance_) {
-		calc_mutex_.lock();
-
-		auto outmsg = boost::shared_ptr<platooning::acceleration>( new platooning::acceleration);
-		outmsg->accelleration = 1;
-
-		pub_acceleration_.publish(outmsg);
-		calc_mutex_.unlock();
-		return;
-	}
-
-	NODELET_ERROR( std::string( "[" + name_ + "][calculate_acceleration] really shouldnt be here.\n"
-	             + "currentspeed:" + std::to_string(current_speed_) + " target speed:" + std::to_string(target_speed_)
-	             + "\ncurrentdistance:" + std::to_string(current_distance_) + " target distance:" + std::to_string(target_distance_)
-	             ).c_str());
-
+	NODELET_ERROR("[%s] calculate_acceleration really shouldnt be here.\n", name_.c_str());
 }
 
 } // namespace platooning

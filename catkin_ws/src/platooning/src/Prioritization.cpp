@@ -104,8 +104,7 @@ void Prioritization::hndl_remotecontrolToggle(platooning::remotecontrolToggle ms
 
 void Prioritization::hndl_remotecontrolInput(platooning::remotecontrolInput msg) {
 	if (state_ != PrioritizationState::REMOTECONTROL) {
-		NODELET_ERROR(std::string("[" + name_ + "] received remotecontrol input while in mode "
-			                          + PrioritizationStateString[state_]).c_str());
+		NODELET_ERROR("[%s] received remotecontrol input while in mode %s", name_.c_str(), PrioritizationStateString[state_].c_str());
 	}
 
 	if (state_ == PrioritizationState::REMOTECONTROL) {
@@ -148,8 +147,8 @@ void Prioritization::hndl_platooningToggle(platooning::platooningToggle msg) {
 void Prioritization::hndl_platooningState(platooning::platooningState msg) {
 
 	if (state_ != PrioritizationState::PLATOONING) {
-		NODELET_ERROR(std::string("[" + name_ + "] received remotecontrol input while in mode "
-			                          + PrioritizationStateString[state_]).c_str());
+		NODELET_ERROR("[%s] received remotecontrol input while in mode %s", name_.c_str(), PrioritizationStateString[state_].c_str());
+
 	}
 
 	if (state_ == PrioritizationState::PLATOONING) {

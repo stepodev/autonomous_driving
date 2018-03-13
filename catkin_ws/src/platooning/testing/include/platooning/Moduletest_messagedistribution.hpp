@@ -37,7 +37,6 @@
 
 namespace platooning {
 
-
 /**
  * @brief Example showing how to document a function with Doxygen.
  *
@@ -72,24 +71,25 @@ namespace platooning {
  * @warning Warning.
  */
 
-  class Moduletest_messagedistribution : public Moduletest {
+class Moduletest_messagedistribution : public Moduletest {
   public:
-    void onInit();
+	void onInit();
 
-    Moduletest_messagedistribution();
+	Moduletest_messagedistribution();
 
-    ~Moduletest_messagedistribution();
+	~Moduletest_messagedistribution();
 
   private:
-    /**
-    * @brief publishes FV_REQUEST on topic in/platoonMsg and expects that message to be translated
-    * and published as on the in/fv_request topic
-    */
-    void pub_in_platoonMsg_recv_fv_request();
+	/**
+	* @brief publishes FV_REQUEST on topic in/platoonMsg and expects that message to be translated
+	* and published as on the in/fv_request topic
+	*/
+	void pub_in_platoonMsg_recv_fv_request();
+	void hndl_pub_in_platoonMsg_recv_fv_request(platooning::fv_request msg);
 
-    void hndl_pub_in_platoonMsg_recv_fv_request(platooning::fv_request msg);
-  };
-
+	void pub_in_platoonMsg_recv_lv_accept();
+	void hndl_pub_in_platoonMsg_recv_lv_accept(platooning::lv_accept msg);
+};
 
 } // namespace platooning
 

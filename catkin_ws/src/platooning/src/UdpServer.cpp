@@ -7,7 +7,7 @@
 
 UdpServer::UdpServer(boost::function<void(std::pair<std::string, uint32_t>)> receive_callback,
                      udp::endpoint bind_endpoint,
-                     udp::endpoint remote_endpoint) {
+                     udp::endpoint remote_endpoint) : io_work_(io_service_) {
 
 	try {
 
@@ -34,6 +34,16 @@ UdpServer::UdpServer(boost::function<void(std::pair<std::string, uint32_t>)> rec
 
 		callback_ = std::move(receive_callback);
 
+		recv_buffer_lock_ = boost::mutex::scoped_lock(recv_buffer_mutex_);
+		send_buffer_lock_ = boost::mutex::scoped_lock(send_buffer_mutex_);
+		https://stackoverflow.com/questions/23166988/how-to-use-a-lock-guard-with-try-lock-for
+		if(a_timed_mutex.try_lock_for(boost::chrono::seconds(1))) {
+			boost::lock_guard<boost::mutex> lock(a_timed_mutex, boost::adopt_lock_t());
+			// Do the work
+		} else {
+			// Handle the acquisition failure
+		}
+
 		start_receive();
 
 		thread_pool_.create_thread([this] { this->io_service_.run(); });
@@ -47,11 +57,11 @@ UdpServer::~UdpServer() {
 }
 
 void UdpServer::shutdown() {
-	try { socket_ptr_->close(); } catch (std::exception &ex) {
-		std::cerr << "[UdpServer] shutdown socket threw " << ex.what() << std::endl;
-	};
 	try { io_service_.stop(); } catch (std::exception &ex) {
 		std::cerr << "[UdpServer] shutdown io_service_ threw " << ex.what() << std::endl;
+	};
+	try { socket_ptr_->close(); } catch (std::exception &ex) {
+		std::cerr << "[UdpServer] shutdown socket threw " << ex.what() << std::endl;
 	};
 	try {
 		thread_pool_.interrupt_all();
@@ -119,6 +129,7 @@ std::pair<std::string, uint32_t> UdpServer::read_from_recvbuffer(size_t bytes_tr
 }
 
 void UdpServer::start_receive() {
+
 	try {
 		socket_ptr_->async_receive_from(
 			boost::asio::buffer(recv_buffer_), msg_src_endpoint_,
@@ -146,11 +157,14 @@ void UdpServer::start_send(std::string message, uint32_t message_type) {
 
 	size_t bytes_written = 0;
 	try {
+		send_buffer_lock_.try_lock_for(boost::chrono::milliseconds(500));
 		bytes_written = write_to_sendbuffer(message, message_type);
 
 		//std::cout << "srv sending " << send_buffer_.data() << std::endl;
 	} catch (std::exception &ex) {
 		std::cerr << "udpserver error stuffing sendbuffer " << ex.what() << std::endl;
+		send_buffer_lock_.unlock();
+		return;
 	}
 
 	try {
@@ -162,6 +176,7 @@ void UdpServer::start_send(std::string message, uint32_t message_type) {
 	}
 	catch (std::exception &e) {
 		std::cerr << "[UdpServer][start_send] threw " << e.what() << std::endl;
+		send_buffer_lock_.unlock();
 	}
 	//std::cout << "srv send done" << std::endl;
 
@@ -175,6 +190,7 @@ void UdpServer::handle_receive(const boost::system::error_code &error,
 		&& msg_src_endpoint_.address() == myaddress_
 		&& msg_src_endpoint_.port() == myport_) { //testport
 		//std::cout << "FILTERED" << msg_src_endpoint_.address() << ":" << msg_src_endpoint_.port() << std::endl;
+		recv_buffer_lock_.unlock();
 		start_receive();
 		return;
 	}
@@ -190,7 +206,7 @@ void UdpServer::handle_receive(const boost::system::error_code &error,
 
 			//std::cout << "srv recv done" << std::endl;
 		} else {
-			std::cerr << "[udpserver] error during handling receive:" << error.message();
+			std::cerr << "[udpserver] error during handling receive:" << error.message() << std::endl;
 		}
 	} catch (std::exception &e) {
 		std::cerr << "[UdpServer][handle_receive] threw " << e.what() << std::endl;
@@ -207,6 +223,8 @@ void UdpServer::handle_send(const boost::system::error_code &error,
 	} else {
 		//std::cout << "server sent " << bytes << " bytes" << std::endl;
 	}
+
+	send_buffer_lock_.unlock();
 }
 
 void UdpServer::set_filter_own_broadcasts(bool flag) {

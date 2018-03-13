@@ -60,9 +60,13 @@ void RadioInterface::onInit() {
 		boost::function<void(std::pair<std::string, uint32_t>)> cbfun(boost::bind(boost::mem_fn(
 			&RadioInterface::hndl_radio_receive), this, _1));
 
-		server_ptr_ = std::unique_ptr<UdpServer>(new UdpServer(cbfun,
+		platooning_server_ptr_ = std::unique_ptr<UdpServer>(new UdpServer(cbfun,
 		                                                       udp::endpoint(udp::v4(), 10000),
 		                                                       udp::endpoint(ip::address_v4::broadcast(), 10000)));
+
+		controller_server_ptr_ = std::unique_ptr<UdpServer>(new UdpServer(cbfun,
+		                                                                  udp::endpoint(udp::v4(), 13500),
+		                                                                  udp::endpoint(ip::address_v4::broadcast(), 13500)));
 	} catch (std::exception &e) {
 		NODELET_FATAL("[%s] udpserver init failed\n %s ", name_.c_str(),e.what());
 	}
@@ -83,13 +87,22 @@ void RadioInterface::hndl_platoonProtocolOut(platooning::platoonProtocol msg) {
 
 	switch ( msg.message_type ) {
 		case FV_REQUEST:
-			NODELET_INFO("[%s] Sending FV_REQUEST via upd", name_.c_str());
+		case LV_ACCEPT:
+		case LV_REJECT:
+		case FV_LEAVE:
+		case LV_BROADCAST:
+		case FV_HEARTBEAT:
+			platooning_server_ptr_->start_send(msg.payload, msg.message_type);
+			break;
+		case REMOTE_USERINTERFACE:
+			controller_server_ptr_->start_send(msg.payload, msg.message_type);
 			break;
 		default:
+			NODELET_ERROR("[%s] trying to send unknown messagetype %#010x paypload %s", name_.c_str(), msg.message_type, msg.payload.c_str());
 			break;
 	}
 
-	server_ptr_->start_send(msg.payload, msg.message_type);
+
 }
 
 /**
@@ -108,14 +121,14 @@ void RadioInterface::hndl_radio_receive(std::pair<std::string, uint32_t> message
 		case LV_REJECT:
 		case FV_LEAVE:
 		case REMOTE_PLATOONINGTOGGLE:
-			NODELET_INFO("[%s] received upd command", name_.c_str());
+			NODELET_INFO("[%s] received upd command %#010x : %s", name_.c_str(), message_pair.second, message_pair.first.c_str());
 			outmsg->payload = message_pair.first;
 			outmsg->message_type = message_pair.second;
 			pub_platoonProtocolIn_.publish(outmsg);
 			break;
 		case LV_BROADCAST:
 		case FV_HEARTBEAT:
-			NODELET_INFO("[%s] received broadcast", name_.c_str());
+			//NODELET_INFO("[%s] received broadcast %#010x", name_.c_str(), message_pair.second);
 			outmsg->payload = message_pair.first;
 			outmsg->message_type = message_pair.second;
 			pub_platoonProtocolIn_.publish(outmsg);
@@ -123,7 +136,7 @@ void RadioInterface::hndl_radio_receive(std::pair<std::string, uint32_t> message
 		case REMOTE_USERINTERFACE:
 			//not for us
 			break;
-		default:NODELET_ERROR("[%s] messagetype not recognized. Type: %i", name_.c_str(), (uint8_t)message_pair.second);
+		default:NODELET_ERROR("[%s] messagetype not recognized. Type: %#010x : %s", name_.c_str(), message_pair.second, message_pair.first.c_str());
 			break;
 
 	}

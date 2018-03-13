@@ -112,8 +112,6 @@ void gazeboadapter::hndl_p3_speed(const prius_msgs::Speed &msg) {
 
 void gazeboadapter::send_gazupdate(const boost::system::error_code &e) {
 
-	ROS_WARN("send_gazupdate");
-
 	if (boost::asio::error::operation_aborted == e) {
 		return;
 	}

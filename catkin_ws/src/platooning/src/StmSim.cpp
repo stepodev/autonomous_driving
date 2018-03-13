@@ -15,7 +15,6 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include <platooning/distanceToObj.h>
 #include "platooning/StmSim.hpp"
 
 namespace platooning {
@@ -54,8 +53,8 @@ void StmSim::onInit() {
 	sub_targetSpeed_ = nh_.subscribe(topics::TARGET_SPEED, 1,
 	                                 &StmSim::hndl_targetSpeed, this);
 
-	pub_current_speed_ = nh_.advertise<platooning::speed>(topics::CURRENT_SPEED, 1);
-	pub_distanceToObj_ = nh_.advertise<platooning::distance>(topics::SENSOR_DISTANCE_TO_OBJ, 1);
+	pub_current_speed_ = nh_.advertise<platooning::speed>(topics::CURRENT_SPEED, 1, true);
+	pub_distanceToObj_ = nh_.advertise<platooning::distance>(topics::SENSOR_DISTANCE_TO_OBJ, 1, true);
 
 	try {
 		boost::function<void(std::pair<std::string, uint32_t>)> cbfun(boost::bind(boost::mem_fn(
@@ -69,7 +68,7 @@ void StmSim::onInit() {
 		server_ptr_->set_filter_own_broadcasts(false);
 
 	} catch (std::exception &e) {
-		NODELET_FATAL(std::string("[" + name_ + "] udpserver init failed\n" + std::string(e.what())).c_str());
+		NODELET_FATAL("[%s] udpserver init failed with %s", name_.c_str(), e.what());
 	}
 
 	target_angle_ = 0;
@@ -96,6 +95,8 @@ void StmSim::onInit() {
 
 	});
 
+	NODELET_INFO("[%s] init done", name_.c_str());
+
 }
 
 /*****************************************************************************
@@ -113,8 +114,9 @@ void StmSim::hndl_gazupdate(std::pair<std::string, uint32_t> message_pair) {
 			speedmsg->speed = gazmsg.speed;
 			pub_current_speed_.publish(speedmsg);
 
-			auto distancemsg = boost::shared_ptr<platooning::distanceToObj>(new platooning::distanceToObj);
-			distancemsg->distance_to_obj = gazmsg.distance;
+			auto distancemsg = boost::shared_ptr<platooning::distance>(new platooning::distance);
+			distancemsg->distance = gazmsg.distance;
+			std::cout << gazmsg.distance << std::endl;
 			pub_distanceToObj_.publish(distancemsg);
 		}
 	}

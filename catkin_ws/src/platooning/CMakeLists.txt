@@ -66,7 +66,6 @@ add_message_files(
         steeringAngle.msg
         ########################
         ## environment mapping messages
-        distanceToObj.msg
         ########################
         ## protocol messages
         platooning/fv_heartbeat.msg
