@@ -52,7 +52,7 @@
 		\subsection{Modulbeschreibung} % Beschreibung der Nodes inkl. (Aktivitäts-)Diagramme
 			\subsubsection{Beispielnode A}
 			\label{node_a}
-				\paragraph{Aufgabe} Node A sammlet Daten bezüglich der aktuellen Radierfähigkeit verschiedener Radiergummis. Die Daten werden kontinuierlich ausgewertet, sodass bei Überschreitung von bestimmten, festgelegter Werte andere Nodes über die Änderung informiert werden. Der Quellcode ist im Anhang \ref{appendix:abcnode} hinterlegt. 
+				\paragraph{Aufgabe} Node A sammelt Daten bezüglich der aktuellen Radierfähigkeit verschiedener Radiergummis. Die Daten werden kontinuierlich ausgewertet, sodass bei Überschreitung von bestimmten, festgelegter Werte andere Nodes über die Änderung informiert werden. Der Quellcode ist im Anhang \ref{appendix:abcnode} hinterlegt. 
 				
 				\paragraph{Assoziationen} Zu den Subscribern gehören Node B (vgl. dazu \ref{node_b}) und Node C (ich tue so als ob ich hier eine Referenz einfüge). Die Publisher sind Node X, Y, und Z (Referenz und so, ne?).
 				\begin{figure}[h!]
@@ -169,12 +169,12 @@
     					\item out/LV\_BROADCAST an Node MessageTranslation
     				\end{itemize}
 			
-			\subsubsection{User Interface Data}
+			\subsubsection{UserInterfaceData}
 			\label{user_interface_data}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
+				\paragraph{Aufgabe} Der UserInterfaceData-Node zeigt dem Nutzer aktuelle Daten des Fahrzeugs an. Dazu gehören zum Beispiel Nachrichten aus dem Platoon, Geschwindigkeit oder Distanz zu anderen Objekten. Aus diesen Daten soll der Nutzer nachvollziehen können, warum sich das Auto verhält, wie es sich verhält.
+				\paragraph{Assoziationen} Der UserInterfaceData-Node ist Subscriber von Messagetranslation. Er ist kein Publisher.
 				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
+					\subparagraph{Platooning Messages}
 				\paragraph{Methoden}
 					\subparagraph{Tolle Methode A}
 				\paragraph{Input}
@@ -182,8 +182,8 @@
 			
 			\subsubsection{Message Translation}
 			\label{message_translation}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
+				\paragraph{Aufgabe} Der MessageTranslation-Node ist dafür verantwortlich, Messages in Datentypen zu übersetzen, damit diese dann von den unterschiedlichen Nodes verwendet werden können. 
+				\paragraph{Assoziationen} Der MessageTranslation-Node ist Subscriber vom RadioInterface-Node und dem Platooning-Node. Er ist Publisher für den UserInterface-Node, den RadioInterface-Node, den Platooning-Node und den Prioritization-Node. 
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
@@ -193,7 +193,7 @@
 			
 			\subsubsection{Radio Interface}
 			\label{radio_interface}
-				\paragraph{Aufgabe}
+				\paragraph{Aufgabe} Der RadioInterface-Node
 				\paragraph{Assoziationen}
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
@@ -203,6 +203,39 @@
 				\paragraph{Output}
 			
 			\subsubsection{Controller UI}
+			\label{controller_ui}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+				
+			\subsubsection{Message Distribution}
+			\label{controller_ui}
+				\paragraph{Aufgabe} Der MessageDistribution Node verteilt die unterschiedlichen Messages an die dafür vorhergesehenen Nodes. 
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+				
+			\subsubsection{MessageTypes}
+			\label{controller_ui}
+				\paragraph{Aufgabe}
+				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+				
+		    \subsubsection{UdpServer}
 			\label{controller_ui}
 				\paragraph{Aufgabe}
 				\paragraph{Assoziationen}
