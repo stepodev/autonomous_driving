@@ -37,6 +37,7 @@
 #include <boost/asio.hpp>
 #include <functional>
 #include <utility>
+#include <iomanip>
 
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
@@ -91,7 +92,8 @@ namespace platooning {
   private:
     ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
     std::string name_;
-    std::unique_ptr<UdpServer> server_ptr_;
+	  std::unique_ptr<UdpServer> platooning_server_ptr_;
+	  std::unique_ptr<UdpServer> controller_server_ptr_;
 
 
     ros::Subscriber sub_platoonProtocolOut_; /* hands to udp_server to publish received messages */

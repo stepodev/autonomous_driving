@@ -43,6 +43,7 @@
 #include "platooning/targetDistance.h"
 #include "platooning/speed.h"
 #include "platooning/distance.h"
+#include "platooning/criticallyDampenedSpring.h"
 #include "platooning/templateMsg.h"
 
 namespace platooning {

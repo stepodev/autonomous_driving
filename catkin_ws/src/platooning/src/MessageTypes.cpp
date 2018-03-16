@@ -147,9 +147,16 @@ void MessageTypes::decode_json(const std::string &json, userInterface &message) 
 	message.enable_remotecontrol = root.get<bool>("enable_remotecontrol");
 	message.leading_vehicle = root.get<bool>("leading_vehicle");
 	message.following_vehicle = root.get<bool>("following_vehicle");
+	message.potential_following_vehicle = root.get<bool>("potential_following_vehicle");
 	message.platooning_state = root.get<std::string>("platooning_state");
 	message.src_vehicle = root.get<uint32_t>("src_vehicle");
 	message.platoon_members = MessageTypes::json_as_vector<uint32_t>(root, "platoon_members");
+	message.platoon_size = message.platoon_members.size();
+	message.inner_platoon_distance = root.get<float>("inner_platoon_distance");
+	message.platoon_speed = root.get<float>("platoon_speed");
+	message.actual_distance = root.get<float>("actual_distance");
+	message.speed = root.get<float>("speed");
+	message.platoon_id = root.get<uint32_t>("platoon_id");
 }
 
 void MessageTypes::decode_json(const std::string &json, stmupdate &message) {
@@ -160,8 +167,8 @@ void MessageTypes::decode_json(const std::string &json, stmupdate &message) {
 	pt::read_json(ss, root);
 
 	message.id = root.get<uint32_t>("id");
-	message.steeringAngle = root.get<bool>("steeringAngle");
-	message.acceleration = root.get<bool>("acceleration");
+	message.steeringAngle = root.get<float>("steeringAngle");
+	message.acceleration = root.get<float>("acceleration");
 
 }
 
@@ -174,8 +181,26 @@ void MessageTypes::decode_json(const std::string &json, gazupdate &message) {
 
 	message.id = root.get<uint32_t>("id");
 	message.speed = root.get<float>("speed");
-	message.distance = root.get<float>("speed");
+	message.distance = root.get<float>("distance");
 
+}
+
+void MessageTypes::decode_json(const std::string &json, steeringAngle &message) {
+
+	std::stringstream ss(json);
+
+	pt::ptree root;
+	pt::read_json(ss, root);
+
+	message.steering_angle = root.get<float>("steering_angle");
+}
+void MessageTypes::decode_json(const std::string &json, acceleration &message) {
+	std::stringstream ss(json);
+
+	pt::ptree root;
+	pt::read_json(ss, root);
+
+	message.accelleration = root.get<float>("accelleration");
 }
 
 std::string MessageTypes::encode_message(const lv_broadcast &message) {
@@ -330,35 +355,51 @@ std::string MessageTypes::encode_message(const gazupdate &message) {
 
 	return ss.str();
 }
-void MessageTypes::decode_json(const std::string &json, steeringAngle &message) {
 
-}
-void MessageTypes::decode_json(const std::string &json, acceleration &message) {
-
-}
 std::string MessageTypes::encode_message(const steeringAngle &message) {
-	return std::__cxx11::string();
+	std::string json;
+	pt::ptree root;
+
+	root.put("steering_angle", message.steering_angle);
+
+	std::stringstream ss;
+	boost::property_tree::write_json(ss, root, false);
+
+	return ss.str();
 }
 std::string MessageTypes::encode_message(const acceleration &message) {
-	return std::__cxx11::string();
+	std::string json;
+	pt::ptree root;
+
+	root.put("accelleration", message.accelleration);
+
+	std::stringstream ss;
+	boost::property_tree::write_json(ss, root, false);
+
+	return ss.str();
 }
 
 std::string MessageTypes::encode_message(const userInterface &message) {
 	std::string json;
 	pt::ptree root;
 
-	root.put("src_vehicle", message.src_vehicle);
-	root.put("enable_remotecontrol", message.enable_remotecontrol);
-	root.add_child("platoon_members", vector_as_json<uint32_t>(message.platoon_members));
-	root.put("platooning_state", message.platooning_state);
-	root.put("following_vehicle", message.following_vehicle);
 	root.put("leading_vehicle", message.leading_vehicle);
-	root.put("speed", message.speed);
-	root.put("actual_distance", message.actual_distance);
-	root.put("platoon_size", message.platoon_size);
-	root.put("platoon_speed", message.platoon_speed);
-	root.put("inner_platoon_distance", message.inner_platoon_distance);
+	root.put("following_vehicle", message.following_vehicle);
 	root.put("potential_following_vehicle", message.potential_following_vehicle);
+
+	root.put("inner_platoon_distance", message.inner_platoon_distance);
+	root.put("actual_distance", message.actual_distance);
+	root.put("platoon_speed", message.platoon_speed);
+	root.put("speed", message.speed);
+
+	root.put("platooning_state", message.platooning_state);
+
+	root.put("src_vehicle", message.src_vehicle);
+	root.put("platoon_size", message.platoon_size);
+	root.add_child("platoon_members", vector_as_json<uint32_t>(message.platoon_members));
+	root.put("enable_remotecontrol", message.enable_remotecontrol);
+
+	root.put("platoon_id", message.platoon_id);
 
 	std::stringstream ss;
 	boost::property_tree::write_json(ss, root, false);

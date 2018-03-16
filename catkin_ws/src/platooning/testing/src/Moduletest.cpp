@@ -10,12 +10,12 @@ Moduletest::Moduletest() : testcase_timer_(io_) {
 
 Moduletest::~Moduletest() {
 	try {
-		NODELET_WARN(std::string("[" + name_ + "] killing " + std::to_string(threadpool_.size()) + " threads").c_str());
+		NODELET_WARN("[%s] killing %i threads", name_.c_str(), (int)threadpool_.size());
 
 		threadpool_.interrupt_all();
 		threadpool_.join_all();
 	} catch (std::exception &ex) {
-		NODELET_ERROR(std::string("[" + name_ + "] threw " + ex.what()).c_str());
+		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}
 
 	expects_timeout_ = false;
@@ -48,9 +48,9 @@ void Moduletest::finalize_test(TestResult result) {
 		   << result.comment << std::endl;
 
 		if (!result.success) {
-			NODELET_ERROR(ss.str().c_str());
+			NODELET_ERROR("%s",ss.str().c_str());
 		} else {
-			NODELET_WARN(ss.str().c_str());
+			NODELET_WARN("%s",ss.str().c_str());
 		}
 
 		of << "[" << t << "]" << ss.str();
@@ -61,7 +61,7 @@ void Moduletest::finalize_test(TestResult result) {
 
 		start_tests();
 	} catch (std::exception &ex) {
-		NODELET_FATAL((std::string("[" + name_ + "] threw ") + ex.what()).c_str());
+		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}
 }
 
@@ -93,11 +93,11 @@ void Moduletest::hndl_testcase_timeout(const boost::system::error_code &ec) {
 		}
 
 	} catch (std::exception &ex) {
-		NODELET_FATAL((std::string("[" + name_ + "] threw ") + ex.what()).c_str());
+		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}
 
-	NODELET_FATAL((std::string("[" + name_ + "] we shouldnt be here. testcase timeout not caught. boost error was "
-	 + ec.message()).c_str()));
+	NODELET_FATAL("[%s] we shouldnt be here. testcase timeout not caught. boost error was %s",
+	              name_.c_str(), ec.message().c_str());
 	ros::shutdown();
 
 }
@@ -125,11 +125,11 @@ void Moduletest::start_tests() {
 			this->io_.run();
 		});
 	} catch (std::exception &ex) {
-		NODELET_FATAL((std::string("[" + name_ + "] threw ") + ex.what()).c_str());
+		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}
 }
 void Moduletest::set_current_test(std::string str) {
 	current_test_ = std::move(str);
-	NODELET_WARN( std::string( "[" + name_ + "][" + current_test_ + "] started").c_str());
+	NODELET_WARN( "[%s] %s started", name_.c_str(), current_test_.c_str());
 }
 

@@ -47,7 +47,7 @@ void Moduletest_prioritization::onInit() {
 
 	register_testcases(boost::bind(&Moduletest_prioritization::pub_platooningState_recv_targetSpeed, this));
 
-	NODELET_INFO(std::string("[" + name_ + "] init done").c_str());
+	NODELET_INFO("[%s] init done", name_.c_str());
 
 	start_tests();
 }
@@ -59,7 +59,7 @@ void Moduletest_prioritization::onInit() {
 void Moduletest_prioritization::pub_platooningState_recv_targetSpeed() {
 
 	set_current_test("pub_platooningState_recv_oughtData");
-	NODELET_INFO(std::string("[" + name_ + "] started testcase " + get_current_test()).c_str());
+	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
 
 	//mockup publishers
 	pub_map_.clear();
@@ -93,7 +93,7 @@ void Moduletest_prioritization::hndl_recv_targetSpeed(platooning::targetSpeed ms
 	}
 
 	if (!res.success) {
-		NODELET_ERROR((std::string("[") + name_ + "] error with " + res.comment).c_str());
+		NODELET_ERROR("[%s] error with %s", name_.c_str(), res.comment.c_str());
 	}
 
 	finalize_test(res);

@@ -67,7 +67,8 @@ void gazeboadapter::hndl_recv_udp(std::pair<std::string, uint32_t> packet) {
 	platooning::stmupdate msg;
 
 	switch (packet.second) {
-		case STMSIM_UPDATE: platooning::MessageTypes::decode_json(packet.first, msg);
+		case STMSIM_UPDATE:
+			platooning::MessageTypes::decode_json(packet.first, msg);
 			process_stmsim( msg );
 			break;
 		default: break;
@@ -87,6 +88,8 @@ void gazeboadapter::hndl_p1_speed(const prius_msgs::Speed &msg) {
 }
 
 void gazeboadapter::hndl_p2_sonar(const sensor_msgs::Range &msg) {
+	std::cout << "p2 dist" << msg.range << std::endl;
+
 	p2gazupdate.distance = msg.range;
 }
 
@@ -112,11 +115,13 @@ void gazeboadapter::hndl_p3_speed(const prius_msgs::Speed &msg) {
 
 void gazeboadapter::send_gazupdate(const boost::system::error_code &e) {
 
-	ROS_WARN("send_gazupdate");
-
 	if (boost::asio::error::operation_aborted == e) {
 		return;
 	}
+
+    std::cout << "id " << p1gazupdate.id << " accel " << p1gazupdate.speed << " dist " << p1gazupdate.distance << std::endl;
+	std::cout << "id " << p2gazupdate.id << " accel " << p2gazupdate.speed << " dist " << p2gazupdate.distance << std::endl;
+
 
 	std::string msg = platooning::MessageTypes::encode_message(p1gazupdate);
 	server_->start_send( msg, GAZ_UPDATE );
@@ -141,6 +146,9 @@ void gazeboadapter::send_gazupdate(const boost::system::error_code &e) {
 }
 void gazeboadapter::process_stmsim(const platooning::stmupdate &stmupdate) {
 
+	std::cout << "id " << stmupdate.id << " accel " << stmupdate.acceleration << std::endl;
+
+
 	auto c = boost::shared_ptr<prius_msgs::Control>( new prius_msgs::Control);
 
 	//we dont reverse
@@ -158,18 +166,17 @@ void gazeboadapter::process_stmsim(const platooning::stmupdate &stmupdate) {
 		c->throttle = stmupdate.acceleration;
 	}
 
-	if( stmupdate.id == 1 ) {
-		pub_p1_control_.publish(c);
+	if( stmupdate.id == 3 ) {
+		pub_p3_control_.publish(c);
 	}
 
 	if( stmupdate.id == 2 ) {
 		pub_p2_control_.publish(c);
 	}
 
-	if( stmupdate.id == 3 ) {
-		pub_p3_control_.publish(c);
+	if( stmupdate.id == 1 ) {
+		pub_p1_control_.publish(c);
 	}
-
 }
 
 }

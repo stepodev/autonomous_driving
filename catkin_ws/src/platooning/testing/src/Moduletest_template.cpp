@@ -47,7 +47,7 @@ void Moduletest_template::onInit() {
 
 	register_testcases(boost::bind(&Moduletest_template::pub_templatemsg_recv_othermsg, this));
 
-	NODELET_INFO(std::string("[" + name_ + "] init done").c_str());
+	NODELET_INFO("[%s ] init done", name_.c_str());
 
 	start_tests();
 }
@@ -97,7 +97,7 @@ void Moduletest_template::hndl_recv_othermsg(const platooning::templateMsg &msg)
 	}
 
 	if (!res.success) {
-		NODELET_ERROR((std::string("[") + name_ + "] error with " + res.comment).c_str());
+		NODELET_ERROR("[%s] error with %s ", name_.c_str(), res.comment.c_str());
 	}
 
 	finalize_test(res);

@@ -52,6 +52,9 @@ const std::string TARGET_ANGLE = "target_angle";
 //lanedetect
 const std::string CAMERA = "camera";
 
+//longitudinalcontrol
+const std::string CRITICALLY_DAMPED_SPRING_PARAMS = "/settings/crit_damp_spring";
+
 //template
 const std::string TEMPLATETOPIC = "templateTopic";
 

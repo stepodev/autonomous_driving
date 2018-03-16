@@ -1,4 +1,5 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="stmsim" args="load platooning/stmsim nodeletmanager">
+<node pkg="nodelet" type="nodelet" name="stmmanager"  args="manager" output="screen"/>
+    <node pkg="nodelet" type="nodelet" name="stmsim" args="load platooning/stmsim stmmanager">
     </node>
 </launch>

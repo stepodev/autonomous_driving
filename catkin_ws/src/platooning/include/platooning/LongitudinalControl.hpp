@@ -29,7 +29,8 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include <mutex>
+#include <boost/thread/mutex.hpp>
+#include <algorithm>
 
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
@@ -70,6 +71,14 @@ namespace platooning {
  * @warning Warning.
  */
 
+#define DEFAULT_TIMESTEP 0.3 //i think this is Hz
+#define DEFAULT_SPRING_CONSTANT 20 //the dice said that
+
+using SpringConstant = float;
+using TimeStep = float;
+using Distance = float;
+using Speed = float;
+
 class LongitudinalControl : public nodelet::Nodelet {
   public:
 	void onInit();
@@ -79,6 +88,25 @@ class LongitudinalControl : public nodelet::Nodelet {
 	~LongitudinalControl();
 
   private:
+
+	class CritiallyDampenedSpring
+	{
+
+	  public:
+		CritiallyDampenedSpring( SpringConstant spring_constant,
+		                         TimeStep time_step,
+		                         Distance target_distance);
+
+		void set_target_distance( const Distance& target_distance ) { target_distance_ = target_distance; };
+
+		float calulate_velocity( const Distance& current_distance, const Speed& current_speed, const Speed& target_speed );
+
+	  private:
+		float spring_constant_;
+		float time_step_;
+		float target_distance_;
+	};
+
 	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
 	std::string name_ = "LongitudinalControl";
 
@@ -86,14 +114,17 @@ class LongitudinalControl : public nodelet::Nodelet {
 	ros::Subscriber sub_target_speed_;
 	ros::Subscriber sub_current_speed_;
 	ros::Subscriber sub_target_distance_;
+	ros::Subscriber sub_critically_dampened_spring_params_;
 
 	ros::Publisher pub_acceleration_;
+
+	CritiallyDampenedSpring spring_;
 
 	float current_distance_;
 	float target_distance_;
 	float target_speed_;
 	float current_speed_;
-	std::mutex calc_mutex_;
+	boost::mutex calc_mutex_;
 
 	/**
 	 * @brief to achieve X does Y
@@ -103,8 +134,14 @@ class LongitudinalControl : public nodelet::Nodelet {
 	void hndl_target_distance(const platooning::targetDistance &msg);
 	void hndl_current_speed(const platooning::speed &msg);
 	void hndl_targetSpeed(const platooning::targetSpeed &msg);
-	void calculate_acceleration();
+	void hndl_spring_update( const platooning::criticallyDampenedSpring &msg );
 
+
+	void update_speed();
+
+	void set_spring(const SpringConstant &spring_constant,
+	                const TimeStep &time_step,
+	                const Distance &target_distance);
 
 };
 

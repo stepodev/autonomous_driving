@@ -15,7 +15,6 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include <platooning/distanceToObj.h>
 #include "platooning/StmSim.hpp"
 
 namespace platooning {
@@ -48,14 +47,14 @@ StmSim::~StmSim() {};
 */
 void StmSim::onInit() {
 
-	sub_targetAngle_ = nh_.subscribe(topics::TARGET_ANGLE, 1,
-	                                 &StmSim::hndl_targetAngle, this);
+	sub_steering_ = nh_.subscribe(topics::STEERING_ANGLE, 1,
+	                              &StmSim::hndl_steeringAngle, this);
 
-	sub_targetSpeed_ = nh_.subscribe(topics::TARGET_SPEED, 1,
-	                                 &StmSim::hndl_targetSpeed, this);
+	sub_accel_ = nh_.subscribe(topics::ACCELERATION, 1,
+	                           &StmSim::hndl_acceleration, this);
 
-	pub_current_speed_ = nh_.advertise<platooning::speed>(topics::CURRENT_SPEED, 1);
-	pub_distanceToObj_ = nh_.advertise<platooning::distance>(topics::SENSOR_DISTANCE_TO_OBJ, 1);
+	pub_current_speed_ = nh_.advertise<platooning::speed>(topics::CURRENT_SPEED, 1, true);
+	pub_distanceToObj_ = nh_.advertise<platooning::distance>(topics::SENSOR_DISTANCE_TO_OBJ, 1, true);
 
 	try {
 		boost::function<void(std::pair<std::string, uint32_t>)> cbfun(boost::bind(boost::mem_fn(
@@ -69,32 +68,39 @@ void StmSim::onInit() {
 		server_ptr_->set_filter_own_broadcasts(false);
 
 	} catch (std::exception &e) {
-		NODELET_FATAL(std::string("[" + name_ + "] udpserver init failed\n" + std::string(e.what())).c_str());
+		NODELET_FATAL("[%s] udpserver init failed with %s", name_.c_str(), e.what());
 	}
 
-	target_angle_ = 0;
-	target_speed_ = 0;
+	steering_angle_ = 0;
+	acceleration_ = 0;
 	vehicle_id_ = 1;
 
 	thread_pool_.create_thread([this] {
 
-		//Services
-		ros::ServiceClient
-			srv_client_ = nh_.serviceClient<platooning::getVehicleId>(platooning_services::VEHICLE_ID);
+		try {
+			//Services
+			ros::ServiceClient
+				srv_client_ = nh_.serviceClient<platooning::getVehicleId>(platooning_services::VEHICLE_ID);
 
-		ros::Duration sec;
-		sec.sec = 20;
-		if (srv_client_.waitForExistence(ros::Duration(sec))) {
+			ros::Duration sec;
+			sec.sec = 20;
+			if (srv_client_.waitForExistence(ros::Duration(sec))) {
 
-			platooning::getVehicleId::Request req;
-			platooning::getVehicleId::Response res;
+				platooning::getVehicleId::Request req;
+				platooning::getVehicleId::Response res;
 
-			if (srv_client_.call(req, res)) {
-				this->vehicle_id_ = res.vehicle_id;
+				if (srv_client_.call(req, res)) {
+					this->vehicle_id_ = res.vehicle_id;
+				}
 			}
+		}
+		catch (std::exception &ex) {
+			NODELET_ERROR("[%s] hndl_gazupdate failed with %s ", name_.c_str(), ex.what());
 		}
 
 	});
+
+	NODELET_INFO("[%s] init done", name_.c_str());
 
 }
 
@@ -103,47 +109,67 @@ void StmSim::onInit() {
 *****************************************************************************/
 void StmSim::hndl_gazupdate(std::pair<std::string, uint32_t> message_pair) {
 
-	if (message_pair.second == GAZ_UPDATE) {
+	try {
 
-		platooning::gazupdate gazmsg;
-		MessageTypes::decode_json(message_pair.first, gazmsg);
+		if (message_pair.second == GAZ_UPDATE) {
 
-		if (gazmsg.id == vehicle_id_) {
-			auto speedmsg = boost::shared_ptr<platooning::speed>(new platooning::speed);
-			speedmsg->speed = gazmsg.speed;
-			pub_current_speed_.publish(speedmsg);
+			platooning::gazupdate gazmsg;
+			MessageTypes::decode_json(message_pair.first, gazmsg);
 
-			auto distancemsg = boost::shared_ptr<platooning::distanceToObj>(new platooning::distanceToObj);
-			distancemsg->distance_to_obj = gazmsg.distance;
-			pub_distanceToObj_.publish(distancemsg);
+			if (gazmsg.id == vehicle_id_) {
+				auto speedmsg = boost::shared_ptr<platooning::speed>(new platooning::speed);
+				speedmsg->speed = gazmsg.speed;
+				pub_current_speed_.publish(speedmsg);
+
+				auto distancemsg = boost::shared_ptr<platooning::distance>(new platooning::distance);
+				distancemsg->distance = gazmsg.distance;
+				pub_distanceToObj_.publish(distancemsg);
+
+				//std::cout << "dist:" << gazmsg.distance << " speed:" << gazmsg.speed << std::endl;
+			}
 		}
 	}
+	catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_gazupdate failed with %s ", name_.c_str(), ex.what());
+	}
 
 }
-void StmSim::hndl_targetSpeed(const platooning::targetSpeed &msg) {
-	if (msg.target_speed != target_speed_) {
+void StmSim::hndl_acceleration(const platooning::acceleration &msg) {
+	try {
+		acceleration_ = msg.accelleration;
+
 		platooning::stmupdate outmsg;
 		outmsg.id = vehicle_id_;
-		outmsg.steeringAngle = target_angle_;
-		outmsg.acceleration = target_speed_;
+		outmsg.steeringAngle = steering_angle_;
+		outmsg.acceleration = acceleration_;
+
+		std::cout << outmsg.id << " " << outmsg.acceleration << std::endl;
 
 		std::string msgstr = MessageTypes::encode_message(outmsg);
 
 		server_ptr_->start_send(msgstr, STMSIM_UPDATE);
+
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_targetSpeed failed with %s ", name_.c_str(), ex.what());
 	}
 
 }
 
-void StmSim::hndl_targetAngle(const platooning::targetAngle &msg) {
-	if (msg.steering_angle != target_angle_) {
+void StmSim::hndl_steeringAngle(const platooning::steeringAngle &msg) {
+	try {
+
+		steering_angle_ = msg.steering_angle;
+
 		platooning::stmupdate outmsg;
 		outmsg.id = vehicle_id_;
-		outmsg.steeringAngle = target_angle_;
-		outmsg.acceleration = target_speed_;
+		outmsg.steeringAngle = steering_angle_;
+		outmsg.acceleration = acceleration_;
 
 		std::string msgstr = MessageTypes::encode_message(outmsg);
 
 		server_ptr_->start_send(msgstr, STMSIM_UPDATE);
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_targetAngle failed with %s ", name_.c_str(), ex.what());
 	}
 }
 

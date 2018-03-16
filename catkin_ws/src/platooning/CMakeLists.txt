@@ -63,10 +63,8 @@ add_message_files(
         FILES
         ########################
         ## lanekeeping messages
-        steeringAngle.msg
         ########################
         ## environment mapping messages
-        distanceToObj.msg
         ########################
         ## protocol messages
         platooning/fv_heartbeat.msg
@@ -82,9 +80,10 @@ add_message_files(
         userInterface.msg
         ########################
         ## lateralControl messages
-        steeringAngle.msg
+        vehiclecontrol/steeringAngle.msg
         ########################
         ## longitudalControl messages
+        vehiclecontrol/criticallyDampenedSpring.msg
         ########################
         ## radiointerface messages
         platoonProtocol.msg
@@ -104,12 +103,12 @@ add_message_files(
         sim/gazupdate.msg
         ########################
         ## prioritization msgs
-        targetSpeed.msg
-        targetDistance.msg
-        targetAngle.msg
+        vehiclecontrol/targetSpeed.msg
+        vehiclecontrol/targetDistance.msg
+        vehiclecontrol/targetAngle.msg
         ########################
         ## vehicle control
-        acceleration.msg
+        vehiclecontrol/acceleration.msg
         ########################
         ## templateMessages
         templateMsg.msg
@@ -254,7 +253,7 @@ target_link_libraries(platooning ${catkin_LIBRARIES})
 
 add_library(stmsim include/platooning/StmSim.hpp src/StmSim.cpp)
 add_dependencies(stmsim udpserver topics messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(stmsim udpserver ${catkin_LIBRARIES})
+target_link_libraries(stmsim udpserver messagetypes topics ${catkin_LIBRARIES})
 
 add_library(longitudinalcontrol include/platooning/LongitudinalControl.hpp src/LongitudinalControl.cpp)
 add_dependencies(longitudinalcontrol topics messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)

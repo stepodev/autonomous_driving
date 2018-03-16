@@ -11,10 +11,18 @@ ControllerUi::ControllerUi(QWidget *parent) :
     recv_udp_msg_cb = boost::bind( boost::mem_fn(&ControllerUi::receive_message), this, _1 );
 
     server_ptr_ = std::unique_ptr<UdpServer>( new UdpServer( recv_udp_msg_cb
-                                                  , udp::endpoint(udp::v4(),10000)
-                                                  , udp::endpoint(boost::asio::ip::address_v4::broadcast(),10000)));
+                                                  , udp::endpoint(udp::v4(),13500)
+                                                  , udp::endpoint(boost::asio::ip::address_v4::broadcast(),13500)));
 
     server_ptr_->set_filter_own_broadcasts(true);
+
+    //useful default platooning shit
+    ui->info_set_lvfv_v1->setText("LV");
+    ui->info_set_platoonspeed_v1->setText("5");
+    ui->info_set_platoon_distance_v1->setText("1");
+    ui->info_set_lvfv_v2->setText("FV");
+    ui->info_set_platoonspeed_v2->setText("5");
+    ui->info_set_platoon_distance_v2->setText("1");
 
     std::cerr << "controllerUI LOADED" << std::endl;
 }
@@ -149,7 +157,7 @@ void ControllerUi::on_togglePlatooning_v2_clicked()
 
         platooning::platooningToggle msg;
         msg.enable_platooning = platooningEnabled_v2_;
-        msg.vehicle_id = 1;
+        msg.vehicle_id = 2;
         msg.inner_platoon_distance = ipd;
         msg.platoon_speed = ps;
         msg.lvfv = ui->info_set_lvfv_v2->text().toStdString();
@@ -175,43 +183,46 @@ void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
         }
 
         platooning::userInterface msg;
+
         switch( msgpair.second ) {
             case REMOTE_USERINTERFACE:
 
             platooning::MessageTypes::decode_json(msgpair.first, msg);
 
-                std::cout << msgpair.second << std::endl << msgpair.first << std::endl;
+            std::cout << msgpair.second << std::endl << msgpair.first << std::endl;
 
             if( msg.src_vehicle == 1 ) {
-                try { ui->info_actual_distance_v1->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_actual_speed_v1->setText( std::to_string(msg.speed).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_ipd_v1->setText( std::to_string(msg.inner_platoon_distance).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_lvfv_v1->setText( msg.following_vehicle ? "FV" : "LV" );} catch( std::exception &ex ) {}
-                try { ui->info_lvfv_v1->setText( msg.leading_vehicle ? "LV" : "FV" );} catch( std::exception &ex ) {}
-                try { ui->info_platooningstate_v1->setText( msg.platooning_state.c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_platoonsize_v1->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_ps_v1->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_vehicle_id_v1->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_actual_distance_v1->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_actual_distance_v1" << std::endl;}
+                try { ui->info_actual_speed_v1->setText( std::to_string(msg.speed).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_actual_speed_v1" << std::endl;}
+                try { ui->info_ipd_v1->setText( std::to_string(msg.inner_platoon_distance).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_ipd_v1" << std::endl;}
+                try { ui->info_lvfv_v1->setText( msg.following_vehicle ? "FV" : "LV" );} catch( std::exception &ex ) { std::cerr << "error info_lvfv_v1" << std::endl;}
+                try { ui->info_lvfv_v1->setText( msg.leading_vehicle ? "LV" : "FV" );} catch( std::exception &ex ) { std::cerr << "error info_lvfv_v1" << std::endl;}
+                try { ui->info_platooningstate_v1->setText( msg.platooning_state.c_str() );} catch( std::exception &ex ) { std::cerr << "error info_platooningstate_v1" << std::endl;}
+                try { ui->info_platoonsize_v1->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_platoonsize_v1" << std::endl;}
+                try { ui->info_ps_v1->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_ps_v1" << std::endl;}
+                try { ui->info_vehicle_id_v1->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_vehicle_id_v1" << std::endl;}
+                try { ui->info_platoonid_v1->setText( std::to_string(msg.platoon_id).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_platoonid_v1" << std::endl;}
 
                 try { std::stringstream followerlist;
                     std::copy(msg.platoon_members.begin(), msg.platoon_members.end(), std::ostream_iterator<uint32_t>(followerlist, " "));
-                        ui->info_platoonmembers_v1->setText( followerlist.str().c_str());}catch( std::exception &ex ) {}
+                        ui->info_platoonmembers_v1->setText( followerlist.str().c_str());}catch( std::exception &ex )  { std::cerr << "error info_platoonmembers_v1" << std::endl;}
             }
 
             if( msg.src_vehicle == 2 ) {
-                try { ui->info_actual_distance_v2->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_actual_speed_v2->setText( std::to_string(msg.speed).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_ipd_v2->setText( std::to_string(msg.inner_platoon_distance).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_lvfv_v2->setText( msg.following_vehicle ? "FV" : "LV" );} catch( std::exception &ex ) {}
-                try { ui->info_lvfv_v2->setText( msg.leading_vehicle ? "LV" : "FV" );} catch( std::exception &ex ) {}
-                try { ui->info_platooningstate_v2->setText( msg.platooning_state.c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_platoonsize_v2->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_ps_v2->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) {}
-                try { ui->info_vehicle_id_v2->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) {}
+                try { ui->info_actual_distance_v2->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_actual_distance_v2" << std::endl;}
+                try { ui->info_actual_speed_v2->setText( std::to_string(msg.speed).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_actual_speed_v2" << std::endl;}
+                try { ui->info_ipd_v2->setText( std::to_string(msg.inner_platoon_distance).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_ipd_v2" << std::endl;}
+                try { ui->info_lvfv_v2->setText( msg.following_vehicle ? "FV" : "LV" );} catch( std::exception &ex ) { std::cerr << "error info_lvfv_v2" << std::endl;}
+                try { ui->info_lvfv_v2->setText( msg.leading_vehicle ? "LV" : "FV" );} catch( std::exception &ex ) { std::cerr << "error info_lvfv_v2" << std::endl;}
+                try { ui->info_platooningstate_v2->setText( msg.platooning_state.c_str() );} catch( std::exception &ex ) { std::cerr << "error info_platooningstate_v2" << std::endl;}
+                try { ui->info_platoonsize_v2->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_platoonsize_v2" << std::endl;}
+                try { ui->info_ps_v2->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_ps_v2" << std::endl;}
+                try { ui->info_vehicle_id_v2->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_vehicle_id_v2" << std::endl;}
+                try { ui->info_platoonid_v2->setText( std::to_string(msg.platoon_id).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_platoonid_v2" << std::endl;}
 
                 try { std::stringstream followerlist;
                     std::copy(msg.platoon_members.begin(), msg.platoon_members.end(), std::ostream_iterator<uint32_t>(followerlist, " "));
-                        ui->info_platoonmembers_v2->setText( followerlist.str().c_str());}catch( std::exception &ex ) {}
+                        ui->info_platoonmembers_v2->setText( followerlist.str().c_str());}catch( std::exception &ex ) { std::cerr << "error info_platoonmembers_v2" << std::endl;}
             }
 
 
