@@ -183,7 +183,7 @@ void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
         }
 
         platooning::userInterface msg;
-        float ipd;
+
         switch( msgpair.second ) {
             case REMOTE_USERINTERFACE:
 
@@ -201,6 +201,7 @@ void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
                 try { ui->info_platoonsize_v1->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_platoonsize_v1" << std::endl;}
                 try { ui->info_ps_v1->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_ps_v1" << std::endl;}
                 try { ui->info_vehicle_id_v1->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_vehicle_id_v1" << std::endl;}
+                try { ui->info_platoonid_v1->setText( std::to_string(msg.platoon_id).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_platoonid_v1" << std::endl;}
 
                 try { std::stringstream followerlist;
                     std::copy(msg.platoon_members.begin(), msg.platoon_members.end(), std::ostream_iterator<uint32_t>(followerlist, " "));
@@ -217,6 +218,7 @@ void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
                 try { ui->info_platoonsize_v2->setText( std::to_string(msg.platoon_size).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_platoonsize_v2" << std::endl;}
                 try { ui->info_ps_v2->setText( std::to_string(msg.platoon_speed).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_ps_v2" << std::endl;}
                 try { ui->info_vehicle_id_v2->setText( std::to_string(msg.src_vehicle).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_vehicle_id_v2" << std::endl;}
+                try { ui->info_platoonid_v2->setText( std::to_string(msg.platoon_id).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_platoonid_v2" << std::endl;}
 
                 try { std::stringstream followerlist;
                     std::copy(msg.platoon_members.begin(), msg.platoon_members.end(), std::ostream_iterator<uint32_t>(followerlist, " "));

@@ -10,3 +10,4 @@ uint32 src_vehicle
 uint32 platoon_size
 uint32[] platoon_members
 bool enable_remotecontrol
+uint32 platoon_id

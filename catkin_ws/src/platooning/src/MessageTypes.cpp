@@ -156,6 +156,7 @@ void MessageTypes::decode_json(const std::string &json, userInterface &message) 
 	message.platoon_speed = root.get<float>("platoon_speed");
 	message.actual_distance = root.get<float>("actual_distance");
 	message.speed = root.get<float>("speed");
+	message.platoon_id = root.get<uint32_t>("platoon_id");
 }
 
 void MessageTypes::decode_json(const std::string &json, stmupdate &message) {
@@ -180,7 +181,7 @@ void MessageTypes::decode_json(const std::string &json, gazupdate &message) {
 
 	message.id = root.get<uint32_t>("id");
 	message.speed = root.get<float>("speed");
-	message.distance = root.get<float>("speed");
+	message.distance = root.get<float>("distance");
 
 }
 
@@ -397,6 +398,8 @@ std::string MessageTypes::encode_message(const userInterface &message) {
 	root.put("platoon_size", message.platoon_size);
 	root.add_child("platoon_members", vector_as_json<uint32_t>(message.platoon_members));
 	root.put("enable_remotecontrol", message.enable_remotecontrol);
+
+	root.put("platoon_id", message.platoon_id);
 
 	std::stringstream ss;
 	boost::property_tree::write_json(ss, root, false);

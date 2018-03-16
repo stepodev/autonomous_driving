@@ -15,6 +15,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
+#include <boost/thread/mutex.hpp>
 #include "platooning/LongitudinalControl.hpp"
 
 namespace platooning {
@@ -77,106 +78,138 @@ void LongitudinalControl::onInit() {
 void LongitudinalControl::hndl_distance_from_sensor(const platooning::distance &msg) {
 	//NODELET_INFO(  "[%s]  recv distance from sensor.", name_.c_str());
 
-	//check if we received new data
-	if (msg.distance != current_distance_) {
-		current_distance_ = msg.distance;
-		calculate_acceleration();
+	try {
+		//check if we received new data
+		if (msg.distance != current_distance_) {
+			current_distance_ = msg.distance;
+			calculate_acceleration();
+		}
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_distance_from_sensor crash with %s", name_.c_str(), ex.what());
 	}
 }
 
 void LongitudinalControl::hndl_target_distance(const platooning::targetDistance &msg) {
 	//NODELET_INFO( "[%s] recv targetDistance.", name_.c_str());
-
-	if (msg.distance != target_distance_) {
-		target_distance_ = msg.distance;
-		calculate_acceleration();
+	try {
+		if (msg.distance != target_distance_) {
+			target_distance_ = msg.distance;
+			calculate_acceleration();
+		}
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_target_distance crash with %s", name_.c_str(), ex.what());
 	}
 };
 
 void LongitudinalControl::hndl_current_speed(const platooning::speed &msg) {
 
 	//NODELET_INFO( "[%s] recv speed.", name_.c_str());
-
-	if (msg.speed != current_speed_) {
-		current_speed_ = msg.speed;
-		calculate_acceleration();
+	try {
+		if (msg.speed != current_speed_) {
+			current_speed_ = msg.speed;
+			calculate_acceleration();
+		}
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_current_speed crash with %s", name_.c_str(), ex.what());
 	}
 }
 
 void LongitudinalControl::hndl_targetSpeed(const platooning::targetSpeed &msg) {
 	//NODELET_INFO( "[%s] recv targetSpeed.", name_.c_str());
-
-	if (msg.target_speed != target_speed_) {
-		target_speed_ = msg.target_speed;
-		calculate_acceleration();
+	try {
+		if (msg.target_speed != target_speed_) {
+			target_speed_ = msg.target_speed;
+			calculate_acceleration();
+		}
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_targetSpeed crash with %s", name_.c_str(), ex.what());
 	}
 }
 void LongitudinalControl::calculate_acceleration() {
 
-	return;
-	NODELET_WARN("[%s] calculate_acceleration \nspeed: %f targetspeed %f\ndistance %f targetdistance %f",
-	              name_.c_str(), current_speed_, target_speed_, current_distance_, target_distance_);
+	NODELET_WARN("[%s] calculate_acceleration \nspeed: %f targetspeed %f\ndistance %f targetdistance %f\ndiff:%f fabs:%f maxdiff:%f bool:%i",
+	             name_.c_str(), current_speed_, target_speed_, current_distance_, target_distance_,
+	             (current_speed_ - target_speed_),
+	             std::fabs(current_speed_ - target_speed_),
+	             target_speed_ * 0.05,
+	             (std::fabs(current_speed_ - target_speed_) <= target_speed_ * 0.05));
 
 	try {
 		//decel if we exceed target speeds
 		if (current_speed_ > target_speed_ * 1.05) {
-			calc_mutex_.lock();
+			boost::mutex::scoped_lock l(calc_mutex_);
+
+			NODELET_WARN("[%s] decel dt target speed exceeded \nspeed: %f targetspeed %f\ndistance %f targetdistance %f",
+			             name_.c_str(), current_speed_, target_speed_, current_distance_, target_distance_);
 
 			auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
-			outmsg->accelleration = -1;
+			outmsg->accelleration = -1.0;
 
 			pub_acceleration_.publish(outmsg);
-			calc_mutex_.unlock();
 			return;
 		}
 
-		//decel if we exceed target distance
+		//decel if we too close
 		if (current_distance_ < target_distance_ * 0.95) {
-			calc_mutex_.lock();
+			boost::mutex::scoped_lock l(calc_mutex_);
+
+			NODELET_WARN("[%s] decel dt target distence under \nspeed: %f targetspeed %f\ndistance %f targetdistance %f",
+			             name_.c_str(), current_speed_, target_speed_, current_distance_, target_distance_);
 
 			auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
-			outmsg->accelleration = -1;
+			outmsg->accelleration = -1.0;
 
 			pub_acceleration_.publish(outmsg);
-			calc_mutex_.unlock();
 			return;
 		}
 
 		//do nothing if target speed is current speed
-		if (abs(current_speed_ - target_speed_) <= target_speed_ * 1.05) {
-			calc_mutex_.lock();
+		if(std::fabs(current_speed_ - target_speed_) <= (target_speed_ * 0.05)) {
+
+			boost::mutex::scoped_lock l(calc_mutex_);
+
+			NODELET_WARN("[%s] we at target speed \ndiff:%f fabs:%f maxdiff:%f bool:%i",
+			             name_.c_str(),
+			             (current_speed_ - target_speed_),
+			             std::fabs(current_speed_ - target_speed_),
+			             target_speed_ * 0.05,
+			             (std::fabs(current_speed_ - target_speed_) <= (target_speed_ * 0.05)));
 
 			auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
-			outmsg->accelleration = 0;
+			outmsg->accelleration = 0.0;
 
 			pub_acceleration_.publish(outmsg);
-			calc_mutex_.unlock();
 			return;
 		}
 
 		//do nothing if target distance is current distance and we are in acceptable speed range
 		if (current_speed_ < target_speed_ * 1.05
-			&& abs(current_distance_ - target_distance_) < target_distance_ * 1.05) {
-			calc_mutex_.lock();
+			&& std::fabs(current_distance_ - target_distance_) < target_distance_ * 0.05) {
+			boost::mutex::scoped_lock l(calc_mutex_);
+
+			NODELET_WARN("[%s] we in distance and speed zone \nspeed: %f targetspeed %f\ndistance %f targetdistance %f",
+			             name_.c_str(), current_speed_, target_speed_, current_distance_, target_distance_);
 
 			auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
-			outmsg->accelleration = 0;
+			outmsg->accelleration = 0.0;
 
 			pub_acceleration_.publish(outmsg);
-			calc_mutex_.unlock();
+
 			return;
 		}
 
 		//accelerate if we need to keep up
 		if (current_speed_ < target_speed_
-			&& current_distance_ < target_distance_) {
-			calc_mutex_.lock();
+			&& current_distance_ > target_distance_) {
+			boost::mutex::scoped_lock l(calc_mutex_);
+
+			NODELET_WARN("[%s] we too slow \nspeed: %f targetspeed %f\ndistance %f targetdistance %f",
+			             name_.c_str(), current_speed_, target_speed_, current_distance_, target_distance_);
 
 			auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
-			outmsg->accelleration = 1;
+			outmsg->accelleration = 1.0;
 
 			pub_acceleration_.publish(outmsg);
-			calc_mutex_.unlock();
 			return;
 		}
 

@@ -29,7 +29,7 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include <mutex>
+#include <boost/thread/mutex.hpp>
 
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
@@ -93,7 +93,7 @@ class LongitudinalControl : public nodelet::Nodelet {
 	float target_distance_;
 	float target_speed_;
 	float current_speed_;
-	std::mutex calc_mutex_;
+	boost::mutex calc_mutex_;
 
 	/**
 	 * @brief to achieve X does Y

@@ -139,7 +139,7 @@ void Prioritization::hndl_platooningToggle(platooning::platooningToggle msg) {
 		state_ = PrioritizationState::PLATOONING;
 		//needs to be turned off so we dont start driving on toggle
 
-		//target_speed_ = msg.platoon_speed;
+		//acceleration_ = msg.platoon_speed;
 		//target_distance_ = msg.inner_platoon_distance;
 	}
 }

@@ -20,9 +20,9 @@ class UdpServerTester : public UdpServer {
   : UdpServer( cbfun, bind, target) {};
 
   std::pair<std::string, int32_t> Convert( std::string msg, int32_t type ) {
-    this->write_to_sendbuffer(msg, type);
+	  this->write_to_sendbuffer(<#initializer#>, msg, type);
     recv_buffer_ = send_buffer_;
-    return read_from_recvbuffer();
+    return read_from_recvbuffer(<#initializer#>, 0);
   };
 };
 

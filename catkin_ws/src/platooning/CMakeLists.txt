@@ -253,7 +253,7 @@ target_link_libraries(platooning ${catkin_LIBRARIES})
 
 add_library(stmsim include/platooning/StmSim.hpp src/StmSim.cpp)
 add_dependencies(stmsim udpserver topics messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(stmsim udpserver ${catkin_LIBRARIES})
+target_link_libraries(stmsim udpserver messagetypes topics ${catkin_LIBRARIES})
 
 add_library(longitudinalcontrol include/platooning/LongitudinalControl.hpp src/LongitudinalControl.cpp)
 add_dependencies(longitudinalcontrol topics messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)

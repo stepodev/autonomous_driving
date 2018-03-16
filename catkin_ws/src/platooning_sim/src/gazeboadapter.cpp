@@ -67,7 +67,8 @@ void gazeboadapter::hndl_recv_udp(std::pair<std::string, uint32_t> packet) {
 	platooning::stmupdate msg;
 
 	switch (packet.second) {
-		case STMSIM_UPDATE: platooning::MessageTypes::decode_json(packet.first, msg);
+		case STMSIM_UPDATE:
+			platooning::MessageTypes::decode_json(packet.first, msg);
 			process_stmsim( msg );
 			break;
 		default: break;
@@ -146,6 +147,8 @@ void gazeboadapter::process_stmsim(const platooning::stmupdate &stmupdate) {
 
 	//maybe between +-0.87? handwheelhigh +-7.85?
 	c->steer = stmupdate.steeringAngle;
+
+	std::cout << "id " << stmupdate.id << " accel " << stmupdate.acceleration << std::endl;
 
 	//assumes accel between -1 and 1
 	if( stmupdate.acceleration < 0 ) {

@@ -563,8 +563,6 @@ void Platooning::send_lv_broadcast(const boost::system::error_code &e) {
 
 uint32_t Platooning::get_vehicle_id_param() {
 
-	NODELET_ERROR("OVERRIDDEN get_vehicle_id_param");
-
 	uint32_t vehicle_id = 1;
 	if (nh_.hasParam("vehicle_id")) {
 		int paramvehicleid = 0;
