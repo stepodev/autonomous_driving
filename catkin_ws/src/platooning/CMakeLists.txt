@@ -63,7 +63,6 @@ add_message_files(
         FILES
         ########################
         ## lanekeeping messages
-        steeringAngle.msg
         ########################
         ## environment mapping messages
         ########################
@@ -81,9 +80,10 @@ add_message_files(
         userInterface.msg
         ########################
         ## lateralControl messages
-        steeringAngle.msg
+        vehiclecontrol/steeringAngle.msg
         ########################
         ## longitudalControl messages
+        vehiclecontrol/criticallyDampenedSpring.msg
         ########################
         ## radiointerface messages
         platoonProtocol.msg
@@ -103,12 +103,12 @@ add_message_files(
         sim/gazupdate.msg
         ########################
         ## prioritization msgs
-        targetSpeed.msg
-        targetDistance.msg
-        targetAngle.msg
+        vehiclecontrol/targetSpeed.msg
+        vehiclecontrol/targetDistance.msg
+        vehiclecontrol/targetAngle.msg
         ########################
         ## vehicle control
-        acceleration.msg
+        vehiclecontrol/acceleration.msg
         ########################
         ## templateMessages
         templateMsg.msg

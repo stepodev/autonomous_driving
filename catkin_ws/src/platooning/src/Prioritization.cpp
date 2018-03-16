@@ -153,7 +153,13 @@ void Prioritization::hndl_platooningState(platooning::platooningState msg) {
 
 	if (state_ == PrioritizationState::PLATOONING) {
 
-		if( target_speed_ != msg.ps ) {
+		//drive faster as FV to catch up
+		if( msg.i_am_FV && msg.ps * 1.3 != target_speed_ ) {
+			target_speed_ = msg.ps * 1.3;
+			auto outmsg = boost::shared_ptr<platooning::targetSpeed>( new targetSpeed );
+			outmsg->target_speed = target_speed_;
+			pub_targetSpeed.publish(outmsg);
+		} else if( msg.i_am_LV && msg.ps != target_speed_) {
 			target_speed_ = msg.ps;
 			auto outmsg = boost::shared_ptr<platooning::targetSpeed>( new targetSpeed );
 			outmsg->target_speed = target_speed_;

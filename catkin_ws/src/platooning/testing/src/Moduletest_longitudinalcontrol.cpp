@@ -47,7 +47,7 @@ void Moduletest_longitudinalcontrol::onInit() {
 
 	register_testcases(boost::bind(&Moduletest_longitudinalcontrol::send_new_data_recv_accel, this));
 
-	NODELET_INFO(std::string("[" + name_ + "] init done").c_str());
+	NODELET_INFO("[%s] init done", name_.c_str());
 
 	start_tests();
 }
@@ -59,7 +59,7 @@ void Moduletest_longitudinalcontrol::onInit() {
 void Moduletest_longitudinalcontrol::send_new_data_recv_accel(){
 
 	set_current_test("send_sensor_distance_recv_accel");
-	NODELET_INFO(std::string("[" + name_ + "] started testcase " + get_current_test()).c_str());
+	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
 
 	//mockup publishers
 	pub_map_.clear();
@@ -116,7 +116,7 @@ void Moduletest_longitudinalcontrol::hndl_tc_send_new_data_recv_accel(platooning
 	}
 
 	if (!res.success) {
-		NODELET_ERROR((std::string("[") + name_ + "] error with " + res.comment).c_str());
+		NODELET_ERROR("[%s] error with %s ", name_.c_str(), res.comment.c_str());
 	}
 
 	finalize_test(res);

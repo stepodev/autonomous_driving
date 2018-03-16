@@ -30,7 +30,7 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-LongitudinalControl::LongitudinalControl() {};
+LongitudinalControl::LongitudinalControl() : spring_(DEFAULT_SPRING_CONSTANT,DEFAULT_TIMESTEP,0){};
 
 /*****************************************************************************
 ** Destructors
@@ -60,6 +60,9 @@ void LongitudinalControl::onInit() {
 	sub_target_distance_ = nh_.subscribe(topics::TARGET_DISTANCE, 1,
 	                                     &LongitudinalControl::hndl_target_distance, this);
 
+	sub_critically_dampened_spring_params_ = nh_.subscribe( topics::CRITICALLY_DAMPED_SPRING_PARAMS, 1,
+															&LongitudinalControl::hndl_spring_update,this);
+
 	pub_acceleration_ = nh_.advertise<platooning::acceleration>(topics::ACCELERATION, 1);
 
 	current_distance_ = 0;
@@ -82,7 +85,7 @@ void LongitudinalControl::hndl_distance_from_sensor(const platooning::distance &
 		//check if we received new data
 		if (msg.distance != current_distance_) {
 			current_distance_ = msg.distance;
-			calculate_acceleration();
+			update_speed();
 		}
 	} catch (std::exception &ex) {
 		NODELET_ERROR("[%s] hndl_distance_from_sensor crash with %s", name_.c_str(), ex.what());
@@ -94,7 +97,8 @@ void LongitudinalControl::hndl_target_distance(const platooning::targetDistance 
 	try {
 		if (msg.distance != target_distance_) {
 			target_distance_ = msg.distance;
-			calculate_acceleration();
+			spring_.set_target_distance(target_distance_);
+			update_speed();
 		}
 	} catch (std::exception &ex) {
 		NODELET_ERROR("[%s] hndl_target_distance crash with %s", name_.c_str(), ex.what());
@@ -107,7 +111,7 @@ void LongitudinalControl::hndl_current_speed(const platooning::speed &msg) {
 	try {
 		if (msg.speed != current_speed_) {
 			current_speed_ = msg.speed;
-			calculate_acceleration();
+			update_speed();
 		}
 	} catch (std::exception &ex) {
 		NODELET_ERROR("[%s] hndl_current_speed crash with %s", name_.c_str(), ex.what());
@@ -119,14 +123,64 @@ void LongitudinalControl::hndl_targetSpeed(const platooning::targetSpeed &msg) {
 	try {
 		if (msg.target_speed != target_speed_) {
 			target_speed_ = msg.target_speed;
-			calculate_acceleration();
+			update_speed();
 		}
 	} catch (std::exception &ex) {
 		NODELET_ERROR("[%s] hndl_targetSpeed crash with %s", name_.c_str(), ex.what());
 	}
 }
-void LongitudinalControl::calculate_acceleration() {
 
+void LongitudinalControl::hndl_spring_update(const platooning::criticallyDampenedSpring &msg) {
+	set_spring( msg.spring_constant, msg.time_step, msg.target_distance );
+}
+
+void LongitudinalControl::update_speed() {
+
+	boost::mutex::scoped_lock l(calc_mutex_);
+
+	auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
+
+	outmsg->accelleration = spring_.calulate_velocity( current_distance_, current_speed_, target_speed_);
+
+	pub_acceleration_.publish(outmsg);
+
+}
+void LongitudinalControl::set_spring(const SpringConstant &spring_constant,
+                                     const TimeStep &time_step,
+                                     const Distance &target_distance) {
+
+	boost::mutex::scoped_lock l(calc_mutex_);
+
+	spring_ = CritiallyDampenedSpring( spring_constant, time_step, target_distance );
+
+}
+
+LongitudinalControl::CritiallyDampenedSpring::CritiallyDampenedSpring(SpringConstant spring_constant, TimeStep time_step, Distance target_distance)
+: spring_constant_(spring_constant), time_step_(time_step), target_distance_(target_distance) {
+
+}
+
+//https://stackoverflow.com/questions/5100811/algorithm-to-control-acceleration-until-a-position-is-reached#
+//https://en.wikipedia.org/wiki/PID_controller
+float LongitudinalControl::CritiallyDampenedSpring::calulate_velocity(const Distance& current_distance,
+                                                                      const Speed& current_speed,
+                                                                      const Speed& target_speed) {
+
+	float current_to_target = current_distance - target_distance_;  //diff to target, reverse of stackoverflow since we are on a reverse x axis?
+	float spring_force = current_to_target * spring_constant_;
+	float damping_force = -current_speed * 2 * sqrt( spring_constant_ );
+	float force = spring_force + damping_force;
+	float new_speed = current_speed + force * time_step_;
+	float displacement = new_speed * time_step_;
+	return std::min(current_distance + displacement, target_speed);
+}
+} // namespace platooning
+
+PLUGINLIB_EXPORT_CLASS(platooning::LongitudinalControl, nodelet::Nodelet);
+// %EndTag(FULLTEXT)%
+
+
+/*
 	NODELET_WARN("[%s] calculate_acceleration \nspeed: %f targetspeed %f\ndistance %f targetdistance %f\ndiff:%f fabs:%f maxdiff:%f bool:%i",
 	             name_.c_str(), current_speed_, target_speed_, current_distance_, target_distance_,
 	             (current_speed_ - target_speed_),
@@ -218,10 +272,5 @@ void LongitudinalControl::calculate_acceleration() {
 		              name_.c_str(), ex.what(), current_speed_, target_speed_, current_distance_, target_distance_);
 	}
 
-	NODELET_ERROR("[%s] calculate_acceleration really shouldnt be here.\n", name_.c_str());
-}
-
-} // namespace platooning
-
-PLUGINLIB_EXPORT_CLASS(platooning::LongitudinalControl, nodelet::Nodelet);
-// %EndTag(FULLTEXT)%
+	NODELET_ERROR("[%s] update_speed really shouldnt be here.\n", name_.c_str());
+ */

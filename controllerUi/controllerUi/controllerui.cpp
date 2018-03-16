@@ -18,10 +18,10 @@ ControllerUi::ControllerUi(QWidget *parent) :
 
     //useful default platooning shit
     ui->info_set_lvfv_v1->setText("LV");
-    ui->info_set_platoonspeed_v1->setText("1");
+    ui->info_set_platoonspeed_v1->setText("5");
     ui->info_set_platoon_distance_v1->setText("1");
     ui->info_set_lvfv_v2->setText("FV");
-    ui->info_set_platoonspeed_v2->setText("1");
+    ui->info_set_platoonspeed_v2->setText("5");
     ui->info_set_platoon_distance_v2->setText("1");
 
     std::cerr << "controllerUI LOADED" << std::endl;
