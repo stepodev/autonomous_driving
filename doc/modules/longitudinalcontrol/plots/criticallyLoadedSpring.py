@@ -4,13 +4,13 @@ import math
 
 
 class SpringSeries:
-    def __init__(self, target_distance: float):
+    def __init__(self):
         self.current_time_ = 0
         self.velocities_ = []
         self.distances_ = []
         self.time_points_ = []
 
-        self.spring_ = SpringState(target_distance=target_distance)
+        self.spring_ = SpringState()
 
     def calc_series(self, start_velocity, start_distance, time_step, to):
 
@@ -33,12 +33,12 @@ class SpringSeries:
 
 class SpringState:
 
-    def __init__(self, target_distance: float):
-        self.spring_constant_ = 5
-        self.target_distance_ = target_distance
+    def __init__(self):
+        self.spring_constant_ = 2
+        self.target_distance_ = 0
 
     def do_timestep(self, current_velocity, current_distance: float, time_step: float) -> float:
-        current_to_target = self.target_distance_ - current_distance
+        current_to_target = current_distance - self.target_distance_
         spring_force = current_to_target * self.spring_constant_
         damping_force = -current_velocity * 2 * math.sqrt(self.spring_constant_)
         force = spring_force + damping_force
@@ -53,25 +53,10 @@ def plot_distance_5to1():
 
     current_velocity = 0
     current_distance = 5
-    target_distance = 1
-    s = SpringSeries(target_distance)
+    s = SpringSeries()
     s.calc_series(current_velocity, current_distance, time_step_len, 10 )
 
     plot_distance(s, "dist 5 to 1, vel 0")
-
-
-def plot_distance_1to5():
-    # y axis velocities
-    #
-    time_step_len = 0.2
-
-    current_velocity = 0
-    current_distance = 0.3
-    target_distance = 1
-    s = SpringSeries(current_velocity, current_distance, target_distance, 10)
-    s.calc_series(time_step=0.3, to=8)
-
-    plot_distance(s, "dist 1 to 5, vel 0")
 
 
 def plot_distance(spring_series: SpringSeries, header: str):
@@ -106,21 +91,30 @@ class Car:
         self.velocity = current_velocity
         self.pos = initial_pos
         self.time_step = timestep
+        self.target_distance = target_distance
 
-        self.spring_ = SpringState(current_velocity, 0, target_distance, 10)
+        self.catch_up_spring_ = SpringState()
+        self.keep_away_spring_ = SpringState()
+        self.keep_away_spring_.target_distance_ = -self.target_distance
+        self.keep_away_spring_.spring_constant_ = 20
+
 
     def drive_constant(self):
         self.pos += self.velocity * self.time_step
 
     def drive_spring(self, current_distance):
-        self.drive_constant()
 
-        self.spring_.current_velocity_ = self.velocity
-        self.spring_.current_distance_ = current_distance
+        print( current_distance, self.target_distance )
 
-        self.spring_.do_timestep(self.time_step)
-
-        self.velocity = self.spring_.current_velocity_
+        if current_distance > self.target_distance:
+            self.velocity = self.catch_up_spring_.do_timestep(current_velocity=self.velocity,
+                                                     current_distance=current_distance,
+                                                     time_step=self.time_step)
+        else:
+            self.velocity = self.keep_away_spring_.do_timestep(current_velocity=self.velocity,
+                                                              current_distance=-current_distance,
+                                                              time_step=self.time_step)
+        self.pos += self.velocity * self.time_step
 
 
 class Platoon:
@@ -149,8 +143,6 @@ class Platoon:
             self.fv_velocity.append(self.FV.velocity)
 
             self.dist_diff.append(self.LV.pos - self.FV.pos)
-
-            print( self.LV.pos - self.FV.pos )
 
             self.time_points.append(self.current_time)
 
@@ -212,6 +204,5 @@ def plot_platoon(platoon: Platoon, header: str):
 
 
 plot_distance_5to1()
-plot_distance_1to5()
 plot_platoon_catchup()
 plot_platoon_brake()
