@@ -32,10 +32,32 @@ ControllerUi::~ControllerUi()
     delete ui;
 }
 
+void ControllerUi::set_platooningbutton_v1( const bool& enabled ) {
+
+    platooningEnabled_v1_ = enabled;
+
+    if( enabled ) {
+        ui->togglePlatooning_v1->setStyleSheet("background-color: red");
+    } else {
+        ui->togglePlatooning_v1->setStyleSheet("background-color: grey");
+    }
+
+}
+void ControllerUi::set_platooningbutton_v2( const bool& enabled ) {
+    platooningEnabled_v2_ = enabled;
+
+    if( enabled ) {
+        ui->togglePlatooning_v2->setStyleSheet("background-color: red");
+    } else {
+        ui->togglePlatooning_v2->setStyleSheet("background-color: grey");
+    }
+}
+
 void ControllerUi::on_togglePlatooning_v1_clicked()
 {
     try {
         platooningEnabled_v1_ = !platooningEnabled_v1_;
+        set_platooningbutton_v1(platooningEnabled_v1_);
         float ipd;
         float ps;
         std::string lvfv;
@@ -104,6 +126,7 @@ void ControllerUi::on_togglePlatooning_v2_clicked()
 {
     try {
         platooningEnabled_v2_ = !platooningEnabled_v2_;
+        set_platooningbutton_v2(platooningEnabled_v2_);
         float ipd;
         float ps;
         std::string lvfv = "";
@@ -206,6 +229,12 @@ void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
                 try { std::stringstream followerlist;
                     std::copy(msg.platoon_members.begin(), msg.platoon_members.end(), std::ostream_iterator<uint32_t>(followerlist, " "));
                         ui->info_platoonmembers_v1->setText( followerlist.str().c_str());}catch( std::exception &ex )  { std::cerr << "error info_platoonmembers_v1" << std::endl;}
+
+                if( msg.platooning_state != "CREATING" && msg.platooning_state != "RUNNING") {
+                    set_platooningbutton_v1(false);
+                } else {
+                    set_platooningbutton_v1(true);
+                }
             }
 
             if( msg.src_vehicle == 2 ) {
@@ -223,6 +252,12 @@ void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
                 try { std::stringstream followerlist;
                     std::copy(msg.platoon_members.begin(), msg.platoon_members.end(), std::ostream_iterator<uint32_t>(followerlist, " "));
                         ui->info_platoonmembers_v2->setText( followerlist.str().c_str());}catch( std::exception &ex ) { std::cerr << "error info_platoonmembers_v2" << std::endl;}
+
+                if( msg.platooning_state != "CREATING" && msg.platooning_state != "RUNNING") {
+                    set_platooningbutton_v2(false);
+                } else {
+                    set_platooningbutton_v2(true);
+                }
             }
 
 
@@ -240,37 +275,75 @@ void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
     }
 }
 
+void ControllerUi::set_remotecontrolbutton_v1( const bool& enabled ) {
+
+    if( enabled ) {
+        remoteEnabled_v1_ = true;
+        QWidget::grabKeyboard(); //only this widget get keypresses
+        ui->toggleRemote_v1->setStyleSheet("background-color: red");
+        ui->cursorDown_v1->setFlat(false);
+        ui->cursorUp_v1->setFlat(false);
+        ui->cursorLeft_v1->setFlat(false);
+        ui->cursorRight_v1->setFlat(false);
+        ui->info_remote_lat_v1->setDisabled(false);
+        ui->info_remote_speed_v1->setDisabled(false);
+        keypollthread_ = boost::thread([this] {
+            while(remoteEnabled_v1_) {
+                keypresspoll();
+            }
+        });
+    } else {
+        QWidget::releaseKeyboard(); //only this widget get keypresses
+        ui->toggleRemote_v1->setStyleSheet("background-color: lightgrey");
+        ui->cursorDown_v1->setFlat(true);
+        ui->cursorUp_v1->setFlat(true);
+        ui->cursorLeft_v1->setFlat(true);
+        ui->cursorRight_v1->setFlat(true);
+        ui->info_remote_lat_v1->setText("");
+        ui->info_remote_speed_v1->setText("");
+        ui->info_remote_lat_v1->setDisabled(true);
+        ui->info_remote_speed_v1->setDisabled(true);
+    }
+}
+
+
+
+void ControllerUi::set_remotecontrolbutton_v2( const bool& enabled ) {
+    if( enabled ) {
+        remoteEnabled_v2_ = true;
+        QWidget::grabKeyboard(); //only this widget get keypresses
+        ui->toggleRemote_v2->setStyleSheet("background-color: red");
+        ui->cursorDown_v2->setFlat(false);
+        ui->cursorUp_v2->setFlat(false);
+        ui->cursorLeft_v2->setFlat(false);
+        ui->cursorRight_v2->setFlat(false);
+        ui->info_remote_lat_v2->setDisabled(false);
+        ui->info_remote_speed_v2->setDisabled(false);
+        keypollthread_ = boost::thread([this] {
+            while(remoteEnabled_v2_) {
+                keypresspoll();
+            }
+        });
+    } else {
+        remoteEnabled_v2_ = false;
+        QWidget::releaseKeyboard(); //only this widget get keypresses
+        ui->toggleRemote_v2->setStyleSheet("background-color: lightgrey");
+        ui->cursorDown_v2->setFlat(true);
+        ui->cursorUp_v2->setFlat(true);
+        ui->cursorLeft_v2->setFlat(true);
+        ui->cursorRight_v2->setFlat(true);
+        ui->info_remote_lat_v2->setText("");
+        ui->info_remote_speed_v2->setText("");
+        ui->info_remote_lat_v2->setDisabled(true);
+        ui->info_remote_speed_v2->setDisabled(true);
+    }
+}
+
 void ControllerUi::on_toggleRemote_v1_clicked()
 {
     try {
-        if( !remoteEnabled_v1_ ) {
-            remoteEnabled_v1_ = true;
-            QWidget::grabKeyboard(); //only this widget get keypresses
-            ui->toggleRemote_v1->setStyleSheet("background-color: red");
-            ui->cursorDown_v1->setFlat(false);
-            ui->cursorUp_v1->setFlat(false);
-            ui->cursorLeft_v1->setFlat(false);
-            ui->cursorRight_v1->setFlat(false);
-            ui->info_remote_lat_v1->setDisabled(false);
-            ui->info_remote_speed_v1->setDisabled(false);
-            keypollthread_ = boost::thread([this] {
-                while(remoteEnabled_v1_) {
-                    keypresspoll();
-                }
-            });
-        } else {
-            remoteEnabled_v1_ = false;
-            QWidget::releaseKeyboard(); //only this widget get keypresses
-            ui->toggleRemote_v1->setStyleSheet("background-color: lightgrey");
-            ui->cursorDown_v1->setFlat(true);
-            ui->cursorUp_v1->setFlat(true);
-            ui->cursorLeft_v1->setFlat(true);
-            ui->cursorRight_v1->setFlat(true);
-            ui->info_remote_lat_v1->setText("");
-            ui->info_remote_speed_v1->setText("");
-            ui->info_remote_lat_v1->setDisabled(true);
-            ui->info_remote_speed_v1->setDisabled(true);
-        }
+        remoteEnabled_v1_ = !remoteEnabled_v1_;
+        set_remotecontrolbutton_v1( remoteEnabled_v1_);
 
         platooning::remotecontrolToggle msg;
         msg.enable_remotecontrol = remoteEnabled_v1_;
@@ -285,34 +358,8 @@ void ControllerUi::on_toggleRemote_v1_clicked()
 void ControllerUi::on_toggleRemote_v2_clicked()
 {
     try {
-        if( !remoteEnabled_v2_ ) {
-            remoteEnabled_v2_ = true;
-            QWidget::grabKeyboard(); //only this widget get keypresses
-            ui->toggleRemote_v2->setStyleSheet("background-color: red");
-            ui->cursorDown_v2->setFlat(false);
-            ui->cursorUp_v2->setFlat(false);
-            ui->cursorLeft_v2->setFlat(false);
-            ui->cursorRight_v2->setFlat(false);
-            ui->info_remote_lat_v2->setDisabled(false);
-            ui->info_remote_speed_v2->setDisabled(false);
-            keypollthread_ = boost::thread([this] {
-                while(remoteEnabled_v2_) {
-                    keypresspoll();
-                }
-            });
-        } else {
-            remoteEnabled_v2_ = false;
-            QWidget::releaseKeyboard(); //only this widget get keypresses
-            ui->toggleRemote_v2->setStyleSheet("background-color: lightgrey");
-            ui->cursorDown_v2->setFlat(true);
-            ui->cursorUp_v2->setFlat(true);
-            ui->cursorLeft_v2->setFlat(true);
-            ui->cursorRight_v2->setFlat(true);
-            ui->info_remote_lat_v2->setText("");
-            ui->info_remote_speed_v2->setText("");
-            ui->info_remote_lat_v2->setDisabled(true);
-            ui->info_remote_speed_v2->setDisabled(true);
-        }
+        remoteEnabled_v2_ = !remoteEnabled_v2_;
+        set_remotecontrolbutton_v2( remoteEnabled_v2_);
 
         platooning::remotecontrolToggle msg;
         msg.enable_remotecontrol = remoteEnabled_v2_;

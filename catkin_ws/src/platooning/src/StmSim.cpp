@@ -143,8 +143,6 @@ void StmSim::hndl_acceleration(const platooning::acceleration &msg) {
 		outmsg.steeringAngle = steering_angle_;
 		outmsg.acceleration = acceleration_;
 
-		std::cout << outmsg.id << " " << outmsg.acceleration << std::endl;
-
 		std::string msgstr = MessageTypes::encode_message(outmsg);
 
 		server_ptr_->start_send(msgstr, STMSIM_UPDATE);

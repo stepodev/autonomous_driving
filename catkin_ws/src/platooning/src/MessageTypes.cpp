@@ -144,7 +144,7 @@ void MessageTypes::decode_json(const std::string &json, userInterface &message) 
 	pt::ptree root;
 	pt::read_json(ss, root);
 
-	message.enable_remotecontrol = root.get<bool>("enable_remotecontrol");
+	message.remotecontrol_enabled = root.get<bool>("remotecontrol_enabled");
 	message.leading_vehicle = root.get<bool>("leading_vehicle");
 	message.following_vehicle = root.get<bool>("following_vehicle");
 	message.potential_following_vehicle = root.get<bool>("potential_following_vehicle");
@@ -397,7 +397,7 @@ std::string MessageTypes::encode_message(const userInterface &message) {
 	root.put("src_vehicle", message.src_vehicle);
 	root.put("platoon_size", message.platoon_size);
 	root.add_child("platoon_members", vector_as_json<uint32_t>(message.platoon_members));
-	root.put("enable_remotecontrol", message.enable_remotecontrol);
+	root.put("remotecontrol_enabled", message.remotecontrol_enabled);
 
 	root.put("platoon_id", message.platoon_id);
 

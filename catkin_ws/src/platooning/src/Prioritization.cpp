@@ -147,11 +147,10 @@ void Prioritization::hndl_platooningToggle(platooning::platooningToggle msg) {
 void Prioritization::hndl_platooningState(platooning::platooningState msg) {
 
 	if (state_ != PrioritizationState::PLATOONING) {
-		NODELET_ERROR("[%s] received remotecontrol input while in mode %s", name_.c_str(), PrioritizationStateString[state_].c_str());
-
+		NODELET_ERROR("[%s] received platooningstate input while in mode %s", name_.c_str(), PrioritizationStateString[state_].c_str());
 	}
 
-	if (state_ == PrioritizationState::PLATOONING) {
+	if (state_ == PrioritizationState::PLATOONING && msg.platooning_state == "RUNNING") {
 
 		//drive faster as FV to catch up
 		if( msg.i_am_FV && msg.ps * 1.3 != target_speed_ ) {

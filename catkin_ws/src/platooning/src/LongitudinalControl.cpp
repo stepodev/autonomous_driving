@@ -15,7 +15,6 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
-#include <boost/thread/mutex.hpp>
 #include "platooning/LongitudinalControl.hpp"
 
 namespace platooning {
@@ -60,6 +59,7 @@ void LongitudinalControl::onInit() {
 	sub_target_distance_ = nh_.subscribe(topics::TARGET_DISTANCE, 1,
 	                                     &LongitudinalControl::hndl_target_distance, this);
 
+	//to change parameters of the spring during runtime
 	sub_critically_dampened_spring_params_ = nh_.subscribe( topics::CRITICALLY_DAMPED_SPRING_PARAMS, 1,
 															&LongitudinalControl::hndl_spring_update,this);
 
@@ -162,17 +162,19 @@ LongitudinalControl::CritiallyDampenedSpring::CritiallyDampenedSpring(SpringCons
 
 //https://stackoverflow.com/questions/5100811/algorithm-to-control-acceleration-until-a-position-is-reached#
 //https://en.wikipedia.org/wiki/PID_controller
+//doesnt work. will always trail way behind where it should be while moving: https://jsfiddle.net/BfLAh/3175/
 float LongitudinalControl::CritiallyDampenedSpring::calulate_velocity(const Distance& current_distance,
                                                                       const Speed& current_speed,
                                                                       const Speed& target_speed) {
 
-	float current_to_target = current_distance - target_distance_;  //diff to target, reverse of stackoverflow since we are on a reverse x axis?
+    float current_to_target = current_distance - target_distance_;  //diff to target, reverse of stackoverflow since we are on a reverse x axis?
 	float spring_force = current_to_target * spring_constant_;
 	float damping_force = -current_speed * 2 * sqrt( spring_constant_ );
 	float force = spring_force + damping_force;
 	float new_speed = current_speed + force * time_step_;
 	float displacement = new_speed * time_step_;
-	return std::min(current_distance + displacement, target_speed);
+	//float newdistance = current_distance - displacement;
+	return std::min( new_speed, target_speed);
 }
 } // namespace platooning
 

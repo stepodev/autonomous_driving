@@ -16,7 +16,7 @@
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="very_inaccurate_odom2" args="0 0 0 0 0 0 odom base_link"/>
 
-  <node name="spawn_urdf2" pkg="gazebo_ros" type="spawn_model" args="-param robot_description2 -urdf -x -143 -y -12 -z 0.5 -model prius2">
+  <node name="spawn_urdf2" pkg="gazebo_ros" type="spawn_model" args="-param robot_description2 -urdf -x -135 -y -12 -z 0.5 -model prius2">
     <remap from="prius" to="p2"/>
   </node>
 

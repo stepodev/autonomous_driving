@@ -31,6 +31,7 @@
 #include <ros/ros.h>
 #include <boost/thread/mutex.hpp>
 #include <algorithm>
+#include <boost/thread/mutex.hpp>
 
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
@@ -71,8 +72,10 @@ namespace platooning {
  * @warning Warning.
  */
 
-#define DEFAULT_TIMESTEP 0.3 //i think this is Hz
-#define DEFAULT_SPRING_CONSTANT 20 //the dice said that
+//time until next distance measurement gives us a new corrected distance
+//the lower, the slower we approach the target distance
+#define DEFAULT_TIMESTEP 0.2
+#define DEFAULT_SPRING_CONSTANT 3 //the dice said that
 
 using SpringConstant = float;
 using TimeStep = float;

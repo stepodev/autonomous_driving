@@ -119,8 +119,8 @@ void gazeboadapter::send_gazupdate(const boost::system::error_code &e) {
 		return;
 	}
 
-    std::cout << "id " << p1gazupdate.id << " accel " << p1gazupdate.speed << " dist " << p1gazupdate.distance << std::endl;
-	std::cout << "id " << p2gazupdate.id << " accel " << p2gazupdate.speed << " dist " << p2gazupdate.distance << std::endl;
+    //std::cout << "id " << p1gazupdate.id << " accel " << p1gazupdate.speed << " dist " << p1gazupdate.distance << std::endl;
+	//std::cout << "id " << p2gazupdate.id << " accel " << p2gazupdate.speed << " dist " << p2gazupdate.distance << std::endl;
 
 
 	std::string msg = platooning::MessageTypes::encode_message(p1gazupdate);

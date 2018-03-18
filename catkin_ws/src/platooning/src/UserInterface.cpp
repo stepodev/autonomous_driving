@@ -10,8 +10,6 @@ UserInterface::~UserInterface() {
 
 void UserInterface::onInit() {
 
-	ui_msg_ = boost::shared_ptr<platooning::userInterface>(new platooning::userInterface);
-
 	pub_userinterface_ = nh_.advertise<userInterface>(topics::USERINTERFACE, 1, true);
 
 	sub_in_lv_broadcast_ = nh_.subscribe(topics::IN_LV_BROADCAST, 1,
@@ -97,6 +95,21 @@ void UserInterface::onInit() {
 		}
 
 	});
+
+	ui_msg_ = boost::shared_ptr<platooning::userInterface>(new platooning::userInterface);
+
+	ui_msg_->remotecontrol_enabled = false;
+	ui_msg_->leading_vehicle = false;
+	ui_msg_->following_vehicle = false;
+	ui_msg_->potential_following_vehicle = false;
+	ui_msg_->platooning_state = "IDLE";
+	ui_msg_->src_vehicle = this->vehicle_id_;
+	ui_msg_->platoon_size = 0;
+	ui_msg_->inner_platoon_distance = 0;
+	ui_msg_->platoon_speed = 0;
+	ui_msg_->actual_distance = 0;
+	ui_msg_->speed = 0;
+	ui_msg_->platoon_id = 0;
 };
 
 void UserInterface::hndl_in_lv_broadcast(const lv_broadcast &msg) {
@@ -149,7 +162,7 @@ void UserInterface::hndl_out_fv_heartbeat(const fv_heartbeat &msg) {
 
 void UserInterface::hndl_remotecontrol_toggle(const remotecontrolToggle &msg) {
 	try {
-		ui_msg_->enable_remotecontrol = msg.enable_remotecontrol;
+		ui_msg_->remotecontrol_enabled = msg.enable_remotecontrol;
 	} catch (std::exception &ex) {
 		NODELET_ERROR("[%s] hndl_remotecontrol_toggle failed with %s", name_.c_str(), ex.what());
 	}

@@ -56,6 +56,10 @@ private:
 
     void receive_message( std::pair<std::string, uint32_t> msgpair ) ;
     void keypresspoll();
+    void set_platooningbutton_v1( const bool& enabled );
+    void set_platooningbutton_v2( const bool& enabled );
+    void set_remotecontrolbutton_v1( const bool& enabled );
+    void set_remotecontrolbutton_v2( const bool& enabled );
 };
 
 #endif // CONTROLLERUI_H
