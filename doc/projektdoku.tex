@@ -92,81 +92,42 @@
 					\item STR\_ERR
 					\item STR\_DEF
 				\end{itemize}
-			
-			\subsubsection{Vehicle Control}
-			\label{vehicle_control}
-				\paragraph{Aufgabe} Der VehicleControl-Node ist dafür da, das Fahrzeug zu steuern. Dies tut er, in dem er konkrete Steuersignale an den Motor und die Lenkung schickt. 
-				\paragraph{Assoziationen} Der VehicleControl-Node ist Subscriber des LongitudinalProcessing-Node und des LateralProcessing-Node. Er steuert direkt den Motor und die Lenkung an. 
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
-			
-			\subsubsection{Distance Processing}
-			\label{distance_processing}
-				\paragraph{Aufgabe} Der DistanceProcessing-Node misst, wie weit er von den nächstgelegenen Objekten entfernt ist und stellt diese Information anderen Knoten zur Verfügung. 
-				\paragraph{Assoziationen} Der DistanceProcessing-Node erhält seine Informationen von einem Ultraschall-Sensor. Er ist Publisher für den LongitudinalProcessing-Node.  
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
-			
-			\subsubsection{Lane Detect}
-			\label{lane_detect}
-				\paragraph{Aufgabe} Der LaneDetect-Node erkennt die Fahrbahnmarkierungen und stellt Informationen über die Lage der Fahrbahn zur Verfügung. 
-				\paragraph{Assoziationen} Der LaneDetect-Node erhält ein Bild von der Kamera. Er ist Publisher für den LateralProcessing-Node. 
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
-			
-			\subsubsection{Longitudal Processing}
-			\label{longitudal_processing}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
-			
-			\subsubsection{Lateral Processing}
-			\label{lateral_processing}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
 				
 			\subsubsection{Prioritization}
 			\label{prioritization}
 				\paragraph{Aufgabe} Der Prioritization-Node erhält Fahrdaten vom Platooning-Node und der MessageTranslation und entscheidet dann, wie sich das Fahrzeug zu verhalten hat. Er entscheidet also zwischen verschiedenen Steuersignalen, welches gerade benutzt werden soll. 
 				\paragraph{Assoziationen} Der Prioritization-Node ist Subscriber vom Platooning-Node und dem MessageTranslation-Node. Er ist Publisher für den LongitudinalProcessing-Node und den LateralProcessing-Node. 
 				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
+					\begin{itemize}
+						\item float \_speed\_ Die Geschwindigkeit, mit der das Auto fahren soll.
+						\item float \_distance\_ Die Distanz, die innerhalb des Platoons zwischen den Fahrzeugen beibehalten werden soll. 
+						\item float target\_angle\_ Der Winkel, auf den die Steuerung eingestellt werden soll.
+						\item PrioritizationState state\_ Gibt an, in welchem Modus der Prioritization-Node derzeit ist. Der Modus gibt an, ob das Auto derzeit zum Beispiel die Fernsteuerung oder die Nachrichten aus dem Platoon priorisieren soll. 
+					\end{itemize}
 				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
+					\subparagraph{hndl\_remotecontrolInput} Wird aufgerufen, wenn Daten der RemoteControl empfangen wurden und veröffentlicht diese via Topic, falls das Auto im State REMOTECONTROL ist.
+					\subparagraph{hndl\_platooningToggle} Wird aufgerufen, wenn eine PlatooningToggleMessage empfangen wird. Setzt die Variable state\_ dann entsprechend auf PLATOONING. 
+					\subparagraph{hndl\_platooningState} Wird aufgerufen, sobald eine PlatooningState Message empfangen wurde. Wenn state\_ auf Platooning gesetzt ist, sorgt die Methode dafür, dass das Auto als FV zur Kolonne aufschließt. ‘
 				\paragraph{Input}
+				    \begin{itemize}
+				        \item remotecontrolInput von Node MessageTranslation
+				        \item remotecontrolToggle von Node MessageTranslation 
+				        \item platooningToggle von Node MessageTranslation 
+				        \item platooningState von Node Platooning
+				    \end{itemize}
 				\paragraph{Output}
+				    \begin{itemize}
+				        \item targetSpeed an Node LongitudinalProcessing
+				        \item targetDistance an Node LongitudinalProcessing
+				        \item targetAngle an Node LateralProcessing
+				    \end{itemize}
 				
 			\subsubsection{Platooning}
 			\label{platooning}
 				\paragraph{Aufgabe} Der Platooning-Node kommuniziert mit den anderen Fahrzeugen und tauscht mit diesen Daten aus. Zu den Daten gehören Geschwindigkeit des Platoons, die im Platoon einzuhaltende Distanz, Heartbeats sowie Broadcasts. 
 				\paragraph{Assoziationen} Zu den Subscribern des Platooning-Node gehören der Prioritization-Node und der MessageTranslation-Node. Publisher für den Platooning-Node ist der MessageTranslation-Node. 
-
 				\paragraph{Methoden}
-					\subparagraph{PlatoonProtocolInHandler()} Diese Methode ist dafür da, eintreffende Messages zu verarbeiten. Sobald der Platooning-Node eine Message erhält, wird diese Methode aufgerufen. Anhand eines switch-cases wird erkannt, welche Art von Message erhalten wurde. Anschließend wird die passende DecodeIncomingJson-Methode aufgerufen. Nachdem die Nachricht dekodiert wurde, werden die dekodierten Daten an den entsprechenden Node gesendet. 
-					\subparagraph{DecodeIncomingJson()} Diese Methode ist eine Helfermethode für PlatoonProtocolInHandler. Sie wird überladen, denn die unterschiedlichen MessageTypes müssen unterschiedlich ausgelesen werden. Ihre Aufgabe ist es, die ankommende JSON-Nachricht richtig zu dekodieren und dem PlatoonProtocolInHandler dadurch Informationen bereitzustellen. 
+					\subparagraph{} 
 				\paragraph{Input} 
 				    \begin{itemize}
     					\item platooningToggle von Node MessageTranslation
@@ -179,11 +140,32 @@
     					\item out/FV\_REQUEST an Node MessageTranslation
     					\item out/LV\_BROADCAST an Node MessageTranslation
     				\end{itemize}
-			
+						
+		    \subsubsection{User Interface}
+			\label{controller_ui}
+				\paragraph{Aufgabe} Der UserInterface-Node zeigt dem Nutzer aktuelle Daten des Fahrzeugs an. Dazu gehören zum Beispiel Nachrichten aus dem Platoon, Geschwindigkeit oder Distanz zu anderen Objekten. Aus diesen Daten soll der Nutzer nachvollziehen können, warum sich das Auto verhält, wie es sich verhält.
+				\paragraph{Assoziationen} Der UserInterface-Node ist Subscriber vom UdpServer-Node.  
+				\paragraph{Attribute}
+					\begin{itemize}
+					    \item Alle Attribute sind selbsterklaerend
+					\end{itemize}
+				\paragraph{Methoden}
+					\subparagraph{hndl\_*} (Wobei * eine der verschiedenen Variablen oder Nachrichten ist) Für jede Variable (Wie zum Beispiel Geschwindigkeit, Beschleunigung etc.) gibt es im UserInterface-Node eine Methode. Die Methoden empfangen die jeweilige Variable und geben diese dann auf dem User Interface aus.
+				\paragraph{Input}
+				    \begin{itemize}
+				        \item userInterfaceData von Node UdpServer
+				    \end{itemize}
+				\paragraph{Output}
+				    \begin{itemize}
+				        \item remoteControlInput an Node UdpServer
+				        \item platooningToggle an Node UdpServer
+				        \item remoteControlToggle an Node UdpServer
+				    \end{itemize}
+				    
 			\subsubsection{UserInterfaceData}
 			\label{user_interface_data}
-				\paragraph{Aufgabe} Der UserInterfaceData-Node zeigt dem Nutzer aktuelle Daten des Fahrzeugs an. Dazu gehören zum Beispiel Nachrichten aus dem Platoon, Geschwindigkeit oder Distanz zu anderen Objekten. Aus diesen Daten soll der Nutzer nachvollziehen können, warum sich das Auto verhält, wie es sich verhält.
-				\paragraph{Assoziationen} Der UserInterfaceData-Node ist Subscriber von Messagetranslation. Er ist kein Publisher.
+				\paragraph{Aufgabe} Der UserInterfaceData-Node hält die Daten, die das UserInterface anzeigt, stets aktuell. Somit hat der Nutzer immer die aktuellsten Fahr-Daten vorliegen. 
+				\paragraph{Assoziationen} Der UserInterfaceData-Node ist Subscriber von Messagetranslation. Er ist Publisher für UserInterface. 
 				\paragraph{Attribute}
 					\subparagraph{Platooning Messages}
 				\paragraph{Methoden}
@@ -201,53 +183,96 @@
 					\subparagraph{Tolle Methode A}
 				\paragraph{Input}
 				\paragraph{Output}
-			
-			\subsubsection{Radio Interface}
-			\label{radio_interface}
-				\paragraph{Aufgabe} Der RadioInterface-Node
-				\paragraph{Assoziationen}
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
-			
-			\subsubsection{Controller UI}
-			\label{controller_ui}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
-				
+
 			\subsubsection{Message Distribution}
 			\label{controller_ui}
-				\paragraph{Aufgabe} Der MessageDistribution Node verteilt die unterschiedlichen Messages an die dafür vorhergesehenen Nodes. 
-				\paragraph{Assoziationen}
+				\paragraph{Aufgabe} Der MessageDistribution-Node erhält alle einkommenden Nachrichten. Je nach MessageType werden diese Nachrichten dann vom MessageDistribution-Node auf den passenden Topics veröffentlicht. Dadurch erhalten alle Nodes immer die richtigen Nachrichten. 
+				\paragraph{Assoziationen} ???
 				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
+				    \begin{itemize}
+				        \item Alle Attribute sind selbsterklärend. 
+				    \end{itemize}
 				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
-				
+                    \subparagraph{hndl\_platooningIn} Erkennt, welche Art von Message empfangen wurde, dekodiert diese und veröffentlicht sie auf dem entsprechenden Topic. 
+					\subparagraph{hndl\_lv\_broadcast} Verpackt die zu übertragenden Daten in eine LV\_BROADCAST-Nachricht und veröffentlicht diese an das Platoon. 
+					\subparagraph{hndl\_lv\_accept} Verpackt die zu übertragenden Daten in eine LV\_ACCEPT-Nachricht und veröffentlicht diese an das Platoon.
+					\subparagraph{hndl\_lv\_reject} Verpackt die zu übertragenden Daten in eine LV\_REJECT-Nachricht und veröffentlicht diese an das Platoon.
+                	\subparagraph{hndl\_fv\_heartbeat} Verpackt die zu übertragenden Daten in eine FV\_HEARTBEAT-Nachricht und veröffentlicht diese an das Platoon.
+                    \subparagraph{hndl\_fv\_leave} Verpackt die zu übertragenden Daten in eine FV\_LEAVE-Nachricht und veröffentlicht diese an das Platoon.
+                	\subparagraph{hndl\_fv\_request} Verpackt die zu übertragenden Daten in eine FV\_REQEUEST-Nachricht und veröffentlicht diese an das Platoon.
+                	\subparagraph{hndl\_ui} Verpackt die zu übertragenden Daten in eine REMOTE\_USERINTERFACE-Nachricht und veröffentlicht diese im Netzwerk. 
+				\paragraph{Input} ???
+				\paragraph{Output} ???
+
 			\subsubsection{MessageTypes}
 			\label{controller_ui}
-				\paragraph{Aufgabe}
+				\paragraph{Aufgabe} ??
 				\paragraph{Assoziationen}
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+
+				\paragraph{Input}
+				\paragraph{Output}
+
+			\subsubsection{Distance Processing}
+			\label{distance_processing}
+				\paragraph{Aufgabe} Der DistanceProcessing-Node misst, wie weit er von den nächstgelegenen Objekten entfernt ist und stellt diese Information anderen Knoten zur Verfügung. 
+				\paragraph{Assoziationen} Der DistanceProcessing-Node erhält seine Informationen von einem Ultraschall-Sensor. Er ist Publisher für den LongitudinalProcessing-Node.  
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
 					\subparagraph{Tolle Methode A}
 				\paragraph{Input}
 				\paragraph{Output}
+			
+			\subsubsection{Longitudinal Processing}
+			\label{longitudinal_processing}
+				\paragraph{Aufgabe} Der LongitudinalProcessing-Node ist für die Beschleunigung des Autos verantwortlich. Er erhält die gewünschte Geschwindigkeit aus dem Prioritization-Node und schickt dann die gewünschte Beschleunigung an den VehicleControl-Node. 
+				\paragraph{Assoziationen} Der LongitudinalProcessing-Node ist Subscriber vom Prioritization-Node, dem DistancePreprocessing-Node und dem Speed Sensor. Er ist Publisher für den VehicleControl-Node. 
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+						
+			\subsubsection{Radio Interface}
+			\label{radio_interface}
+				\paragraph{Aufgabe} Der RadioInterface-Node wickelt den Nachrichtenverkehr über UDP ab. Er benutzt den UDP-Server, um das Senden und Empfangen von Netzwerk-Nachrichten über UDP zu ermöglichen. 
+				\paragraph{Assoziationen} Der RadioInterface-Node ist 
+				\paragraph{Attribute}
+					\begin{itemize}
+					    \item std::unique\_ptr<UdpServer> platooning\_server\_ptr\_ Ein einmaliger Pointer für den Platooning Server. 
+					    \item std::unique\_ptr<UdpServer> controller\_server\_ptr\_ Ein einmaliger Pointer für den Controller Server. 
+					\end{itemize}
+				\paragraph{Methoden}
+				    \subparagraph{hndl_platoonProtocolOut} Sendet Nachrichten in das Netzwerk. Je nach MessageType muss die Nachricht anders verschickt werden. Daher wird hierfür eine extra Methode benötigt. 
+					\subparagraph{hndl\_radio\_receive} Kümmert sich um die empfangenen Nachrichten aus dem Netzwerk. Je nach MessageType muss mit den empfangenen Nachrichten anders verfahren werden. Darum kümmmert sich diese Methode. 
+				\paragraph{Input} 
+				    \begin{itemize}
+				        \item in/platooningProtocol von Node MessageTranslation
+				        \item Daten vom UdpServer
+				    \end{itemize}
+				\paragraph{Output}
+				    \begin{itemize}
+				        \item out/platooningProtocol an Node MessageTranslation
+				        \item Daten an UdpServer
+				    \end{itemize}
 				
 		    \subsubsection{UdpServer}
 			\label{controller_ui}
+				\paragraph{Aufgabe} Der UdpServer-Node wird vom RadioInterface-Node verwendet, um den Nachrichtenverkehr über das Netzwerk realisieren zu können. 
+				\paragraph{Assoziationen} Der UdpServer-Node ist Subscriber vom UserInterface-Node und Publisher für den UserInterface-Node. 
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
+				
+			\subsubsection{Toller neuer Node}
+			\label{controller_ui}
 				\paragraph{Aufgabe}
 				\paragraph{Assoziationen}
 				\paragraph{Attribute}
@@ -255,8 +280,8 @@
 				\paragraph{Methoden}
 					\subparagraph{Tolle Methode A}
 				\paragraph{Input}
-				\paragraph{Output}
-			
+				\paragraph{Output}			
+				
 	\section{Tests}
 		\subsection{Test-Standard} % warum haben wir uns auf google test festgelegt; Designentscheidung
 		\subsection{Test-Cases}
