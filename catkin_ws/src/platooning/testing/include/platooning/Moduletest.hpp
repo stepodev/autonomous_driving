@@ -34,6 +34,7 @@ class Moduletest : public nodelet::Nodelet {
 	std::string test_result_filepath_ = "test1.txt";
 	ros::NodeHandle nh_;
 
+	std::unique_ptr<boost::asio::io_service::work> work_;
 	boost::asio::io_service io_;
 	boost::asio::deadline_timer testcase_timer_;
 	boost::posix_time::time_duration timeout_;

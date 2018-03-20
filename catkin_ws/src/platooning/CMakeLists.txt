@@ -188,7 +188,7 @@ include_directories(
 #######################
 
 ## Declare a C++ library
-add_library(environment_mapping include/platooning/EnvironmentMapping.hpp src/EnvironmentMapping.cpp src/UdpServer.cpp include/platooning/UdpServer.hpp src/UdpPackage.cpp)
+add_library(environment_mapping include/platooning/EnvironmentMapping.hpp src/EnvironmentMapping.cpp src/UdpServer.cpp include/platooning/UdpServer.hpp)
 add_dependencies(environment_mapping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(environment_mapping ${catkin_LIBRARIES})
 
@@ -220,7 +220,7 @@ add_library(radiointerface include/platooning/MessageTypes.hpp include/platoonin
 add_dependencies(radiointerface udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(radiointerface udpserver ${catkin_LIBRARIES})
 
-add_library(udpserver include/platooning/MessageTypes.hpp include/platooning/UdpPackage.hpp include/platooning/UdpServer.hpp src/UdpServer.cpp src/UdpPackage.cpp include/platooning/UdpPackageSet.cpp include/platooning/UdpPackageSet.hpp)
+add_library(udpserver include/platooning/MessageTypes.hpp include/platooning/UdpServer.hpp src/UdpServer.cpp src/UdpPackageSet.cpp include/platooning/UdpPackageSet.hpp)
 add_dependencies(udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(udpserver ${catkin_LIBRARIES})
 

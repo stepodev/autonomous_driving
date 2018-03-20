@@ -14,7 +14,6 @@
 #include <chrono>
 #include <utility>
 
-#include "UdpPackage.hpp"
 #include "UdpPackageSet.hpp"
 #include "MessageTypes.hpp"
 
@@ -29,21 +28,21 @@ class UdpServer {
 	~UdpServer();
 
 	void start_send(std::string, uint32_t message_type);
+	void handle_send(const boost::system::error_code &error, std::size_t size, std::shared_ptr<UdpPackage> package);
 	void set_filter_own_broadcasts(bool filter);
 
 	void shutdown();
 
   private:
 	void start_receive();
-	void handle_receive(const boost::system::error_code &error, std::size_t, std::shared_ptr<UdpPackage> package);
-
+	void handle_receive(const boost::system::error_code &error, std::size_t size, std::shared_ptr<UdpPackage>);
 
 	size_t write_to_sendbuffer(boost::array<char, MAX_RECV_BYTES> &target_buf,
 	                           const std::string &message,
 	                           const uint32_t &message_type);
 
 	std::pair<std::string, uint32_t> read_from_recvbuffer(const boost::array<char, MAX_RECV_BYTES> &buf,
-		                                                      size_t bytes_transferred);
+	                                                      size_t bytes_transferred);
 
 	std::unique_ptr<udp::socket> socket_ptr_;
 	boost::asio::io_service io_service_;
@@ -55,7 +54,7 @@ class UdpServer {
 	boost::asio::ip::address myaddress_;
 	unsigned short myport_;
 	bool filter_own_broadcasts_ = true;
-	PackageSet udp_packages_;
+	UdpPackageSet pending_packages_;
 
 	boost::function<void(std::pair<std::string, uint32_t>)> callback_;
 	/***
