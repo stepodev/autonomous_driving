@@ -1,4 +1,5 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="messagedistribution" args="load platooning/messagedistribution nodeletmanager">
+<node pkg="nodelet" type="nodelet" name="msgmanager"  args="manager" output="screen"/>
+    <node pkg="nodelet" type="nodelet" name="messagedistribution" args="load platooning/messagedistribution msgmanager">
     </node>
 </launch>

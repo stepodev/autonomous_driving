@@ -165,10 +165,10 @@ generate_messages(
 catkin_package(
         INCLUDE_DIRS include
         LIBRARIES environment_mapping lanedetect lanekeeping prioritization messagedistribution userinterface
-                vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalcontrol
+                vehiclecontrol radiointerface template platooning udpserver messagetypes topics longitudinalprocessing
                 services servicetypes stmsim
                 moduletest_platooning moduletest_prioritization moduletest_radiointerface moduletest_messagedistribution
-                moduletest_longitudinalcontrol
+                moduletest_longitudinalprocessing
         CATKIN_DEPENDS roscpp std_msgs message_runtime nodelet rospy
         #  DEPENDS system_lib
 )
@@ -188,7 +188,7 @@ include_directories(
 #######################
 
 ## Declare a C++ library
-add_library(environment_mapping include/platooning/EnvironmentMapping.hpp src/EnvironmentMapping.cpp src/UdpServer.cpp include/platooning/UdpServer.hpp)
+add_library(environment_mapping include/platooning/EnvironmentMapping.hpp src/EnvironmentMapping.cpp src/UdpServer.cpp include/platooning/UdpServer.hpp src/UdpPackage.cpp)
 add_dependencies(environment_mapping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(environment_mapping ${catkin_LIBRARIES})
 
@@ -220,7 +220,7 @@ add_library(radiointerface include/platooning/MessageTypes.hpp include/platoonin
 add_dependencies(radiointerface udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(radiointerface udpserver ${catkin_LIBRARIES})
 
-add_library(udpserver include/platooning/MessageTypes.hpp include/platooning/UdpServer.hpp src/UdpServer.cpp)
+add_library(udpserver include/platooning/MessageTypes.hpp include/platooning/UdpPackage.hpp include/platooning/UdpServer.hpp src/UdpServer.cpp src/UdpPackage.cpp include/platooning/UdpPackageSet.cpp include/platooning/UdpPackageSet.hpp)
 add_dependencies(udpserver ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(udpserver ${catkin_LIBRARIES})
 
@@ -255,9 +255,9 @@ add_library(stmsim include/platooning/StmSim.hpp src/StmSim.cpp)
 add_dependencies(stmsim udpserver topics messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(stmsim udpserver messagetypes topics ${catkin_LIBRARIES})
 
-add_library(longitudinalcontrol include/platooning/LongitudinalControl.hpp src/LongitudinalControl.cpp)
-add_dependencies(longitudinalcontrol topics messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(longitudinalcontrol topics messagetypes ${catkin_LIBRARIES})
+add_library(longitudinalprocessing include/platooning/LongitudinalProcessing.hpp src/LongitudinalProcessing.cpp)
+add_dependencies(longitudinalprocessing topics messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(longitudinalprocessing topics messagetypes ${catkin_LIBRARIES})
 
 ##############################################
 #### platooning tests
@@ -282,9 +282,9 @@ add_library(moduletest_prioritization testing/include/platooning/Moduletest_prio
 add_dependencies(moduletest_prioritization messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
 target_link_libraries(moduletest_prioritization messagetypes moduletest ${catkin_LIBRARIES})
 
-add_library(moduletest_longitudinalcontrol testing/include/platooning/Moduletest_longitudinalcontrol.hpp testing/src/Moduletest_longitudinalcontrol.cpp)
-add_dependencies(moduletest_longitudinalcontrol messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
-target_link_libraries(moduletest_longitudinalcontrol messagetypes moduletest ${catkin_LIBRARIES})
+add_library(moduletest_longitudinalprocessing testing/include/platooning/Moduletest_longitudinalprocessing.hpp testing/src/Moduletest_longitudinalprocessing.cpp)
+add_dependencies(moduletest_longitudinalprocessing messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_longitudinalprocessing messagetypes moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_template testing/include/platooning/Moduletest_template.hpp testing/src/Moduletest_template.cpp)
 add_dependencies(moduletest_template messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
@@ -365,9 +365,9 @@ target_link_libraries(messagedistribution-unit-test messagedistribution ${catkin
 install(TARGETS
             environment_mapping lanedetect lanekeeping prioritization messagedistribution
             userinterface vehiclecontrol radiointerface template platooning udpserver messagetypes
-            topics longitudinalcontrol services servicetypes stmsim
+            topics longitudinalprocessing services servicetypes stmsim
             moduletest_platooning moduletest_prioritization moduletest_radiointerface moduletest_messagedistribution
-            moduletest_longitudinalcontrol
+            moduletest_longitudinalprocessing
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

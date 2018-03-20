@@ -9,7 +9,6 @@ namespace platooning_sim {
 
 gazeboadapter::gazeboadapter() :
 	gazupdate_send_timer_(io_service_) {
-
 }
 
 gazeboadapter::~gazeboadapter() {
@@ -46,19 +45,13 @@ void gazeboadapter::onInit() {
 			cbfun, udp::endpoint(udp::v4(), 13000), udp::endpoint(boost::asio::ip::address_v4::broadcast(), 13001)));
 	server_->set_filter_own_broadcasts(false);
 
-
-	keep_spinning_ = true;
-
 	gazupdate_send_timer_.expires_from_now(BROADCAST_FREQ);
 	gazupdate_send_timer_.async_wait(boost::bind(&gazeboadapter::send_gazupdate, this,
 	                                             boost::asio::placeholders::error));
-
-	thread_pool_.create_thread([this] {
-		while (this->keep_spinning_) {
-			io_service_.run();
-		}
+	thread_pool_.create_thread( [this] {
+		boost::asio::io_service::work work(io_service_);
+		io_service_.run();
 	});
-
 	ROS_WARN("init done");
 }
 
@@ -88,8 +81,6 @@ void gazeboadapter::hndl_p1_speed(const prius_msgs::Speed &msg) {
 }
 
 void gazeboadapter::hndl_p2_sonar(const sensor_msgs::Range &msg) {
-	std::cout << "p2 dist" << msg.range << std::endl;
-
 	p2gazupdate.distance = msg.range;
 }
 
@@ -119,8 +110,8 @@ void gazeboadapter::send_gazupdate(const boost::system::error_code &e) {
 		return;
 	}
 
-    //std::cout << "id " << p1gazupdate.id << " accel " << p1gazupdate.speed << " dist " << p1gazupdate.distance << std::endl;
-	//std::cout << "id " << p2gazupdate.id << " accel " << p2gazupdate.speed << " dist " << p2gazupdate.distance << std::endl;
+    //std::cout << "id " << p1gazupdate.id << " speed " << p1gazupdate.speed << " dist " << p1gazupdate.distance << std::endl;
+	//std::cout << "id " << p2gazupdate.id << " speed " << p2gazupdate.speed << " dist " << p2gazupdate.distance << std::endl;
 
 
 	std::string msg = platooning::MessageTypes::encode_message(p1gazupdate);
@@ -135,34 +126,29 @@ void gazeboadapter::send_gazupdate(const boost::system::error_code &e) {
 	gazupdate_send_timer_.expires_from_now(BROADCAST_FREQ);
 	gazupdate_send_timer_.async_wait(boost::bind(&gazeboadapter::send_gazupdate, this,
 	                                            boost::asio::placeholders::error));
-
-	if (io_service_.stopped()) {
-		thread_pool_.create_thread([this] {
-			while (this->keep_spinning_) {
-				io_service_.run();
-			}
-		});
-	}
 }
 void gazeboadapter::process_stmsim(const platooning::stmupdate &stmupdate) {
 
 	std::cout << "id " << stmupdate.id << " accel " << stmupdate.acceleration << std::endl;
 
-
 	auto c = boost::shared_ptr<prius_msgs::Control>( new prius_msgs::Control);
 
-	//we dont reverse
-	c->shift_gears = prius_msgs::Control::FORWARD;
-
+	if( stmupdate.acceleration < 0 ) {
+		c->shift_gears = prius_msgs::Control::REVERSE;
+	} else if( stmupdate.acceleration == 0) {
+		c->shift_gears = prius_msgs::Control::NEUTRAL;
+	} else {
+		c->shift_gears = prius_msgs::Control::FORWARD;
+	}
 	//maybe between +-0.87? handwheelhigh +-7.85?
 	c->steer = stmupdate.steeringAngle;
 
 	//assumes accel between -1 and 1
 	if( stmupdate.acceleration < 0 ) {
-		c->brake = stmupdate.acceleration * -1;
+		c->throttle = stmupdate.acceleration * -1;
 	} else if( stmupdate.acceleration == 0 ) {
 		//dont do nothin
-	} else if( stmupdate.acceleration > 0){
+	} else if( stmupdate.acceleration > 0) {
 		c->throttle = stmupdate.acceleration;
 	}
 

@@ -59,7 +59,6 @@ class gazeboadapter : public nodelet::Nodelet {
 	ros::Subscriber sub_p3_camera_front_;
 
 	boost::asio::io_service io_service_;
-	bool keep_spinning_;
 	boost::asio::deadline_timer gazupdate_send_timer_;
 
 	void hndl_recv_udp(std::pair<std::string, uint32_t> packet);

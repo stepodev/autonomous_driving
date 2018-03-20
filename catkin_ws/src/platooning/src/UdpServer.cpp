@@ -127,7 +127,7 @@ void UdpServer::start_receive() {
 	boost::function<void(const boost::system::error_code &, size_t, std::shared_ptr<UdpPackage>)> cbfun
 		= boost::bind(boost::mem_fn(&UdpServer::handle_receive), this, _1, _2, _3);
 
-	auto p = PackageSet::get_recvpackage(cbfun);
+	auto p = udp_packages_.get_recvpackage(cbfun);
 
 	try {
 		socket_ptr_->async_receive_from(
@@ -153,7 +153,7 @@ void UdpServer::start_send(std::string message, uint32_t message_type) {
 		throw;
 	}
 
-	std::shared_ptr<UdpPackage> p = PackageSet::get_sendpackage(send_endpoint_);
+	std::shared_ptr<UdpPackage> p = udp_packages_.get_sendpackage(send_endpoint_);
 
 	size_t bytes_written = 0;
 	try {
@@ -212,30 +212,6 @@ void UdpServer::handle_receive(const boost::system::error_code &error, std::size
 	start_receive();
 
 }
-
-void UdpServer::UdpPackage::handle_send_done(const boost::system::error_code &error,
-                                             std::size_t bytes /*bytes_transferred*/) {
-	if (error) {
-		std::cerr << "server send error " << error.message() << std::endl;
-	} else {
-		//std::cout << "server sent " << bytes << " bytes" << std::endl;
-	}
-
-	UdpServer::PackageSet::remove_package(this);
-}
-
-void UdpServer::UdpPackage::handle_recv_done(const boost::system::error_code &error, size_t size) {
-	auto p = UdpServer::PackageSet::get_package(this);
-
-	try {
-		p->receive_callback( error, size, p );
-	}catch( std::exception& e ) {
-		std::cerr << "receive callback error " << e.what() << std::endl;
-	}
-
-	UdpServer::PackageSet::remove_package(this);
-}
-
 void UdpServer::set_filter_own_broadcasts(bool flag) {
 	filter_own_broadcasts_ = flag;
 }
@@ -257,6 +233,7 @@ std::shared_ptr<UdpServer::UdpPackage> UdpServer::PackageSet::get_sendpackage( c
 	psend->endpoint_ = to;
 	boost::mutex::scoped_lock l(send_set_mtx_);
 	set_.insert(psend);
+	psend->call_to_delete_ = this;
 	//std::cout << "[UdpServer][PackageSet][get_sendpackage] size is " << set_.size() << std::endl;
 	return psend;
 }
@@ -269,6 +246,7 @@ std::shared_ptr<UdpServer::UdpPackage> UdpServer::PackageSet::get_recvpackage(bo
 	boost::mutex::scoped_lock l(recv_set_mtx_);
 	set_.insert(psend);
 	//std::cout << "[UdpServer][PackageSet][get_sendpackage] size is " << set_.size() << std::endl;
+	psend->call_to_delete_ = this;
 	return psend;
 }
 
@@ -285,9 +263,5 @@ std::shared_ptr<UdpServer::UdpPackage> UdpServer::PackageSet::get_package(UdpSer
 
 	return pret;
 }
-
-boost::mutex UdpServer::PackageSet::send_set_mtx_;
-boost::mutex UdpServer::PackageSet::recv_set_mtx_;
-std::unordered_set<std::shared_ptr<UdpServer::UdpPackage>> UdpServer::PackageSet::set_;
 
 

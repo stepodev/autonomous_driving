@@ -9,6 +9,20 @@ UserInterface::~UserInterface() {
 };
 
 void UserInterface::onInit() {
+	ui_msg_ = boost::shared_ptr<platooning::userInterface>(new platooning::userInterface);
+
+	ui_msg_->remotecontrol_enabled = false;
+	ui_msg_->leading_vehicle = false;
+	ui_msg_->following_vehicle = false;
+	ui_msg_->potential_following_vehicle = false;
+	ui_msg_->platooning_state = "IDLE";
+	ui_msg_->src_vehicle = this->vehicle_id_;
+	ui_msg_->platoon_size = 0;
+	ui_msg_->inner_platoon_distance = 0;
+	ui_msg_->platoon_speed = 0;
+	ui_msg_->actual_distance = 0;
+	ui_msg_->speed = 0;
+	ui_msg_->platoon_id = 0;
 
 	pub_userinterface_ = nh_.advertise<userInterface>(topics::USERINTERFACE, 1, true);
 
@@ -95,21 +109,6 @@ void UserInterface::onInit() {
 		}
 
 	});
-
-	ui_msg_ = boost::shared_ptr<platooning::userInterface>(new platooning::userInterface);
-
-	ui_msg_->remotecontrol_enabled = false;
-	ui_msg_->leading_vehicle = false;
-	ui_msg_->following_vehicle = false;
-	ui_msg_->potential_following_vehicle = false;
-	ui_msg_->platooning_state = "IDLE";
-	ui_msg_->src_vehicle = this->vehicle_id_;
-	ui_msg_->platoon_size = 0;
-	ui_msg_->inner_platoon_distance = 0;
-	ui_msg_->platoon_speed = 0;
-	ui_msg_->actual_distance = 0;
-	ui_msg_->speed = 0;
-	ui_msg_->platoon_id = 0;
 };
 
 void UserInterface::hndl_in_lv_broadcast(const lv_broadcast &msg) {
@@ -188,7 +187,7 @@ void UserInterface::hndl_current_speed(const speed &msg) {
 	try {
 		ui_msg_->speed = msg.speed;
 	} catch (std::exception &ex) {
-		NODELET_ERROR("[%s] hndl_current_speed failed with %s", name_.c_str(), ex.what());
+		NODELET_ERROR("[%s] hndl_current_velocity failed with %s", name_.c_str(), ex.what());
 	}
 }
 

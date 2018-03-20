@@ -1,3 +1,7 @@
+//
+// Created by stepo on 12/16/17.
+//
+
 /**
  * @file doxygen_c.h
  * @author My Self
@@ -15,8 +19,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_MODULETEST_PLATOONING_HPP
-#define PLATOONING_MODULETEST_PLATOONING_HPP
+#ifndef PLATOONING_LONGITUDINAL_HPP
+#define PLATOONING_LONGITUDINAL_HPP
 
 /*****************************************************************************
 ** Includes
@@ -25,10 +29,12 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
+#include <boost/thread/mutex.hpp>
+#include <algorithm>
+#include <boost/thread/mutex.hpp>
 
-#include "Moduletest.hpp"
-#include "platooning/Topics.hpp"
-#include "platooning/MessageTypes.hpp"
+#include "Topics.hpp"
+#include "MessageTypes.hpp"
 
 namespace platooning {
 
@@ -66,23 +72,79 @@ namespace platooning {
  * @warning Warning.
  */
 
-class Moduletest_longitudinalcontrol : public Moduletest {
+#define DEFAULT_SPRING_CONSTANT 3 //the lower, the slower we reach target distance, the slower we brake
+
+using SpringConstant = float;
+using TimeStep = float;
+using Distance = float;
+using Velocity = float;
+
+class LongitudinalProcessing : public nodelet::Nodelet {
   public:
 	void onInit();
 
-	Moduletest_longitudinalcontrol();
+	LongitudinalProcessing();
 
-	~Moduletest_longitudinalcontrol();
+	~LongitudinalProcessing();
 
   private:
+
+	class CritiallyDampenedSpring
+	{
+
+	  public:
+		CritiallyDampenedSpring(SpringConstant spring_constant,
+				                        Distance target_distance);
+
+		void set_target_position(const Distance &target_postion) { target_relative_position_ = target_postion; };
+
+		float calulate_velocity(const Distance &current_position,
+				                        const Velocity &relative_velocity,
+				                        const float &time_step);
+
+	  private:
+		float spring_constant_;
+		float time_step_;
+		float target_relative_position_;
+	};
+
+	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
+	std::string name_ = "LongitudinalProcessing";
+
+	ros::Subscriber sub_distance_to_obj_;
+	ros::Subscriber sub_target_speed_;
+	ros::Subscriber sub_current_speed_;
+	ros::Subscriber sub_target_distance_;
+
+	ros::Publisher pub_acceleration_;
+
+	CritiallyDampenedSpring spring_;
+
+	Distance current_distance_;
+	Distance previous_distance_;
+	Distance target_distance_;
+
+	float target_velocity_;
+	float current_velocity_;
+
+	boost::posix_time::ptime previous_distance_timestamp_;
+	boost::posix_time::ptime current_distance_timestamp_;
+
+	boost::mutex calc_mutex_;
+
 	/**
-	* @brief template_testcase does x,y,z and expects a,b,c
-	*/
-	void send_new_data_recv_accel();
-	void hndl_tc_send_new_data_recv_accel(platooning::acceleration);
+	 * @brief to achieve X does Y
+	 * @param msg incoming topic message
+	 */
+	void hndl_distance_from_sensor(const platooning::distance &msg);
+	void hndl_target_distance(const platooning::targetDistance &msg);
+	void hndl_current_velocity(const platooning::speed &msg);
+	void hndl_targetSpeed(const platooning::targetSpeed &msg);
+
+	void update_velocity();
 
 };
 
 } // namespace platooning
 
-#endif //PLATOONING_MODULETEST_PLATOONING_HPP
+#endif //PLATOONING_LONGITUDINAL_HPP

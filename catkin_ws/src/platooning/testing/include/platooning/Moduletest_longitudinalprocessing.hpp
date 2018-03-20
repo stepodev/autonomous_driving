@@ -1,7 +1,3 @@
-//
-// Created by stepo on 12/16/17.
-//
-
 /**
  * @file doxygen_c.h
  * @author My Self
@@ -19,8 +15,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_LONGITUDINAL_HPP
-#define PLATOONING_LONGITUDINAL_HPP
+#ifndef PLATOONING_MODULETEST_PLATOONING_HPP
+#define PLATOONING_MODULETEST_PLATOONING_HPP
 
 /*****************************************************************************
 ** Includes
@@ -29,12 +25,10 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include <boost/thread/mutex.hpp>
-#include <algorithm>
-#include <boost/thread/mutex.hpp>
 
-#include "Topics.hpp"
-#include "MessageTypes.hpp"
+#include "Moduletest.hpp"
+#include "platooning/Topics.hpp"
+#include "platooning/MessageTypes.hpp"
 
 namespace platooning {
 
@@ -72,82 +66,23 @@ namespace platooning {
  * @warning Warning.
  */
 
-//time until next distance measurement gives us a new corrected distance
-//the lower, the slower we approach the target distance
-#define DEFAULT_TIMESTEP 0.2
-#define DEFAULT_SPRING_CONSTANT 3 //the dice said that
-
-using SpringConstant = float;
-using TimeStep = float;
-using Distance = float;
-using Speed = float;
-
-class LongitudinalControl : public nodelet::Nodelet {
+class Moduletest_longitudinalprocessing : public Moduletest {
   public:
 	void onInit();
 
-	LongitudinalControl();
+	Moduletest_longitudinalprocessing();
 
-	~LongitudinalControl();
+	~Moduletest_longitudinalprocessing();
 
   private:
-
-	class CritiallyDampenedSpring
-	{
-
-	  public:
-		CritiallyDampenedSpring( SpringConstant spring_constant,
-		                         TimeStep time_step,
-		                         Distance target_distance);
-
-		void set_target_distance( const Distance& target_distance ) { target_distance_ = target_distance; };
-
-		float calulate_velocity( const Distance& current_distance, const Speed& current_speed, const Speed& target_speed );
-
-	  private:
-		float spring_constant_;
-		float time_step_;
-		float target_distance_;
-	};
-
-	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-	std::string name_ = "LongitudinalControl";
-
-	ros::Subscriber sub_distance_to_obj_;
-	ros::Subscriber sub_target_speed_;
-	ros::Subscriber sub_current_speed_;
-	ros::Subscriber sub_target_distance_;
-	ros::Subscriber sub_critically_dampened_spring_params_;
-
-	ros::Publisher pub_acceleration_;
-
-	CritiallyDampenedSpring spring_;
-
-	float current_distance_;
-	float target_distance_;
-	float target_speed_;
-	float current_speed_;
-	boost::mutex calc_mutex_;
-
 	/**
-	 * @brief to achieve X does Y
-	 * @param msg incoming topic message
-	 */
-	void hndl_distance_from_sensor(const platooning::distance &msg);
-	void hndl_target_distance(const platooning::targetDistance &msg);
-	void hndl_current_speed(const platooning::speed &msg);
-	void hndl_targetSpeed(const platooning::targetSpeed &msg);
-	void hndl_spring_update( const platooning::criticallyDampenedSpring &msg );
-
-
-	void update_speed();
-
-	void set_spring(const SpringConstant &spring_constant,
-	                const TimeStep &time_step,
-	                const Distance &target_distance);
+	* @brief template_testcase does x,y,z and expects a,b,c
+	*/
+	void send_new_data_recv_accel();
+	void hndl_tc_send_new_data_recv_accel(platooning::acceleration);
 
 };
 
 } // namespace platooning
 
-#endif //PLATOONING_LONGITUDINAL_HPP
+#endif //PLATOONING_MODULETEST_PLATOONING_HPP

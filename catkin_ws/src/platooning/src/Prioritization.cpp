@@ -140,7 +140,7 @@ void Prioritization::hndl_platooningToggle(platooning::platooningToggle msg) {
 		//needs to be turned off so we dont start driving on toggle
 
 		//acceleration_ = msg.platoon_speed;
-		//target_distance_ = msg.inner_platoon_distance;
+		//target_position_ = msg.inner_platoon_distance;
 	}
 }
 
@@ -152,13 +152,7 @@ void Prioritization::hndl_platooningState(platooning::platooningState msg) {
 
 	if (state_ == PrioritizationState::PLATOONING && msg.platooning_state == "RUNNING") {
 
-		//drive faster as FV to catch up
-		if( msg.i_am_FV && msg.ps * 1.3 != target_speed_ ) {
-			target_speed_ = msg.ps * 1.3;
-			auto outmsg = boost::shared_ptr<platooning::targetSpeed>( new targetSpeed );
-			outmsg->target_speed = target_speed_;
-			pub_targetSpeed.publish(outmsg);
-		} else if( msg.i_am_LV && msg.ps != target_speed_) {
+		if( msg.ps != target_speed_) {
 			target_speed_ = msg.ps;
 			auto outmsg = boost::shared_ptr<platooning::targetSpeed>( new targetSpeed );
 			outmsg->target_speed = target_speed_;

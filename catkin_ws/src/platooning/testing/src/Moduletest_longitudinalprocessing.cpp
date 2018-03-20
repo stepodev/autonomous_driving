@@ -10,7 +10,7 @@
 ** Includes
 *****************************************************************************/
 
-#include "platooning/Moduletest_longitudinalcontrol.hpp"
+#include "platooning/Moduletest_longitudinalprocessing.hpp"
 
 // %Tag(FULLTEXT)%
 namespace platooning {
@@ -24,13 +24,13 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-Moduletest_longitudinalcontrol::Moduletest_longitudinalcontrol() = default;
+Moduletest_longitudinalprocessing::Moduletest_longitudinalprocessing() = default;
 
 /*****************************************************************************
 ** Destructors
 *****************************************************************************/
 
-Moduletest_longitudinalcontrol::~Moduletest_longitudinalcontrol() = default;
+Moduletest_longitudinalprocessing::~Moduletest_longitudinalprocessing() = default;
 
 
 /*****************************************************************************
@@ -41,11 +41,11 @@ Moduletest_longitudinalcontrol::~Moduletest_longitudinalcontrol() = default;
 * Set-up necessary publishers/subscribers
 * @return true, if successful
 */
-void Moduletest_longitudinalcontrol::onInit() {
+void Moduletest_longitudinalprocessing::onInit() {
 
-	name_ = "Moduletest_longitudinalcontrol";
+	name_ = "Moduletest_longitudinalprocessing";
 
-	register_testcases(boost::bind(&Moduletest_longitudinalcontrol::send_new_data_recv_accel, this));
+	register_testcases(boost::bind(&Moduletest_longitudinalprocessing::send_new_data_recv_accel, this));
 
 	NODELET_INFO("[%s] init done", name_.c_str());
 
@@ -56,7 +56,7 @@ void Moduletest_longitudinalcontrol::onInit() {
 ** Testcases
 *****************************************************************************/
 
-void Moduletest_longitudinalcontrol::send_new_data_recv_accel(){
+void Moduletest_longitudinalprocessing::send_new_data_recv_accel(){
 
 	set_current_test("send_sensor_distance_recv_accel");
 	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
@@ -97,7 +97,7 @@ void Moduletest_longitudinalcontrol::send_new_data_recv_accel(){
 	sub_map_.clear();
 	sub_map_.emplace(topics::ACCELERATION, ros::Subscriber());
 	sub_map_[topics::ACCELERATION] = nh_.subscribe(topics::ACCELERATION, 1,
-	                                               &Moduletest_longitudinalcontrol::hndl_tc_send_new_data_recv_accel,
+	                                               &Moduletest_longitudinalprocessing::hndl_tc_send_new_data_recv_accel,
 	                                               this);
 
 	auto target_speed = boost::shared_ptr<platooning::targetSpeed>(new platooning::targetSpeed);
@@ -105,7 +105,7 @@ void Moduletest_longitudinalcontrol::send_new_data_recv_accel(){
 	pub_map_[topics::TARGET_SPEED].publish(target_speed);
 }
 
-void Moduletest_longitudinalcontrol::hndl_tc_send_new_data_recv_accel(platooning::acceleration msg) {
+void Moduletest_longitudinalprocessing::hndl_tc_send_new_data_recv_accel(platooning::acceleration msg) {
 	TestResult res;
 	res.success = true;
 
@@ -125,5 +125,5 @@ void Moduletest_longitudinalcontrol::hndl_tc_send_new_data_recv_accel(platooning
 
 } // namespace platooning
 
-PLUGINLIB_EXPORT_CLASS(platooning::Moduletest_longitudinalcontrol, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(platooning::Moduletest_longitudinalprocessing, nodelet::Nodelet);
 // %EndTag(FULLTEXT)%

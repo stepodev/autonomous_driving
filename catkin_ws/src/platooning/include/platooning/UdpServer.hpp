@@ -9,15 +9,14 @@
 #include <boost/function.hpp>
 #include <boost/thread.hpp>
 #include <boost/array.hpp>
-#include <boost/thread/mutex.hpp>
-#include <unordered_set>
+
 #include <memory>
 #include <chrono>
 #include <utility>
 
+#include "UdpPackage.hpp"
+#include "UdpPackageSet.hpp"
 #include "MessageTypes.hpp"
-
-const uint32_t MAX_RECV_BYTES = 1024;
 
 using boost::asio::ip::udp;
 
@@ -35,32 +34,6 @@ class UdpServer {
 	void shutdown();
 
   private:
-
-	class UdpPackage {
-	  public:
-		udp::endpoint endpoint_;
-		boost::array<char, MAX_RECV_BYTES> buffer_;
-		boost::function<void(const boost::system::error_code &error, std::size_t, std::shared_ptr<UdpPackage>)> receive_callback;
-		long timestamp = std::chrono::system_clock::now().time_since_epoch().count();
-		void handle_recv_done(const boost::system::error_code &error, size_t);
-		void handle_send_done(const boost::system::error_code &error, size_t);
-	};
-
-	class PackageSet {
-	  private:
-		static boost::mutex send_set_mtx_;
-		static boost::mutex recv_set_mtx_;
-		static std::unordered_set<std::shared_ptr<UdpPackage>> set_;
-
-	  public:
-		static std::shared_ptr<UdpPackage> get_sendpackage(const udp::endpoint& to);
-		static std::shared_ptr<UdpPackage> get_recvpackage(boost::function<void(const boost::system::error_code &error, std::size_t bytes_recvd, std::shared_ptr<UdpPackage>)> receive_callback);
-		static std::shared_ptr<UdpPackage> get_package(UdpPackage* );
-
-		static void remove_package(UdpPackage *p);
-
-	};
-
 	void start_receive();
 	void handle_receive(const boost::system::error_code &error, std::size_t, std::shared_ptr<UdpPackage> package);
 
@@ -82,6 +55,7 @@ class UdpServer {
 	boost::asio::ip::address myaddress_;
 	unsigned short myport_;
 	bool filter_own_broadcasts_ = true;
+	PackageSet udp_packages_;
 
 	boost::function<void(std::pair<std::string, uint32_t>)> callback_;
 	/***
