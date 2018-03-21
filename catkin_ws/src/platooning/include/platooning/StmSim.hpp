@@ -104,7 +104,7 @@ class StmSim : public nodelet::Nodelet {
 	 * @brief to achieve X does Y
 	 * @param msg incoming topic message
 	 */
-	void hndl_gazupdate(std::pair<std::string, uint32_t> message_pair);
+	void hndl_gazupdate(boost::shared_ptr<std::pair<std::string, uint32_t>> message_pair);
 
 	void hndl_acceleration(const platooning::acceleration &);
 

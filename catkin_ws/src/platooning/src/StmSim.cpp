@@ -57,7 +57,7 @@ void StmSim::onInit() {
 	pub_distanceToObj_ = nh_.advertise<platooning::distance>(topics::SENSOR_DISTANCE_TO_OBJ, 1, true);
 
 	try {
-		boost::function<void(std::pair<std::string, uint32_t>)> cbfun(boost::bind(boost::mem_fn(
+		boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)> cbfun(boost::bind(boost::mem_fn(
 			&StmSim::hndl_gazupdate), this, _1));
 
 		server_ptr_ = std::unique_ptr<UdpServer>(
@@ -107,14 +107,14 @@ void StmSim::onInit() {
 /*****************************************************************************
 ** Handlers
 *****************************************************************************/
-void StmSim::hndl_gazupdate(std::pair<std::string, uint32_t> message_pair) {
+void StmSim::hndl_gazupdate(boost::shared_ptr<std::pair<std::string, uint32_t>> message_pair) {
 
 	try {
 
-		if (message_pair.second == GAZ_UPDATE) {
+		if (message_pair->second == GAZ_UPDATE) {
 
 			platooning::gazupdate gazmsg;
-			MessageTypes::decode_json(message_pair.first, gazmsg);
+			MessageTypes::decode_json(message_pair->first, gazmsg);
 
 			if (gazmsg.id == vehicle_id_) {
 				auto speedmsg = boost::shared_ptr<platooning::speed>(new platooning::speed);
@@ -124,8 +124,6 @@ void StmSim::hndl_gazupdate(std::pair<std::string, uint32_t> message_pair) {
 				auto distancemsg = boost::shared_ptr<platooning::distance>(new platooning::distance);
 				distancemsg->distance = gazmsg.distance;
 				pub_distanceToObj_.publish(distancemsg);
-
-				//std::cout << "dist:" << gazmsg.distance << " speed:" << gazmsg.speed << std::endl;
 			}
 		}
 	}

@@ -162,63 +162,94 @@ void MessageDistribution::hndl_platooningIn(const platooning::platoonProtocol &i
 }
 
 void MessageDistribution::hndl_lv_broadcast(const lv_broadcast &msg) {
-	auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
-	p->message_type = LV_BROADCAST;
-	p->payload = MessageTypes::encode_message(msg);
 
-	pub_platooningOut.publish(p);
+	try {
+		auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+		p->message_type = LV_BROADCAST;
+		p->payload = MessageTypes::encode_message(msg);
+
+		pub_platooningOut.publish(p);
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_lv_broadcast\n %s", name_.c_str(), ex.what());
+	}
+
 }
 
 void MessageDistribution::hndl_lv_accept(const platooning::lv_accept &msg) {
-	NODELET_INFO("[%s] Sending upd message LV_ACCEPT", name_.c_str());
-	auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
-	p->message_type = LV_ACCEPT;
-	p->payload = MessageTypes::encode_message(msg);
+	try {
+		NODELET_INFO("[%s] Sending upd message LV_ACCEPT", name_.c_str());
+		auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+		p->message_type = LV_ACCEPT;
+		p->payload = MessageTypes::encode_message(msg);
 
-	pub_platooningOut.publish(p);
+		pub_platooningOut.publish(p);
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_lv_accept\n %s", name_.c_str(), ex.what());
+	}
 }
 
 void MessageDistribution::hndl_lv_reject(const platooning::lv_reject &msg) {
-	NODELET_INFO("[%s] Sending upd message LV_REJECT", name_.c_str());
-	auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
-	p->message_type = LV_REJECT;
-	p->payload = MessageTypes::encode_message(msg);
+	try {
+		NODELET_INFO("[%s] Sending upd message LV_REJECT", name_.c_str());
+		auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+		p->message_type = LV_REJECT;
+		p->payload = MessageTypes::encode_message(msg);
 
-	pub_platooningOut.publish(p);
+		pub_platooningOut.publish(p);
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_lv_reject\n %s", name_.c_str(), ex.what());
+	}
 }
 
 void MessageDistribution::hndl_fv_heartbeat(const platooning::fv_heartbeat &msg) {
-	auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
-	p->message_type = FV_HEARTBEAT;
-	p->payload = MessageTypes::encode_message(msg);
+	try {
+		auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+		p->message_type = FV_HEARTBEAT;
+		p->payload = MessageTypes::encode_message(msg);
 
-	pub_platooningOut.publish(p);
+		pub_platooningOut.publish(p);
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_fv_heartbeat\n %s", name_.c_str(), ex.what());
+	}
 }
 
 void MessageDistribution::hndl_fv_leave(const platooning::fv_leave &msg) {
-	NODELET_INFO("[%s] Sending upd message FV_LEAVE", name_.c_str());
-	auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
-	p->message_type = FV_LEAVE;
-	p->payload = MessageTypes::encode_message(msg);
+	try {
+		NODELET_INFO("[%s] Sending upd message FV_LEAVE", name_.c_str());
+		auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+		p->message_type = FV_LEAVE;
+		p->payload = MessageTypes::encode_message(msg);
 
-	pub_platooningOut.publish(p);
+		pub_platooningOut.publish(p);
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_fv_leave\n %s", name_.c_str(), ex.what());
+	}
 }
 
 void MessageDistribution::hndl_fv_request(const platooning::fv_request &msg) {
-	NODELET_INFO("[%s] Sending upd message FV_REQUEST", name_.c_str());
-	auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
-	p->message_type = FV_REQUEST;
-	p->payload = MessageTypes::encode_message(msg);
+	try {
+		NODELET_INFO("[%s] Sending upd message FV_REQUEST", name_.c_str());
+		auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+		p->message_type = FV_REQUEST;
+		p->payload = MessageTypes::encode_message(msg);
 
-	pub_platooningOut.publish(p);
+		pub_platooningOut.publish(p);
+
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_fv_request\n %s", name_.c_str(), ex.what());
+	}
 }
 
 void MessageDistribution::hndl_ui(const platooning::userInterface &msg) {
-	auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
-	p->message_type = REMOTE_USERINTERFACE;
-	p->payload = MessageTypes::encode_message(msg);
+	try {
+		auto p = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+		p->message_type = REMOTE_USERINTERFACE;
+		p->payload = MessageTypes::encode_message(msg);
 
-	pub_platooningOut.publish(p);
+		pub_platooningOut.publish(p);
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] hndl_ui\n %s", name_.c_str(), ex.what());
+	}
 }
 
 } // namespace platooning

@@ -57,7 +57,7 @@ void RadioInterface::onInit() {
 
 	try {
 		//bind to local 10000 port, broadcast to 10000 port
-		boost::function<void(std::pair<std::string, uint32_t>)> cbfun(boost::bind(boost::mem_fn(
+		boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)> cbfun(boost::bind(boost::mem_fn(
 			&RadioInterface::hndl_radio_receive), this, _1));
 
 		platooning_server_ptr_ = std::unique_ptr<UdpServer>(new UdpServer(cbfun,
@@ -109,34 +109,33 @@ void RadioInterface::hndl_platoonProtocolOut(platooning::platoonProtocol msg) {
  * @brief handles received messages from the network
  * @param message_pair with message_type and payload
  */
-void RadioInterface::hndl_radio_receive(std::pair<std::string, uint32_t> message_pair) {
+void RadioInterface::hndl_radio_receive(boost::shared_ptr<std::pair<std::string, uint32_t>> message_pair) {
 	//std::cout << "handling radiointerface receive" << std::endl;
 
-	boost::shared_ptr<platooning::platoonProtocol> outmsg
-		= boost::shared_ptr<platooning::platoonProtocol>(new platooning::platoonProtocol);
+	auto outmsg = boost::shared_ptr<platooning::platoonProtocol>(new platooning::platoonProtocol);
 
-	switch (message_pair.second) {
+	switch (message_pair->second) {
 		case FV_REQUEST:
 		case LV_ACCEPT:
 		case LV_REJECT:
 		case FV_LEAVE:
 		case REMOTE_PLATOONINGTOGGLE:
-			NODELET_INFO("[%s] received upd command %#010x : %s", name_.c_str(), message_pair.second, message_pair.first.c_str());
-			outmsg->payload = message_pair.first;
-			outmsg->message_type = message_pair.second;
+			NODELET_INFO("[%s] received upd command %#010x : %s", name_.c_str(), message_pair->second, message_pair->first.c_str());
+			outmsg->payload = message_pair->first;
+			outmsg->message_type = message_pair->second;
 			pub_platoonProtocolIn_.publish(outmsg);
 			break;
 		case LV_BROADCAST:
 		case FV_HEARTBEAT:
 			//NODELET_INFO("[%s] received broadcast %#010x", name_.c_str(), message_pair.second);
-			outmsg->payload = message_pair.first;
-			outmsg->message_type = message_pair.second;
+			outmsg->payload = message_pair->first;
+			outmsg->message_type = message_pair->second;
 			pub_platoonProtocolIn_.publish(outmsg);
 			break;
 		case REMOTE_USERINTERFACE:
 			//not for us
 			break;
-		default:NODELET_ERROR("[%s] messagetype not recognized. Type: %#010x : %s", name_.c_str(), message_pair.second, message_pair.first.c_str());
+		default:NODELET_ERROR("[%s] messagetype not recognized. Type: %#010x : %s", name_.c_str(), message_pair->second, message_pair->first.c_str());
 			break;
 
 	}

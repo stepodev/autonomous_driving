@@ -1,4 +1,3 @@
 <launch>
-<node pkg="nodelet" type="nodelet" name="longmanager"  args="manager" output="screen"/>
-    <node pkg="nodelet" type="nodelet" name="longitudinalprocessing" args="load platooning/longitudinalprocessing longmanager "></node>
+    <node pkg="nodelet" type="nodelet" name="longitudinalprocessing" args="load platooning/longitudinalprocessing nodeletmanager" respawn="true"></node>
 </launch>

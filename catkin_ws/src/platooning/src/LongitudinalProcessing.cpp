@@ -29,7 +29,12 @@ namespace platooning {
  * @brief Template Nodelet
  */
 
-LongitudinalProcessing::LongitudinalProcessing() : spring_(DEFAULT_SPRING_CONSTANT, 0) {};
+LongitudinalProcessing::LongitudinalProcessing()
+	: io_worker_(io_service_), detect_dead_datasource_timer(io_service_) {
+
+	thread_pool_.create_thread([this] { io_service_.run(); });
+
+};
 
 /*****************************************************************************
 ** Destructors
@@ -66,7 +71,6 @@ void LongitudinalProcessing::onInit() {
 
 	current_distance_ = 0;
 	current_velocity_ = 0;
-	target_distance_ = 0;
 	target_velocity_ = 0;
 
 	NODELET_INFO("[%s] init done", name_.c_str());
@@ -80,22 +84,25 @@ void LongitudinalProcessing::onInit() {
 void LongitudinalProcessing::hndl_distance_from_sensor(const platooning::distance &msg) {
 	//NODELET_INFO(  "[%s]  recv distance from sensor.", name_.c_str());
 
+
+	detect_dead_datasource_timer.cancel();
+	detect_dead_datasource_timer.expires_from_now(SOURCECHECK_FREQ);
+	detect_dead_datasource_timer.async_wait(boost::bind(&LongitudinalProcessing::check_dead_datasrc, this,
+	                                                    boost::asio::placeholders::error));
+
 	try {
 		//check if we received new data
-		if (msg.distance != current_distance_) {
+		previous_distance_ = current_distance_;
+		current_distance_ = msg.distance;
 
-			previous_distance_ = current_distance_;
-			current_distance_ = msg.distance;
+		previous_distance_timestamp_ = current_distance_timestamp_;
+		current_distance_timestamp_ = boost::posix_time::microsec_clock::local_time();
 
-			previous_distance_timestamp_ = current_distance_timestamp_;
-			current_distance_timestamp_ = boost::posix_time::microsec_clock::local_time();
-
-			if( previous_distance_timestamp_ == boost::posix_time::min_date_time ) {
-				return;
-			}
-
-			update_velocity();
+		if (previous_distance_timestamp_ == boost::posix_time::min_date_time) {
+			return;
 		}
+
+		update_velocity();
 	} catch (std::exception &ex) {
 		NODELET_ERROR("[%s] hndl_distance_from_sensor crash with %s", name_.c_str(), ex.what());
 	}
@@ -104,17 +111,16 @@ void LongitudinalProcessing::hndl_distance_from_sensor(const platooning::distanc
 void LongitudinalProcessing::hndl_target_distance(const platooning::targetDistance &msg) {
 	//NODELET_INFO( "[%s] recv targetDistance.", name_.c_str());
 	try {
-		if (msg.distance != target_distance_) {
+		if (msg.distance != -spring_.get_target_position()) {
 
-			target_distance_ = msg.distance;
 
-			if( msg.distance < 0.5 ) {
+			if (msg.distance < 0.5) {
 				NODELET_ERROR("[%s] target distance shorter than 0.5. Setting to 1.", name_.c_str());
-				target_distance_ = 1;
+				spring_.set_target_position(-1);
+
+			} else {
+				spring_.set_target_position(-msg.distance);
 			}
-
-			spring_.set_target_position(-target_distance_);
-
 		}
 	} catch (std::exception &ex) {
 		NODELET_ERROR("[%s] hndl_target_distance crash with %s", name_.c_str(), ex.what());
@@ -146,8 +152,8 @@ void LongitudinalProcessing::hndl_targetSpeed(const platooning::targetSpeed &msg
 
 void LongitudinalProcessing::update_velocity() {
 
-    //wait for second ranging
-	if( previous_distance_timestamp_ == boost::posix_time::min_date_time ) {
+	//wait for second ranging
+	if (previous_distance_timestamp_ == boost::posix_time::min_date_time) {
 		std::cout << "wait for second ranging" << std::endl;
 		return;
 	}
@@ -157,33 +163,67 @@ void LongitudinalProcessing::update_velocity() {
 	auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
 
 	//calculate time_step in seconds since velocity is in m/s and distance in m
-	float time_step = (current_distance_timestamp_ - previous_distance_timestamp_).total_milliseconds()/1000.0f;
+	float time_step = (current_distance_timestamp_ - previous_distance_timestamp_).total_milliseconds() / 1000.0f;
 
 	//distance change in the last time_step
 	float range_diff = current_distance_ - previous_distance_;
 	//change in range / timestep should be the relative velocity
 	float relative_velocity = range_diff / time_step;
 	//add current velocity to
-	float spring_velocity = current_velocity_ + spring_.calulate_velocity( -current_distance_, relative_velocity, time_step );
+	float spring_velocity =
+		current_velocity_ + spring_.calulate_velocity(-current_distance_, relative_velocity, time_step);
 
 	//modify current velocity with spring value to approach target distance
 	float calculated_velocity = current_velocity_ + spring_velocity;
 
-	NODELET_INFO("ms: %f time_step: %f range_diff: %f relative_vel: %f spring_vel %f current_vel: %f calc_vel: %f"
-	, (float)(current_distance_timestamp_ - previous_distance_timestamp_).total_milliseconds(), time_step, range_diff
-	, relative_velocity, spring_velocity, current_velocity_, calculated_velocity);
+	float accel = std::max(-5.0f, std::min(calculated_velocity, target_velocity_ * 1.4f)) - current_velocity_;
+
+	gazsim brake weglassen? hoffen dass reverse throttle unser brake wird? ipd auf 5 momentan?? crashes nun nur longcontrol?
+
+	NODELET_INFO(
+		"ms: %f time_step: %f range_diff: %f relative_vel: %f spring_vel %f current_vel: %f calc_vel: %f\ndist:%f target:%f accel: %f",
+		(float) (current_distance_timestamp_ - previous_distance_timestamp_).total_milliseconds(),
+		time_step,
+		range_diff,
+		relative_velocity,
+		spring_velocity,
+		current_velocity_,
+		calculated_velocity,
+		current_distance_,
+		-spring_.get_target_position(),
+		accel);
 
 	//clamp calculated velocity to -5 and target_speed *1.4 so we dont drive so fast
-	outmsg->accelleration = std::max( -5.0f, std::min( calculated_velocity, target_velocity_ * 1.4f ));
+	outmsg->accelleration = accel;
 
 	pub_acceleration_.publish(outmsg);
 
 }
+void LongitudinalProcessing::check_dead_datasrc(const boost::system::error_code &e) {
 
-LongitudinalProcessing::CritiallyDampenedSpring::CritiallyDampenedSpring(SpringConstant spring_constant,
-                                                                         float target_relative_position) {
-	spring_constant_ = spring_constant;
-	target_relative_position_ = target_relative_position;
+	if (boost::asio::error::operation_aborted == e) {
+		//NODELET_ERROR("[%s] check_dead_datasrc timer cancelled", name_.c_str());
+		return;
+	}
+
+	NODELET_ERROR("[%s] distance data source hasnt delivered in %i ms. halting",
+	              name_.c_str(),
+	              (int) SOURCECHECK_FREQ.total_milliseconds());
+	auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
+	outmsg->accelleration = 0;
+	pub_acceleration_.publish(outmsg);
+
+
+//is always started on every range receipt
+//detect_dead_datasource_timer->expires_from_now(SOURCECHECK_FREQ);
+//detect_dead_datasource_timer->async_wait(boost::bind(&LongitudinalProcessing::check_dead_datasrc, this,
+//                                                     boost::asio::placeholders::error));
+
+}
+
+LongitudinalProcessing::CritiallyDampenedSpring::CritiallyDampenedSpring() {
+	spring_constant_ = 3;
+	target_relative_position_ = -1;
 
 }
 
@@ -191,12 +231,12 @@ LongitudinalProcessing::CritiallyDampenedSpring::CritiallyDampenedSpring(SpringC
 //https://en.wikipedia.org/wiki/PID_controller
 //doesnt work. will always trail way behind where it should be while moving: https://jsfiddle.net/BfLAh/3175/
 float LongitudinalProcessing::CritiallyDampenedSpring::calulate_velocity(const Distance &current_position,
-                                                                      const Velocity &relative_velocity,
-                                                                      const float &time_step) {
+                                                                         const Velocity &relative_velocity,
+                                                                         const float &time_step) {
 
-    float current_to_target = target_relative_position_ - current_position;
+	float current_to_target = target_relative_position_ - current_position;
 	float spring_force = current_to_target * spring_constant_;
-	float damping_force = -relative_velocity * 2 * sqrt( spring_constant_ );
+	float damping_force = -relative_velocity * 2 * sqrt(spring_constant_);
 	float force = spring_force + damping_force;
 	float new_velocity = relative_velocity + force * time_step_;
 	//float displacement = new_velocity * time_step_;

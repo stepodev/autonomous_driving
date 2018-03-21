@@ -1,4 +1,5 @@
 <launch>
+    <include file="$(find platooning)/launch/nodeletmanager.launch"/>
     <include file="$(find platooning)/launch/userinterface.launch"/>
     <include file="$(find platooning)/launch/longitudinalprocessing.launch"/>
     <include file="$(find platooning)/launch/platooning.launch"/>

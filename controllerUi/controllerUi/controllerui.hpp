@@ -45,7 +45,7 @@ private:
     bool platooningEnabled_v2_ = false;
 
     std::unique_ptr<UdpServer> server_ptr_;
-    boost::function<void (std::pair<std::string, uint32_t>)> recv_udp_msg_cb;
+    boost::function<void (boost::shared_ptr<std::pair<std::string, uint32_t>>)> recv_udp_msg_cb;
     std::list<int32_t> slave_vehicle_ids_;
     boost::thread keypollthread_;
 
@@ -54,7 +54,7 @@ private:
     float remote_lat_angle_v2_ = 0;
     float remote_speed_v2_ = 0;
 
-    void receive_message( std::pair<std::string, uint32_t> msgpair ) ;
+    void receive_message( boost::shared_ptr<std::pair<std::string, uint32_t>> msgpair ) ;
     void keypresspoll();
     void set_platooningbutton_v1( const bool& enabled );
     void set_platooningbutton_v2( const bool& enabled );

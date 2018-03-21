@@ -1,5 +1,4 @@
 <launch>
-<node pkg="nodelet" type="nodelet" name="rfmanager"  args="manager" output="screen"/>
-    <node pkg="nodelet" type="nodelet" name="radiointerface" args="load platooning/radiointerface rfmanager">
+    <node pkg="nodelet" type="nodelet" name="radiointerface" args="load platooning/radiointerface nodeletmanager">
     </node>
 </launch>

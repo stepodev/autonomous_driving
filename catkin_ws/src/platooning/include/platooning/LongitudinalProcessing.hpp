@@ -35,6 +35,8 @@
 
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
+#include <boost/thread/thread.hpp>
+#include <boost/asio.hpp>
 
 namespace platooning {
 
@@ -93,14 +95,15 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 	{
 
 	  public:
-		CritiallyDampenedSpring(SpringConstant spring_constant,
-				                        Distance target_distance);
+		CritiallyDampenedSpring();
 
 		void set_target_position(const Distance &target_postion) { target_relative_position_ = target_postion; };
 
 		float calulate_velocity(const Distance &current_position,
 				                        const Velocity &relative_velocity,
 				                        const float &time_step);
+
+		const float& get_target_position() { return target_relative_position_; }
 
 	  private:
 		float spring_constant_;
@@ -122,7 +125,6 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 
 	Distance current_distance_;
 	Distance previous_distance_;
-	Distance target_distance_;
 
 	float target_velocity_;
 	float current_velocity_;
@@ -143,6 +145,14 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 
 	void update_velocity();
 
+
+	//Timer facilites
+	boost::posix_time::milliseconds SOURCECHECK_FREQ = boost::posix_time::milliseconds(1000);
+	boost::asio::io_service io_service_;
+	boost::asio::io_service::work io_worker_;
+	boost::asio::deadline_timer detect_dead_datasource_timer;
+	boost::thread_group thread_pool_;
+	void check_dead_datasrc(const boost::system::error_code &e);
 };
 
 } // namespace platooning

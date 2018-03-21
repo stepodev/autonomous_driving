@@ -1,5 +1,4 @@
 <launch>
-<node pkg="nodelet" type="nodelet" name="uimanager"  args="manager" output="screen"/>
-    <node pkg="nodelet" type="nodelet" name="userinterface" args="load platooning/userinterface uimanager">
+    <node pkg="nodelet" type="nodelet" name="userinterface" args="load platooning/userinterface nodeletmanager">
     </node>
 </launch>

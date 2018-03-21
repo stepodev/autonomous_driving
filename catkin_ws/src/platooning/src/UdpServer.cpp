@@ -5,9 +5,9 @@
 
 #include "platooning/UdpServer.hpp"
 
-UdpServer::UdpServer(boost::function<void(std::pair<std::string, uint32_t>)> receive_callback,
-                     udp::endpoint bind_endpoint,
-                     udp::endpoint remote_endpoint) : io_work_(io_service_) {
+UdpServer::UdpServer(boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)> receive_callback,
+                     const udp::endpoint &bind_endpoint,
+                     const udp::endpoint &remote_endpoint) : io_work_(io_service_) {
 
 	try {
 
@@ -30,6 +30,7 @@ UdpServer::UdpServer(boost::function<void(std::pair<std::string, uint32_t>)> rec
 		send_endpoint_ = std::move(remote_endpoint);
 
 		myport_ = bind_endpoint.port();
+
 		find_own_ip();
 
 		callback_ = std::move(receive_callback);
@@ -37,8 +38,9 @@ UdpServer::UdpServer(boost::function<void(std::pair<std::string, uint32_t>)> rec
 		start_receive();
 
 		thread_pool_.create_thread([this] {
-				io_service_.run();
-				std::cout << "[UdpServer] IOSERVICE STOPPED" << std::endl;});
+			io_service_.run();
+			std::cout << "[UdpServer] IOSERVICE STOPPED" << std::endl;
+		});
 	} catch (std::exception &e) {
 		std::cerr << "[UdpServer][constructor] threw " << e.what() << std::endl;
 	}
@@ -50,7 +52,7 @@ UdpServer::~UdpServer() {
 
 void UdpServer::shutdown() {
 	std::cout << "[UdpServer] shutdown called" << std::endl;
-try { io_service_.stop(); } catch (std::exception &ex) {
+	try { io_service_.stop(); } catch (std::exception &ex) {
 		std::cerr << "[UdpServer] shutdown io_service_ threw " << ex.what() << std::endl;
 	};
 	try { socket_ptr_->close(); } catch (std::exception &ex) {
@@ -66,30 +68,34 @@ try { io_service_.stop(); } catch (std::exception &ex) {
 
 void UdpServer::find_own_ip() {
 
-	udp::endpoint broadcast(boost::asio::ip::address_v4::broadcast(), 54566);
+	try {
+		udp::endpoint broadcast(boost::asio::ip::address_v4::broadcast(), 54566);
 
-	boost::array<char, 5> buf = {'0', '1', '2'};
-	udp::endpoint myself(udp::v4(), 54566);
-	udp::socket mesock(io_service_, myself);
+		boost::array<char, 5> buf = {'0', '1', '2'};
+		udp::endpoint myself(udp::v4(), 54566);
+		udp::socket mesock(io_service_, myself);
 
-	thread_pool_.create_thread([&mesock, &myself, &buf] {
-		mesock.receive_from(boost::asio::buffer(buf), myself);
-	});
+		thread_pool_.create_thread([&mesock, &myself, &buf] {
+			mesock.receive_from(boost::asio::buffer(buf), myself);
+		});
 
-	socket_ptr_->send_to(boost::asio::buffer(buf), broadcast);
+		socket_ptr_->send_to(boost::asio::buffer(buf), broadcast);
 
-	while (myself.address() == udp::endpoint(udp::v4(), 54566).address()
-		|| buf[0] != '0' || buf[1] != '1' || buf[2] != '2') {
-		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+		while (myself.address() == udp::endpoint(udp::v4(), 54566).address()
+			|| buf[0] != '0' || buf[1] != '1' || buf[2] != '2') {
+			boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+		}
+		mesock.close();
+		myaddress_ = myself.address();
+
+		std::cout << "[UdpServer] bound to ip " << myaddress_.to_string() << ":" << myport_ << std::endl;
+	} catch (std::exception &ex) {
+		std::cerr << "[UdpServer] find_own_ip threadpool threw " << ex.what() << std::endl;
 	}
-	mesock.close();
-	myaddress_ = myself.address();
-
-	std::cout << "[UdpServer] bound to ip " << myaddress_.to_string() << ":" << myport_ << std::endl;
 
 }
 
-size_t UdpServer::write_to_sendbuffer(boost::array<char, MAX_RECV_BYTES> &target_buf,
+size_t UdpServer::write_to_sendbuffer(boost::array<char, 1024> &target_buf,
                                       const std::string &message,
                                       const uint32_t &message_type) {
 
@@ -106,32 +112,34 @@ size_t UdpServer::write_to_sendbuffer(boost::array<char, MAX_RECV_BYTES> &target
 	}
 }
 
-std::pair<std::string, uint32_t> UdpServer::read_from_recvbuffer(const boost::array<char, MAX_RECV_BYTES> &buf,
-                                                                 size_t bytes_transferred) {
-	try {
-		uint32_t message_type;
-		memcpy(&message_type, buf.data(), sizeof(uint32_t));
+boost::shared_ptr<std::pair<std::string, uint32_t>> UdpServer::read_from_recvbuffer(const boost::array<char,
+                                                                                                       MAX_RECV_BYTES> &buf,
+                                                                                    size_t bytes_transferred) {
 
-		//hopefully the whole string without the message
-		std::string str(buf.begin() + sizeof(uint32_t), bytes_transferred - sizeof(uint32_t));
+	uint32_t message_type;
+	memcpy(&message_type, buf.data(), sizeof(uint32_t));
 
-		//std::cout << "[UdpServer] recvd message type " << message_type << "\nmessage:" << str << std::endl;
+	//hopefully the whole string without the message
+	std::string str(buf.begin() + sizeof(uint32_t), bytes_transferred - sizeof(uint32_t));
 
-		return std::pair<std::string, uint32_t>(str.data(), message_type);
-	} catch (std::exception &e) {
-		std::cerr << "[UdpServer][read_from_buffer] threw " << e.what() << std::endl;
-		return std::pair<std::string, uint32_t>();
-	}
+
+	auto msgpair = boost::shared_ptr<std::pair<std::string, uint32_t>>(new std::pair<std::string, uint32_t>());
+	msgpair->first = str;
+	msgpair->second = message_type;
+
+	//std::cout << "[UdpServer] recvd message type " << msgpair->second << "\nmessage:" << msgpair->first << std::endl;
+
+	return msgpair;
 }
 
 void UdpServer::start_receive() {
-
-	boost::function<void(const boost::system::error_code &, size_t, std::shared_ptr<UdpPackage>)> cbfun
-		= boost::bind(boost::mem_fn(&UdpServer::handle_receive), this, _1, _2, _3);
-
-	auto p = pending_packages_.get_recvpackage(cbfun);
-
 	try {
+
+		boost::function<void(const boost::system::error_code &, size_t, std::shared_ptr<UdpPackage>)> cbfun
+			= boost::bind(boost::mem_fn(&UdpServer::handle_receive), this, _1, _2, _3);
+
+		auto p = pending_packages_.get_recvpackage(cbfun);
+
 		socket_ptr_->async_receive_from(
 			boost::asio::buffer(p->buffer_), p->endpoint_,
 			boost::bind(&UdpPackage::handle_transmission_done, p,
@@ -154,22 +162,18 @@ void UdpServer::start_send(std::string message, uint32_t message_type) {
 		std::cerr << "[UdpServer] message max length exceeded" << std::endl;
 	}
 
-	boost::function<void(const boost::system::error_code &, size_t, std::shared_ptr<UdpPackage>)> cbfun
-		= boost::bind(boost::mem_fn(&UdpServer::handle_send), this, _1, _2, _3);
-
-	std::shared_ptr<UdpPackage> p = pending_packages_.get_sendpackage(cbfun, send_endpoint_);
-
-	size_t bytes_written = 0;
 	try {
+		boost::function<void(const boost::system::error_code &, size_t, std::shared_ptr<UdpPackage>)> cbfun
+			= boost::bind(boost::mem_fn(&UdpServer::handle_send), this, _1, _2, _3);
+
+		std::shared_ptr<UdpPackage> p = pending_packages_.get_sendpackage(cbfun, send_endpoint_);
+
+		size_t bytes_written = 0;
+
 		bytes_written = write_to_sendbuffer(p->buffer_, message, message_type);
 
 		//std::cout << "srv sending " << p->buffer_.data() << std::endl;
-	} catch (std::exception &ex) {
-		std::cerr << "udpserver error stuffing sendbuffer " << ex.what() << std::endl;
-		return;
-	}
 
-	try {
 		socket_ptr_->async_send_to(
 			boost::asio::buffer(p->buffer_, bytes_written), p->endpoint_,
 			boost::bind(&UdpPackage::handle_transmission_done, p,
@@ -205,10 +209,9 @@ void UdpServer::handle_receive(const boost::system::error_code &error,
 	}
 
 	try {
-		//std::cout << "udpserv handl recv " << size << " bytes"
-		//          <<  "\n" << msg_src_endpoint_.address() << "==>" << socket_ptr_->local_endpoint().address() << std::endl;
+		//std::cout << "udpserv handl recv " << std::endl;
+		boost::shared_ptr<std::pair<std::string, uint32_t>> msgpair = read_from_recvbuffer(package->buffer_, size);
 
-		std::pair<std::string, uint32_t> msgpair = read_from_recvbuffer(package->buffer_, size);
 		callback_(msgpair);
 
 		//std::cout << "srv recv done" << std::endl;

@@ -197,22 +197,22 @@ void ControllerUi::add_slave_vehicle( uint32_t vehicle_id) {
     slave_vehicle_ids_.emplace_back(vehicle_id);
 }
 
-void ControllerUi::receive_message( std::pair<std::string, uint32_t> msgpair )
+void ControllerUi::receive_message( boost::shared_ptr<std::pair<std::string, uint32_t>> msgpair )
 {
 
     try {
-        if( msgpair.first.empty()) {
+        if( msgpair->first.empty()) {
             return;
         }
 
         platooning::userInterface msg;
 
-        switch( msgpair.second ) {
+        switch( msgpair->second ) {
             case REMOTE_USERINTERFACE:
 
-            platooning::MessageTypes::decode_json(msgpair.first, msg);
+            platooning::MessageTypes::decode_json(msgpair->first, msg);
 
-            std::cout << msgpair.second << std::endl << msgpair.first << std::endl;
+            std::cout << msgpair->second << std::endl << msgpair->first << std::endl;
 
             if( msg.src_vehicle == 1 ) {
                 try { ui->info_actual_distance_v1->setText( std::to_string(msg.actual_distance).c_str() );} catch( std::exception &ex ) { std::cerr << "error info_actual_distance_v1" << std::endl;}

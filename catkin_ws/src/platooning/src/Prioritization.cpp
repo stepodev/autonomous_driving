@@ -160,7 +160,14 @@ void Prioritization::hndl_platooningState(platooning::platooningState msg) {
 		}
 
 		if( target_distance_ != msg.ipd ) {
-			target_distance_ = msg.ipd;
+
+			if( msg.i_am_LV ) {
+				//currently means "max sensor range, nothing ahead. car shouldnt speed up
+				target_distance_ = 5;
+			} else {
+				target_distance_ = msg.ipd;
+			}
+
 			auto outmsg = boost::shared_ptr<platooning::targetDistance>(new targetDistance);
 			outmsg->distance = target_distance_;
 			pub_targetDistance.publish(outmsg);
