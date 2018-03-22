@@ -9,7 +9,6 @@ Platooning::Platooning() :
 	lv_broadcast_checker_(io_service_) {
 
 	thread_pool_.create_thread( [this]{ io_service_.run();});
-	set_vehicle_id(get_vehicle_id_param());
 
 }
 Platooning::~Platooning() {}
@@ -30,6 +29,8 @@ void Platooning::onInit() {
 	// subscribers nh_.subscribe("Topic", Rate, &Callback, this)
 	sub_platooning_toggle_ =
 		nh_.subscribe(topics::TOGGLE_PLATOONING, 100, &Platooning::hndl_msg_platooning_toggle, this);
+
+	set_vehicle_id(get_vehicle_id_param());
 
 	NODELET_INFO("[%s] init done", name_.c_str());
 
@@ -575,7 +576,7 @@ uint32_t Platooning::get_vehicle_id_param() {
 			vehicle_id = (uint32_t) paramvehicleid;
 		}
 	} else {
-		NODELET_ERROR("[%s] invalid vehicle id parameter. Defaulting to 1", name_.c_str());
+		NODELET_ERROR("[%s] no vehicle id parameter. Defaulting to 1", name_.c_str());
 		vehicle_id = 1;
 	}
 

@@ -9,5 +9,5 @@ string platooning_state
 uint32 src_vehicle
 uint32 platoon_size
 uint32[] platoon_members
-bool enable_remotecontrol
+bool remotecontrol_enabled
 uint32 platoon_id

@@ -31,9 +31,12 @@
 #include <ros/ros.h>
 #include <boost/thread/mutex.hpp>
 #include <algorithm>
+#include <boost/thread/mutex.hpp>
 
 #include "Topics.hpp"
 #include "MessageTypes.hpp"
+#include <boost/thread/thread.hpp>
+#include <boost/asio.hpp>
 
 namespace platooning {
 
@@ -71,21 +74,22 @@ namespace platooning {
  * @warning Warning.
  */
 
-#define DEFAULT_TIMESTEP 0.3 //i think this is Hz
-#define DEFAULT_SPRING_CONSTANT 20 //the dice said that
+#define DEFAULT_SPRING_CONSTANT 0.01 //the lower, the slower we reach target distance, the slower we brake
+#define RANGE_DATA_CHECK 1
+#define VELOCITY_DATA_CHECK 2
 
 using SpringConstant = float;
 using TimeStep = float;
 using Distance = float;
-using Speed = float;
+using Velocity = float;
 
-class LongitudinalControl : public nodelet::Nodelet {
+class LongitudinalProcessing : public nodelet::Nodelet {
   public:
 	void onInit();
 
-	LongitudinalControl();
+	LongitudinalProcessing();
 
-	~LongitudinalControl();
+	~LongitudinalProcessing();
 
   private:
 
@@ -93,37 +97,43 @@ class LongitudinalControl : public nodelet::Nodelet {
 	{
 
 	  public:
-		CritiallyDampenedSpring( SpringConstant spring_constant,
-		                         TimeStep time_step,
-		                         Distance target_distance);
+		CritiallyDampenedSpring();
 
-		void set_target_distance( const Distance& target_distance ) { target_distance_ = target_distance; };
+		void set_target_position(const Distance &target_postion) { target_relative_position_ = target_postion; };
 
-		float calulate_velocity( const Distance& current_distance, const Speed& current_speed, const Speed& target_speed );
+		float calulate_velocity(const Distance &current_position,
+				                        const Velocity &relative_velocity,
+				                        const float &time_step);
+
+		const float& get_target_position() { return target_relative_position_; }
 
 	  private:
-		float spring_constant_;
-		float time_step_;
-		float target_distance_;
+		float spring_constant_ = DEFAULT_SPRING_CONSTANT;
+		float time_step_ = 1;
+		float target_relative_position_ = -1;
 	};
 
 	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-	std::string name_ = "LongitudinalControl";
+	std::string name_ = "LongitudinalProcessing";
 
 	ros::Subscriber sub_distance_to_obj_;
 	ros::Subscriber sub_target_speed_;
 	ros::Subscriber sub_current_speed_;
 	ros::Subscriber sub_target_distance_;
-	ros::Subscriber sub_critically_dampened_spring_params_;
 
-	ros::Publisher pub_acceleration_;
+	ros::Publisher pub_velocity_;
 
 	CritiallyDampenedSpring spring_;
 
-	float current_distance_;
-	float target_distance_;
-	float target_speed_;
-	float current_speed_;
+	Distance current_distance_ = 0;
+	Distance previous_distance_ = 0;
+
+	float target_velocity_ = 0;
+	float current_velocity_ = 0;
+
+	boost::posix_time::ptime previous_distance_timestamp_ = boost::posix_time::min_date_time;
+	boost::posix_time::ptime current_distance_timestamp_ = boost::posix_time::min_date_time;
+
 	boost::mutex calc_mutex_;
 
 	/**
@@ -132,17 +142,22 @@ class LongitudinalControl : public nodelet::Nodelet {
 	 */
 	void hndl_distance_from_sensor(const platooning::distance &msg);
 	void hndl_target_distance(const platooning::targetDistance &msg);
-	void hndl_current_speed(const platooning::speed &msg);
+	void hndl_current_velocity(const platooning::speed &msg);
 	void hndl_targetSpeed(const platooning::targetSpeed &msg);
-	void hndl_spring_update( const platooning::criticallyDampenedSpring &msg );
+
+	void update_velocity();
 
 
-	void update_speed();
+	//Timer facilites
+	boost::posix_time::milliseconds SOURCECHECK_FREQ = boost::posix_time::milliseconds(1000);
+	boost::asio::io_service io_service_;
+	boost::asio::io_service::work io_worker_;
+	boost::asio::deadline_timer detect_dead_datasource_timer;
+	boost::thread_group thread_pool_;
+	void check_dead_datasrc(const boost::system::error_code &e);
+	unsigned short data_src_flags = 0;
 
-	void set_spring(const SpringConstant &spring_constant,
-	                const TimeStep &time_step,
-	                const Distance &target_distance);
-
+	int ix = 0;
 };
 
 } // namespace platooning

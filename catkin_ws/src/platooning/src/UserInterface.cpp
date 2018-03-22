@@ -9,8 +9,20 @@ UserInterface::~UserInterface() {
 };
 
 void UserInterface::onInit() {
-
 	ui_msg_ = boost::shared_ptr<platooning::userInterface>(new platooning::userInterface);
+
+	ui_msg_->remotecontrol_enabled = false;
+	ui_msg_->leading_vehicle = false;
+	ui_msg_->following_vehicle = false;
+	ui_msg_->potential_following_vehicle = false;
+	ui_msg_->platooning_state = "IDLE";
+	ui_msg_->src_vehicle = this->vehicle_id_;
+	ui_msg_->platoon_size = 0;
+	ui_msg_->inner_platoon_distance = 0;
+	ui_msg_->platoon_speed = 0;
+	ui_msg_->actual_distance = 0;
+	ui_msg_->speed = 0;
+	ui_msg_->platoon_id = 0;
 
 	pub_userinterface_ = nh_.advertise<userInterface>(topics::USERINTERFACE, 1, true);
 
@@ -44,11 +56,11 @@ void UserInterface::onInit() {
 	                                      &UserInterface::hndl_platooning_toggle, this);
 	sub_remotecontrol_input = nh_.subscribe(topics::REMOTECONTROL_INPUT, 1,
 	                                        &UserInterface::hndl_remotecontrol_input, this);
-	sub_speed = nh_.subscribe(topics::CURRENT_SPEED, 1,
+	sub_speed = nh_.subscribe(topics::SENSOR_VELOCITY, 1,
 	                          &UserInterface::hndl_current_speed, this);
 	sub_target_speed = nh_.subscribe(topics::TARGET_SPEED, 1,
 	                                 &UserInterface::hndl_target_speed, this);
-	sub_distance_to_obj = nh_.subscribe(topics::SENSOR_DISTANCE_TO_OBJ, 1,
+	sub_distance_to_obj = nh_.subscribe(topics::SENSOR_DISTANCE, 1,
 	                                    &UserInterface::hndl_sensor_dist_to_obj, this);
 	sub_target_dist = nh_.subscribe(topics::TARGET_DISTANCE, 1,
 	                                &UserInterface::hndl_target_dist, this);
@@ -149,7 +161,7 @@ void UserInterface::hndl_out_fv_heartbeat(const fv_heartbeat &msg) {
 
 void UserInterface::hndl_remotecontrol_toggle(const remotecontrolToggle &msg) {
 	try {
-		ui_msg_->enable_remotecontrol = msg.enable_remotecontrol;
+		ui_msg_->remotecontrol_enabled = msg.enable_remotecontrol;
 	} catch (std::exception &ex) {
 		NODELET_ERROR("[%s] hndl_remotecontrol_toggle failed with %s", name_.c_str(), ex.what());
 	}
@@ -175,7 +187,7 @@ void UserInterface::hndl_current_speed(const speed &msg) {
 	try {
 		ui_msg_->speed = msg.speed;
 	} catch (std::exception &ex) {
-		NODELET_ERROR("[%s] hndl_current_speed failed with %s", name_.c_str(), ex.what());
+		NODELET_ERROR("[%s] hndl_current_velocity failed with %s", name_.c_str(), ex.what());
 	}
 }
 

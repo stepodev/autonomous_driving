@@ -87,7 +87,7 @@ void Moduletest_radiointerface::test_send_udp_recv_protocolIn() {
 
 	//setup server to send udp from
 	try {
-		boost::function<void(std::pair<std::string, uint32_t>)>
+		boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)>
 			cbfun(boost::bind(boost::mem_fn(&Moduletest_radiointerface::hndl_recv_udp_dummy), this, _1));
 
 		server_ = std::unique_ptr<UdpServer>(
@@ -121,10 +121,10 @@ void Moduletest_radiointerface::test_send_udp_recv_protocolIn() {
 	}
 }
 
-void Moduletest_radiointerface::hndl_recv_udp_dummy(std::pair<std::string, uint32_t> msg) {
+void Moduletest_radiointerface::hndl_recv_udp_dummy(boost::shared_ptr<std::pair<std::string, uint32_t>> msg) {
 	NODELET_WARN("[%s][hndl_recv_udp_dummy] unexpectedly received msg\ntype %s\npayload %s",
-	             name_.c_str(), std::to_string(msg.second).c_str(),
-		         msg.first.c_str());
+	             name_.c_str(), std::to_string(msg->second).c_str(),
+		         msg->first.c_str());
 }
 
 void Moduletest_radiointerface::hndl_recv_in_protocol(platooning::platoonProtocol msg) {
@@ -164,7 +164,7 @@ void Moduletest_radiointerface::test_send_protocolOut_recv_udp() {
 
 	//prepare server
 	try {
-		boost::function<void(std::pair<std::string, uint32_t>)>
+		boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)>
 			cbfun(boost::bind(boost::mem_fn(&Moduletest_radiointerface::handl_test_udp_recvd), this, _1));
 
 		server_ = std::unique_ptr<UdpServer>(new UdpServer(
@@ -205,21 +205,21 @@ void Moduletest_radiointerface::test_send_protocolOut_recv_udp() {
 	pub_map_[topics::OUT_PLATOONING_MSG].publish(msg);
 }
 
-void Moduletest_radiointerface::handl_test_udp_recvd(std::pair<std::string, uint32_t> msg_pair) {
+void Moduletest_radiointerface::handl_test_udp_recvd(boost::shared_ptr<std::pair<std::string, uint32_t>> msg_pair) {
 
 	TestResult res;
 
-	if (msg_pair.first == get_current_test() && msg_pair.second == FV_LEAVE) {
+	if (msg_pair->first == get_current_test() && msg_pair->second == FV_LEAVE) {
 		res.success = true;
-	} else if (msg_pair.first != get_current_test()) {
+	} else if (msg_pair->first != get_current_test()) {
 		res.comment = std::string(" payload mismatch.\nought:\"")
-			+ get_current_test() + "\"\nwas   \"" + msg_pair.first + "\"";
+			+ get_current_test() + "\"\nwas   \"" + msg_pair->first + "\"";
 
 		res.success = false;
-	} else if (msg_pair.second != FV_LEAVE) {
+	} else if (msg_pair->second != FV_LEAVE) {
 		res.comment += std::string("\nmessage_type mismatch.\nought:\"")
 			+ std::to_string(FV_LEAVE)
-			+ "\"\nwas   \"" + std::to_string(msg_pair.second) + "\"";
+			+ "\"\nwas   \"" + std::to_string(msg_pair->second) + "\"";
 		res.success = false;
 	} else {
 		res.success = false;

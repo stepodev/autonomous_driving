@@ -43,7 +43,7 @@
 #include "platooning/targetDistance.h"
 #include "platooning/speed.h"
 #include "platooning/distance.h"
-#include "platooning/criticallyDampenedSpring.h"
+#include "platooning/vehicleControl.h"
 #include "platooning/templateMsg.h"
 
 namespace platooning {
@@ -83,6 +83,8 @@ class MessageTypes {
 
 	static void decode_json(const std::string &json, stmupdate &message);
 
+	static void decode_json(const std::string &json, vehicleControl &message);
+
 	static std::string encode_message(const lv_broadcast &message);
 
 	static std::string encode_message(const lv_accept &message);
@@ -111,6 +113,8 @@ class MessageTypes {
 
 	static std::string encode_message(const stmupdate &message);
 
+	static std::string encode_message(const vehicleControl &message);
+
   private:
 	template<typename T>
 	static std::vector<T>
@@ -118,6 +122,7 @@ class MessageTypes {
 
 	template<typename T>
 	static boost::property_tree::ptree vector_as_json(std::vector<T> const &v);
+
 };
 
 }

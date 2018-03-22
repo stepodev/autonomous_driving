@@ -49,7 +49,7 @@ void Moduletest_platooning::onInit() {
 	register_testcases(boost::bind(&Moduletest_platooning::send_platoontoggle_recv_platoonstate_creating, this));
 	register_testcases(boost::bind(&Moduletest_platooning::send_fv_request_recv_lv_accept, this));
 
-	NODELET_INFO(std::string("[" + name_ + "] init done").c_str());
+	NODELET_INFO("[%s] init done", name_.c_str());
 
 	start_tests();
 }
@@ -57,49 +57,6 @@ void Moduletest_platooning::onInit() {
 /*****************************************************************************
 ** Testcases
 *****************************************************************************/
-
-void Moduletest_platooning::pub_templatemsg_recv_othermsg() {
-
-	set_current_test("pub_templatemsg_recv_othermsg");
-	NODELET_INFO(std::string("[" + name_ + "] started testcase " + get_current_test()).c_str());
-
-	//mockup publishers
-	pub_map_.clear();
-	pub_map_.emplace(topics::TEMPLATETOPIC, ros::Publisher());
-	pub_map_[topics::TEMPLATETOPIC] = nh_.advertise<templateMsg>(topics::TEMPLATETOPIC, 1);
-
-	//mockup subscribers
-	sub_map_.clear();
-	sub_map_.emplace(topics::TEMPLATETOPIC, ros::Subscriber());
-	sub_map_[topics::TEMPLATETOPIC] = nh_.subscribe(topics::TEMPLATETOPIC, 1,
-	                                                &Moduletest_platooning::hndl_recv_othermsg,
-	                                                this);
-
-	boost::shared_ptr<templateMsg> inmsg = boost::shared_ptr<templateMsg>(new templateMsg);
-
-	inmsg->templatebool = true;
-
-	pub_map_[topics::TEMPLATETOPIC].publish(inmsg);
-
-}
-
-void Moduletest_platooning::hndl_recv_othermsg(const platooning::templateMsg &msg) {
-
-	TestResult res;
-	res.success = true;
-
-	if (msg.templatebool != true) {
-		res.success = false;
-		res.comment = "this is a useful comment what happened and why";
-	}
-
-	if (!res.success) {
-		NODELET_ERROR((std::string("[") + name_ + "] error with " + res.comment).c_str());
-	}
-
-	finalize_test(res);
-
-}
 
 void Moduletest_platooning::send_platoontoggle_recv_platoonstate_creating() {
 
@@ -155,7 +112,7 @@ void Moduletest_platooning::hndl_testcase_send_platoontoggle_recv_platoonstate_c
 	}
 
 	if (!res.success) {
-		NODELET_ERROR((std::string("[") + name_ + "] error with " + res.comment).c_str());
+		NODELET_ERROR("[%s] error with %s", name_.c_str(), res.comment.c_str());
 	}
 
 	//cleanup

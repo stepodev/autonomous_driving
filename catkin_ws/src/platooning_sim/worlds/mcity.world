@@ -4,7 +4,7 @@
     <gui fullscreen='0'>
       <plugin name='keyboard' filename='libKeyboardGUIPlugin.so'/>
       <camera name="user_camera">
-        <pose>-143.136 65.8162 11.6055 0 0.224 -1.56119</pose>
+        <pose>-133.136 70.8162 11.6055 0 0.224 -1.56119</pose>
       </camera>
     </gui>
 
@@ -63,7 +63,7 @@
     <atmosphere type='adiabatic'/>
     <physics name='default_physics' default='0' type='ode'>
       <max_step_size>0.001</max_step_size>
-      <real_time_factor>1</real_time_factor>
+      <real_time_factor>0.2</real_time_factor>
       <real_time_update_rate>1000</real_time_update_rate>
     </physics>
     <scene>

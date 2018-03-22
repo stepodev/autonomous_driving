@@ -20,9 +20,6 @@ find_package(catkin REQUIRED COMPONENTS
         gazebo_ros
         prius_msgs
         sensor_msgs
-        )
-
-find_package(platooning REQUIRED COMPONENTS
         platooning
         )
 
@@ -38,21 +35,21 @@ find_package(ignition-msgs0 REQUIRED)
 catkin_package(
         INCLUDE_DIRS include
         LIBRARIES gazeboadapter
-        CATKIN_DEPENDS gazebo_ros
+        CATKIN_DEPENDS gazebo_ros platooning prius_msgs
         #  DEPENDS system_lib
 )
 
-include_directories(include ../platooning/include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${SDFormat_INCLUDE_DIRS})
+include_directories(include ../platooning/include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${SDFormat_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 add_library(PriusHybridPlugin SHARED plugins/PriusHybridPlugin.cc)
 target_link_libraries(PriusHybridPlugin ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES})
 
-add_library(priustopics include/platooning_sim/topics.hpp ${catkin_LIBRARIES})
+add_library(priustopics include/platooning_sim/topics.hpp )
 set_target_properties(priustopics PROPERTIES LINKER_LANGUAGE CXX)
 
 add_library(gazeboadapter include/platooning_sim/gazeboadapter.hpp src/gazeboadapter.cpp)
-add_dependencies(gazeboadapter priustopics)
-target_link_libraries(gazeboadapter udpserver messagetypes topics priustopics ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES})
+add_dependencies(gazeboadapter priustopics ${catkin_EXPORTED_TARGETS} )
+target_link_libraries(gazeboadapter udpserver messagetypes topics priustopics ${platooning_LIBRARIES} ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES} ${Boost_LIBRARIES})
 
 install(TARGETS PriusHybridPlugin gazeboadapter
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

@@ -37,6 +37,9 @@
 #include "Services.hpp"
 #include "ServiceTypes.hpp"
 
+#define LOWEST_SPEED -5.0f
+#define HIGHEST_SPEED 7.0f
+
 namespace platooning {
 
 /**
@@ -73,17 +76,24 @@ namespace platooning {
  * @warning Warning.
  */
 
-enum PrioritizationState {
+enum class PrioritizationMode {
 	NONE,
 	REMOTECONTROL,
 	PLATOONING,
 };
 
-const std::string PrioritizationStateString[] {
-	"NONE",
-	"REMOTECONTROL",
-	"PLATOONING"
-};
+std::string to_string( const PrioritizationMode& e ) {
+	switch ( e ) {
+		case PrioritizationMode::NONE:
+			return "NONE";
+		case PrioritizationMode::REMOTECONTROL:
+			return "REMOTECONTROL";
+		case PrioritizationMode::PLATOONING:
+			return "PLATOONING";
+	}
+
+	return "";
+}
 
 class Prioritization : public nodelet::Nodelet {
   public:
@@ -95,34 +105,41 @@ class Prioritization : public nodelet::Nodelet {
 
   private:
 	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-	std::string name_;
+	std::string name_ = "Prioritization";
 	float target_speed_;
+	float current_speed_;
 	float target_distance_;
 	float target_angle_;
 	uint32_t vehicle_id_ = 1;
-	PrioritizationState state_;
+	PrioritizationMode mode_;
+	platooningState platooning_state_;
 	boost::thread_group thread_pool_;
 
 	//Subscribers
-	ros::Subscriber sub_remotecontrolInput;
-	ros::Subscriber sub_remotecontrolToggle;
-	ros::Subscriber sub_platooningToggle;
-	ros::Subscriber sub_platooningState;
+	ros::Subscriber sub_remotecontrolInput_;
+	ros::Subscriber sub_remotecontrolToggle_;
+	ros::Subscriber sub_platooningToggle_;
+	ros::Subscriber sub_platooningState_;
+	ros::Subscriber sub_sensor_velocity_;
+	ros::Subscriber sub_calc_velocity_;
 
 	//Publishers
-	ros::Publisher pub_targetAngle;
-	ros::Publisher pub_targetSpeed;
-	ros::Publisher pub_targetDistance;
+	ros::Publisher pub_targetAngle_;
+	ros::Publisher pub_targetSpeed_;
+	ros::Publisher pub_targetDistance_;
+	ros::Publisher pub_vehicleControl_;
 
 	/**
 	 * @brief to achieve X does Y
 	 * @param msg incoming topic message
 	 */
 
-	void hndl_remotecontrolInput(platooning::remotecontrolInput);
-	void hndl_remotecontrolToggle(platooning::remotecontrolToggle);
-	void hndl_platooningToggle(platooning::platooningToggle);
-	void hndl_platooningState(platooning::platooningState);
+	void hndl_remotecontrolInput(const remotecontrolInput &);
+	void hndl_remotecontrolToggle(const remotecontrolToggle &);
+	void hndl_platooningToggle(const platooningToggle &);
+	void hndl_platooningState(const platooningState &);
+	void hndl_current_speed(const speed&);
+	void hndl_calc_velocity(const speed&);
 
 };
 

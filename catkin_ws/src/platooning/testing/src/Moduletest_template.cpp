@@ -59,7 +59,7 @@ void Moduletest_template::onInit() {
 void Moduletest_template::pub_templatemsg_recv_othermsg() {
 
 	set_current_test("pub_templatemsg_recv_othermsg");
-	NODELET_INFO(std::string("[" + name_ + "] started testcase " + get_current_test()).c_str());
+	NODELET_INFO("[%s] started testcase %s ", name_.c_str(), get_current_test().c_str());
 
 	//mockup publishers
 	pub_map_.clear();

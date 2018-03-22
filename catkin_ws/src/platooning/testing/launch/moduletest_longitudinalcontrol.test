@@ -1,5 +1,0 @@
-<launch>
-  <include file="$(find platooning)/launch/nodeletmanager.launch"/>
-  <include file="$(find platooning)/testing/launch/moduletest_longitudinalcontrol.launch"/>
-  <include file="$(find platooning)/launch/longitudinalcontrol.launch"/>
-</launch>

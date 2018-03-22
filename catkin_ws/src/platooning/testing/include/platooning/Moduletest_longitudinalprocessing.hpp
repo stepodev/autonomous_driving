@@ -66,13 +66,13 @@ namespace platooning {
  * @warning Warning.
  */
 
-class Moduletest_longitudinalcontrol : public Moduletest {
+class Moduletest_longitudinalprocessing : public Moduletest {
   public:
 	void onInit();
 
-	Moduletest_longitudinalcontrol();
+	Moduletest_longitudinalprocessing();
 
-	~Moduletest_longitudinalcontrol();
+	~Moduletest_longitudinalprocessing();
 
   private:
 	/**

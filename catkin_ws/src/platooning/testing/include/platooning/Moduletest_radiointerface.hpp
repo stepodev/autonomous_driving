@@ -91,12 +91,12 @@ namespace platooning {
      * @param msg incoming topic message
      */
     void test_send_udp_recv_protocolIn();
-    void hndl_recv_udp_dummy(std::pair<std::string, uint32_t> msg);
+    void hndl_recv_udp_dummy(boost::shared_ptr<std::pair<std::string, uint32_t>> msg);
     void hndl_recv_in_protocol(platooning::platoonProtocol msg);
 
 
     void test_send_protocolOut_recv_udp();
-    void handl_test_udp_recvd( std::pair<std::string, uint32_t> msg);
+    void handl_test_udp_recvd(boost::shared_ptr<std::pair<std::string, uint32_t>> msg);
   };
 
 

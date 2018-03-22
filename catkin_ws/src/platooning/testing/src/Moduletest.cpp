@@ -6,14 +6,18 @@
 Moduletest::Moduletest() : testcase_timer_(io_) {
 	timeout_ = boost::posix_time::seconds(3);
 	timeout_callback_ = boost::function<void()>();
+
+	work_ = std::unique_ptr<boost::asio::io_service::work>( new boost::asio::io_service::work(io_) );
 }
 
 Moduletest::~Moduletest() {
 	try {
 		NODELET_WARN("[%s] killing %i threads", name_.c_str(), (int)threadpool_.size());
 
+		work_->get_io_service().stop();
+		work_->get_io_service().reset();
+
 		threadpool_.interrupt_all();
-		threadpool_.join_all();
 	} catch (std::exception &ex) {
 		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}
@@ -60,6 +64,8 @@ void Moduletest::finalize_test(TestResult result) {
 		expects_timeout_ = false;
 
 		start_tests();
+
+
 	} catch (std::exception &ex) {
 		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}
@@ -122,8 +128,9 @@ void Moduletest::start_tests() {
 											   boost::asio::placeholders::error));
 
 		threadpool_.create_thread([this] {
-			this->io_.run();
+			io_.run();
 		});
+
 	} catch (std::exception &ex) {
 		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}

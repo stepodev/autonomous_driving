@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="nodelet" type="nodelet" name="longitudinalprocessing" args="load platooning/longitudinalprocessing nodeletmanager" respawn="true"></node>
+</launch>

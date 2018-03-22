@@ -1,0 +1,9 @@
+<library path="lib/liblongitudinalprocessing">
+    <class name="platooning/longitudinalprocessing"
+	         type="platooning::LongitudinalProcessing"
+            base_class_type="nodelet::Nodelet">
+        <description>
+            Template Nodelet
+        </description>
+    </class>
+</library>
