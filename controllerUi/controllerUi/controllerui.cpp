@@ -63,7 +63,7 @@ void ControllerUi::on_togglePlatooning_v1_clicked()
         std::string lvfv;
 
         if( platooningEnabled_v1_ ) {
-            if( ui->info_set_platoonspeed_v1->text() == "") {
+            if( ui->info_set_platoon_distance_v1->text() == "") {
                 platooningEnabled_v1_ = !platooningEnabled_v1_;
                 QMessageBox msgBox;
                 msgBox.setText("IPD cannot be empty.");
@@ -72,7 +72,7 @@ void ControllerUi::on_togglePlatooning_v1_clicked()
             }
 
             try {
-                ipd = std::stof(ui->info_set_platoonspeed_v1->text().toStdString() );
+                ipd = std::stof(ui->info_set_platoon_distance_v1->text().toStdString() );
             } catch( std::invalid_argument &ex ) {
                 platooningEnabled_v1_ = !platooningEnabled_v1_;
                 QMessageBox msgBox;
@@ -81,7 +81,7 @@ void ControllerUi::on_togglePlatooning_v1_clicked()
                 return;
             }
 
-            if( ui->info_set_platoon_distance_v1->text() == "") {
+            if( ui->info_set_platoonspeed_v1->text() == "") {
                 platooningEnabled_v1_ = !platooningEnabled_v1_;
                 QMessageBox msgBox;
                 msgBox.setText("PS cannot be empty.");

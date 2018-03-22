@@ -38,9 +38,10 @@ const std::string TOGGLE_PLATOONING = "toggle_platooning";
 const std::string REMOTECONTROL_INPUT = "remotecontrolinput";
 
 //control topics
-const std::string SENSOR_DISTANCE_TO_OBJ = "sensor_distance_to_obj";
-const std::string CURRENT_SPEED = "current_speed";
-const std::string VEHICLE_CONTROL = "vehiclecontrol";
+const std::string SENSOR_DISTANCE = "sensors/distance";
+const std::string SENSOR_VELOCITY = "sensors/velocity";
+const std::string CALCULATED_VELOCITY = "calc_velocity";
+const std::string VEHICLE_CONTROL = "vehicle_control";
 const std::string STEERING_ANGLE = "steeringangle";
 const std::string ACCELERATION = "acceleration";
 
@@ -53,7 +54,6 @@ const std::string TARGET_ANGLE = "target_angle";
 const std::string CAMERA = "camera";
 
 //longitudinalcontrol
-const std::string CRITICALLY_DAMPED_SPRING_PARAMS = "/settings/crit_damp_spring";
 
 //template
 const std::string TEMPLATETOPIC = "templateTopic";

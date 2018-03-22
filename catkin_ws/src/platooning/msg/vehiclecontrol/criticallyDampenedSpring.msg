@@ -1,3 +1,0 @@
-float32 time_step
-float32 spring_constant
-float32 target_distance

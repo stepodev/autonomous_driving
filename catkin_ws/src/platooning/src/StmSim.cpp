@@ -47,14 +47,11 @@ StmSim::~StmSim() {};
 */
 void StmSim::onInit() {
 
-	sub_steering_ = nh_.subscribe(topics::STEERING_ANGLE, 1,
-	                              &StmSim::hndl_steeringAngle, this);
+	sub_vehicle_control_ = nh_.subscribe(topics::VEHICLE_CONTROL, 1,
+	                                     &StmSim::hndl_vehicleControl, this);
 
-	sub_accel_ = nh_.subscribe(topics::ACCELERATION, 1,
-	                           &StmSim::hndl_acceleration, this);
-
-	pub_current_speed_ = nh_.advertise<platooning::speed>(topics::CURRENT_SPEED, 1, true);
-	pub_distanceToObj_ = nh_.advertise<platooning::distance>(topics::SENSOR_DISTANCE_TO_OBJ, 1, true);
+	pub_current_speed_ = nh_.advertise<platooning::speed>(topics::SENSOR_VELOCITY, 1, true);
+	pub_distanceToObj_ = nh_.advertise<platooning::distance>(topics::SENSOR_DISTANCE, 1, true);
 
 	try {
 		boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)> cbfun(boost::bind(boost::mem_fn(
@@ -72,7 +69,7 @@ void StmSim::onInit() {
 	}
 
 	steering_angle_ = 0;
-	acceleration_ = 0;
+	current_velocity_ = 0;
 	vehicle_id_ = 1;
 
 	thread_pool_.create_thread([this] {
@@ -117,6 +114,7 @@ void StmSim::hndl_gazupdate(boost::shared_ptr<std::pair<std::string, uint32_t>> 
 			MessageTypes::decode_json(message_pair->first, gazmsg);
 
 			if (gazmsg.id == vehicle_id_) {
+				current_velocity_ = gazmsg.speed;
 				auto speedmsg = boost::shared_ptr<platooning::speed>(new platooning::speed);
 				speedmsg->speed = gazmsg.speed;
 				pub_current_speed_.publish(speedmsg);
@@ -132,34 +130,45 @@ void StmSim::hndl_gazupdate(boost::shared_ptr<std::pair<std::string, uint32_t>> 
 	}
 
 }
-void StmSim::hndl_acceleration(const platooning::acceleration &msg) {
-	try {
-		acceleration_ = msg.accelleration;
 
-		platooning::stmupdate outmsg;
-		outmsg.id = vehicle_id_;
-		outmsg.steeringAngle = steering_angle_;
-		outmsg.acceleration = acceleration_;
-
-		std::string msgstr = MessageTypes::encode_message(outmsg);
-
-		server_ptr_->start_send(msgstr, STMSIM_UPDATE);
-
-	} catch (std::exception &ex) {
-		NODELET_ERROR("[%s] hndl_targetSpeed failed with %s ", name_.c_str(), ex.what());
-	}
-
-}
-
-void StmSim::hndl_steeringAngle(const platooning::steeringAngle &msg) {
+void StmSim::hndl_vehicleControl(const vehicleControl &msg) {
 	try {
 
 		steering_angle_ = msg.steering_angle;
 
+		float mod_velo = msg.velocity - current_velocity_ ;
+
+		if( msg.velocity == 0 ){
+			mod_velo = 0;
+		}
+
+		float acceleration = 0;
+
+		//remap velocity to -1 to 1 range. assumes original range of -5 to 7
+		//normalized = (x-min(x))/(max(x)-min(x))
+		//normalize to 0 to 7 to 0 to 1
+		if( mod_velo > 0.0f ) {
+			acceleration = (mod_velo/7.0f);
+		} else if ( mod_velo == 0 ) {
+			acceleration = 0;
+		}
+		else {
+			//normalize -5 to 0 to -1 to 0
+			acceleration = -((-mod_velo/5.0f));
+		}
+
+		if( acceleration >= 1.f || acceleration <= -1.f) {
+			NODELET_ERROR("[%s] velo %f - calc: %f = %f -> throttle %f ",
+			             name_.c_str(), current_velocity_, msg.velocity, mod_velo, acceleration);
+		} else {
+			NODELET_INFO("[%s] velo %f - calc: %f = %f -> throttle %f ",
+			             name_.c_str(), current_velocity_, msg.velocity, mod_velo, acceleration);
+		}
+
 		platooning::stmupdate outmsg;
 		outmsg.id = vehicle_id_;
 		outmsg.steeringAngle = steering_angle_;
-		outmsg.acceleration = acceleration_;
+		outmsg.acceleration = acceleration;
 
 		std::string msgstr = MessageTypes::encode_message(outmsg);
 

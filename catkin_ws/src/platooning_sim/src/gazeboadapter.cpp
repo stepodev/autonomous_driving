@@ -28,8 +28,16 @@ gazeboadapter::~gazeboadapter() {
 void gazeboadapter::onInit() {
 
 	p1gazupdate.id = 1;
+	p1gazupdate.speed = 0;
+	p1gazupdate.distance = 0;
+
 	p2gazupdate.id = 2;
+	p2gazupdate.speed = 0;
+	p2gazupdate.distance = 0;
+
 	p3gazupdate.id = 3;
+	p3gazupdate.speed = 0;
+	p3gazupdate.distance = 0;
 
 	pub_p1_control_ = nh_.advertise<prius_msgs::Control>(topics::p1_control, 1);
 	pub_p2_control_ = nh_.advertise<prius_msgs::Control>(topics::p2_control, 1);
@@ -151,6 +159,7 @@ void gazeboadapter::process_stmsim(const platooning::stmupdate &stmupdate) {
 		c->shift_gears = prius_msgs::Control::REVERSE;
 	} else if( stmupdate.acceleration == 0) {
 		c->shift_gears = prius_msgs::Control::NEUTRAL;
+		c->throttle = 0;
 	} else {
 		c->shift_gears = prius_msgs::Control::FORWARD;
 	}

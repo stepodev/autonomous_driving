@@ -83,7 +83,6 @@ add_message_files(
         vehiclecontrol/steeringAngle.msg
         ########################
         ## longitudalControl messages
-        vehiclecontrol/criticallyDampenedSpring.msg
         ########################
         ## radiointerface messages
         platoonProtocol.msg
@@ -109,6 +108,7 @@ add_message_files(
         ########################
         ## vehicle control
         vehiclecontrol/acceleration.msg
+        vehiclecontrol/vehicleControl.msg
         ########################
         ## templateMessages
         templateMsg.msg

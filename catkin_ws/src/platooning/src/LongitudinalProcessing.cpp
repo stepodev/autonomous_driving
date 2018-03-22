@@ -52,26 +52,23 @@ LongitudinalProcessing::~LongitudinalProcessing() {};
 */
 void LongitudinalProcessing::onInit() {
 
-	sub_current_speed_ = nh_.subscribe(topics::CURRENT_SPEED, 1,
+	sub_current_speed_ = nh_.subscribe(topics::SENSOR_VELOCITY, 1,
 	                                   &LongitudinalProcessing::hndl_current_velocity, this);
 
 	sub_target_speed_ = nh_.subscribe(topics::TARGET_SPEED, 1,
 	                                  &LongitudinalProcessing::hndl_targetSpeed, this);
 
-	sub_distance_to_obj_ = nh_.subscribe(topics::SENSOR_DISTANCE_TO_OBJ, 1,
+	sub_distance_to_obj_ = nh_.subscribe(topics::SENSOR_DISTANCE, 1,
 	                                     &LongitudinalProcessing::hndl_distance_from_sensor, this);
 
 	sub_target_distance_ = nh_.subscribe(topics::TARGET_DISTANCE, 1,
 	                                     &LongitudinalProcessing::hndl_target_distance, this);
 
-	pub_acceleration_ = nh_.advertise<platooning::acceleration>(topics::ACCELERATION, 1);
+	pub_velocity_ = nh_.advertise<platooning::speed>(topics::CALCULATED_VELOCITY, 1);
 
-	previous_distance_timestamp_ = boost::posix_time::min_date_time;
-	current_distance_timestamp_ = boost::posix_time::min_date_time;
-
-	current_distance_ = 0;
-	current_velocity_ = 0;
-	target_velocity_ = 0;
+	detect_dead_datasource_timer.expires_from_now(SOURCECHECK_FREQ);
+	detect_dead_datasource_timer.async_wait(boost::bind(&LongitudinalProcessing::check_dead_datasrc, this,
+	                                                    boost::asio::placeholders::error));
 
 	NODELET_INFO("[%s] init done", name_.c_str());
 
@@ -84,11 +81,7 @@ void LongitudinalProcessing::onInit() {
 void LongitudinalProcessing::hndl_distance_from_sensor(const platooning::distance &msg) {
 	//NODELET_INFO(  "[%s]  recv distance from sensor.", name_.c_str());
 
-
-	detect_dead_datasource_timer.cancel();
-	detect_dead_datasource_timer.expires_from_now(SOURCECHECK_FREQ);
-	detect_dead_datasource_timer.async_wait(boost::bind(&LongitudinalProcessing::check_dead_datasrc, this,
-	                                                    boost::asio::placeholders::error));
+	data_src_flags |= RANGE_DATA_CHECK;
 
 	try {
 		//check if we received new data
@@ -113,7 +106,6 @@ void LongitudinalProcessing::hndl_target_distance(const platooning::targetDistan
 	try {
 		if (msg.distance != -spring_.get_target_position()) {
 
-
 			if (msg.distance < 0.5) {
 				NODELET_ERROR("[%s] target distance shorter than 0.5. Setting to 1.", name_.c_str());
 				spring_.set_target_position(-1);
@@ -128,6 +120,8 @@ void LongitudinalProcessing::hndl_target_distance(const platooning::targetDistan
 };
 
 void LongitudinalProcessing::hndl_current_velocity(const platooning::speed &msg) {
+
+	data_src_flags |= VELOCITY_DATA_CHECK;
 
 	//NODELET_INFO( "[%s] recv speed.", name_.c_str());
 	try {
@@ -160,69 +154,92 @@ void LongitudinalProcessing::update_velocity() {
 
 	boost::mutex::scoped_lock l(calc_mutex_);
 
-	auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
+	auto outmsg = boost::shared_ptr<platooning::speed>(new platooning::speed);
 
 	//calculate time_step in seconds since velocity is in m/s and distance in m
 	float time_step = (current_distance_timestamp_ - previous_distance_timestamp_).total_milliseconds() / 1000.0f;
+
+	//ensure we are not dividing by 0
+	if (time_step <= 0.0f) {
+		return;
+	}
 
 	//distance change in the last time_step
 	float range_diff = current_distance_ - previous_distance_;
 	//change in range / timestep should be the relative velocity
 	float relative_velocity = range_diff / time_step;
-	//add current velocity to
-	float spring_velocity =
-		current_velocity_ + spring_.calulate_velocity(-current_distance_, relative_velocity, time_step);
+	//if we deviate 10% from our target distance, calculate velocity
+	//else, just try to match speed
+	float spring_velocity = 0;
+	if (fabs(current_distance_ - -spring_.get_target_position()) <= 0.1 * -spring_.get_target_position()) {
+		std::cout << "fine " << fabs(current_distance_ - -spring_.get_target_position()) << std::endl;
+		spring_velocity = relative_velocity;
+	} else {
+		std::cout << "not fine" << std::endl;
+		spring_velocity = spring_.calulate_velocity(-current_distance_, relative_velocity, time_step);
+	}
 
 	//modify current velocity with spring value to approach target distance
 	float calculated_velocity = current_velocity_ + spring_velocity;
 
-	float accel = std::max(-5.0f, std::min(calculated_velocity, target_velocity_ * 1.4f)) - current_velocity_;
+	/*
+	//every 40th time. remove!
+	if (ix++ % 20 == 0) {
+		NODELET_INFO(
+			"ms: %i time_step: %f range_diff: %f relative_vel: %f spring_vel %f current_vel: %f calc_vel: %f\ndist:%f target:%f prev_dist %f",
+			(int) (current_distance_timestamp_ - previous_distance_timestamp_).total_milliseconds(),
+			time_step,
+			range_diff,
+			relative_velocity,
+			spring_velocity,
+			current_velocity_,
+			calculated_velocity,
+			current_distance_,
+			-spring_.get_target_position(),
+		previous_distance_);
+	}
+*/
+	outmsg->speed = calculated_velocity;
 
-	gazsim brake weglassen? hoffen dass reverse throttle unser brake wird? ipd auf 5 momentan?? crashes nun nur longcontrol?
-
-	NODELET_INFO(
-		"ms: %f time_step: %f range_diff: %f relative_vel: %f spring_vel %f current_vel: %f calc_vel: %f\ndist:%f target:%f accel: %f",
-		(float) (current_distance_timestamp_ - previous_distance_timestamp_).total_milliseconds(),
-		time_step,
-		range_diff,
-		relative_velocity,
-		spring_velocity,
-		current_velocity_,
-		calculated_velocity,
-		current_distance_,
-		-spring_.get_target_position(),
-		accel);
-
-	//clamp calculated velocity to -5 and target_speed *1.4 so we dont drive so fast
-	outmsg->accelleration = accel;
-
-	pub_acceleration_.publish(outmsg);
+	pub_velocity_.publish(outmsg);
 
 }
 void LongitudinalProcessing::check_dead_datasrc(const boost::system::error_code &e) {
 
 	if (boost::asio::error::operation_aborted == e) {
-		//NODELET_ERROR("[%s] check_dead_datasrc timer cancelled", name_.c_str());
+		NODELET_ERROR("[%s] check_dead_datasrc timer cancelled", name_.c_str());
 		return;
 	}
 
-	NODELET_ERROR("[%s] distance data source hasnt delivered in %i ms. halting",
-	              name_.c_str(),
-	              (int) SOURCECHECK_FREQ.total_milliseconds());
-	auto outmsg = boost::shared_ptr<platooning::acceleration>(new platooning::acceleration);
-	outmsg->accelleration = 0;
-	pub_acceleration_.publish(outmsg);
+	if ((data_src_flags & RANGE_DATA_CHECK) != RANGE_DATA_CHECK) {
+		NODELET_ERROR("[%s] RANGE_DATA_CHECK false. range data not received for %i",
+		              name_.c_str(), (int) SOURCECHECK_FREQ.total_milliseconds());
 
+		auto outmsg = boost::shared_ptr<platooning::speed>(new platooning::speed);
+		outmsg->speed = 0;
+		pub_velocity_.publish(outmsg);
 
-//is always started on every range receipt
-//detect_dead_datasource_timer->expires_from_now(SOURCECHECK_FREQ);
-//detect_dead_datasource_timer->async_wait(boost::bind(&LongitudinalProcessing::check_dead_datasrc, this,
-//                                                     boost::asio::placeholders::error));
+	}
 
+	if ((data_src_flags & VELOCITY_DATA_CHECK) != VELOCITY_DATA_CHECK) {
+		NODELET_ERROR("[%s] VELOCITY_DATA_CHECK false. velocity data not received for %i",
+		              name_.c_str(), (int) SOURCECHECK_FREQ.total_milliseconds());
+
+		auto outmsg = boost::shared_ptr<platooning::speed>(new platooning::speed);
+		outmsg->speed = 0;
+		pub_velocity_.publish(outmsg);
+
+	}
+
+	data_src_flags = 0;
+
+	detect_dead_datasource_timer.expires_from_now(SOURCECHECK_FREQ);
+	detect_dead_datasource_timer.async_wait(boost::bind(&LongitudinalProcessing::check_dead_datasrc, this,
+	                                                    boost::asio::placeholders::error));
 }
 
 LongitudinalProcessing::CritiallyDampenedSpring::CritiallyDampenedSpring() {
-	spring_constant_ = 3;
+	spring_constant_ = DEFAULT_SPRING_CONSTANT;
 	target_relative_position_ = -1;
 
 }

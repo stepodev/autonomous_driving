@@ -194,6 +194,7 @@ void MessageTypes::decode_json(const std::string &json, steeringAngle &message) 
 
 	message.steering_angle = root.get<float>("steering_angle");
 }
+
 void MessageTypes::decode_json(const std::string &json, acceleration &message) {
 	std::stringstream ss(json);
 
@@ -203,9 +204,17 @@ void MessageTypes::decode_json(const std::string &json, acceleration &message) {
 	message.accelleration = root.get<float>("accelleration");
 }
 
-std::string MessageTypes::encode_message(const lv_broadcast &message) {
+void MessageTypes::decode_json(const std::string &json, vehicleControl &message) {
+	std::stringstream ss(json);
 
-	std::string json;
+	pt::ptree root;
+	pt::read_json(ss, root);
+
+	message.steering_angle = root.get<float>("steering_angle");
+	message.velocity = root.get<float>("velocity");
+}
+
+std::string MessageTypes::encode_message(const lv_broadcast &message) {
 	pt::ptree root;
 
 	root.put("src_vehicle", message.src_vehicle);
@@ -221,7 +230,6 @@ std::string MessageTypes::encode_message(const lv_broadcast &message) {
 }
 
 std::string MessageTypes::encode_message(const lv_accept &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("platoon_id", message.platoon_id);
@@ -235,7 +243,6 @@ std::string MessageTypes::encode_message(const lv_accept &message) {
 }
 
 std::string MessageTypes::encode_message(const lv_reject &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("platoon_id", message.platoon_id);
@@ -249,7 +256,6 @@ std::string MessageTypes::encode_message(const lv_reject &message) {
 }
 
 std::string MessageTypes::encode_message(const fv_heartbeat &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("platoon_id", message.platoon_id);
@@ -262,7 +268,6 @@ std::string MessageTypes::encode_message(const fv_heartbeat &message) {
 }
 
 std::string MessageTypes::encode_message(const fv_leave &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("platoon_id", message.platoon_id);
@@ -275,7 +280,6 @@ std::string MessageTypes::encode_message(const fv_leave &message) {
 }
 
 std::string MessageTypes::encode_message(const fv_request &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("src_vehicle", message.src_vehicle);
@@ -287,7 +291,6 @@ std::string MessageTypes::encode_message(const fv_request &message) {
 }
 
 std::string MessageTypes::encode_message(const remotecontrolInput &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("remote_angle", message.remote_angle);
@@ -301,7 +304,6 @@ std::string MessageTypes::encode_message(const remotecontrolInput &message) {
 }
 
 std::string MessageTypes::encode_message(const remotecontrolToggle &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("enable_remotecontrol", message.enable_remotecontrol);
@@ -313,7 +315,6 @@ std::string MessageTypes::encode_message(const remotecontrolToggle &message) {
 }
 
 std::string MessageTypes::encode_message(const platooningToggle &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("vehicle_id", message.vehicle_id);
@@ -329,7 +330,6 @@ std::string MessageTypes::encode_message(const platooningToggle &message) {
 }
 
 std::string MessageTypes::encode_message(const stmupdate &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("id", message.id);
@@ -343,7 +343,6 @@ std::string MessageTypes::encode_message(const stmupdate &message) {
 }
 
 std::string MessageTypes::encode_message(const gazupdate &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("id", message.id);
@@ -357,7 +356,6 @@ std::string MessageTypes::encode_message(const gazupdate &message) {
 }
 
 std::string MessageTypes::encode_message(const steeringAngle &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("steering_angle", message.steering_angle);
@@ -368,7 +366,6 @@ std::string MessageTypes::encode_message(const steeringAngle &message) {
 	return ss.str();
 }
 std::string MessageTypes::encode_message(const acceleration &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("accelleration", message.accelleration);
@@ -380,7 +377,6 @@ std::string MessageTypes::encode_message(const acceleration &message) {
 }
 
 std::string MessageTypes::encode_message(const userInterface &message) {
-	std::string json;
 	pt::ptree root;
 
 	root.put("leading_vehicle", message.leading_vehicle);
@@ -405,6 +401,19 @@ std::string MessageTypes::encode_message(const userInterface &message) {
 	boost::property_tree::write_json(ss, root, false);
 
 	return ss.str();
+}
+
+std::string MessageTypes::encode_message(const vehicleControl &message) {
+	pt::ptree root;
+
+	root.put("velocity", message.velocity);
+	root.put("steering_angle", message.steering_angle);
+
+	std::stringstream ss;
+	boost::property_tree::write_json(ss, root, false);
+
+	return ss.str();
+
 }
 
 }

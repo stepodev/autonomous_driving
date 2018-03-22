@@ -89,15 +89,14 @@ class StmSim : public nodelet::Nodelet {
 	std::unique_ptr<UdpServer> server_ptr_;
 	boost::thread_group thread_pool_;
 
-	ros::Subscriber sub_accel_;
-	ros::Subscriber sub_steering_;
+	ros::Subscriber sub_vehicle_control_;
 
 	ros::Publisher pub_current_speed_;
 	ros::Publisher pub_camera_;
 	ros::Publisher pub_distanceToObj_;
 
-	float acceleration_;
-	float steering_angle_;
+	float current_velocity_ = 0;
+	float steering_angle_ = 0;
 	uint32_t vehicle_id_ = 1;
 
 	/**
@@ -106,9 +105,7 @@ class StmSim : public nodelet::Nodelet {
 	 */
 	void hndl_gazupdate(boost::shared_ptr<std::pair<std::string, uint32_t>> message_pair);
 
-	void hndl_acceleration(const platooning::acceleration &);
-
-	void hndl_steeringAngle(const platooning::steeringAngle &);
+	void hndl_vehicleControl(const vehicleControl &);
 
 
 };

@@ -56,11 +56,11 @@ void UserInterface::onInit() {
 	                                      &UserInterface::hndl_platooning_toggle, this);
 	sub_remotecontrol_input = nh_.subscribe(topics::REMOTECONTROL_INPUT, 1,
 	                                        &UserInterface::hndl_remotecontrol_input, this);
-	sub_speed = nh_.subscribe(topics::CURRENT_SPEED, 1,
+	sub_speed = nh_.subscribe(topics::SENSOR_VELOCITY, 1,
 	                          &UserInterface::hndl_current_speed, this);
 	sub_target_speed = nh_.subscribe(topics::TARGET_SPEED, 1,
 	                                 &UserInterface::hndl_target_speed, this);
-	sub_distance_to_obj = nh_.subscribe(topics::SENSOR_DISTANCE_TO_OBJ, 1,
+	sub_distance_to_obj = nh_.subscribe(topics::SENSOR_DISTANCE, 1,
 	                                    &UserInterface::hndl_sensor_dist_to_obj, this);
 	sub_target_dist = nh_.subscribe(topics::TARGET_DISTANCE, 1,
 	                                &UserInterface::hndl_target_dist, this);

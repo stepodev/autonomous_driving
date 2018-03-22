@@ -74,7 +74,9 @@ namespace platooning {
  * @warning Warning.
  */
 
-#define DEFAULT_SPRING_CONSTANT 3 //the lower, the slower we reach target distance, the slower we brake
+#define DEFAULT_SPRING_CONSTANT 0.01 //the lower, the slower we reach target distance, the slower we brake
+#define RANGE_DATA_CHECK 1
+#define VELOCITY_DATA_CHECK 2
 
 using SpringConstant = float;
 using TimeStep = float;
@@ -106,9 +108,9 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 		const float& get_target_position() { return target_relative_position_; }
 
 	  private:
-		float spring_constant_;
-		float time_step_;
-		float target_relative_position_;
+		float spring_constant_ = DEFAULT_SPRING_CONSTANT;
+		float time_step_ = 1;
+		float target_relative_position_ = -1;
 	};
 
 	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
@@ -119,18 +121,18 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 	ros::Subscriber sub_current_speed_;
 	ros::Subscriber sub_target_distance_;
 
-	ros::Publisher pub_acceleration_;
+	ros::Publisher pub_velocity_;
 
 	CritiallyDampenedSpring spring_;
 
-	Distance current_distance_;
-	Distance previous_distance_;
+	Distance current_distance_ = 0;
+	Distance previous_distance_ = 0;
 
-	float target_velocity_;
-	float current_velocity_;
+	float target_velocity_ = 0;
+	float current_velocity_ = 0;
 
-	boost::posix_time::ptime previous_distance_timestamp_;
-	boost::posix_time::ptime current_distance_timestamp_;
+	boost::posix_time::ptime previous_distance_timestamp_ = boost::posix_time::min_date_time;
+	boost::posix_time::ptime current_distance_timestamp_ = boost::posix_time::min_date_time;
 
 	boost::mutex calc_mutex_;
 
@@ -153,6 +155,9 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 	boost::asio::deadline_timer detect_dead_datasource_timer;
 	boost::thread_group thread_pool_;
 	void check_dead_datasrc(const boost::system::error_code &e);
+	unsigned short data_src_flags = 0;
+
+	int ix = 0;
 };
 
 } // namespace platooning
