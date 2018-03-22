@@ -1,18 +1,8 @@
-//
-// Created by stepo on 12/16/17.
-//
-
 /**
- * @file doxygen_c.h
- * @author My Self
- * @date 9 Sep 2012
- * @brief File containing example of doxygen usage for quick reference.
+ * @file include/platooning/RadioInterface.hpp
+ * @author stepo
+ * @date 22.03.2018
  *
- * Here typically goes a more extensive explanation of what the header
- * defines. Doxygens tags are words preceeded by either a backslash @\
- * or by an at symbol @@.
- * @see http://www.stack.nl/~dimitri/doxygen/docblocks.html
- * @see http://www.stack.nl/~dimitri/doxygen/commands.html
  */
 
 /*****************************************************************************
@@ -48,68 +38,58 @@ using namespace boost::asio;
 namespace platooning {
 
 /**
- * @brief Example showing how to document a function with Doxygen.
+ * @class RadioInterface
  *
- * Description of what the function does. This part may refer to the parameters
- * of the function, like @p param1 or @p param2. A word of code can also be
- * inserted like @c this which is equivalent to <tt>this</tt> and can be useful
- * to say that the function returns a @c void or an @c int. If you want to have
- * more than one word in typewriter font, then just use @<tt@>.
- * We can also include text verbatim,
- * @verbatim like this@endverbatim
- * Sometimes it is also convenient to include an example of usage:
- * @code
- * BoxStruct *out = Box_The_Function_Name(param1, param2);
- * printf("something...\n");
- * @endcode
- * Or,
- * @code{.py}
- * pyval = python_func(arg1, arg2)
- * print pyval
- * @endcode
- * when the language is not the one used in the current source file (but
- * <b>be careful</b> as this may be supported only by recent versions
- * of Doxygen). By the way, <b>this is how you write bold text</b> or,
- * if it is just one word, then you can just do @b this.
- * @param param1 Description of the first parameter of the function.
- * @param param2 The second one, which follows @p param1.
- * @return Describe what the function returns.
- * @see Box_The_Second_Function
- * @see Box_The_Last_One
- * @see http://website/
- * @note Something to note.
- * @warning Warning.
+ * @brief Manages a communication class to translate ros graph messages to sendable packets and back.
+ *
+ * Spins up two communication class objects, currently UdpServer instances. One to receive and broadcast udp packages
+ * from and to the platoon network, the other to receive controller messages.
+ *
+ * On receipt of UDP package, the header byte is read, the message converted into a @refitem platoonProtocol message
+ * and sent on @ref platooning::IN_PLATOONING_MSG.
+ * On receipt of a message on topic @refitem platooning::OUT_PLATOON_MSG, the message gets converted into a packet
+ * an byte of header describing the message type followed by a char array of json.
+ *
+ * @bugs No known
+ *
  */
 
-  class RadioInterface : public nodelet::Nodelet {
+class RadioInterface : public nodelet::Nodelet {
   public:
-    virtual void onInit();
 
-    RadioInterface();
+	/**
+	 * @brief Called by nodeletmanager
+	 */
+	virtual void onInit();
 
-    ~RadioInterface();
+	RadioInterface();
+
+	~RadioInterface();
 
   private:
-    ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-    std::string name_;
-	  std::unique_ptr<UdpServer> platooning_server_ptr_;
-	  std::unique_ptr<UdpServer> controller_server_ptr_;
+	ros::NodeHandle nh_;
+	std::string name_= "radiointerface";
+	std::unique_ptr<UdpServer> platooning_server_ptr_;
+	std::unique_ptr<UdpServer> controller_server_ptr_;
 
+	ros::Subscriber sub_platoonProtocolOut_;
 
-    ros::Subscriber sub_platoonProtocolOut_; /* hands to udp_server to publish received messages */
+	ros::Publisher pub_platoonProtocolIn_; /**< hands to udp_server to publish received messages */
+	ros::Publisher pub_communicationMessageIn_; /**< publishes received communication messages */
 
-    ros::Publisher pub_platoonProtocolIn_; /* hands to udp_server to publish received messages */
-    ros::Publisher pub_communicationMessageIn_; /* publishes received communication messages */
+	/**
+	 * @brief called by subscriber to @ref OUT_PLATOON_MSG and sends it out per communication class
+	 * @param msg platoonProtocol message that needs to be sent out
+	 */
+	void hndl_platoonProtocolOut(platooning::platoonProtocol msg);
 
-    /**
-     * @brief to achieve X does Y
-     * @param msg incoming topic message
-     */
-    void hndl_platoonProtocolOut(platooning::platoonProtocol msg);
-    void hndl_radio_receive(boost::shared_ptr<std::pair<std::string, uint32_t>> message_tup);
+	/**
+	 * @brief callback for the communication class to call with received Message. Publishes that on @ref OUT_PLATOON_MSG
+	 * @param message_tuple a tuple of payload and messagetype
+	 */
+	void hndl_radio_receive(boost::shared_ptr<std::pair<std::string, uint32_t>> message_tuple);
 
-  };
-
+};
 
 } // namespace platooning
 

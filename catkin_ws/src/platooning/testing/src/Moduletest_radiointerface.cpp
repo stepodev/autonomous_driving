@@ -4,9 +4,9 @@
 
 
 /**
- * @file /platooning/src/platooning.cpp
+ * @file /testing/platooning/Moduletest_radiointerface.cpp
  *
- * @brief Nodelet implementation of RemoteContol
+ * @brief Tests RadioInterface class
  *
  * @author stepo
  **/
@@ -15,8 +15,6 @@
 ** Includes
 *****************************************************************************/
 
-#include <thread>
-#include <boost/thread/thread.hpp>
 #include "platooning/Moduletest_radiointerface.hpp"
 
 // %Tag(FULLTEXT)%
@@ -25,11 +23,6 @@ namespace platooning {
 /*****************************************************************************
 ** Constructors
 *****************************************************************************/
-
-
-/**
- * @brief Template Nodelet
- */
 
 Moduletest_radiointerface::Moduletest_radiointerface() = default;
 
@@ -43,17 +36,13 @@ Moduletest_radiointerface::~Moduletest_radiointerface() = default;
 /*****************************************************************************
 ** Initializers
 *****************************************************************************/
-
-/**
-* Set-up necessary publishers/subscribers
-* @return true, if successful
-*/
 void Moduletest_radiointerface::onInit() {
 
-	name_ = Moduletest::name_ = "Moduletest_radiointerface";
+
 
 	register_testcases(boost::bind(&Moduletest_radiointerface::test_send_udp_recv_protocolIn, this));
 	register_testcases(boost::bind(&Moduletest_radiointerface::test_send_protocolOut_recv_udp, this));
+	register_testcases(boost::bind(&Moduletest_radiointerface::test_stresstest_protocolOut_recv_udp, this));
 
 	NODELET_INFO("[%s] init done", name_.c_str());
 
@@ -82,10 +71,10 @@ void Moduletest_radiointerface::test_send_udp_recv_protocolIn() {
 	                                                    this);
 
 	while (sub_map_[topics::IN_PLATOONING_MSG].getNumPublishers() == 0) {
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		boost::this_thread::sleep_for(boost::chrono::seconds(1));
 	}
 
-	//setup server to send udp from
+	//setup server to send udp
 	try {
 		boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)>
 			cbfun(boost::bind(boost::mem_fn(&Moduletest_radiointerface::hndl_recv_udp_dummy), this, _1));
@@ -185,7 +174,7 @@ void Moduletest_radiointerface::test_send_protocolOut_recv_udp() {
 	pub_map_[topics::OUT_PLATOONING_MSG] = nh_.advertise<platooning::platoonProtocol>(topics::OUT_PLATOONING_MSG, 10);
 
 	while (pub_map_[topics::OUT_PLATOONING_MSG].getNumSubscribers() == 0) {
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		boost::this_thread::sleep_for(boost::chrono::seconds(1));
 	}
 
 	if (pub_map_[topics::OUT_PLATOONING_MSG].getNumSubscribers() == 0) {
@@ -225,7 +214,87 @@ void Moduletest_radiointerface::handl_test_udp_recvd(boost::shared_ptr<std::pair
 		res.success = false;
 		res.comment = "handl_test_udp_recvd: unknown failure";
 	}
+	server_->shutdown();
+
 	finalize_test(res);
+}
+void Moduletest_radiointerface::test_stresstest_protocolOut_recv_udp() {
+	set_current_test("test_stresstest_protocolOut_recv_udp");
+	set_timeout(boost::posix_time::seconds(8));
+
+	//prepare server
+	try {
+
+		server_->shutdown();
+
+		boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)>
+			cbfun(boost::bind(boost::mem_fn(&Moduletest_radiointerface::hdnl_stresstest_protocolOut_recv_udp), this, _1));
+
+		server_ = std::unique_ptr<UdpServer>(new UdpServer(
+			cbfun, udp::endpoint(udp::v4(), 10000), udp::endpoint(boost::asio::ip::address_v4::broadcast(), 10000)));
+		server_->set_filter_own_broadcasts(false);
+	} catch (std::exception &e) {
+		TestResult res;
+		res.success = false;
+		res.comment = std::string("udpserver init failed ") + e.what();
+
+		finalize_test(res);
+		return;
+	}
+
+	//prepare subscriber
+	ros::Subscriber sub_= nh_.subscribe(topics::IN_PLATOONING_MSG, 100,
+	                                     &Moduletest_radiointerface::hndl_recv_in_protocol,
+	                                     this);
+
+	//wait for publishers to be online
+	int ix = 0;
+	while (sub_.getNumPublishers() == 0 && ix++ < 5) {
+		boost::this_thread::sleep_for(boost::chrono::seconds(1));
+	}
+
+
+	if (sub_.getNumPublishers() == 0) {
+		TestResult res;
+		res.success = false;
+		res.comment = "test_stresstest_protocolOut_recv_udp: no publishers to topics::IN_PLATOONING_MSG";
+		finalize_test(res);
+		return;
+	}
+
+	while( send_counter <= 99 ) {
+
+		server_->start_send(get_current_test(), FV_LEAVE);
+
+		send_counter++;
+
+	}
+
+	while( recv_counter != send_counter ) {
+		boost::this_thread::sleep_for(boost::chrono::seconds(1));
+	}
+
+	TestResult res;
+
+	if (recv_counter == send_counter && recv_counter == 100 ) {
+		res.success = true;
+	} else {
+		res.success = false;
+		res.comment = "test_stresstest_protocolOut_recv_udp: sent " + std::to_string(send_counter)
+			+ " recv: " + std::to_string(recv_counter);
+	}
+	server_->shutdown();
+
+	finalize_test(res);
+
+}
+void Moduletest_radiointerface::hdnl_stresstest_protocolOut_recv_udp(boost::shared_ptr<std::pair<std::string,
+                                                                                                 uint32_t>> msg) {
+
+	if (msg->first == get_current_test() && msg->second == FV_LEAVE) {
+		recv_counter++;
+	}
+
 }
 } // namespace platooning
 

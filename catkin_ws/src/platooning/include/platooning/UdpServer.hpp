@@ -56,6 +56,7 @@ class UdpServer {
 	boost::asio::ip::address myaddress_;
 	unsigned short myport_;
 	bool filter_own_broadcasts_ = true;
+	bool is_up = false;
 	UdpPackageSet pending_packages_;
 
 	boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)> callback_;

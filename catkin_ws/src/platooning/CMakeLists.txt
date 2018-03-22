@@ -293,51 +293,6 @@ target_link_libraries(moduletest_template messagetypes moduletest ${catkin_LIBRA
 #add_library(pcap test/Pcap.hpp test/Pcap.cpp)
 #target_link_libraries(pcap libpcap.so)
 
-##################
-## UNIT Testing ##
-##################
-# if your test needs a roscore, use
-# add_rostest_gtest(YOURNODELET-unit-test launch/YOURNODELET.launch test/unittest_YOURNODELET.cpp)
-# target_link_libraries(YOURNODELET-unit-test YOURNODELET_REQUIRED_LIBRARIES ${catkin_LIBRARIES})
-##################
-## Add gtest based cpp test target and link libraries
-
-catkin_add_gtest(platooning-unit-test testing/src/unittest_platooning.cpp)
-target_link_libraries(platooning-unit-test ${catkin_LIBRARIES})
-
-catkin_add_gtest(lanedetect-unit-test testing/src/unittest_lanedetect.cpp)
-target_link_libraries(lanedetect-unit-test ${catkin_LIBRARIES})
-
-catkin_add_gtest(priorization-unit-test testing/src/unittest_priorization.cpp)
-target_link_libraries(priorization-unit-test ${catkin_LIBRARIES})
-
-catkin_add_gtest(userinterface-unit-test testing/src/unittest_userinterface.cpp)
-target_link_libraries(userinterface-unit-test ${catkin_LIBRARIES})
-
-catkin_add_gtest(vehiclecontrol-unit-test testing/src/unittest_vehiclecontrol.cpp)
-target_link_libraries(vehiclecontrol-unit-test vehiclecontrol ${catkin_LIBRARIES})
-
-catkin_add_gtest(radiointerface-unit-test launch/radiointerface.launch testing/src/unittest_radiointerface.cpp)
-target_link_libraries(radiointerface-unit-test ${catkin_LIBRARIES})
-
-catkin_add_gtest(udpserver-unit-test testing/src/unittest_udpserver.cpp)
-target_link_libraries(udpserver-unit-test udpserver ${catkin_LIBRARIES})
-
-catkin_add_gtest(template-unit-test testing/src/unittest_template.cpp)
-target_link_libraries(template-unit-test ${catkin_LIBRARIES})
-
-add_rostest_gtest(messagedistribution-unit-test launch/messagedistribution.launch testing/src/unittest_messagedistribution.cpp)
-target_link_libraries(messagedistribution-unit-test messagedistribution ${catkin_LIBRARIES})
-
-#add_rostest_gtest(platooningnode-unit-test testing/src/unittest_platooningnode.cpp)
-#target_link_libraries(platooningnode-unit-test platooningnode ${catkin_LIBRARIES})
-
-#if (TARGET ${PROJECT_NAME}-test)
-#    target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES})
-#    target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-#endif ()
-
-
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 

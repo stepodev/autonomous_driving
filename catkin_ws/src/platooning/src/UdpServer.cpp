@@ -10,7 +10,6 @@ UdpServer::UdpServer(boost::function<void(boost::shared_ptr<std::pair<std::strin
                      const udp::endpoint &remote_endpoint) : io_work_(io_service_) {
 
 	try {
-
 		socket_ptr_ = std::unique_ptr<udp::socket>(new udp::socket(io_service_, udp::v4()));
 
 		//reuse port
@@ -41,6 +40,8 @@ UdpServer::UdpServer(boost::function<void(boost::shared_ptr<std::pair<std::strin
 			io_service_.run();
 			std::cout << "[UdpServer] IOSERVICE STOPPED" << std::endl;
 		});
+
+		is_up = true;
 	} catch (std::exception &e) {
 		std::cerr << "[UdpServer][constructor] threw " << e.what() << std::endl;
 	}
@@ -52,6 +53,11 @@ UdpServer::~UdpServer() {
 
 void UdpServer::shutdown() {
 	std::cout << "[UdpServer] shutdown called" << std::endl;
+
+	if( !is_up ) {
+		return;
+	}
+
 	try { io_service_.stop(); } catch (std::exception &ex) {
 		std::cerr << "[UdpServer] shutdown io_service_ threw " << ex.what() << std::endl;
 	};
@@ -64,6 +70,8 @@ void UdpServer::shutdown() {
 	} catch (std::exception &ex) {
 		std::cerr << "[UdpServer] shutdown threadpool threw " << ex.what() << std::endl;
 	};
+
+	is_up = false;
 }
 
 void UdpServer::find_own_ip() {

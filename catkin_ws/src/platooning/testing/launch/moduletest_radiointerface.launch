@@ -1,4 +1,4 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="moduletest_radiointerface" args="load platooning/moduletest_radiointerface nodeletmanager">
+    <node pkg="nodelet" type="nodelet" name="moduletest_radiointerface" args="load platooning/moduletest_radiointerface nodeletmanager" required="true">
     </node>
 </launch>

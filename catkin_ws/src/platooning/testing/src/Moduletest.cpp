@@ -3,21 +3,24 @@
 //
 #include "platooning/Moduletest.hpp"
 
-Moduletest::Moduletest() : testcase_timer_(io_) {
+Moduletest::Moduletest() :
+	testcase_timer_(io_) {
 	timeout_ = boost::posix_time::seconds(3);
 	timeout_callback_ = boost::function<void()>();
 
-	work_ = std::unique_ptr<boost::asio::io_service::work>( new boost::asio::io_service::work(io_) );
+	work_ = boost::shared_ptr<boost::asio::io_service::work>( new boost::asio::io_service::work(io_));
+
+	threadpool_.create_thread( [this] { io_.run(); });
 }
 
 Moduletest::~Moduletest() {
 	try {
-		NODELET_WARN("[%s] killing %i threads", name_.c_str(), (int)threadpool_.size());
+		NODELET_WARN("[%s] killing %i threads", name_.c_str(), (int) threadpool_.size());
 
-		work_->get_io_service().stop();
-		work_->get_io_service().reset();
+		io_.reset();
+		io_.stop();
 
-		threadpool_.interrupt_all();
+		threadpool_.join_all();
 	} catch (std::exception &ex) {
 		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}
@@ -30,7 +33,7 @@ void Moduletest::register_testcases(boost::function<void()> test_case_fun) {
 	testcases_to_run_.emplace_back(test_case_fun);
 }
 
-void Moduletest::register_timeout_callback( boost::function<void()> cb, bool is_expected ) {
+void Moduletest::register_timeout_callback(boost::function<void()> cb) {
 	timeout_callback_ = std::move(cb);
 	expects_timeout_ = true;
 }
@@ -52,9 +55,9 @@ void Moduletest::finalize_test(TestResult result) {
 		   << result.comment << std::endl;
 
 		if (!result.success) {
-			NODELET_ERROR("%s",ss.str().c_str());
+			NODELET_ERROR("%s", ss.str().c_str());
 		} else {
-			NODELET_WARN("%s",ss.str().c_str());
+			NODELET_WARN("%s", ss.str().c_str());
 		}
 
 		of << "[" << t << "]" << ss.str();
@@ -63,8 +66,10 @@ void Moduletest::finalize_test(TestResult result) {
 
 		expects_timeout_ = false;
 
-		start_tests();
+		pub_map_.clear();
+		sub_map_.clear();
 
+		start_tests();
 
 	} catch (std::exception &ex) {
 		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
@@ -86,7 +91,7 @@ void Moduletest::hndl_testcase_timeout(const boost::system::error_code &ec) {
 			finalize_test(res);
 		}
 
-		if( ec == boost::system::errc::success && !timeout_callback_.empty() ) {
+		if (ec == boost::system::errc::success && !timeout_callback_.empty()) {
 
 			timeout_callback_();
 
@@ -112,6 +117,7 @@ void Moduletest::start_tests() {
 
 	try {
 		if (testcases_to_run_.empty()) {
+			NODELET_WARN("[%s] no more testcases. stopping", name_.c_str());
 			ros::shutdown();
 			return;
 		}
@@ -125,18 +131,13 @@ void Moduletest::start_tests() {
 
 		testcase_timer_.expires_from_now(timeout_);
 		testcase_timer_.async_wait(boost::bind(&Moduletest::hndl_testcase_timeout, this,
-											   boost::asio::placeholders::error));
-
-		threadpool_.create_thread([this] {
-			io_.run();
-		});
-
+		                                       boost::asio::placeholders::error));
 	} catch (std::exception &ex) {
 		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}
 }
 void Moduletest::set_current_test(std::string str) {
 	current_test_ = std::move(str);
-	NODELET_WARN( "[%s] %s started", name_.c_str(), current_test_.c_str());
+	NODELET_WARN("[%s] %s started", name_.c_str(), current_test_.c_str());
 }
 
