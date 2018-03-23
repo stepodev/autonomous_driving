@@ -54,7 +54,6 @@ class Moduletest_radiointerface : public Moduletest {
 
 	/**
 	 * @brief sends upd datagram, expects to get a platoonprotocol on IN_PLATOON_MSG topic
-	 * @param msg incoming topic message
 	 */
 	void test_send_udp_recv_protocolIn();
 	void hndl_recv_udp_dummy(boost::shared_ptr<std::pair<std::string, uint32_t>> msg);
@@ -67,19 +66,19 @@ class Moduletest_radiointerface : public Moduletest {
 	void handl_test_udp_recvd(boost::shared_ptr<std::pair<std::string, uint32_t>> msg);
 
 	/**
-	 * @brief sends 100 udp datagrams and expects to receive them all on IN_PLATOON_MSG topic
+	 * @brief sends 100 upd datagram, expects to get a platoonprotocol on IN_PLATOON_MSG topic
 	 */
 	int send_counter = 0;
 	int recv_counter = 0;
-	void test_stresstest_protocolOut_recv_udp();
-	void hdnl_stresstest_protocolOut_recv_udp(boost::shared_ptr<std::pair<std::string, uint32_t>> msg);
+	void test_stresstest_send_udp_recv_protocolIn();
+	void hdnl_test_stresstest_send_udp_recv_protocolIn(boost::shared_ptr<std::pair<std::string, uint32_t>> msg);
 
 
 	/**
-	 * @brief sends 100 udp OUT_PLATOON_MSG and expects to receive them all in udp packages
+	 * @brief sends 100 platoonProtocol message on OUT_PLATOON_MSG topic and expects to receive the udp datagrams
 	 */
-	void test_stresstest_udp_recv_protocolIn();
-	void handl_test_stresstest_udp_recv_protocolIn(boost::shared_ptr<std::pair<std::string, uint32_t>> msg);
+	void test_stresstest_send_protocolOut_recv_upd();
+	void handl_test_stresstest_send_protocolOut_recv_upd(boost::shared_ptr<std::pair<std::string, uint32_t>> msg);
 };
 
 } // namespace platooning

@@ -42,7 +42,8 @@ void Moduletest_radiointerface::onInit() {
 
 	register_testcases(boost::bind(&Moduletest_radiointerface::test_send_udp_recv_protocolIn, this));
 	register_testcases(boost::bind(&Moduletest_radiointerface::test_send_protocolOut_recv_udp, this));
-	register_testcases(boost::bind(&Moduletest_radiointerface::test_stresstest_protocolOut_recv_udp, this));
+	register_testcases(boost::bind(&Moduletest_radiointerface::test_stresstest_send_udp_recv_protocolIn, this));
+	register_testcases(boost::bind(&Moduletest_radiointerface::test_stresstest_send_protocolOut_recv_upd, this));
 
 	NODELET_INFO("[%s] init done", name_.c_str());
 
@@ -218,8 +219,8 @@ void Moduletest_radiointerface::handl_test_udp_recvd(boost::shared_ptr<std::pair
 
 	finalize_test(res);
 }
-void Moduletest_radiointerface::test_stresstest_protocolOut_recv_udp() {
-	set_current_test("test_stresstest_protocolOut_recv_udp");
+void Moduletest_radiointerface::test_stresstest_send_udp_recv_protocolIn() {
+	set_current_test("test_stresstest_send_udp_recv_protocolIn");
 	set_timeout(boost::posix_time::seconds(8));
 
 	//prepare server
@@ -228,7 +229,7 @@ void Moduletest_radiointerface::test_stresstest_protocolOut_recv_udp() {
 		server_->shutdown();
 
 		boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)>
-			cbfun(boost::bind(boost::mem_fn(&Moduletest_radiointerface::hdnl_stresstest_protocolOut_recv_udp), this, _1));
+			cbfun(boost::bind(boost::mem_fn(&Moduletest_radiointerface::hdnl_test_stresstest_send_udp_recv_protocolIn), this, _1));
 
 		server_ = std::unique_ptr<UdpServer>(new UdpServer(
 			cbfun, udp::endpoint(udp::v4(), 10000), udp::endpoint(boost::asio::ip::address_v4::broadcast(), 10000)));
@@ -262,6 +263,8 @@ void Moduletest_radiointerface::test_stresstest_protocolOut_recv_udp() {
 		return;
 	}
 
+	send_counter = 0;
+	recv_counter = 0;
 	while( send_counter <= 99 ) {
 
 		server_->start_send(get_current_test(), FV_LEAVE);
@@ -288,10 +291,92 @@ void Moduletest_radiointerface::test_stresstest_protocolOut_recv_udp() {
 	finalize_test(res);
 
 }
-void Moduletest_radiointerface::hdnl_stresstest_protocolOut_recv_udp(boost::shared_ptr<std::pair<std::string,
+
+void Moduletest_radiointerface::hdnl_test_stresstest_send_udp_recv_protocolIn(boost::shared_ptr<std::pair<std::string,
                                                                                                  uint32_t>> msg) {
 
 	if (msg->first == get_current_test() && msg->second == FV_LEAVE) {
+		recv_counter++;
+	}
+
+}
+
+void Moduletest_radiointerface::test_stresstest_send_protocolOut_recv_upd() {
+	set_current_test("test_stresstest_send_protocolOut_recv_upd");
+	set_timeout(boost::posix_time::seconds(8));
+
+	//prepare server
+	try {
+
+		server_->shutdown();
+
+		boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)>
+			cbfun(boost::bind(boost::mem_fn(&Moduletest_radiointerface::hdnl_test_stresstest_send_udp_recv_protocolIn), this, _1));
+
+		server_ = std::unique_ptr<UdpServer>(new UdpServer(
+			cbfun, udp::endpoint(udp::v4(), 10000), udp::endpoint(boost::asio::ip::address_v4::broadcast(), 10000)));
+		server_->set_filter_own_broadcasts(false);
+	} catch (std::exception &e) {
+		TestResult res;
+		res.success = false;
+		res.comment = std::string("udpserver init failed ") + e.what();
+
+		finalize_test(res);
+		return;
+	}
+
+	ros::Publisher pub_ = nh_.advertise<platooning::platoonProtocol>(topics::OUT_PLATOONING_MSG, 100);
+
+	int ix = 0;
+	while (pub_.getNumSubscribers() == 0 && ix++ < 5) {
+		boost::this_thread::sleep_for(boost::chrono::seconds(1));
+	}
+
+
+	if (pub_.getNumSubscribers() == 0) {
+		TestResult res;
+		res.success = false;
+		res.comment = "test_stresstest_send_protocolOut_recv_upd: no subscribers to topics::OUT_PLATOONING_MSG";
+		finalize_test(res);
+		return;
+	}
+
+	send_counter = 0;
+	recv_counter = 0;
+	while( send_counter <= 99 ) {
+
+		auto msg = boost::shared_ptr<platooning::platoonProtocol>( new platooning::platoonProtocol() );
+		msg->message_type = FV_LEAVE;
+		msg->payload = get_current_test();
+		pub_.publish(msg);
+
+		send_counter++;
+
+	}
+
+	while( recv_counter != send_counter ) {
+		boost::this_thread::sleep_for(boost::chrono::seconds(1));
+	}
+
+	TestResult res;
+
+	if (recv_counter == send_counter && recv_counter == 100 ) {
+		res.success = true;
+	} else {
+		res.success = false;
+		res.comment = "test_stresstest_send_protocolOut_recv_upd: sent " + std::to_string(send_counter)
+			+ " recv: " + std::to_string(recv_counter);
+	}
+	server_->shutdown();
+
+	finalize_test(res);
+
+
+}
+
+void Moduletest_radiointerface::handl_test_stresstest_send_protocolOut_recv_upd(boost::shared_ptr<std::pair<std::string,
+                                                                                                            uint32_t>> msg) {
+	if( msg->second == FV_LEAVE && msg->first == get_current_test() ) {
 		recv_counter++;
 	}
 
