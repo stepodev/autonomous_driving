@@ -104,14 +104,14 @@ void LongitudinalProcessing::hndl_distance_from_sensor(const platooning::distanc
 void LongitudinalProcessing::hndl_target_distance(const platooning::targetDistance &msg) {
 	//NODELET_INFO( "[%s] recv targetDistance.", name_.c_str());
 	try {
-		if (msg.distance != -spring_.get_target_position()) {
+		if (msg.distance != -pd_controller_.get_target_position()) {
 
 			if (msg.distance < 0.5) {
 				NODELET_ERROR("[%s] target distance shorter than 0.5. Setting to 1.", name_.c_str());
-				spring_.set_target_position(-1);
+				pd_controller_.set_target_position(-1);
 
 			} else {
-				spring_.set_target_position(-msg.distance);
+				pd_controller_.set_target_position(-msg.distance);
 			}
 		}
 	} catch (std::exception &ex) {
@@ -164,23 +164,7 @@ void LongitudinalProcessing::update_velocity() {
 		return;
 	}
 
-	//distance change in the last time_step
-	float range_diff = current_distance_ - previous_distance_;
-	//change in range / timestep should be the relative velocity
-	float relative_velocity = range_diff / time_step;
-	//if we deviate 10% from our target distance, calculate velocity
-	//else, just try to match speed
-	float spring_velocity = 0;
-	if (fabs(current_distance_ - -spring_.get_target_position()) <= 0.1 * -spring_.get_target_position()) {
-		std::cout << "fine " << fabs(current_distance_ - -spring_.get_target_position()) << std::endl;
-		spring_velocity = relative_velocity;
-	} else {
-		std::cout << "not fine" << std::endl;
-		spring_velocity = spring_.calulate_velocity(-current_distance_, relative_velocity, time_step);
-	}
-
-	//modify current velocity with spring value to approach target distance
-	float calculated_velocity = current_velocity_ + spring_velocity;
+	float calculated_velocity = pd_controller_.calulate_velocity(-current_distance_, current_velocity_);
 
 	/*
 	//every 40th time. remove!
@@ -195,7 +179,7 @@ void LongitudinalProcessing::update_velocity() {
 			current_velocity_,
 			calculated_velocity,
 			current_distance_,
-			-spring_.get_target_position(),
+			-pd_controller_.get_target_position(),
 		previous_distance_);
 	}
 */
@@ -238,28 +222,14 @@ void LongitudinalProcessing::check_dead_datasrc(const boost::system::error_code 
 	                                                    boost::asio::placeholders::error));
 }
 
-LongitudinalProcessing::CritiallyDampenedSpring::CritiallyDampenedSpring() {
-	spring_constant_ = DEFAULT_SPRING_CONSTANT;
-	target_relative_position_ = -1;
+float LongitudinalProcessing::PDController::calulate_velocity(const Distance &current_position,
+                                                              const Velocity &current_velocity) {
+	return kp_ * (target_relative_position_ - current_position) - kd_ * current_velocity;
+}
+LongitudinalProcessing::PDController::PDController() {
 
 }
 
-//https://stackoverflow.com/questions/5100811/algorithm-to-control-acceleration-until-a-position-is-reached#
-//https://en.wikipedia.org/wiki/PID_controller
-//doesnt work. will always trail way behind where it should be while moving: https://jsfiddle.net/BfLAh/3175/
-float LongitudinalProcessing::CritiallyDampenedSpring::calulate_velocity(const Distance &current_position,
-                                                                         const Velocity &relative_velocity,
-                                                                         const float &time_step) {
-
-	float current_to_target = target_relative_position_ - current_position;
-	float spring_force = current_to_target * spring_constant_;
-	float damping_force = -relative_velocity * 2 * sqrt(spring_constant_);
-	float force = spring_force + damping_force;
-	float new_velocity = relative_velocity + force * time_step_;
-	//float displacement = new_velocity * time_step_;
-	//float predicted_distance = current_position - displacement;
-	return new_velocity;
-}
 } // namespace platooning
 
 PLUGINLIB_EXPORT_CLASS(platooning::LongitudinalProcessing, nodelet::Nodelet);

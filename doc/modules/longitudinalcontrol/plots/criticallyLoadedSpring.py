@@ -87,6 +87,18 @@ class SelfAdjustingRigiditySpring(AbstractSpring):
                                                time_step=time_step)
 
 
+# http://robotic-controls.com/learn/programming/pd-feedback-control-introduction
+class PDController(AbstractSpring):
+    def __init__(self, target_position):
+        self.kp = 0.5 # factor to multiply with error. puts the error proportionally to the desired value
+        self.kd = 0.1 # rate of change factor. says "slow down before you get there"
+        self.target_position = -target_position
+
+    def do_timestep(self, relative_velocity, current_position: float, time_step: float) ->float:
+        y = self.kp * (self.target_position - current_position) - self.kd * relative_velocity
+        print( self.target_position,  current_position, y)
+        return y
+
 class Car:
     def __init__(self, initial_pos: float, timestep: float, current_velocity: float,
                  target_distance: float):
@@ -222,10 +234,10 @@ def plot_distance_5to1():
 
     plot_distance(s, "CLS vel 0, -5m to -1m")
 
-    s = SpringSeries(spring_type=SelfAdjustingRigiditySpring(-target_distance))
+    s = SpringSeries(spring_type=PDController(-target_distance))
     s.calc_series(current_velocity, -current_distance, time_step_len, 10)
 
-    plot_distance(s, "SARS vel 0, -5m to -1m")
+    plot_distance(s, "PDcontroller vel 0, -5m to -1m")
 
 
 def plot_distance_1to5():
@@ -241,10 +253,10 @@ def plot_distance_1to5():
 
     plot_distance(s, "CLS vel 0, -1m to -5m")
 
-    s = SpringSeries(spring_type=SelfAdjustingRigiditySpring(-target_distance))
+    s = SpringSeries(spring_type=PDController(-target_distance))
     s.calc_series(current_velocity, -current_distance, time_step_len, 10)
 
-    plot_distance(s, "SARS vel 0, -1m to -5m")
+    plot_distance(s, "PD vel 0, -1m to -5m")
 
 
 def plot_platoon_catchup():
@@ -261,13 +273,13 @@ def plot_platoon_catchup():
 
     lv = Car(initial_pos=5, timestep=0.3, current_velocity=5, target_distance=1)
     fv = Car(initial_pos=1, timestep=0.3, current_velocity=5, target_distance=1)
-    fv.catch_up_spring_ = SelfAdjustingRigiditySpring(target_position=-1)
+    fv.catch_up_spring_ = PDController(target_position=-1)
 
     platoon = Platoon(lv, fv)
 
     platoon.do_series(time_step_len, 15)
 
-    plot_platoon(platoon=platoon, header="SARS catch up from dist5 to 1, from vel 0 to x")
+    plot_platoon(platoon=platoon, header="PD catch up from dist5 to 1, from vel 0 to x")
 
 
 def plot_platoon_brake():
@@ -284,7 +296,7 @@ def plot_platoon_brake():
 
     lv = Car(initial_pos=0.3, timestep=0.3, current_velocity=5, target_distance=1)
     fv = Car(initial_pos=0, timestep=0.3, current_velocity=5, target_distance=1)
-    fv.catch_up_spring_ = SelfAdjustingRigiditySpring(target_position=-1)
+    fv.catch_up_spring_ = PDController(target_position=-1)
 
     platoon = Platoon(lv, fv)
 

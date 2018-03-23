@@ -93,23 +93,22 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 
   private:
 
-	class CritiallyDampenedSpring
+	// http://robotic-controls.com/learn/programming/pd-feedback-control-introduction
+	class PDController
 	{
-
 	  public:
-		CritiallyDampenedSpring();
+		PDController();
 
 		void set_target_position(const Distance &target_postion) { target_relative_position_ = target_postion; };
 
 		float calulate_velocity(const Distance &current_position,
-				                        const Velocity &relative_velocity,
-				                        const float &time_step);
+		                        const Velocity &current_velocity);
 
 		const float& get_target_position() { return target_relative_position_; }
 
 	  private:
-		float spring_constant_ = DEFAULT_SPRING_CONSTANT;
-		float time_step_ = 1;
+		float kp_ = 0.5;
+		float kd_ = 0.1;
 		float target_relative_position_ = -1;
 	};
 
@@ -123,7 +122,7 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 
 	ros::Publisher pub_velocity_;
 
-	CritiallyDampenedSpring spring_;
+	PDController pd_controller_;
 
 	Distance current_distance_ = 0;
 	Distance previous_distance_ = 0;
