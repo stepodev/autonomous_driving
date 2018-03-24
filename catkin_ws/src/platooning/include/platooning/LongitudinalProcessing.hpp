@@ -29,7 +29,7 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include <boost/thread/mutex.hpp>
+#include <boost/thread/recursive_mutex.hpp>
 #include <algorithm>
 #include <boost/thread/mutex.hpp>
 
@@ -122,18 +122,16 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 
 	ros::Publisher pub_velocity_;
 
+	boost::recursive_mutex calc_mutex_;
 	PDController pd_controller_;
 
 	Distance current_distance_ = 0;
 	Distance previous_distance_ = 0;
-
 	float target_velocity_ = 0;
 	float current_velocity_ = 0;
 
 	boost::posix_time::ptime previous_distance_timestamp_ = boost::posix_time::min_date_time;
 	boost::posix_time::ptime current_distance_timestamp_ = boost::posix_time::min_date_time;
-
-	boost::mutex calc_mutex_;
 
 	/**
 	 * @brief to achieve X does Y

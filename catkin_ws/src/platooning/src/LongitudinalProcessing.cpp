@@ -85,6 +85,8 @@ void LongitudinalProcessing::hndl_distance_from_sensor(const platooning::distanc
 
 	try {
 		//check if we received new data
+		boost::recursive_mutex::scoped_lock l(calc_mutex_);
+
 		previous_distance_ = current_distance_;
 		current_distance_ = msg.distance;
 
@@ -102,9 +104,10 @@ void LongitudinalProcessing::hndl_distance_from_sensor(const platooning::distanc
 }
 
 void LongitudinalProcessing::hndl_target_distance(const platooning::targetDistance &msg) {
-	//NODELET_INFO( "[%s] recv targetDistance.", name_.c_str());
 	try {
 		if (msg.distance != -pd_controller_.get_target_position()) {
+
+			boost::recursive_mutex::scoped_lock l(calc_mutex_);
 
 			if (msg.distance < 0.5) {
 				NODELET_ERROR("[%s] target distance shorter than 0.5. Setting to 1.", name_.c_str());
@@ -126,6 +129,9 @@ void LongitudinalProcessing::hndl_current_velocity(const platooning::speed &msg)
 	//NODELET_INFO( "[%s] recv speed.", name_.c_str());
 	try {
 		if (msg.speed != current_velocity_) {
+
+			boost::recursive_mutex::scoped_lock l(calc_mutex_);
+
 			current_velocity_ = msg.speed;
 		}
 	} catch (std::exception &ex) {
@@ -137,6 +143,9 @@ void LongitudinalProcessing::hndl_targetSpeed(const platooning::targetSpeed &msg
 	//NODELET_INFO( "[%s] recv targetSpeed.", name_.c_str());
 	try {
 		if (msg.target_speed != target_velocity_) {
+
+			boost::recursive_mutex::scoped_lock l(calc_mutex_);
+
 			target_velocity_ = msg.target_speed;
 		}
 	} catch (std::exception &ex) {
@@ -148,11 +157,10 @@ void LongitudinalProcessing::update_velocity() {
 
 	//wait for second ranging
 	if (previous_distance_timestamp_ == boost::posix_time::min_date_time) {
-		std::cout << "wait for second ranging" << std::endl;
 		return;
 	}
 
-	boost::mutex::scoped_lock l(calc_mutex_);
+	boost::recursive_mutex::scoped_lock l(calc_mutex_);
 
 	auto outmsg = boost::shared_ptr<platooning::speed>(new platooning::speed);
 
@@ -167,7 +175,7 @@ void LongitudinalProcessing::update_velocity() {
 	float calculated_velocity = pd_controller_.calulate_velocity(-current_distance_, current_velocity_);
 
 	/*
-	//every 40th time. remove!
+	//every 40th time. remove! bug happens on one of those variables. invalid memory
 	if (ix++ % 20 == 0) {
 		NODELET_INFO(
 			"ms: %i time_step: %f range_diff: %f relative_vel: %f spring_vel %f current_vel: %f calc_vel: %f\ndist:%f target:%f prev_dist %f",
