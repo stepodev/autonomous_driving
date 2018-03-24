@@ -1,0 +1,9 @@
+<library path="lib/libmoduletest_messagetypes">
+    <class name="platooning/moduletest_messagetypes"
+	         type="platooning::Moduletest_messagetypes"
+            base_class_type="nodelet::Nodelet">
+        <description>
+            Moduletest messagetypes nodlet
+        </description>
+    </class>
+</library>

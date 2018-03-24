@@ -1,0 +1,9 @@
+<library path="lib/libmoduletest_template">
+    <class name="platooning/moduletest_template"
+	         type="platooning::Moduletest_template"
+            base_class_type="nodelet::Nodelet">
+        <description>
+            Template nodelet
+        </description>
+    </class>
+</library>

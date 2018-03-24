@@ -1,7 +1,3 @@
-//
-// Created by stepo on 2/3/18.
-//
-
 #include "platooning/MessageTypes.hpp"
 
 namespace pt = boost::property_tree;
@@ -41,6 +37,7 @@ void MessageTypes::decode_json(const std::string &json, lv_broadcast &message) {
 	message.platoon_id = root.get<uint32_t>("platoon_id");
 	message.ipd = root.get<float>("ipd");
 	message.ps = root.get<float>("ps");
+	message.followers = MessageTypes::json_as_vector<uint32_t>(root, "followers");
 }
 
 void MessageTypes::decode_json(const std::string &json, lv_accept &message) {
@@ -108,8 +105,9 @@ void MessageTypes::decode_json(const std::string &json, remotecontrolInput &mess
 	pt::read_json(ss, root);
 
 	message.emergency_stop = root.get<bool>("emergency_stop");
-	message.remote_angle = root.get<bool>("remote_angle");
-	message.remote_speed = root.get<bool>("remote_speed");
+	message.remote_angle = root.get<float>("remote_angle");
+	message.remote_speed = root.get<float>("remote_speed");
+	message.vehicle_id = root.get<uint32_t>("vehicle_id");
 }
 
 void MessageTypes::decode_json(const std::string &json, remotecontrolToggle &message) {
@@ -119,6 +117,7 @@ void MessageTypes::decode_json(const std::string &json, remotecontrolToggle &mes
 	pt::read_json(ss, root);
 
 	message.enable_remotecontrol = root.get<bool>("enable_remotecontrol");
+	message.vehicle_id = root.get<uint32_t>("vehicle_id");
 
 }
 
@@ -293,6 +292,7 @@ std::string MessageTypes::encode_message(const fv_request &message) {
 std::string MessageTypes::encode_message(const remotecontrolInput &message) {
 	pt::ptree root;
 
+	root.put("vehicle_id", message.vehicle_id);
 	root.put("remote_angle", message.remote_angle);
 	root.put("remote_speed", message.remote_speed);
 	root.put("emergency_stop", message.emergency_stop);
@@ -307,6 +307,7 @@ std::string MessageTypes::encode_message(const remotecontrolToggle &message) {
 	pt::ptree root;
 
 	root.put("enable_remotecontrol", message.enable_remotecontrol);
+	root.put("vehicle_id", message.vehicle_id);
 
 	std::stringstream ss;
 	boost::property_tree::write_json(ss, root, false);
