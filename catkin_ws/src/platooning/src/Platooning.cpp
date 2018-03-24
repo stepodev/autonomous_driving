@@ -338,6 +338,7 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 		//change platoon role
 		if (msg.lvfv == "FV") {
 			set_role(PlatoonRoleEnum::FV);
+			set_platoon_id(get_vehicle_id());
 
 			NODELET_INFO(std::string("[%s] changing platooning role to %s").c_str(),
 			             name_.c_str(),

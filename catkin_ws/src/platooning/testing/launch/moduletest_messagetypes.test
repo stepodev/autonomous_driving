@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find platooning)/testing/launch/test_nodeletmanager.launch"/>
+  <include file="$(find platooning)/testing/launch/moduletest_messagetypes.launch"/>
+</launch>

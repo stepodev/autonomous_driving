@@ -260,7 +260,7 @@ add_dependencies(longitudinalprocessing topics messagetypes ${catkin_EXPORTED_TA
 target_link_libraries(longitudinalprocessing topics messagetypes ${catkin_LIBRARIES})
 
 ##############################################
-#### platooning tests
+#### platooning module tests
 ##############################################
 add_library(moduletest testing/include/platooning/Moduletest.hpp testing/src/Moduletest.cpp)
 add_dependencies(moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
@@ -285,6 +285,10 @@ target_link_libraries(moduletest_prioritization messagetypes moduletest ${catkin
 add_library(moduletest_longitudinalprocessing testing/include/platooning/Moduletest_longitudinalprocessing.hpp testing/src/Moduletest_longitudinalprocessing.cpp)
 add_dependencies(moduletest_longitudinalprocessing messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
 target_link_libraries(moduletest_longitudinalprocessing messagetypes moduletest ${catkin_LIBRARIES})
+
+add_library(moduletest_messagetypes testing/include/platooning/Moduletest_messagetypes.hpp testing/src/Moduletest_messagetypes.cpp)
+add_dependencies(moduletest_messagetypes messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_messagetypes messagetypes moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_template testing/include/platooning/Moduletest_template.hpp testing/src/Moduletest_template.cpp)
 add_dependencies(moduletest_template messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)

@@ -1,3 +1,25 @@
+/**
+ * @file include/platooning/MessageTypes.hpp
+ * @author stepo
+ * @date 22.03.2018
+ *
+ */
+
+
+/**
+ * @class MessageTypes
+ *
+ * @brief Includes generated messages, defines their header bytes, provides decode and encode functions.
+ *
+ * Each ros generated message is included here. Their header bytes for encoding to udp packets are defined and functions
+ * decoding and encoding are defined here also.
+ *
+ * Each encode_json takes the message to be encoded and returns a json string.
+ * Each decode_json takes a json and an instance of the message that json should be decoded to.
+ *
+ * @bugs No known
+ *
+ */
 #ifndef PLATOONING_MESSAGETYPES_HPP
 #define PLATOONING_MESSAGETYPES_HPP
 
@@ -51,10 +73,6 @@ namespace platooning {
 class MessageTypes {
 
   public:
-/**
- * @brief takes json and decodes it
- * @param msg protocol data
- */
 	static void decode_json(const std::string &json, lv_broadcast &message);
 
 	static void decode_json(const std::string &json, lv_accept &message);
