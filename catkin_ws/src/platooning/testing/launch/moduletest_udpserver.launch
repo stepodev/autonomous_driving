@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="nodelet" type="nodelet" name="moduletest_udpserver" args="load platooning/moduletest_udpserver nodeletmanager" required="true"></node>
+</launch>

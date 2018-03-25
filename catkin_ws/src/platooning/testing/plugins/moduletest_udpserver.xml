@@ -1,0 +1,9 @@
+<library path="lib/libmoduletest_udpserver">
+    <class name="platooning/moduletest_udpserver"
+	         type="platooning::Moduletest_udpserver"
+            base_class_type="nodelet::Nodelet">
+        <description>
+            moduletest_udpserver nodelet
+        </description>
+    </class>
+</library>
