@@ -91,7 +91,7 @@ class Moduletest : public nodelet::Nodelet {
 	 * @brief sets the timeout before the testcase is considered a fail
 	 * @param s time duration in seconds
 	 */
-	void set_timeout(const boost::posix_time::time_duration &s) { timeout_ = s; };
+	void set_timeout(const boost::posix_time::time_duration &s);
 
 	/**
 	 * @brief called to register testcase methods

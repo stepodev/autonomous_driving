@@ -271,28 +271,32 @@ add_dependencies(moduletest_messagedistribution topics messagetypes moduletest m
 target_link_libraries(moduletest_messagedistribution topics messagetypes moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_radiointerface testing/include/platooning/Moduletest_radiointerface.hpp testing/src/Moduletest_radiointerface.cpp)
-add_dependencies(moduletest_radiointerface topics moduletest udpserver radiointerface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(moduletest_radiointerface topics moduletest udpserver ${catkin_LIBRARIES})
+add_dependencies(moduletest_radiointerface topics messagetypes moduletest udpserver radiointerface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(moduletest_radiointerface topics messagetypes moduletest udpserver ${catkin_LIBRARIES})
 
 add_library(moduletest_platooning testing/include/platooning/Moduletest_platooning.hpp testing/src/Moduletest_platooning.cpp)
-add_dependencies(moduletest_platooning messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(moduletest_platooning messagetypes moduletest ${catkin_LIBRARIES})
+add_dependencies(moduletest_platooning messagetypes topics moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(moduletest_platooning messagetypes topics moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_prioritization testing/include/platooning/Moduletest_prioritization.hpp testing/src/Moduletest_prioritization.cpp)
-add_dependencies(moduletest_prioritization messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
-target_link_libraries(moduletest_prioritization messagetypes moduletest ${catkin_LIBRARIES})
+add_dependencies(moduletest_prioritization messagetypes topics moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_prioritization messagetypes topics moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_longitudinalprocessing testing/include/platooning/Moduletest_longitudinalprocessing.hpp testing/src/Moduletest_longitudinalprocessing.cpp)
-add_dependencies(moduletest_longitudinalprocessing messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
-target_link_libraries(moduletest_longitudinalprocessing messagetypes moduletest ${catkin_LIBRARIES})
+add_dependencies(moduletest_longitudinalprocessing messagetypes topics moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_longitudinalprocessing messagetypes topics moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_messagetypes testing/include/platooning/Moduletest_messagetypes.hpp testing/src/Moduletest_messagetypes.cpp)
-add_dependencies(moduletest_messagetypes messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
-target_link_libraries(moduletest_messagetypes messagetypes moduletest ${catkin_LIBRARIES})
+add_dependencies(moduletest_messagetypes messagetypes topics moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_messagetypes messagetypes topics moduletest ${catkin_LIBRARIES})
+
+add_library(moduletest_udpserver testing/include/platooning/Moduletest_udpserver.hpp testing/src/Moduletest_udpserver.cpp)
+add_dependencies(moduletest_udpserver udpserver messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_udpserver udpserver messagetypes moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_template testing/include/platooning/Moduletest_template.hpp testing/src/Moduletest_template.cpp)
-add_dependencies(moduletest_template messagetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(moduletest_template messagetypes moduletest ${catkin_LIBRARIES})
+add_dependencies(moduletest_template moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(moduletest_template moduletest ${catkin_LIBRARIES})
 
 #add_library(pcap test/Pcap.hpp test/Pcap.cpp)
 #target_link_libraries(pcap libpcap.so)

@@ -69,6 +69,8 @@ void Moduletest::finalize_test(TestResult result) {
 		pub_map_.clear();
 		sub_map_.clear();
 
+		set_timeout(boost::posix_time::seconds(3));
+
 		start_tests();
 
 	} catch (std::exception &ex) {
@@ -139,5 +141,15 @@ void Moduletest::start_tests() {
 void Moduletest::set_current_test(std::string str) {
 	current_test_ = std::move(str);
 	NODELET_WARN("[%s] %s started", name_.c_str(), current_test_.c_str());
+}
+
+void Moduletest::set_timeout(const boost::posix_time::time_duration &s) {
+	timeout_ = s;
+
+	testcase_timer_.cancel();
+
+	testcase_timer_.expires_from_now(timeout_);
+	testcase_timer_.async_wait(boost::bind(&Moduletest::hndl_testcase_timeout, this,
+	                                       boost::asio::placeholders::error));
 }
 
