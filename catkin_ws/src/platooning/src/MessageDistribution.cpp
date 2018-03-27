@@ -82,7 +82,7 @@ void MessageDistribution::onInit() {
 	pub_fv_leave = nh_.advertise<platooning::fv_leave>(topics::IN_FV_LEAVE, 100);
 	pub_fv_request = nh_.advertise<platooning::fv_request>(topics::IN_FV_REQUEST, 100);
 
-	pub_remotecontrol_input = nh_.advertise<remotecontrolInput>(topics::REMOTECONTROL_INPUT, 100);
+	pub_remotecontrol_input = nh_.advertise<remotecontrolInput>(topics::INPUT_REMOTECONTROL, 100);
 	pub_remotecontrol_toggle = nh_.advertise<remotecontrolToggle>(topics::TOGGLE_REMOTECONTROL, 100);
 	pub_platooning_toggle = nh_.advertise<platooningToggle>(topics::TOGGLE_PLATOONING, 100);
 

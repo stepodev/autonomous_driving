@@ -35,7 +35,7 @@ const std::string PLATOONINGSTATE = "platooningState";
 //remotecontrol topics
 const std::string TOGGLE_REMOTECONTROL = "toggle_remotecontrol";
 const std::string TOGGLE_PLATOONING = "toggle_platooning";
-const std::string REMOTECONTROL_INPUT = "remotecontrolinput";
+const std::string INPUT_REMOTECONTROL = "input_remotecontrol";
 
 //control topics
 const std::string SENSOR_DISTANCE = "sensors/distance";

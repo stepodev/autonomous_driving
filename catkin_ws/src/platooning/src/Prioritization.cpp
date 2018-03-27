@@ -72,7 +72,7 @@ void Prioritization::onInit() {
 
 	sub_remotecontrolToggle_ = nh_.subscribe(topics::TOGGLE_REMOTECONTROL, 1,
 	                                        &Prioritization::hndl_remotecontrolToggle, this);
-	sub_remotecontrolInput_ = nh_.subscribe(topics::REMOTECONTROL_INPUT, 1,
+	sub_remotecontrolInput_ = nh_.subscribe(topics::INPUT_REMOTECONTROL, 1,
 	                                       &Prioritization::hndl_remotecontrolInput, this);
 	sub_platooningToggle_ = nh_.subscribe(topics::TOGGLE_PLATOONING, 1,
 	                                     &Prioritization::hndl_platooningToggle, this);
