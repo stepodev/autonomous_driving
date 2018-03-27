@@ -41,16 +41,29 @@ void Moduletest_messagedistribution::onInit() {
 
 	name_ = "Moduletest_messagedistribution";
 
-	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_fv_request, this));
-	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_lv_accept, this));
 	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_lv_broadcast, this));
+	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_lv_broadcast_recv_platoonMsg, this));
+
+	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_lv_accept, this));
+	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_lv_accept_recv_platoonMsg, this));
+
 	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_lv_reject, this));
+	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_lv_reject_recv_platoonMsg, this));
+
+	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_fv_heartbeat_recv_platoonMsg, this));
 	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_fv_heartbeat, this));
+
 	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_fv_leave, this));
+	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_fv_leave_recv_platoonMsg, this));
+
+	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_fv_request, this));
+	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_fv_request_recv_platoonMsg, this));
+
 	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_remotecontrolInput, this));
 	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_remotecontrolToggle, this));
 	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_platooningToggle, this));
 	register_testcases(boost::bind(&Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_userInterface, this));
+	register_testcases(boost::bind(&Moduletest_messagedistribution::test_stresstest_all_messages, this));
 
 	NODELET_INFO("[%s] init done", name_.c_str());
 
@@ -104,6 +117,38 @@ void Moduletest_messagedistribution::hndl_test_pub_in_platoonMsg_recv_lv_broadca
 	finalize_test(res);
 }
 
+void Moduletest_messagedistribution::test_pub_in_lv_broadcast_recv_platoonMsg() {
+	set_current_test("test_pub_in_lv_broadcast_recv_platoonMsg");
+	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
+
+	//mockup publishers
+	pub_map_.emplace(topics::OUT_LV_BROADCAST, ros::Publisher());
+	pub_map_[topics::OUT_LV_BROADCAST] = nh_.advertise<platooning::lv_broadcast>(topics::OUT_LV_BROADCAST, 1);
+
+	//mockup subscribers
+	sub_map_.emplace(topics::OUT_PLATOONING_MSG, ros::Subscriber());
+	sub_map_[topics::OUT_PLATOONING_MSG] = nh_.subscribe(topics::OUT_PLATOONING_MSG, 1,
+	                                                  &Moduletest_messagedistribution::hndl_test_pub_in_lv_broadcast_recv_platoonMsg,
+	                                                  this);
+
+	boost::shared_ptr<lv_broadcast> inmsg = boost::shared_ptr<lv_broadcast>(new lv_broadcast);
+
+	inmsg->src_vehicle = 3;
+
+	pub_map_[topics::OUT_LV_BROADCAST].publish(inmsg);
+}
+void Moduletest_messagedistribution::hndl_test_pub_in_lv_broadcast_recv_platoonMsg(platooning::platoonProtocol msg) {
+	TestResult res;
+	res.success = true;
+
+	if (msg.message_type != LV_BROADCAST) {
+		res.success = false;
+		res.comment = "hndl_test_pub_in_lv_broadcast_recv_platoonMsg received wrong header type";
+	}
+
+	finalize_test(res);
+}
+
 void Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_lv_accept() {
 	set_current_test("test_pub_in_platoonMsg_recv_lv_accept");
 	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
@@ -152,6 +197,38 @@ void Moduletest_messagedistribution::hndl_test_pub_in_platoonMsg_recv_lv_accept(
 	finalize_test(res);
 }
 
+void Moduletest_messagedistribution::test_pub_in_lv_accept_recv_platoonMsg() {
+	set_current_test("test_pub_in_lv_accept_recv_platoonMsg");
+	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
+
+	//mockup publishers
+	pub_map_.emplace(topics::OUT_LV_ACCEPT, ros::Publisher());
+	pub_map_[topics::OUT_LV_ACCEPT] = nh_.advertise<platooning::lv_accept>(topics::OUT_LV_ACCEPT, 1);
+
+	//mockup subscribers
+	sub_map_.emplace(topics::OUT_PLATOONING_MSG, ros::Subscriber());
+	sub_map_[topics::OUT_PLATOONING_MSG] = nh_.subscribe(topics::OUT_PLATOONING_MSG, 1,
+	                                                    &Moduletest_messagedistribution::hndl_test_pub_in_lv_accept_recv_platoonMsg,
+	                                                    this);
+
+	auto inmsg = boost::shared_ptr<lv_accept>(new lv_accept);
+
+	inmsg->src_vehicle = 3;
+
+	pub_map_[topics::OUT_LV_ACCEPT].publish(inmsg);
+}
+void Moduletest_messagedistribution::hndl_test_pub_in_lv_accept_recv_platoonMsg(platooning::platoonProtocol msg) {
+	TestResult res;
+	res.success = true;
+
+	if (msg.message_type != LV_ACCEPT) {
+		res.success = false;
+		res.comment = "hndl_test_pub_in_lv_accept_recv_platoonMsg received wrong header type";
+	}
+
+	finalize_test(res);
+}
+
 void Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_lv_reject() {
 	set_current_test("test_pub_in_platoonMsg_recv_lv_reject");
 	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
@@ -176,6 +253,7 @@ void Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_lv_reject() {
 
 	pub_map_[topics::IN_PLATOONING_MSG].publish(inmsg);
 }
+
 void Moduletest_messagedistribution::hndl_test_pub_in_platoonMsg_recv_lv_reject(platooning::lv_reject msg) {
 	TestResult res;
 	res.success = true;
@@ -189,6 +267,39 @@ void Moduletest_messagedistribution::hndl_test_pub_in_platoonMsg_recv_lv_reject(
 
 	if (msg.src_vehicle == 3) {
 		res.success = true;
+	}
+
+	finalize_test(res);
+}
+
+void Moduletest_messagedistribution::test_pub_in_lv_reject_recv_platoonMsg() {
+	set_current_test("test_pub_in_lv_reject_recv_platoonMsg");
+	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
+
+	//mockup publishers
+	pub_map_.emplace(topics::OUT_LV_REJECT, ros::Publisher());
+	pub_map_[topics::OUT_LV_REJECT] = nh_.advertise<platooning::lv_reject>(topics::OUT_LV_REJECT, 1);
+
+	//mockup subscribers
+	sub_map_.emplace(topics::OUT_PLATOONING_MSG, ros::Subscriber());
+	sub_map_[topics::OUT_PLATOONING_MSG] = nh_.subscribe(topics::OUT_PLATOONING_MSG, 1,
+	                                                    &Moduletest_messagedistribution::hndl_test_pub_in_lv_reject_recv_platoonMsg,
+	                                                    this);
+
+	auto inmsg = boost::shared_ptr<lv_reject>(new lv_reject);
+
+	inmsg->src_vehicle = 3;
+
+	pub_map_[topics::OUT_LV_REJECT].publish(inmsg);
+}
+
+void Moduletest_messagedistribution::hndl_test_pub_in_lv_reject_recv_platoonMsg(platooning::platoonProtocol msg) {
+	TestResult res;
+	res.success = true;
+
+	if (msg.message_type != LV_REJECT) {
+		res.success = false;
+		res.comment = "hndl_test_pub_in_lv_reject_recv_platoonMsg received wrong header type";
 	}
 
 	finalize_test(res);
@@ -236,6 +347,39 @@ void Moduletest_messagedistribution::hndl_test_pub_in_platoonMsg_recv_fv_heartbe
 	finalize_test(res);
 }
 
+void Moduletest_messagedistribution::test_pub_in_fv_heartbeat_recv_platoonMsg() {
+	set_current_test("test_pub_in_fv_heartbeat_recv_platoonMsg");
+	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
+
+	//mockup publishers
+	pub_map_.emplace(topics::OUT_FV_HEARTBEAT, ros::Publisher());
+	pub_map_[topics::OUT_FV_HEARTBEAT] = nh_.advertise<platooning::fv_heartbeat>(topics::OUT_FV_HEARTBEAT, 1);
+
+	//mockup subscribers
+	sub_map_.emplace(topics::OUT_PLATOONING_MSG, ros::Subscriber());
+	sub_map_[topics::OUT_PLATOONING_MSG] = nh_.subscribe(topics::OUT_PLATOONING_MSG, 1,
+	                                                    &Moduletest_messagedistribution::hndl_test_pub_in_fv_heartbeat_recv_platoonMsg,
+	                                                    this);
+
+	auto inmsg = boost::shared_ptr<fv_heartbeat>(new fv_heartbeat);
+
+	inmsg->src_vehicle = 3;
+
+	pub_map_[topics::OUT_FV_HEARTBEAT].publish(inmsg);
+}
+void Moduletest_messagedistribution::hndl_test_pub_in_fv_heartbeat_recv_platoonMsg(platooning::platoonProtocol msg) {
+	TestResult res;
+	res.success = true;
+
+	if (msg.message_type != FV_HEARTBEAT) {
+		res.success = false;
+		res.comment = "hndl_test_pub_in_fv_heartbeat_recv_platoonMsg received wrong header type";
+	}
+
+	finalize_test(res);
+}
+
+
 void Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_fv_leave() {
 	set_current_test("test_pub_in_platoonMsg_recv_fv_leave");
 	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
@@ -278,6 +422,38 @@ void Moduletest_messagedistribution::hndl_test_pub_in_platoonMsg_recv_fv_leave(p
 	finalize_test(res);
 }
 
+void Moduletest_messagedistribution::test_pub_in_fv_leave_recv_platoonMsg() {
+	set_current_test("test_pub_in_fv_leave_recv_platoonMsg");
+	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
+
+	//mockup publishers
+	pub_map_.emplace(topics::OUT_FV_LEAVE, ros::Publisher());
+	pub_map_[topics::OUT_FV_LEAVE] = nh_.advertise<platooning::fv_leave>(topics::OUT_FV_LEAVE, 1);
+
+	//mockup subscribers
+	sub_map_.emplace(topics::OUT_PLATOONING_MSG, ros::Subscriber());
+	sub_map_[topics::OUT_PLATOONING_MSG] = nh_.subscribe(topics::OUT_PLATOONING_MSG, 1,
+	                                                    &Moduletest_messagedistribution::hndl_test_pub_in_fv_leave_recv_platoonMsg,
+	                                                    this);
+
+	auto inmsg = boost::shared_ptr<fv_leave>(new fv_leave);
+
+	inmsg->src_vehicle = 3;
+
+	pub_map_[topics::OUT_FV_LEAVE].publish(inmsg);
+}
+void Moduletest_messagedistribution::hndl_test_pub_in_fv_leave_recv_platoonMsg(platooning::platoonProtocol msg) {
+	TestResult res;
+	res.success = true;
+
+	if (msg.message_type != FV_LEAVE) {
+		res.success = false;
+		res.comment = "hndl_test_pub_in_fv_leave_recv_platoonMsg received wrong header type";
+	}
+
+	finalize_test(res);
+}
+
 void Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_fv_request() {
 
 	set_current_test("test_pub_in_platoonMsg_recv_fv_request");
@@ -308,7 +484,6 @@ void Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_fv_request() {
 }
 
 void Moduletest_messagedistribution::hndl_test_pub_in_platoonMsg_recv_fv_request(platooning::fv_request msg) {
-
 	TestResult res;
 	res.success = true;
 
@@ -326,6 +501,39 @@ void Moduletest_messagedistribution::hndl_test_pub_in_platoonMsg_recv_fv_request
 	finalize_test(res);
 
 }
+
+void Moduletest_messagedistribution::test_pub_in_fv_request_recv_platoonMsg() {
+	set_current_test("test_pub_in_fv_request_recv_platoonMsg");
+	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
+
+	//mockup publishers
+	pub_map_.emplace(topics::OUT_FV_REQUEST, ros::Publisher());
+	pub_map_[topics::OUT_FV_REQUEST] = nh_.advertise<platooning::fv_request>(topics::OUT_FV_REQUEST, 1);
+
+	//mockup subscribers
+	sub_map_.emplace(topics::OUT_PLATOONING_MSG, ros::Subscriber());
+	sub_map_[topics::OUT_PLATOONING_MSG] = nh_.subscribe(topics::OUT_PLATOONING_MSG, 1,
+	                                                    &Moduletest_messagedistribution::hndl_test_pub_in_fv_request_recv_platoonMsg,
+	                                                    this);
+
+	auto inmsg = boost::shared_ptr<fv_request>(new fv_request);
+
+	inmsg->src_vehicle = 3;
+
+	pub_map_[topics::OUT_FV_REQUEST].publish(inmsg);
+}
+void Moduletest_messagedistribution::hndl_test_pub_in_fv_request_recv_platoonMsg(platooning::platoonProtocol msg) {
+	TestResult res;
+	res.success = true;
+
+	if (msg.message_type != FV_REQUEST) {
+		res.success = false;
+		res.comment = "hndl_test_pub_in_fv_request_recv_platoonMsg received wrong header type";
+	}
+
+	finalize_test(res);
+}
+
 void Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_remotecontrolInput() {
 	set_current_test("test_pub_in_platoonMsg_recv_remotecontrolInput");
 	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
@@ -471,22 +679,32 @@ void Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_userInterface()
 	inmsg->message_type = REMOTE_USERINTERFACE;
 	inmsg->payload = MessageTypes::encode_message(msg);
 
+	boost::function<void()>
+		cbfun(boost::bind(boost::mem_fn(&Moduletest_messagedistribution::callback_test_pub_in_platoonMsg_recv_userInterface), this));
+	register_timeout_callback(cbfun);
+
 	pub_map_[topics::IN_PLATOONING_MSG].publish(inmsg);
 }
+
 void Moduletest_messagedistribution::hndl_test_pub_in_platoonMsg_recv_userInterface(platooning::userInterface msg) {
+	TestResult res;
+	res.success = false;
+	res.comment = "shouldnt receive userinterface. must be filtered out";
+
+	finalize_test(res);
+}
+
+void Moduletest_messagedistribution::callback_test_pub_in_platoonMsg_recv_userInterface() {
+
 	TestResult res;
 	res.success = true;
 
-	if (msg.src_vehicle != 3) {
-		res.success = false;
-		res.comment = std::string("hndl_test_pub_in_platoonMsg_recv_userInterface:") + "src_vehicle:3 == "
-			+ std::to_string(msg.src_vehicle)
-			+ "=" + std::to_string(msg.src_vehicle == 3);
-	}
+	finalize_test(res);
+}
 
-	if (msg.src_vehicle == 3) {
-		res.success = true;
-	}
+void Moduletest_messagedistribution::test_stresstest_all_messages() {
+	TestResult res;
+	res.success = true;
 
 	finalize_test(res);
 }

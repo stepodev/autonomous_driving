@@ -1,12 +1,9 @@
-//
-// Created by stepo on 12/16/17.
-//
-
-
 /**
- * @file /platooning/src/platooning.cpp
+ * @file /platooning/src/MessageDistribution.cpp
  *
- * @brief Nodelet implementation of RemoteContol
+ * @brief Nodelet implementation of MessageDistribution class
+ *
+ * @date 22.03.2018
  *
  * @author stepo
  **/
@@ -26,11 +23,6 @@ namespace platooning {
 ** Constructors
 *****************************************************************************/
 
-
-/**
- * @brief Template Nodelet
- */
-
 MessageDistribution::MessageDistribution() = default;
 
 /*****************************************************************************
@@ -46,7 +38,6 @@ MessageDistribution::~MessageDistribution() = default;
 
 /**
 * Set-up necessary publishers/subscribers
-* @return true, if successful
 */
 void MessageDistribution::onInit() {
 
@@ -149,6 +140,8 @@ void MessageDistribution::hndl_platooningIn(const platooning::platoonProtocol &i
 			boost::shared_ptr<platooningToggle> outmsg = boost::shared_ptr<platooningToggle>(new platooningToggle);
 			MessageTypes::decode_json(inmsg.payload, *outmsg);
 			pub_platooning_toggle.publish(outmsg);
+		} else if (inmsg.message_type == REMOTE_USERINTERFACE) {
+			//ignore
 		} else {
 			NODELET_ERROR("[MessageDistribution] unknown message type");
 		}
