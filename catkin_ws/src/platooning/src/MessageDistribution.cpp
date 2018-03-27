@@ -1,12 +1,9 @@
-//
-// Created by stepo on 12/16/17.
-//
-
-
 /**
- * @file /platooning/src/platooning.cpp
+ * @file /platooning/src/MessageDistribution.cpp
  *
- * @brief Nodelet implementation of RemoteContol
+ * @brief Nodelet implementation of MessageDistribution class
+ *
+ * @date 22.03.2018
  *
  * @author stepo
  **/
@@ -26,11 +23,6 @@ namespace platooning {
 ** Constructors
 *****************************************************************************/
 
-
-/**
- * @brief Template Nodelet
- */
-
 MessageDistribution::MessageDistribution() = default;
 
 /*****************************************************************************
@@ -46,7 +38,6 @@ MessageDistribution::~MessageDistribution() = default;
 
 /**
 * Set-up necessary publishers/subscribers
-* @return true, if successful
 */
 void MessageDistribution::onInit() {
 
@@ -82,7 +73,7 @@ void MessageDistribution::onInit() {
 	pub_fv_leave = nh_.advertise<platooning::fv_leave>(topics::IN_FV_LEAVE, 100);
 	pub_fv_request = nh_.advertise<platooning::fv_request>(topics::IN_FV_REQUEST, 100);
 
-	pub_remotecontrol_input = nh_.advertise<remotecontrolInput>(topics::REMOTECONTROL_INPUT, 100);
+	pub_remotecontrol_input = nh_.advertise<remotecontrolInput>(topics::INPUT_REMOTECONTROL, 100);
 	pub_remotecontrol_toggle = nh_.advertise<remotecontrolToggle>(topics::TOGGLE_REMOTECONTROL, 100);
 	pub_platooning_toggle = nh_.advertise<platooningToggle>(topics::TOGGLE_PLATOONING, 100);
 
@@ -149,6 +140,8 @@ void MessageDistribution::hndl_platooningIn(const platooning::platoonProtocol &i
 			boost::shared_ptr<platooningToggle> outmsg = boost::shared_ptr<platooningToggle>(new platooningToggle);
 			MessageTypes::decode_json(inmsg.payload, *outmsg);
 			pub_platooning_toggle.publish(outmsg);
+		} else if (inmsg.message_type == REMOTE_USERINTERFACE) {
+			//ignore
 		} else {
 			NODELET_ERROR("[MessageDistribution] unknown message type");
 		}

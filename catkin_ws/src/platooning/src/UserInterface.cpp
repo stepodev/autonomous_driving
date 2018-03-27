@@ -54,7 +54,7 @@ void UserInterface::onInit() {
 	                                         &UserInterface::hndl_remotecontrol_toggle, this);
 	sub_toggle_platooning = nh_.subscribe(topics::TOGGLE_PLATOONING, 1,
 	                                      &UserInterface::hndl_platooning_toggle, this);
-	sub_remotecontrol_input = nh_.subscribe(topics::REMOTECONTROL_INPUT, 1,
+	sub_remotecontrol_input = nh_.subscribe(topics::INPUT_REMOTECONTROL, 1,
 	                                        &UserInterface::hndl_remotecontrol_input, this);
 	sub_speed = nh_.subscribe(topics::SENSOR_VELOCITY, 1,
 	                          &UserInterface::hndl_current_speed, this);

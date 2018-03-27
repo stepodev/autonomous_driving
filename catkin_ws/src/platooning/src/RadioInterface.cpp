@@ -1,12 +1,7 @@
-//
-// Created by stepo on 12/16/17.
-//
-
-
 /**
  * @file /platooning/src/RadioInterface.cpp
  *
- * @brief RadioInterface class
+ * @brief Implementation of RadioInterface class
  *
  * @author stepo
  **/

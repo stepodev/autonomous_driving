@@ -1,8 +1,3 @@
-//
-// Created by stepo on 12/16/17.
-//
-
-
 /**
  * @file /platooning/src/platooning.cpp
  *

@@ -69,6 +69,8 @@ void Moduletest::finalize_test(TestResult result) {
 		pub_map_.clear();
 		sub_map_.clear();
 
+		timeout_callback_.clear();
+
 		set_timeout(boost::posix_time::seconds(3));
 
 		start_tests();
@@ -91,6 +93,7 @@ void Moduletest::hndl_testcase_timeout(const boost::system::error_code &ec) {
 			res.comment = "testcase timeout";
 
 			finalize_test(res);
+			return;
 		}
 
 		if (ec == boost::system::errc::success && !timeout_callback_.empty()) {
@@ -103,6 +106,7 @@ void Moduletest::hndl_testcase_timeout(const boost::system::error_code &ec) {
 
 			timeout_callback_ = boost::function<void()>();
 			finalize_test(res);
+			return;
 		}
 
 	} catch (std::exception &ex) {
