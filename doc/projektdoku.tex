@@ -22,6 +22,15 @@
 \usepackage[onehalfspacing]{setspace}
 \usepackage[left=3cm,right=3cm,top=2.5cm,bottom=2.5cm,includeheadfoot]{geometry}
 
+\usepackage{url}
+
+
+\usepackage[
+style=ieee,
+backend=biber
+]{biblatex}
+\bibliography{projekt_biblio.bib}
+
 \begin{document}	
 \author{Supercoole Kinder}
 \title{Projektdokumentation} 
@@ -259,13 +268,31 @@
 			
 	\section{Tests}
 		\subsection{Test-Standard} % warum haben wir uns auf google test festgelegt; Designentscheidung
+		Als Testing Framework für unsere Unit Tests haben wir im Rahmen des Projektes Google Test verwendet.
+		Hierbei handelt es sich um eine plattformübergreifende\footnote{Verfügbar auf den Betriebssystemen Linux, Windows, Mac OS},
+		von Google entwickelte Test-Bibliothek für die Programmiersprache C++. Sie zeichnet sich durch schnelle Performanz und 
+		Wiederverwertbarkeit aus. Letzteres war im Projekt von Vorteil, da die gleichen Tests auf unterschiedlichen Systemen der 
+		Projektteilnehmer liefen, ohne Modifizierungen vornehmen zu müssen. Des Weiteren ist es mit Google Test möglich, die Test 
+		isoliert voneinander ablaufen zu lassen, um im Falle eines gescheiterten Test die Fehlerquelle gezielter zu finden. 
+		
+		Einander ähnelnde Test bzw. Tests, die sich auf eine bestimmte Komponente beziehen, können in sog. \emph{Test Cases} 
+		organisiert und bei Bedarf einzeln oder im Verbund getestet werden. In diesem Zusammenhang muss jedoch erwähnt werden, 
+		dass der Ausdruck \emph{Test Case} dem ISTQB\footnote{International Software Testing Qualificatios Board}-Ausdruck 
+		\emph{Test Suite} entspricht\cite{google}. 
+		
+		Die Testergebnisse werden automatisch generiert. Bei Bedarf kann ein XML-Report erzeugt werden. 
+		
+		Eine beispielhafte Anleitung zum globalen Einbinden von Google Test für das Betriebssystem Ubuntu 16.04 befindet sich im Anhang \ref{appendix:gtest_install}. 
+		
+		% Probleme in Verbindung mit ROS, Erzeugen von Reports zB als xml output
+		
 		\subsection{Test-Cases}
 		\subsection{Testergebnisse}
 	\section{Nutzerhandbuch} %brumm brumm auto fahren (wie lasse ich=schlingloff die autos fahren/kann ich die simulation starten? was kann ich alles anstellen und wie? steuerung, hindernisse...)
 \newpage
 \part{Beschreibung der Eigenleistung}
 	\section{Cooles Kind 1}
-		Für nähere Informationen siehe Anhang \ref{appendix:xynode}.
+		Für nähere Informationen siehe Anhang \ref{appendix:xynode}. Vergleiche dazu auch \cite{ibm}.
 	\section{Falco Becker}
 	\section{Yannick Boerner}
 	\section{Anne Borchard}
@@ -273,6 +300,9 @@
 	\section{Jonas Heyden}
 	\section{Benjamin Lorenz}
 	\section{Stephan Orlowsky}
+	
+\newpage
+\printbibliography
 
 %Anhang: 
 %Datenblätter
@@ -283,6 +313,7 @@
 \renewcommand\appendixpagename{Anhang}
 \renewcommand\appendixname{Anhang}
 
+\newpage
 \begin{appendices}
 
 \section{XY-Node Code}
@@ -308,5 +339,23 @@
 \section{Code per File importiert}
 \label{appendix:importcode}
 	\lstinputlisting[style=customcpp]{lambda_test.cpp}
+
+\section{Google Test Installation}
+\label{appendix:gtest_install}
+	Anleitung zum Installieren der Google Test Suite unter Ubuntu 16.04:
+	\begin{itemize}
+		\item Terminal öffnen und nachfolgende Befehle eingeben
+		\item wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+		\item tar xf release-1.8.0.tar.gz
+		\item cd googletest-release-1.8.0
+		\item cmake -DBUILD\_SHARED\_LIBS=ON .
+		\item make
+		\item sudo cp -a googletest/include/gtest /usr/include
+		\item sudo cp -a googlemock/gtest/libgtest\_main.so googlemock/gtest/libgtest.so /usr/lib
+		\item sudo ldconfig -v | grep gtest
+		\item es sollte folgenden Output geben:
+		\item libgtest\_main.so -- libgtest\_main.so
+		\item libgtest.so -- libgtest.so
+	\end{itemize}
 \end{appendices}
 \end{document}
