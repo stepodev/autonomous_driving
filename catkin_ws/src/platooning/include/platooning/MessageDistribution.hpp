@@ -43,6 +43,8 @@ namespace platooning {
  * put messages that need to be sent via radiointerface into the platoonProtocol
  * messagetype. Messages coming from the radiointerface get filtered or unpacked
  * into their proper messagetypes and sent on the appropriate topic.
+ *
+ * @bugs sometimes seems to eat lv_accept messages
  */
 
   class MessageDistribution : public nodelet::Nodelet {
