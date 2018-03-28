@@ -1,4 +1,5 @@
-\documentclass[a4paper, 12pt, titlepage]{scrartcl}  
+\documentclass[a4paper, 12pt, titlepage]{scrartcl}
+\usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[toc,title,page]{appendix} % Anhang 
 
@@ -23,7 +24,6 @@
 
 \usepackage{url}
 
-
 \usepackage[
 style=ieee,
 backend=biber
@@ -38,7 +38,8 @@ backend=biber
 \tableofcontents
 
 \part{Projektdokumentation}
-	\section{Projektbeschreibung} % Ziele und Motivation, warum das alles so toll ist. (umweltfreundlich, super Auslastung, weniger Unfälle... besonderes feature: car2car kommunikation)
+	\section{Projektbeschreibung}
+	\label{projektbeschreibung}
 		Im Rahmen des Semesterprojekts 'Hochautomatisiertes Fahren' an der Humboldt-Universität zu Berlin haben sich mehrere Studenten, verteilt auf drei parallel arbeitende Gruppen, 
 		mit dem Problem beschäftigt, drei Modellfahrzeuge automatisiert in einer Kolonne fahren zu lassen. 
 		Dabei gibt das führende Fahrzeug Geschwindigkeit und Richtung vor. Der Gedanke hinter dieser Problemstellung ist, 
@@ -50,7 +51,9 @@ backend=biber
 		Zum anderen, worauf in diesem Projekt ein großes Augenmerk gelegt worden ist, kommuniziert das führende Fahrzeug mit den Mitgliedern seiner Kolonne über eine drahtlose Verbindung. 
 		Erwartet wird, dass diese Kommunikation schneller durchgeführt wird als die Auswertung der Sensordaten jedes einzelnen Kolonnen-Teilnehmers. 
 		In Folge dessen können die Sicherheitsabstände zwischen den Fahrzeugen signifikant geringer gehalten werden. 
-	\section{Lastenheft} %(nicht-)funktionale anforderungen, was liefern wir am ende, use cases. nur grob erwähnen und dann im anhang auf das lastenheft verweisen??
+	\section{Lastenheft} 
+	\label{lastenheft}
+	%(nicht-)funktionale anforderungen, was liefern wir am ende, use cases. nur grob erwähnen und dann im anhang auf das lastenheft verweisen??
 	\section{Projekt-Organisation und Umfeld} 
 	\label{umfeld}
 	% 3 teams arbeiten parallel, zusammenarbeit mit assystem und frauenhofer, wir: agiler Ansatz, clion, gitlab, slack, meistertask; späterer Umschwung auf gitlab issues
@@ -58,20 +61,49 @@ backend=biber
 	% externer Bau der autos plus betreuung durch externen studenten/frauenhofer/assystems
 	% Räumlichkeiten: wo fand was statt
 	
-	\section{Projektplan} % vgl. project charter http://sce2.umkc.edu/BIT/burrise/pl/appendix/Software_Documentation_Templates/Project_Charter_Template.html
+	\section{Projektplan}
+	\label{projektplan} 
+	% vgl. project charter http://sce2.umkc.edu/BIT/burrise/pl/appendix/Software_Documentation_Templates/Project_Charter_Template.html
 	%Meilensteine, Routinen, Treffen, Planänderungen (mal gucken was die anderen Gruppe da haben), Designänderungen der Architektur nach treffen mit assystem?
-	\section{Projektablauf} %vergleich ist-zustand mit soll-zustand? was wurde bei den wöchentlichen treffen mit schlingloff etc besprochen, Lieferprobleme...
+	\section{Projektablauf} 
+	\label{projektablauf}
+	%vergleich ist-zustand mit soll-zustand? was wurde bei den wöchentlichen treffen mit schlingloff etc besprochen, Lieferprobleme...
 	% eventuell sind Projektmetriken interessant: Diagram zur Visualsierung der Zeitverteilung auf verschiedene Aspekte des Projekts (wie viel Zeit für's Coden, in ros einarbeiten etc)
 \newpage
 \part{Produktdokumentation}
-	\section{Systemvoraussetzungen} % ubuntu, SW von assystems, ros. im prinzip beschreibung unserer vm + welche Schritte wurden unternommen ums zum laufen zu bringen und kurze erläuterung dass sw von assystems aufs board geschmissen wurde. und catkin zeugs
+	\section{Systemvoraussetzungen} 
+	\label{systemvoraussetzungen}
+	% ubuntu, SW von assystems, ros. im prinzip beschreibung unserer vm + welche Schritte wurden unternommen ums zum laufen zu bringen und kurze erläuterung dass sw von assystems aufs board geschmissen wurde. und catkin zeugs
 	\section{Fahrzeug-Architektur}
-		\subsection{Hardware} % sensoren, boards, teile ausm 3d drucker, datenblätter im anhang? erläuterung von joe(?) wie er die boards zum laufen gebracht hat
-		\subsection{Fahrzeugzusammenbau} % tutorial zum zusammenbau, fotos
+	\label{hw_architektur}
+		\subsection{Hardware}
+		\label{hardware}
+		 % sensoren, boards, teile ausm 3d drucker, datenblätter im anhang? erläuterung von joe(?) wie er die boards zum laufen gebracht hat
+		\subsection{Fahrzeugzusammenbau} 
+		\label{fahrzeugzusammenbau}
+		% tutorial zum zusammenbau, fotos
 	\section{Software-Architektur}
-		\subsection{Architekturübersicht} % grafische Darstellung der Beziehung der module zueinander, uml?
-		\subsection{Coding-Standard} % C++, Mix aus Google Style Guide und anderen Conventions, version control
-		\subsection{Modulbeschreibung} % Beschreibung der Nodes inkl. (Aktivitäts-)Diagramme
+	\label{sw_architektur}
+		\subsection{Architekturübersicht} 
+		\label{sw_uebersicht}
+		% grafische Darstellung der Beziehung der module zueinander, uml?
+		\subsection{Coding-Standard} 
+		\label{coding_standard}
+			Die im Projekt verwendete Programmiersprache ist C++, da diese mit dem ROS-Betriebssystem kompatibel ist. 
+			Um die Verständlichkeit und Lesbarkeit innerhalb der Projektgruppe zu gewährleisten, haben wir uns auf 
+			bestimmte syntaktische Standards geeinigt. Eine erste Orientierung boten der Google C++ Style Guide\cite{googleTest} und die C++ Core Guidelines\cite{cppCoreGuide}. 
+			
+			Der Code ist aufgeteilt in Deklarations- und Definitionsteil, sprich: in Header- und CPP-Dateien.
+			Klassennamen werden mit großem Anfangsbuchstaben geschrieben, Variablen mit kleinen. Klassenvariablen enden zudem 
+			auf einem Unterstrich. Zur besseren Lesbarkeit werden die Namen im sog. \emph{snake case}\footnote{Die einzelnen 
+			Worte des Kompositums werden durch Unterstriche getrennt, z.B.: important\_value} geschrieben. 
+			Die Einrückung mittels Tabulator beträgt vier Leerzeichen. 
+			
+			Die von uns verwendete IDE, vgl. dazu Kapitel \ref{umfeld}, bot die Möglichkeit, den Google C++ Style Guide und andere Code-Konventionen zu unterstützen. 
+
+		\subsection{Modulbeschreibung} 
+		\label{modulbeschreibung}
+		% Beschreibung der Nodes inkl. (Aktivitäts-)Diagramme
 			\subsubsection{Beispielnode A}
 			\label{node_a}
 				\paragraph{Aufgabe} Node A sammelt Daten bezüglich der aktuellen Radierfähigkeit verschiedener Radiergummis. Die Daten werden kontinuierlich ausgewertet, sodass bei Überschreitung von bestimmten, festgelegter Werte andere Nodes über die Änderung informiert werden. Der Quellcode ist im Anhang \ref{appendix:abcnode} hinterlegt. 
@@ -153,7 +185,7 @@ backend=biber
     				\end{itemize}
 						
 		    \subsubsection{User Interface}
-			\label{controller_ui}
+			\label{user_interfcae}
 				\paragraph{Aufgabe} Der UserInterface-Node zeigt dem Nutzer aktuelle Daten des Fahrzeugs an. Dazu gehören zum Beispiel Nachrichten aus dem Platoon, Geschwindigkeit oder Distanz zu anderen Objekten. Aus diesen Daten soll der Nutzer nachvollziehen können, warum sich das Auto verhält, wie es sich verhält.
 				\paragraph{Assoziationen} Der UserInterface-Node ist Subscriber vom UdpServer-Node.  
 				\paragraph{Attribute}
@@ -196,7 +228,7 @@ backend=biber
 				\paragraph{Output}
 
 			\subsubsection{Message Distribution}
-			\label{controller_ui}
+			\label{message_distribution}
 				\paragraph{Aufgabe} Der MessageDistribution-Node erhält alle einkommenden Nachrichten. Je nach MessageType werden diese Nachrichten dann vom MessageDistribution-Node auf den passenden Topics veröffentlicht. Dadurch erhalten alle Nodes immer die richtigen Nachrichten. 
 				\paragraph{Assoziationen} ???
 				\paragraph{Attribute}
@@ -216,7 +248,7 @@ backend=biber
 				\paragraph{Output} ???
 
 			\subsubsection{MessageTypes}
-			\label{controller_ui}
+			\label{messages_types}
 				\paragraph{Aufgabe} ??
 				\paragraph{Assoziationen}
 				\paragraph{Attribute}
@@ -258,7 +290,7 @@ backend=biber
 					    \item std::unique\_ptr<UdpServer> controller\_server\_ptr\_ Ein einmaliger Pointer für den Controller Server. 
 					\end{itemize}
 				\paragraph{Methoden}
-				    \subparagraph{hndl_platoonProtocolOut} Sendet Nachrichten in das Netzwerk. Je nach MessageType muss die Nachricht anders verschickt werden. Daher wird hierfür eine extra Methode benötigt. 
+				    \subparagraph{hndl\_platoonProtocolOut} Sendet Nachrichten in das Netzwerk. Je nach MessageType muss die Nachricht anders verschickt werden. Daher wird hierfür eine extra Methode benötigt. 
 					\subparagraph{hndl\_radio\_receive} Kümmert sich um die empfangenen Nachrichten aus dem Netzwerk. Je nach MessageType muss mit den empfangenen Nachrichten anders verfahren werden. Darum kümmmert sich diese Methode. 
 				\paragraph{Input} 
 				    \begin{itemize}
@@ -272,7 +304,7 @@ backend=biber
 				    \end{itemize}
 				
 		    \subsubsection{UdpServer}
-			\label{controller_ui}
+			\label{udpserver}
 				\paragraph{Aufgabe} Der UdpServer-Node wird vom RadioInterface-Node verwendet, um den Nachrichtenverkehr über das Netzwerk realisieren zu können. 
 				\paragraph{Assoziationen} Der UdpServer-Node ist Subscriber vom UserInterface-Node und Publisher für den UserInterface-Node. 
 				\paragraph{Attribute}
@@ -294,7 +326,9 @@ backend=biber
 				\paragraph{Output}			
 				
 	\section{Tests}
+	\label{tests}
 		\subsection{Test-Standard}
+		\label{test_standard}
 		Als Testing Framework für unsere Unit Tests haben wir im Rahmen des Projektes Google Test verwendet.
 		Hierbei handelt es sich um eine plattformübergreifende\footnote{Verfügbar auf den Betriebssystemen Linux, Windows, Mac OS},
 		von Google entwickelte Test-Bibliothek für die Programmiersprache C++. Diese zeichnet sich durch schnelle Performanz und 
@@ -314,10 +348,15 @@ backend=biber
 		% Probleme in Verbindung mit ROS, Erzeugen von Reports zB als xml output
 		
 		\subsection{Test-Cases}
+		\label{test_cases}
 		\subsection{Testergebnisse}
-	\section{Nutzerhandbuch} %brumm brumm auto fahren (wie lasse ich=schlingloff die autos fahren/kann ich die simulation starten? was kann ich alles anstellen und wie? steuerung, hindernisse...)
+		\label{test_ergebnisse}
+	\section{Nutzerhandbuch} 
+	\label{nutzerhandbuch}
+	%brumm brumm auto fahren (wie lasse ich=schlingloff die autos fahren/kann ich die simulation starten? was kann ich alles anstellen und wie? steuerung, hindernisse...)
 \newpage
 \part{Beschreibung der Eigenleistung}
+\label{eigenleistung}
 	\section{Cooles Kind 1}
 		Für nähere Informationen siehe Anhang \ref{appendix:xynode}. Vergleiche dazu auch \cite{ibm}.
 	\section{Falco Becker}
@@ -363,9 +402,9 @@ backend=biber
 
 % cpp-file befindet sich im gleichen Ordner wie das tex-file
 % der Stil wird global definiert, siehe oben customcpp
-\section{Code per File importiert}
-\label{appendix:importcode}
-	\lstinputlisting[style=customcpp]{lambda_test.cpp}
+%\section{Code per File importiert}
+%\label{appendix:importcode}
+%	\lstinputlisting[style=customcpp]{lambda_test.cpp}
 
 \section{Google Test Installation}
 \label{appendix:gtest_install}

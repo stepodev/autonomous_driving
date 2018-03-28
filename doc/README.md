@@ -1,3 +1,6 @@
+### Update 28.03.2018
+Bitte keine eigenmächtigen Änderungen (sprich: Packages entfernen) an der Präambel vornehmen. 
+
 ### Update 27.03.2018
 Gab einige Probleme mit der Bibliographie (Kompilierung, Zeilenumbrüche, deutsche Sprache und was weiß ich), wenn ihr noch Seltsames entdeckt bitte Issue eröffnen, aber ich hoffe ich habe alles gesehen.
 Momentaner Style ist IEEE, Bibliographie-Programm ist biber (biblatex macht komische Sachen, bitte nicht eigenmächtig ändern sondern gemeinsam nach ner Lösung suchen falls das zu einem Probkem wird).
