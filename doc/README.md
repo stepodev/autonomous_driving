@@ -1,3 +1,13 @@
+### Update 27.03.2018
+Gab einige Probleme mit der Bibliographie (Kompilierung, Zeilenumbrüche, deutsche Sprache und was weiß ich), wenn ihr noch Seltsames entdeckt bitte Issue eröffnen, aber ich hoffe ich habe alles gesehen.
+Momentaner Style ist IEEE, Bibliographie-Programm ist biber (biblatex macht komische Sachen, bitte nicht eigenmächtig ändern sondern gemeinsam nach ner Lösung suchen falls das zu einem Probkem wird).
+Ihr müsst für euren Latex-Editor einrichten, dass ihr das tex-File quasi 3-mal erzeugen müsst: latex - biber - nochmal latex, siehe: https://tex.stackexchange.com/questions/13509/biblatex-in-a-nutshell-for-beginners
+
+Hier ein Guide für verschiedene Editor: 
+https://tex.stackexchange.com/questions/154751/biblatex-with-biber-configuring-my-editor-to-avoid-undefined-citations
+
+Sonst kann es zu Problemen beim Erzeugen des Dokuments kommen! 
+
 ### Update 07.03.18
 Zunächst: Alles steht zur Debatte, wenn etwas unsinnig erscheint sollten wir das zeitnah(!) diskutieren. Bitte nicht erst im April ;)
 
