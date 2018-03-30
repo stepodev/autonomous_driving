@@ -56,13 +56,26 @@ backend=biber
 	%(nicht-)funktionale anforderungen, was liefern wir am ende, use cases. nur grob erwähnen und dann im anhang auf das lastenheft verweisen??
 	\section{Projekt-Organisation und Umfeld} 
 	\label{umfeld}
-	% 3 teams arbeiten parallel, zusammenarbeit mit assystem und frauenhofer, wir: agiler Ansatz, clion, gitlab, slack, meistertask; späterer Umschwung auf gitlab issues
-	% ros, turtle sim
-	% externer Bau der autos plus betreuung durch externen studenten/frauenhofer/assystems
-	% Räumlichkeiten: wo fand was statt
+		Wie bereits in Abschnitt \ref{projektbeschreibung} erwähnt, beteiligten sich an diesem Projekt drei parallel zueinander arbeitende Gruppen. 
+		Ursache dafür ist, dass in möglichen, realen Anwendungsszenarien der Kolonnenfahrweise je nach Fahrzeughersteller heterogene 
+		Assistenzsysteme verwendet werden. Diese müssen dennoch in der Lage sein, untereinander kommunizieren und sich koordinieren zu können, unabhängig von fahrzeugspezifischen Charakteristika.
+		
+		Begleitet wurde unser Projekt von Mitarbeitern der Firma Assystem Germany GmbH und Fraunhofer FOKUS\footnote{Fraunhofer-Institut für Offene Kommunikationssysteme}. 
+		Sie boten vor allem Unterstützung im Bereich des Fahrzeugzusammenbaus und des Projektmanagements und stellten außerdem 
+		Räumlichkeiten zur Verfügung. Während Projektmanagement und Softwareentwicklung überwiegend im häuslichen Bereich oder an der 
+		Universität stattfanden, mussten die Fahrzeuge im Gebäude von Fraunhofer FOKUS zusammengebaut werden, vgl. dazu die Abschnitte \ref{hardware} und \ref{fahrzeugzusammenbau}. 
+		
+		Die Versionsverwaltung unseres Codes und anderer Dateien erfolgte über einen universitätseigenen \emph{GitLab}\footnote{GitLab B.V., https://about.gitlab.com/}-Server. Neben den eigentlichen Code-Dateien pflegten wir zudem ein gruppeninternes 
+		Wiki mit Anleitungen, Tutorials und ergänzenden Informationen, welche das Projekt betrafen. 
+		Zwingend erforderlich für dieses Projekt war die Nutzung von ROS\footnote{Robot Operating System, http://www.ros.org/}, 
+		mit dessen Hilfe wir die Fahrzeuge steuern und deren Sensoren auswerten konnten, vgl. dazu \ref{ros}. 
+		Nicht verbindlich vorgeschrieben, jedoch von Vorteil war die Nutzung der IDE\footnote{Integrated development environment} 
+		\emph{CLion}\footnote{JetBrains s.r.o., https://www.jetbrains.com/clion/}, da diese diverse von uns geforderte Funktionalitäten unterstützt (vgl. dazu die Abschnitte \ref{coding_standard} und \ref{test_standard}).
+		Die Kommunikation innerhalb unserer Gruppe fand über die Software \emph{slack}\footnote{Slack Technologies, Inc., https://slack.com/intl/de-de/features} statt, die Aufgaben wurden zunächst mit dem Tool \emph{meistertask}\footnote{MeisterLabs GmbH, https://www.meistertask.com/de} zugewiesen. Im Verlauf des Projekts sind wir jedoch komplett auf \emph{GitLab-Issues} umgestiegen, vgl. dazu Abschnitt \ref{projektablauf}. 
 	
 	\section{Projektplan}
 	\label{projektplan} 
+	%agiler Ansatz
 	% vgl. project charter http://sce2.umkc.edu/BIT/burrise/pl/appendix/Software_Documentation_Templates/Project_Charter_Template.html
 	%Meilensteine, Routinen, Treffen, Planänderungen (mal gucken was die anderen Gruppe da haben), Designänderungen der Architektur nach treffen mit assystem?
 	\section{Projektablauf} 
@@ -81,12 +94,15 @@ backend=biber
 		 % sensoren, boards, teile ausm 3d drucker, datenblätter im anhang? erläuterung von joe(?) wie er die boards zum laufen gebracht hat
 		\subsection{Fahrzeugzusammenbau} 
 		\label{fahrzeugzusammenbau}
-		% tutorial zum zusammenbau, fotos
+		% tutorial zum zusammenbau, fotos, ggf. ausführliche Beschreibung in den Anhang verbannen und darauf verweisen
 	\section{Software-Architektur}
 	\label{sw_architektur}
 		\subsection{Architekturübersicht} 
 		\label{sw_uebersicht}
 		% grafische Darstellung der Beziehung der module zueinander, uml?
+		\subsection{ROS}
+		\label{ros}
+		% kurze erläuterung der nodes, turtle sim
 		\subsection{Coding-Standard} 
 		\label{coding_standard}
 			Die im Projekt verwendete Programmiersprache ist C++, da diese mit dem ROS-Betriebssystem kompatibel ist. 
