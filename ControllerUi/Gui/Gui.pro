@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-01-28T14:32:17
+# Project created by QtCreator 2018-03-31T10:51:40
 #
 #-------------------------------------------------
 
@@ -8,7 +8,7 @@ QT       += core gui widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = controllerUi
+TARGET = Gui
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -25,13 +25,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        controllerui.cpp
+        gui.cpp
 
 HEADERS += \
-    controllerui.hpp
+        gui.h
 
 FORMS += \
-        controllerui.ui
+        gui.ui
+
+DISTFILES += \
+    Gui.pri
 
 #get UdpServer stuff
 unix:!macx: LIBS += -L$$PWD/../../catkin_ws/devel/lib/ -ludpserver
@@ -47,7 +50,7 @@ DEPENDPATH += $$PWD/../../catkin_ws/devel/include
 INCLUDEPATH += /opt/ros/lunar/include
 DEPENDPATH +=/opt/ros/lunar/include
 
-#BOOST shit
+#BOOST
 INCLUDEPATH += /usr/include/boost
 
 unix:!macx: LIBS += -L/usr/include/boost -lboost_system
