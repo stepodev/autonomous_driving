@@ -1,5 +1,5 @@
-#include "controllerui.hpp"
-#include "ui_controllerui.h"
+#include "gui.h"
+#include "ui_gui.h"
 
 ControllerUi::ControllerUi(QWidget *parent) :
     QMainWindow(parent),
