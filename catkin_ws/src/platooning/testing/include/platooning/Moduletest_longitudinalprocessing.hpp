@@ -1,16 +1,10 @@
 /**
- * @file doxygen_c.h
- * @author My Self
- * @date 9 Sep 2012
- * @brief File containing example of doxygen usage for quick reference.
+ * @file testing/src/Moduletest_longitudinalprocessing.hpp
+ * @author stepo
+ * @date 22,03,2018
+ * @brief Contains header of Moduletest_longitudinalprocessing class
  *
- * Here typically goes a more extensive explanation of what the header
- * defines. Doxygens tags are words preceeded by either a backslash @\
- * or by an at symbol @@.
- * @see http://www.stack.nl/~dimitri/doxygen/docblocks.html
- * @see http://www.stack.nl/~dimitri/doxygen/commands.html
  */
-
 /*****************************************************************************
 ** Ifdefs
 *****************************************************************************/
@@ -25,6 +19,7 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
+#include <algorithm>
 
 #include "Moduletest.hpp"
 #include "platooning/Topics.hpp"
@@ -33,37 +28,10 @@
 namespace platooning {
 
 /**
- * @brief Example showing how to document a function with Doxygen.
+ * @class Moduletest_longitudinalprocessing
  *
- * Description of what the function does. This part may refer to the parameters
- * of the function, like @p param1 or @p param2. A word of code can also be
- * inserted like @c this which is equivalent to <tt>this</tt> and can be useful
- * to say that the function returns a @c void or an @c int. If you want to have
- * more than one word in typewriter font, then just use @<tt@>.
- * We can also include text verbatim,
- * @verbatim like this@endverbatim
- * Sometimes it is also convenient to include an example of usage:
- * @code
- * BoxStruct *out = Box_The_Function_Name(param1, param2);
- * printf("something...\n");
- * @endcode
- * Or,
- * @code{.py}
- * pyval = python_func(arg1, arg2)
- * print pyval
- * @endcode
- * when the language is not the one used in the current source file (but
- * <b>be careful</b> as this may be supported only by recent versions
- * of Doxygen). By the way, <b>this is how you write bold text</b> or,
- * if it is just one word, then you can just do @b this.
- * @param param1 Description of the first parameter of the function.
- * @param param2 The second one, which follows @p param1.
- * @return Describe what the function returns.
- * @see Box_The_Second_Function
- * @see Box_The_Last_One
- * @see http://website/
- * @note Something to note.
- * @warning Warning.
+ * @brief Moduletest nodelet for LongitudinalProcessing class.
+ *
  */
 
 class Moduletest_longitudinalprocessing : public Moduletest {
@@ -76,11 +44,41 @@ class Moduletest_longitudinalprocessing : public Moduletest {
 
   private:
 	/**
-	* @brief template_testcase does x,y,z and expects a,b,c
-	*/
-	void send_new_data_recv_accel();
-	void hndl_tc_send_new_data_recv_accel(platooning::acceleration);
+	 * @brief Sends target and current distance, target and current velocity, and expects to receive new velocity on
+	 * topics::CALCULATED_VELOCITY
+	 */
+	void test_send_new_data_recv_velocity();
+	void hndl_test_send_new_data_recv_velocity(const speed &);
 
+	/**
+	 * @brief Times out distance and velo data, excepts velocity 0 on
+	 * topics::CALCULATED_VELOCITY
+	 */
+	void test_send_timeout_distance_velo_recv_velocity();
+	void hndl_test_send_timeout_distance_velo_recv_velocity(const speed &);
+
+	/**
+	 * @brief Simulates object ahead increasing velocity, expects returned velocities to catch this car up
+	 *
+	 * Simulates two cars starting at same speed and at correct distance. Changes LV speed up and down. Expects distance
+	 * to never go below 0 and to be around the desired distance at the end
+	 */
+
+	float fv_pos = 0;
+	float lv_pos = 1;
+	float fv_velo = 0;
+	float lv_velo = 2;
+	boost::posix_time::ptime start_time;
+	void test_change_velocity_keep_up();
+	void hndl_test_change_velocity_keep_up_velo(const platooning::speed &);
+	void hndl_test_change_velocity_keep_up_timer(const boost::system::error_code &e);
+	void hndl_test_change_velocity_keep_up_scenario_over();
+
+	boost::posix_time::milliseconds TIMER_FREQ = boost::posix_time::milliseconds(20);
+	boost::asio::io_service io_service_;
+	boost::asio::io_service::work io_worker_;
+	boost::asio::deadline_timer update_timer;
+	boost::thread_group thread_pool_;
 };
 
 } // namespace platooning

@@ -90,14 +90,15 @@ class SelfAdjustingRigiditySpring(AbstractSpring):
 # http://robotic-controls.com/learn/programming/pd-feedback-control-introduction
 class PDController(AbstractSpring):
     def __init__(self, target_position):
-        self.kp = 0.5 # factor to multiply with error. puts the error proportionally to the desired value
-        self.kd = 0.1 # rate of change factor. says "slow down before you get there"
-        self.target_position = -target_position
+        self.kp = 0.2 # factor to multiply with error. puts the error proportionally to the desired value
+        self.kd = 0.04 # rate of change factor. says "slow down before you get there"
+        self.target_position = target_position
 
     def do_timestep(self, relative_velocity, current_position: float, time_step: float) ->float:
         y = self.kp * (self.target_position - current_position) - self.kd * relative_velocity
-        print( self.target_position,  current_position, y)
+        print( "ought:", self.target_position, "is:",  current_position,  "calc:{0:.2f}".format(y))
         return y
+
 
 class Car:
     def __init__(self, initial_pos: float, timestep: float, current_velocity: float,
@@ -114,11 +115,11 @@ class Car:
 
     def drive_by_range(self, distance: float, lv_speed_offset: float):
         relative_velocity = self.velocity - lv_speed_offset
-        self.velocity = lv_speed_offset + self.calc_spring_(-distance, relative_velocity)
+        self.velocity = lv_speed_offset + self.calc_spring(-distance, relative_velocity)
 
         self.pos += self.velocity * self.time_step
 
-    def calc_spring_(self, current_position: float, relative_velocity: float) -> float:
+    def calc_spring(self, current_position: float, relative_velocity: float) -> float:
         return self.catch_up_spring_.do_timestep(relative_velocity=relative_velocity,
                                                  current_position=current_position,
                                                  time_step=self.time_step)
@@ -192,11 +193,11 @@ def plot_distance(spring_series: SpringSeries, header: str):
 
 
 def plot_platoon(platoon: Platoon, header: str):
-    max_velo = max(platoon.fv_velocity) + 2
+    max_velo = max(max(platoon.lv_velocity) + 2, max(platoon.fv_velocity)+2)
     min_velo = min(0, min(platoon.fv_velocity) - 2, min(platoon.fv_velocity) - 2)
     max_distance = max(platoon.dist_diff) + 2
     min_distance = min(0, min(platoon.dist_diff) - 2)
-    max_time = 15
+    max_time = max(platoon.time_points)
 
     plt.figure(1)
     p = plt.subplot(211)
@@ -262,8 +263,8 @@ def plot_distance_1to5():
 def plot_platoon_catchup():
     time_step_len = 0.2
 
-    lv = Car(initial_pos=5, timestep=0.3, current_velocity=5, target_distance=1)
-    fv = Car(initial_pos=1, timestep=0.3, current_velocity=5, target_distance=1)
+    lv = Car(initial_pos=5, timestep=time_step_len, current_velocity=5, target_distance=1)
+    fv = Car(initial_pos=1, timestep=time_step_len, current_velocity=5, target_distance=1)
 
     platoon = Platoon(lv, fv)
 
@@ -271,8 +272,8 @@ def plot_platoon_catchup():
 
     plot_platoon(platoon=platoon, header="CLS catch up from dist5 to 1, from vel 0 to x")
 
-    lv = Car(initial_pos=5, timestep=0.3, current_velocity=5, target_distance=1)
-    fv = Car(initial_pos=1, timestep=0.3, current_velocity=5, target_distance=1)
+    lv = Car(initial_pos=5, timestep=time_step_len, current_velocity=5, target_distance=1)
+    fv = Car(initial_pos=1, timestep=time_step_len, current_velocity=5, target_distance=1)
     fv.catch_up_spring_ = PDController(target_position=-1)
 
     platoon = Platoon(lv, fv)
@@ -294,18 +295,71 @@ def plot_platoon_brake():
 
     plot_platoon(platoon=platoon, header="CLS brake from 0.3 to 1, vel 5")
 
-    lv = Car(initial_pos=0.3, timestep=0.3, current_velocity=5, target_distance=1)
-    fv = Car(initial_pos=0, timestep=0.3, current_velocity=5, target_distance=1)
+    lv = Car(initial_pos=0.3, timestep=time_step_len, current_velocity=5, target_distance=1)
+    fv = Car(initial_pos=0, timestep=time_step_len, current_velocity=5, target_distance=1)
     fv.catch_up_spring_ = PDController(target_position=-1)
 
     platoon = Platoon(lv, fv)
 
     platoon.do_series(time_step_len, 15)
 
-    plot_platoon(platoon=platoon, header="CLS brake from 0.3 to 1, vel 5")
+    plot_platoon(platoon=platoon, header="PD brake from 0.3 to 1, vel 5")
 
 
-plot_distance_5to1()
-plot_distance_1to5()
-plot_platoon_catchup()
-plot_platoon_brake()
+def plot_platoon_lv_speed_change():
+    time_step_len = 0.2
+
+    lv = Car(initial_pos=1, timestep=time_step_len, current_velocity=1, target_distance=1)
+    fv = Car(initial_pos=0, timestep=time_step_len, current_velocity=1, target_distance=1)
+
+    platoon = Platoon(lv, fv)
+
+    platoon.do_series(time_step_len, 2)
+
+    #increase to 4
+    to = platoon.current_time + 10
+    platoon.LV.velocity = 4
+    platoon.do_series(time_step_len, to)
+
+    #increase to 6
+    to = platoon.current_time + 10
+    platoon.LV.velocity = 6
+    platoon.do_series( time_step_len, to)
+
+    # decrease to 4
+    to = platoon.current_time + 10
+    platoon.LV.velocity = 4
+    platoon.do_series(time_step_len, to)
+
+    plot_platoon(platoon=platoon, header="CLS LV speeds change")
+
+    lv = Car(initial_pos=1, timestep=time_step_len, current_velocity=1, target_distance=1)
+    fv = Car(initial_pos=0, timestep=time_step_len, current_velocity=1, target_distance=1)
+    fv.catch_up_spring_ = PDController(target_position=-1)
+
+    platoon = Platoon(lv, fv)
+
+    platoon.do_series(time_step_len, 2)
+
+    #increase to 4
+    to = platoon.current_time + 10
+    platoon.LV.velocity = 4
+    platoon.do_series(time_step_len, to)
+
+    #increase to 6
+    to = platoon.current_time + 10
+    platoon.LV.velocity = 6
+    platoon.do_series(time_step_len, to)
+
+    # decrease to 4
+    to = platoon.current_time + 10
+    platoon.LV.velocity = 4
+    platoon.do_series(time_step_len, to)
+
+    plot_platoon(platoon=platoon, header="PD LV speeds change")
+
+#plot_distance_5to1()
+#plot_distance_1to5()
+#plot_platoon_catchup()
+#plot_platoon_brake()
+plot_platoon_lv_speed_change()

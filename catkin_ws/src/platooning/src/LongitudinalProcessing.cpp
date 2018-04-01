@@ -1,10 +1,9 @@
 /**
- * @file /platooning/src/platooning.cpp
- *
- * @brief Nodelet implementation of RemoteContol
- *
+ * @file include/platooning/LongitudinalProcessing.hpp
  * @author stepo
- **/
+ * @date 22.03.2018
+ * @brief LongitudinalProcessing implementation
+ */
 
 /*****************************************************************************
 ** Includes
@@ -14,15 +13,9 @@
 
 namespace platooning {
 
-
 /*****************************************************************************
 ** Constructors
 *****************************************************************************/
-
-
-/**
- * @brief Template Nodelet
- */
 
 LongitudinalProcessing::LongitudinalProcessing()
 	: io_worker_(io_service_), detect_dead_datasource_timer(io_service_) {
@@ -35,7 +28,7 @@ LongitudinalProcessing::LongitudinalProcessing()
 ** Destructors
 *****************************************************************************/
 
-LongitudinalProcessing::~LongitudinalProcessing() {};
+LongitudinalProcessing::~LongitudinalProcessing() = default;
 
 
 /*****************************************************************************
@@ -47,11 +40,11 @@ LongitudinalProcessing::~LongitudinalProcessing() {};
 */
 void LongitudinalProcessing::onInit() {
 
-	sub_current_speed_ = nh_.subscribe(topics::SENSOR_VELOCITY, 1,
-	                                   &LongitudinalProcessing::hndl_current_velocity, this);
+	sub_current_velocity_ = nh_.subscribe(topics::SENSOR_VELOCITY, 1,
+	                                      &LongitudinalProcessing::hndl_current_velocity, this);
 
-	sub_target_speed_ = nh_.subscribe(topics::TARGET_SPEED, 1,
-	                                  &LongitudinalProcessing::hndl_targetSpeed, this);
+	sub_target_velocity_ = nh_.subscribe(topics::TARGET_SPEED, 1,
+	                                     &LongitudinalProcessing::hndl_targetSpeed, this);
 
 	sub_distance_to_obj_ = nh_.subscribe(topics::SENSOR_DISTANCE, 1,
 	                                     &LongitudinalProcessing::hndl_distance_from_sensor, this);
@@ -73,8 +66,12 @@ void LongitudinalProcessing::onInit() {
 ** Handlers
 *****************************************************************************/
 
+/**
+ * @brief Receives sensor distance, checks whether we have two measurements and updates velocity if true. Sets flag that
+ * distance measurement was received.
+ * @param msg a message containing the distance to an object
+ */
 void LongitudinalProcessing::hndl_distance_from_sensor(const platooning::distance &msg) {
-	//NODELET_INFO(  "[%s]  recv distance from sensor.", name_.c_str());
 
 	data_src_flags |= RANGE_DATA_CHECK;
 
@@ -98,6 +95,11 @@ void LongitudinalProcessing::hndl_distance_from_sensor(const platooning::distanc
 	}
 }
 
+/**
+ * @brief received new target distance. Checks whether new distance is in appropriate range and if so, sets the
+ * target distance of the pd controller.
+ * @param msg a message with new target distance
+ */
 void LongitudinalProcessing::hndl_target_distance(const platooning::targetDistance &msg) {
 	try {
 		if (msg.distance != -pd_controller_.get_target_position()) {
@@ -117,11 +119,14 @@ void LongitudinalProcessing::hndl_target_distance(const platooning::targetDistan
 	}
 };
 
+/**
+ * @brief Handles current velocity data. updates it if new. Sets flag that it was received.
+ * @param msg a message containing current velocity
+ */
 void LongitudinalProcessing::hndl_current_velocity(const platooning::speed &msg) {
 
 	data_src_flags |= VELOCITY_DATA_CHECK;
 
-	//NODELET_INFO( "[%s] recv speed.", name_.c_str());
 	try {
 		if (msg.speed != current_velocity_) {
 
@@ -134,8 +139,12 @@ void LongitudinalProcessing::hndl_current_velocity(const platooning::speed &msg)
 	}
 }
 
+/**
+ * @brief Received new target speed.
+ * @param msg a message containing new target speed
+ */
 void LongitudinalProcessing::hndl_targetSpeed(const platooning::targetSpeed &msg) {
-	//NODELET_INFO( "[%s] recv targetSpeed.", name_.c_str());
+
 	try {
 		if (msg.target_speed != target_velocity_) {
 
@@ -148,6 +157,14 @@ void LongitudinalProcessing::hndl_targetSpeed(const platooning::targetSpeed &msg
 	}
 }
 
+/**
+ * @brief Publishes velocity based on current target velocity, target distance, current velocity and current distance
+ *
+ * Calculates relative speed based on change in distance, then calculates how much that speed should be adjusted to
+ * get to target distance.
+ *
+ * using the pd controller
+ */
 void LongitudinalProcessing::update_velocity() {
 
 	//wait for second ranging
@@ -167,30 +184,39 @@ void LongitudinalProcessing::update_velocity() {
 		return;
 	}
 
-	float calculated_velocity = pd_controller_.calulate_velocity(-current_distance_, current_velocity_);
+	float relative_velocity = (current_distance_ - previous_distance_) / time_step;
 
-	/*
-	//every 40th time. remove! bug happens on one of those variables. invalid memory
-	if (ix++ % 20 == 0) {
-		NODELET_INFO(
-			"ms: %i time_step: %f range_diff: %f relative_vel: %f spring_vel %f current_vel: %f calc_vel: %f\ndist:%f target:%f prev_dist %f",
-			(int) (current_distance_timestamp_ - previous_distance_timestamp_).total_milliseconds(),
-			time_step,
-			range_diff,
-			relative_velocity,
-			spring_velocity,
-			current_velocity_,
-			calculated_velocity,
-			current_distance_,
-			-pd_controller_.get_target_position(),
+	//distance to negative since we calculate distance to point 0 on x axis
+	float calculated_velocity = current_velocity_ +
+		pd_controller_.calulate_velocity(-current_distance_, relative_velocity);
+
+	std::cout << -current_distance_ << " "  << pd_controller_.get_target_position() << std::endl;
+
+/*
+	//remove! bug happens on one of those variables. invalid memory
+	NODELET_INFO(
+		"ms: %i time_step: %f range_diff: %f relative_vel: %f current_vel: %f calc_vel: %f\ndist:%f target:%f prev_dist %f",
+		(int) (current_distance_timestamp_ - previous_distance_timestamp_).total_milliseconds(),
+		time_step,
+		current_distance_ - previous_distance_,
+		relative_velocity,
+		current_velocity_,
+		calculated_velocity,
+		current_distance_,
+		-pd_controller_.get_target_position(),
 		previous_distance_);
-	}
 */
 	outmsg->speed = calculated_velocity;
 
 	pub_velocity_.publish(outmsg);
 
 }
+
+/**
+ * @brief Handler for timer that checks for up-to-date distance and velocity measurements. Currently calls for an
+ * emergency stop if not
+ * @param e the timer error code
+ */
 void LongitudinalProcessing::check_dead_datasrc(const boost::system::error_code &e) {
 
 	if (boost::asio::error::operation_aborted == e) {
@@ -229,8 +255,11 @@ float LongitudinalProcessing::PDController::calulate_velocity(const Distance &cu
                                                               const Velocity &current_velocity) {
 	return kp_ * (target_relative_position_ - current_position) - kd_ * current_velocity;
 }
-LongitudinalProcessing::PDController::PDController() {
 
+LongitudinalProcessing::PDController::PDController() = default;
+
+void LongitudinalProcessing::PDController::set_target_position(const Distance &target_postion) {
+	target_relative_position_ = target_postion;
 }
 
 } // namespace platooning
