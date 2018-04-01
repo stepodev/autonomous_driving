@@ -184,15 +184,12 @@ void LongitudinalProcessing::update_velocity() {
 		return;
 	}
 
-	float relative_velocity = (current_distance_ - previous_distance_) / time_step;
+	float relative_velocity = (previous_distance_ - current_distance_) / time_step;
 
 	//distance to negative since we calculate distance to point 0 on x axis
 	float calculated_velocity = current_velocity_ +
 		pd_controller_.calulate_velocity(-current_distance_, relative_velocity);
 
-	std::cout << -current_distance_ << " "  << pd_controller_.get_target_position() << std::endl;
-
-/*
 	//remove! bug happens on one of those variables. invalid memory
 	NODELET_INFO(
 		"ms: %i time_step: %f range_diff: %f relative_vel: %f current_vel: %f calc_vel: %f\ndist:%f target:%f prev_dist %f",
@@ -205,7 +202,7 @@ void LongitudinalProcessing::update_velocity() {
 		current_distance_,
 		-pd_controller_.get_target_position(),
 		previous_distance_);
-*/
+
 	outmsg->speed = calculated_velocity;
 
 	pub_velocity_.publish(outmsg);
