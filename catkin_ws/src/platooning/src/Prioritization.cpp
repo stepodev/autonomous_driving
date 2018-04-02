@@ -186,7 +186,7 @@ void Prioritization::hndl_calc_velocity(const speed &msg) {
 
 	auto outmsg = boost::shared_ptr<vehicleControl>(new vehicleControl);
 
-	//followers can underceed (??) min speed to get away from stupid leader
+	//followers can underceed (new word) min speed to get away from stupid leader
 	if (platooning_state_.i_am_LV) {
 		outmsg->velocity = std::max(LOWEST_SPEED * 1.4f, std::min(msg.speed, HIGHEST_SPEED));
 	}
@@ -198,7 +198,7 @@ void Prioritization::hndl_calc_velocity(const speed &msg) {
 
 	outmsg->steering_angle = target_angle_;
 
-	NODELET_INFO("[%s] angle:%f velo:%f, in speed %f", name_.c_str(), outmsg->steering_angle, outmsg->velocity, msg.speed);
+	//NODELET_INFO("[%s] angle:%f velo:%f, in speed %f", name_.c_str(), outmsg->steering_angle, outmsg->velocity, msg.speed);
 
 	pub_vehicleControl_.publish(outmsg);
 

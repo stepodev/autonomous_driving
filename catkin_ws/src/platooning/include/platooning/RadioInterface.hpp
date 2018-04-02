@@ -2,7 +2,7 @@
  * @file include/platooning/RadioInterface.hpp
  * @author stepo
  * @date 22.03.2018
- *
+ * @brief Radiointerface header file
  */
 
 /*****************************************************************************
