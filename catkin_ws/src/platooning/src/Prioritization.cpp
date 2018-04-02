@@ -57,7 +57,7 @@ void Prioritization::onInit() {
 		ros::ServiceClient srv_client_ = nh_.serviceClient<platooning::getVehicleId>(platooning_services::VEHICLE_ID);
 
 		ros::Duration sec;
-		sec.sec = 20;
+		sec.sec = 2;
 		if( srv_client_.waitForExistence(ros::Duration(sec))) {
 
 			platooning::getVehicleId::Request req;
@@ -66,6 +66,9 @@ void Prioritization::onInit() {
 			if( srv_client_.call(req, res)) {
 				this->vehicle_id_ = res.vehicle_id;
 			}
+		} else {
+			NODELET_INFO("[%s] failed getting vehicle_id from service. defaulting to 0", name_.c_str());
+			vehicle_id_ = 0;
 		}
 
 	});
@@ -90,71 +93,132 @@ void Prioritization::onInit() {
 
 	mode_ = PrioritizationMode::NONE;
 
+	vehicle_id_ = 0;
 	target_angle_ = 0;
 	target_distance_ = 0;
 	target_speed_ = 0;
 	current_speed_ = 0;
+
+	NODELET_INFO("[%s] init done", name_.c_str());
 }
 
 /*****************************************************************************
 ** Handlers
 *****************************************************************************/
 
+/**
+ * @brief Toggle mode in and out of remotecontrol input.
+ *
+ * Toggle any state into REMOTECONTROL state, moves state to NONE only iff current
+ * state is REMOTECONTROL
+ *
+ * @param msg remotecontrolToggle message
+ */
 void Prioritization::hndl_remotecontrolToggle(const remotecontrolToggle &msg) {
 
+	if( msg.vehicle_id != vehicle_id_) {
+		return;
+	}
+
 	if (mode_ != PrioritizationMode::REMOTECONTROL && msg.enable_remotecontrol) {
+		NODELET_INFO("[%s] enabled remotecontrol", name_.c_str());
 		mode_ = PrioritizationMode::REMOTECONTROL;
+	}
+
+	if( mode_ == PrioritizationMode::REMOTECONTROL && !msg.enable_remotecontrol) {
+		NODELET_INFO("[%s] disabled remotecontrol", name_.c_str());
+		mode_ = PrioritizationMode::NONE;
 	}
 
 }
 
+/**
+ * @brief Handles control input from controller PC
+ *
+ * If we receive an emergencystop we immediately send targetspeed=0. Steering angle and Speed only get sent
+ * if they deviate from previous values.
+ */
 void Prioritization::hndl_remotecontrolInput(const remotecontrolInput &msg) {
+
+	if( msg.vehicle_id != vehicle_id_) {
+		return;
+	}
+
 	if (mode_ != PrioritizationMode::REMOTECONTROL) {
 		NODELET_ERROR("[%s] received remotecontrol input while in mode %s", name_.c_str(), to_string(mode_).c_str());
+		return;
 	}
+
+	NODELET_INFO("[%s] received remotecontrol input", name_.c_str());
 
 	if (mode_ == PrioritizationMode::REMOTECONTROL) {
 
 		//always send emergencystop
 		if( msg.emergency_stop ) {
 			target_speed_ = 0;
-			auto outmsg = boost::shared_ptr<platooning::targetSpeed>(new targetSpeed);
-			outmsg->target_speed = target_speed_;
-			pub_targetSpeed_.publish(outmsg);
-		}
 
-		if( msg.remote_speed != target_speed_ ) {
-			target_speed_ = msg.remote_speed;
-			auto outmsg = boost::shared_ptr<platooning::targetSpeed>(new targetSpeed);
-			outmsg->target_speed = target_speed_;
-			pub_targetSpeed_.publish(outmsg);
-		}
-
-		if( msg.remote_angle != target_angle_ ) {
-			target_angle_ = msg.remote_angle;
-			auto outmsg = boost::shared_ptr<platooning::targetAngle>(new targetAngle);
+			auto outmsg = boost::shared_ptr<platooning::vehicleControl>(new platooning::vehicleControl);
 			outmsg->steering_angle = target_angle_;
-			pub_targetAngle_.publish(outmsg);
+			outmsg->velocity = target_speed_;
+
+			pub_vehicleControl_.publish(outmsg);
+			return;
+		}
+
+		if( msg.remote_speed != target_speed_ || msg.remote_angle != target_angle_) {
+
+			target_angle_ = msg.remote_angle;
+			target_speed_ = msg.remote_speed;
+
+			auto outmsg = boost::shared_ptr<platooning::vehicleControl>(new platooning::vehicleControl);
+			outmsg->steering_angle = target_angle_;
+			outmsg->velocity = target_speed_;
+
+			pub_vehicleControl_.publish(outmsg);
 		}
 	}
 }
 
+/**
+ * @brief Toggle any state into PLATOONING state, moves state to NONE only iff current
+ * state is PLATOONING
+ * @param msg
+ */
 void Prioritization::hndl_platooningToggle(const platooningToggle &msg) {
+
+	if( msg.vehicle_id != vehicle_id_) {
+		return;
+	}
+
+	NODELET_INFO("[%s] received platooning toggle", name_.c_str());
 
 	if (mode_ != PrioritizationMode::PLATOONING && msg.enable_platooning) {
 		mode_ = PrioritizationMode::PLATOONING;
 	}
+
+	if( mode_ == PrioritizationMode::PLATOONING && !msg.enable_platooning) {
+		mode_ = PrioritizationMode::NONE;
+	}
 }
 
+/**
+ * @brief Receives platooning state from platooning nodelet. Iff platooningstate is RUNNING forwards target speed
+ * and distance
+ * @param msg platooningState message
+ */
 void Prioritization::hndl_platooningState(const platooningState &msg) {
 
 	platooning_state_ = msg;
 
 	if (mode_ != PrioritizationMode::PLATOONING) {
 		NODELET_ERROR("[%s] received platooningstate input while in mode %s", name_.c_str(), to_string(mode_).c_str());
+		return;
 	}
 
 	if (mode_ == PrioritizationMode::PLATOONING && msg.platooning_state == "RUNNING") {
+
+		//reset angle to zero. will be set by lateralcontrol if ever
+		target_angle_ = 0;
 
 		if( msg.ps != target_speed_) {
 			target_speed_ = msg.ps;
@@ -173,32 +237,41 @@ void Prioritization::hndl_platooningState(const platooningState &msg) {
 	}
 
 }
+
+/**
+ * @brief saves received current speed from sensor
+ * @param msg speed message
+ */
 void Prioritization::hndl_current_speed(const speed & msg) {
 
 	current_speed_ = msg.speed;
 
 }
+
+/**
+ * @brief handles calculated velocity from longitudinal processing and forwards it to vehicleControl topic iff
+ * state is PLATOONING. FV can exceed targetspeed to catch up.
+ * @param msg message with calculated velocity
+ */
 void Prioritization::hndl_calc_velocity(const speed &msg) {
 
-	if (mode_ != PrioritizationMode::PLATOONING && platooning_state_.i_am_LV ) {
+	if (mode_ != PrioritizationMode::PLATOONING ) {
 		return;
 	}
 
 	auto outmsg = boost::shared_ptr<vehicleControl>(new vehicleControl);
 
-	//followers can underceed (new word) min speed to get away from stupid leader
 	if (platooning_state_.i_am_LV) {
-		outmsg->velocity = std::max(LOWEST_SPEED * 1.4f, std::min(msg.speed, HIGHEST_SPEED));
+		outmsg->velocity = std::max(LOWEST_SPEED, std::min(msg.speed, HIGHEST_SPEED));
 	}
 
-	//followers can exceed max speed to catch up
+	/**< followers can underceed (new word) min speed to get away from stupid leader
+	and exceed max speed to catch up */
 	if (platooning_state_.i_am_FV) {
-		outmsg->velocity = std::max(LOWEST_SPEED, std::min(msg.speed, HIGHEST_SPEED * 1.4f));
+		outmsg->velocity = std::max(LOWEST_SPEED * 1.4f, std::min(msg.speed, HIGHEST_SPEED * 1.4f));
 	};
 
 	outmsg->steering_angle = target_angle_;
-
-	//NODELET_INFO("[%s] angle:%f velo:%f, in speed %f", name_.c_str(), outmsg->steering_angle, outmsg->velocity, msg.speed);
 
 	pub_vehicleControl_.publish(outmsg);
 

@@ -68,12 +68,13 @@ class Moduletest_longitudinalprocessing : public Moduletest {
 	float lv_pos = 1;
 	float fv_velo = 0;
 	float lv_velo = 2;
-	boost::posix_time::ptime start_time;
+
 	void test_change_velocity_keep_up();
 	void hndl_test_change_velocity_keep_up_velo(const platooning::speed &);
 	void hndl_test_change_velocity_keep_up_timer(const boost::system::error_code &e);
 	void hndl_test_change_velocity_keep_up_scenario_over();
 
+	boost::posix_time::ptime start_time;
 	boost::posix_time::milliseconds TIMER_FREQ = boost::posix_time::milliseconds(20);
 	boost::asio::io_service io_service_;
 	boost::asio::io_service::work io_worker_;
