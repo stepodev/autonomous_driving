@@ -205,10 +205,12 @@ void Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_timer(
 	lv_pos += lv_velo * 0.02;
 	fv_pos += fv_velo * 0.02;
 
+	/*
 	std::cout << "###############################################################################################\n"
 	          << "lv_velo " << lv_velo << " lv_pos " << lv_pos << "\nfv_velo " << fv_velo << " fv_pos " << fv_pos
 	          << "\nvelodiff " << lv_velo - fv_velo
 	          << "\ndistdiff " << lv_pos - fv_pos << std::endl;
+	*/
 
 	if( lv_pos - fv_pos <= 0.0f ) {
 		TestResult res;

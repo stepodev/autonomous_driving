@@ -279,8 +279,8 @@ add_dependencies(moduletest_platooning messagetypes topics moduletest ${catkin_E
 target_link_libraries(moduletest_platooning messagetypes topics moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_prioritization testing/include/platooning/Moduletest_prioritization.hpp testing/src/Moduletest_prioritization.cpp)
-add_dependencies(moduletest_prioritization messagetypes topics moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
-target_link_libraries(moduletest_prioritization messagetypes topics moduletest ${catkin_LIBRARIES})
+add_dependencies(moduletest_prioritization messagetypes topics services servicetypes moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )
+target_link_libraries(moduletest_prioritization messagetypes topics services servicetypes moduletest ${catkin_LIBRARIES})
 
 add_library(moduletest_longitudinalprocessing testing/include/platooning/Moduletest_longitudinalprocessing.hpp testing/src/Moduletest_longitudinalprocessing.cpp)
 add_dependencies(moduletest_longitudinalprocessing messagetypes topics moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp )

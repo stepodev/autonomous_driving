@@ -61,6 +61,7 @@
         <nodelet plugin="${prefix}/testing/plugins/moduletest_longitudinalprocessing.xml"/>
         <nodelet plugin="${prefix}/testing/plugins/moduletest_messagetypes.xml"/>
         <nodelet plugin="${prefix}/testing/plugins/moduletest_udpserver.xml"/>
+        <nodelet plugin="${prefix}/testing/plugins/moduletest_prioritization.xml"/>
 
     </export>
 </package>
