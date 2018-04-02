@@ -126,6 +126,7 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 	boost::asio::io_service::work io_worker_;
 	boost::asio::deadline_timer detect_dead_datasource_timer;
 	boost::thread_group thread_pool_;
+	bool dead_data_reminder_warn_ = true;
 	void check_dead_datasrc(const boost::system::error_code &e);
 	unsigned short data_src_flags = 0;
 };

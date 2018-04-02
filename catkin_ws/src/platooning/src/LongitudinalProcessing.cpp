@@ -28,7 +28,10 @@ LongitudinalProcessing::LongitudinalProcessing()
 ** Destructors
 *****************************************************************************/
 
-LongitudinalProcessing::~LongitudinalProcessing() = default;
+LongitudinalProcessing::~LongitudinalProcessing() {
+	io_service_.stop();
+	thread_pool_.interrupt_all();
+}
 
 
 /*****************************************************************************
@@ -72,6 +75,8 @@ void LongitudinalProcessing::onInit() {
  * @param msg a message containing the distance to an object
  */
 void LongitudinalProcessing::hndl_distance_from_sensor(const platooning::distance &msg) {
+
+	dead_data_reminder_warn_ = true;
 
 	data_src_flags |= RANGE_DATA_CHECK;
 
@@ -124,6 +129,8 @@ void LongitudinalProcessing::hndl_target_distance(const platooning::targetDistan
  * @param msg a message containing current velocity
  */
 void LongitudinalProcessing::hndl_current_velocity(const platooning::speed &msg) {
+
+	dead_data_reminder_warn_ = true;
 
 	data_src_flags |= VELOCITY_DATA_CHECK;
 
@@ -191,6 +198,7 @@ void LongitudinalProcessing::update_velocity() {
 		pd_controller_.calulate_velocity(-current_distance_, relative_velocity);
 
 	//remove! bug happens on one of those variables. invalid memory
+	/*
 	NODELET_INFO(
 		"ms: %i time_step: %f range_diff: %f relative_vel: %f current_vel: %f calc_vel: %f\ndist:%f target:%f prev_dist %f",
 		(int) (current_distance_timestamp_ - previous_distance_timestamp_).total_milliseconds(),
@@ -202,7 +210,7 @@ void LongitudinalProcessing::update_velocity() {
 		current_distance_,
 		-pd_controller_.get_target_position(),
 		previous_distance_);
-
+	*/
 	outmsg->speed = calculated_velocity;
 
 	pub_velocity_.publish(outmsg);
@@ -222,18 +230,26 @@ void LongitudinalProcessing::check_dead_datasrc(const boost::system::error_code 
 	}
 
 	if ((data_src_flags & RANGE_DATA_CHECK) != RANGE_DATA_CHECK) {
-		NODELET_ERROR("[%s] RANGE_DATA_CHECK false. range data not received for %i",
-		              name_.c_str(), (int) SOURCECHECK_FREQ.total_milliseconds());
+
+
+		if( dead_data_reminder_warn_ ) {
+			NODELET_ERROR("[%s] RANGE_DATA_CHECK false. range data not received for %i",
+			              name_.c_str(), (int) SOURCECHECK_FREQ.total_milliseconds());
+			dead_data_reminder_warn_ = false;
+		}
 
 		auto outmsg = boost::shared_ptr<platooning::speed>(new platooning::speed);
 		outmsg->speed = 0;
 		pub_velocity_.publish(outmsg);
-
+		dead_data_reminder_warn_ = false;
 	}
 
 	if ((data_src_flags & VELOCITY_DATA_CHECK) != VELOCITY_DATA_CHECK) {
-		NODELET_ERROR("[%s] VELOCITY_DATA_CHECK false. velocity data not received for %i",
-		              name_.c_str(), (int) SOURCECHECK_FREQ.total_milliseconds());
+		if( dead_data_reminder_warn_) {
+			NODELET_ERROR("[%s] VELOCITY_DATA_CHECK false. velocity data not received for %i",
+			              name_.c_str(), (int) SOURCECHECK_FREQ.total_milliseconds());
+			dead_data_reminder_warn_ = false;
+		}
 
 		auto outmsg = boost::shared_ptr<platooning::speed>(new platooning::speed);
 		outmsg->speed = 0;

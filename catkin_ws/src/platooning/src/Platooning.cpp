@@ -11,7 +11,21 @@ Platooning::Platooning() :
 	thread_pool_.create_thread( [this]{ io_service_.run();});
 
 }
-Platooning::~Platooning() {}
+Platooning::~Platooning() {
+	fv_heartbeat_sender_.cancel();
+	fv_heartbeat_checker_.cancel();
+	lv_broadcast_sender_.cancel();
+	lv_broadcast_checker_.cancel();
+
+	io_service_.stop();
+
+	if( !io_service_.stopped() ) {
+		thread_pool_.interrupt_all();
+	}
+
+	thread_pool_.join_all();
+
+}
 
 /**
  * TODO:
@@ -48,6 +62,12 @@ void Platooning::reset() {
 
 	thread_pool_.interrupt_all();
 
+	//heartbeat timer
+	fv_heartbeat_sender_.cancel();
+	fv_heartbeat_checker_.cancel();
+	lv_broadcast_sender_.cancel();
+	lv_broadcast_checker_.cancel();
+
 	shutdown_pubs_and_subs();
 
 	//state vars
@@ -55,12 +75,6 @@ void Platooning::reset() {
 
 	set_vehicle_id(get_vehicle_id_param());
 	set_platoon_id(get_vehicle_id());
-
-	//heartbeat timer
-	fv_heartbeat_sender_.cancel();
-	fv_heartbeat_checker_.cancel();
-	lv_broadcast_sender_.cancel();
-	lv_broadcast_checker_.cancel();
 
 	//follower list and timeouts;
 	fv_heartbeat_timeout_tracker_.clear();
@@ -306,7 +320,7 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 		//turn off platooning as FV
 		if (get_role() == PlatoonRoleEnum::FV) {
 
-			NODELET_INFO("[%s] turning off platooning", name_.c_str());
+			NODELET_INFO("[%s] turning off platooning as FV", name_.c_str());
 
 			auto msg_to_send = boost::shared_ptr<fv_leave>(new fv_leave());
 			msg_to_send->src_vehicle = get_vehicle_id();
@@ -327,7 +341,7 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 		}
 
 		if (get_role() == PlatoonRoleEnum::LV && !has_members()) {
-			NODELET_INFO("[%s] turning off platooning", name_.c_str());
+			NODELET_INFO("[%s] turning off platooning as LV", name_.c_str());
 			reset();
 			return;
 		}
@@ -338,13 +352,13 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 		//change platoon role
 		if (msg.lvfv == "FV") {
 			set_role(PlatoonRoleEnum::FV);
-			set_platoon_id(get_vehicle_id());
 
 			NODELET_INFO(std::string("[%s] changing platooning role to %s").c_str(),
 			             name_.c_str(),
 			             to_string(get_role()).c_str());
 		} else if (msg.lvfv == "LV") {
 			set_role(PlatoonRoleEnum::LV);
+			set_platoon_id(get_vehicle_id());
 			NODELET_INFO(std::string("[%s] changing platooning role to %s").c_str(),
 			             name_.c_str(),
 			             to_string(get_role()).c_str());
@@ -424,7 +438,7 @@ void Platooning::update_state(const lv_broadcast &bc) {
 
 		NODELET_INFO("[%s] LV_BROADCAST change received. platoon members changed", name_.c_str());
 
-		set_members(bc.followers.begin(), bc.followers.end());
+		set_members(bc.followers);
 	}
 }
 
@@ -640,85 +654,136 @@ PlatooningState::PlatooningState() {
 }
 
 void PlatooningState::reset() {
+	boost::lock_guard<boost::shared_mutex> l(mtx_);
+
 	role_ = PlatoonRoleEnum::NONE;
 	current_mode_ = PlatooningModeEnum::IDLE;
 	members_.clear();
 	vehicle_id_ = 0;
 	platoon_id_ = vehicle_id_;
 	leader_id_ = UINT32_MAX;
+
+	mtx_.unlock();
+
 	publish_state();
 }
 
 void PlatooningState::set_role(const PlatoonRoleEnum &in) {
+	boost::lock_guard<boost::shared_mutex> l(mtx_);
 
 	role_ = in;
+
+	mtx_.unlock();
+
 	publish_state();
 
 }
 
 PlatoonRoleEnum PlatooningState::get_role() {
+
+	boost::shared_lock<boost::shared_mutex> l(mtx_);
+
 	return role_;
 }
 
 void PlatooningState::set_mode(const PlatooningModeEnum &m) {
+	boost::lock_guard<boost::shared_mutex> l(mtx_);
+
 	current_mode_ = m;
+
+	mtx_.unlock();
+
 	publish_state();
 }
 
 PlatooningModeEnum PlatooningState::get_mode() {
+	boost::shared_lock<boost::shared_mutex> l(mtx_);
+
 	return current_mode_;
 }
 
 void PlatooningState::add_member(const uint32_t &m ) {
+	boost::lock_guard<boost::shared_mutex> l(mtx_);
+
 	members_.emplace_back(m);
+
+	mtx_.unlock();
+
 
 	publish_state();
 }
 
 void PlatooningState::remove_member(const uint32_t &src_vehicle) {
+	boost::lock_guard<boost::shared_mutex> l(mtx_);
+
 	auto ix = std::find(members_.begin(), members_.end(), src_vehicle);
 	if (ix != members_.end()) {
 		members_.erase(ix);
 	}
 
+	mtx_.unlock();
+
 	publish_state();
 }
 
 bool PlatooningState::is_member(const uint32_t &needle) {
+	boost::shared_lock<boost::shared_mutex> l(mtx_);
+
 	return std::find(members_.begin(), members_.end(), needle) == members_.end();
 }
 
 size_t PlatooningState::member_count() {
+	boost::shared_lock<boost::shared_mutex> l(mtx_);
+
 	return members_.size();
 }
 
 std::vector<uint32_t> PlatooningState::get_members() {
+	boost::shared_lock<boost::shared_mutex> l(mtx_);
+
 	return members_;
 }
 
 bool PlatooningState::has_members() {
+	boost::shared_lock<boost::shared_mutex> l(mtx_);
+
 	return !members_.empty();
 }
 
-void PlatooningState::set_members(std::vector<uint32_t>::const_iterator begin,
-                                              std::vector<uint32_t>::const_iterator end) {
+void PlatooningState::set_members(const std::vector<uint32_t> &v) {
+	boost::lock_guard<boost::shared_mutex> l(mtx_);
 
 	members_.clear();
-	std::copy(begin, end, members_.begin());
+
+	for( auto x : v ) {
+		members_.push_back(x);
+	}
+
+	std::sort(members_.begin(),members_.end(), std::greater<uint32_t>() );
+
+	mtx_.unlock();
 
 	publish_state();
 }
 
 void PlatooningState::set_leader_id(const uint32_t &vehicle_id) {
+	boost::lock_guard<boost::shared_mutex> l(mtx_);
+
 	leader_id_ = vehicle_id;
+
+	mtx_.unlock();
+
 	publish_state();
 }
 
 uint32_t PlatooningState::get_leader_id() {
+	boost::shared_lock<boost::shared_mutex> l(mtx_);
+
 	return leader_id_;
 }
 
 void PlatooningState::publish_state() {
+	boost::shared_lock<boost::shared_mutex> l(mtx_);
 
 	auto statemsg = boost::shared_ptr<platooning::platooningState>(new platooning::platooningState);
 
@@ -734,22 +799,35 @@ void PlatooningState::publish_state() {
 		statemsg->i_am_FV = false;
 		statemsg->i_am_LV = true;
 	}
+	statemsg->platoon_members = members_;
 
 	pub_platooning_state_.publish(statemsg);
 
 }
 
 void PlatooningState::set_vehicle_id(const uint32_t &in) {
+	boost::lock_guard<boost::shared_mutex> l(mtx_);
+
 	vehicle_id_ = in;
+
+	mtx_.unlock();
+
 	publish_state();
 }
 
 uint32_t PlatooningState::get_vehicle_id() {
+	boost::shared_lock<boost::shared_mutex> l(mtx_);
+
 	return vehicle_id_;
 }
 
 void PlatooningState::set_platoon_id(const uint32_t &in) {
+	boost::lock_guard<boost::shared_mutex> l(mtx_);
+
 	platoon_id_ = in;
+
+	mtx_.unlock();
+
 	publish_state();
 }
 uint32_t PlatooningState::get_platoon_id() {
@@ -757,21 +835,34 @@ uint32_t PlatooningState::get_platoon_id() {
 }
 
 void PlatooningState::set_platoon_speed(const float &d) {
+	boost::lock_guard<boost::shared_mutex> l(mtx_);
+
 	platoon_speed_ = d;
+
+	mtx_.unlock();
+
 	publish_state();
 }
 
 float PlatooningState::get_platoon_speed() {
+	boost::shared_lock<boost::shared_mutex> l(mtx_);
+
 	return platoon_speed_;
 }
 
 void PlatooningState::set_platoon_distance(const float &d) {
+	boost::lock_guard<boost::shared_mutex> l(mtx_);
+
 	platoon_distance_ = d;
+
+	mtx_.unlock();
 
 	publish_state();
 }
 
 float PlatooningState::get_platoon_distance() {
+	boost::shared_lock<boost::shared_mutex> l(mtx_);
+
 	return platoon_distance_;
 }
 

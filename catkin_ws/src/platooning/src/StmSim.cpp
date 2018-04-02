@@ -161,8 +161,8 @@ void StmSim::hndl_vehicleControl(const vehicleControl &msg) {
 			NODELET_ERROR("[%s] velo %f - calc: %f = %f -> throttle %f ",
 			             name_.c_str(), current_velocity_, msg.velocity, mod_velo, acceleration);
 		} else {
-			NODELET_INFO("[%s] velo %f - calc: %f = %f -> throttle %f ",
-			             name_.c_str(), current_velocity_, msg.velocity, mod_velo, acceleration);
+			//NODELET_INFO("[%s] velo %f - calc: %f = %f -> throttle %f ",
+			//             name_.c_str(), current_velocity_, msg.velocity, mod_velo, acceleration);
 		}
 
 		platooning::stmupdate outmsg;

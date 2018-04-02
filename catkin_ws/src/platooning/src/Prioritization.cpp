@@ -15,6 +15,7 @@
 ** Includes
 *****************************************************************************/
 // %Tag(FULLTEXT)%
+#include <platooning/Platooning.hpp>
 #include "platooning/Prioritization.hpp"
 
 namespace platooning {
@@ -261,14 +262,14 @@ void Prioritization::hndl_calc_velocity(const speed &msg) {
 
 	auto outmsg = boost::shared_ptr<vehicleControl>(new vehicleControl);
 
-	if (platooning_state_.i_am_LV) {
-		outmsg->velocity = std::max(LOWEST_SPEED, std::min(msg.speed, HIGHEST_SPEED));
+	if (platooning_state_.i_am_LV && platooning_state_.platooning_state == "RUNNING") {
+		outmsg->velocity = std::max(LOWEST_SPEED, std::min(target_speed_, std::min( msg.speed, HIGHEST_SPEED)));
 	}
 
 	/**< followers can underceed (new word) min speed to get away from stupid leader
 	and exceed max speed to catch up */
 	if (platooning_state_.i_am_FV) {
-		outmsg->velocity = std::max(LOWEST_SPEED * 1.4f, std::min(msg.speed, HIGHEST_SPEED * 1.4f));
+		outmsg->velocity = std::max(LOWEST_SPEED * 1.4f, std::min(msg.speed, std::min(target_speed_ * 1.4f, HIGHEST_SPEED )));
 	};
 
 	outmsg->steering_angle = target_angle_;

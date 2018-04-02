@@ -27,7 +27,7 @@ MessageTypes::vector_as_json(std::vector<T> const &v) {
 	return root;
 }
 
-void MessageTypes::decode_json(const std::string &json, lv_broadcast &message) {
+void MessageTypes::decode_json(const std::string &json, lv_broadcast& message) {
 	std::stringstream ss(json);
 
 	pt::ptree root;

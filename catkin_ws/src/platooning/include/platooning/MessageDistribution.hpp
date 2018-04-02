@@ -90,7 +90,7 @@ namespace platooning {
      * @brief receives json payloads from radiointerface, transforms them to messages
      * @param msg message to be put into platoonProtocol messagetype
      */
-    void hndl_platooningIn(const platooning::platoonProtocol &msg);
+    void hndl_platooningIn(const platoonProtocol msg);
 
     void hndl_lv_broadcast(const lv_broadcast &msg);
 

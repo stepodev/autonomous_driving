@@ -6,6 +6,7 @@
 #include <pluginlib/class_list_macros.h>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
+#include <boost/thread/shared_mutex.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <unordered_map>
 
@@ -68,6 +69,8 @@ class PlatooningState {
 
 	ros::Publisher pub_platooning_state_;
 
+	boost::shared_mutex mtx_;
+
   public:
 
 	PlatooningState();
@@ -86,7 +89,7 @@ class PlatooningState {
 	bool is_member(const uint32_t&);
 	bool has_members();
 	size_t member_count();
-	void set_members(std::vector<uint32_t>::const_iterator iterator, std::vector<uint32_t>::const_iterator normal_iterator);
+	void set_members(const std::vector<uint32_t> &v);
 	std::vector<uint32_t> get_members();
 
 	void set_vehicle_id( const uint32_t&);
