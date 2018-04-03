@@ -1,0 +1,23 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "ServerControlProtos";
+
+/// \ingroup ignition.msgs
+/// \interface ServerControl
+/// \brief A message that allows for control of the server functions
+
+import "ignition/msgs/header.proto";
+
+message ServerControl
+{
+  /// \brief Optional header data
+  optional Header header          = 1;
+
+  optional string save_world_name = 2;
+  optional string save_filename   = 3;
+  optional string open_filename   = 4;
+  optional bool new_world         = 5;
+  optional bool stop              = 6;
+  optional bool clone             = 7;
+  optional uint32 new_port        = 8;
+}

@@ -1,0 +1,27 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "ShadowsProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Shadows
+/// \brief A message for shadow data
+
+import "ignition/msgs/color.proto";
+import "ignition/msgs/header.proto";
+
+message Shadows
+{
+  enum ShadowType
+  {
+    STENCIL_ADDITIVE   = 1;
+    STENCIL_MODULATIVE = 2;
+    TEXTURE_ADDITIVE   = 3;
+    TEXTURE_MODULATIVE = 4;
+  }
+
+  /// \brief Optional header data
+  optional Header header   = 1;
+
+  optional ShadowType type = 2;
+  optional Color color = 3;
+}

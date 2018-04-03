@@ -1,0 +1,22 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "FluidProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Fluid
+/// \brief msg passing fluid particle position
+
+import "ignition/msgs/vector3d.proto";
+import "ignition/msgs/header.proto";
+
+message Fluid
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  // Name of the fluid
+  optional string name = 2;
+  
+  // Position of each particle in the fluid.
+  repeated Vector3d position = 3;
+}

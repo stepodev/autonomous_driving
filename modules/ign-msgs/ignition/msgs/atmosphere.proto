@@ -1,0 +1,38 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "AtmosphereProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Atmosphere
+/// \brief A message containing a description of the global atmosphere
+/// properties
+
+import "ignition/msgs/header.proto";
+
+message Atmosphere
+{
+  /// \brief Types of atmosphere models.
+  enum Type
+  {
+    /// \brief Adiabatic atmosphere model.
+    ADIABATIC = 1;
+  }
+
+  /// \brief Optional header data
+  optional Header header                     = 1;
+
+  /// \brief Type of the atmosphere model.
+  optional Type type                         = 2[default=ADIABATIC];
+
+  /// \brief Temperature at sea level in kelvins.
+  optional double temperature                = 3;
+
+  /// \brief Pressure at sea level in pascals.
+  optional double pressure                   = 4;
+
+  /// \brief Mass density of the air at sea level in kg/m^3.
+  optional double mass_density               = 5;
+
+  /// \brief Enable atmosphere model
+  optional bool enable_atmosphere            = 6;
+}

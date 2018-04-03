@@ -1,0 +1,21 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "MeshGeomProtos";
+
+/// \ingroup ignition.msgs
+/// \interface MeshGeom 
+/// \brief Message for a mesh geometry
+
+import "ignition/msgs/vector3d.proto";
+import "ignition/msgs/header.proto";
+
+message MeshGeom
+{
+  /// \brief Optional header data
+  optional Header header   = 1;
+
+  optional string filename = 2;
+  optional Vector3d scale  = 3;
+  optional string submesh  = 4;
+  optional bool center_submesh = 5;
+}

@@ -1,0 +1,29 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "JoyStickProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Joystick 
+/// \brief Message for a joystick
+
+import "ignition/msgs/vector3d.proto";
+import "ignition/msgs/header.proto";
+
+message Joystick
+{
+  /// \brief Optional header data
+  optional Header header        = 1;
+
+  // Translation measurements along the x,y,z
+  // axes. These values should be normalized to
+  // the range -1...1
+  optional Vector3d translation = 2;
+
+  // Rotation measurements about the x,y,z 
+  // axes. These values should be normalized to
+  // the range -1...1
+  optional Vector3d rotation    = 3;
+
+  // Button measurements
+  repeated int32 buttons        = 4;
+}

@@ -1,0 +1,21 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "WorldModifyProtos";
+
+/// \ingroup ignition.msgs
+/// \interface WorldModify
+/// \brief A message that allows for modifying (open, close) worlds
+
+import "ignition/msgs/header.proto";
+
+message WorldModify
+{
+  /// \brief Optional header data
+  optional Header header     = 1;
+
+  optional string world_name = 2;
+  optional bool remove       = 3;
+  optional bool create       = 4;
+  optional bool cloned       = 5;
+  optional string cloned_uri = 6;
+}

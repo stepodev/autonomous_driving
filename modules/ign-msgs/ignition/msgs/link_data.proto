@@ -1,0 +1,22 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "LinkDataProtos";
+
+/// \ingroup ignition.msgs
+/// \interface LinkData
+/// \brief Timestamped link data
+
+import "ignition/msgs/vector3d.proto";
+import "ignition/msgs/time.proto";
+import "ignition/msgs/header.proto";
+
+message LinkData
+{
+  /// \brief Optional header data
+  optional Header header         = 1;
+
+  optional Time time             = 2;
+  optional string name           = 3;
+  optional Vector3d linear_velocity  = 4;
+  optional Vector3d angular_velocity = 5;
+}

@@ -1,0 +1,17 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "DensityProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Density
+/// \brief Information about density
+
+import "ignition/msgs/header.proto";
+
+message Density
+{
+  /// \brief Optional header data
+  optional Header header  = 1;
+
+  optional double density = 2 [default = 0];
+}

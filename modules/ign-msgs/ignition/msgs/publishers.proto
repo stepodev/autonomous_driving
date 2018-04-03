@@ -1,0 +1,18 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "PublishersProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Publishers
+/// \brief A list of publishers 
+
+import "ignition/msgs/publish.proto";
+import "ignition/msgs/header.proto";
+
+message Publishers
+{
+  /// \brief Optional header data
+  optional Header header     = 1;
+
+  repeated Publish publisher = 2;
+}

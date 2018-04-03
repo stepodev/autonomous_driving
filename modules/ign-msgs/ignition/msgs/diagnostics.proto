@@ -1,0 +1,29 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "DiagnosticsProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Diagnostics
+/// \brief Diagnostic information about a running instance of Gazebo.
+/// Gazebo must have been compiled with the ENABLE_DIAGNOSTICS flag.
+
+import "ignition/msgs/time.proto";
+import "ignition/msgs/header.proto";
+
+message Diagnostics
+{
+  message DiagTime
+  {
+    optional string name = 1 [default = ""];
+    optional Time elapsed = 2;
+    optional Time wall = 3;
+  }
+
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  repeated DiagTime time = 2;
+  optional Time real_time = 3;
+  optional Time sim_time = 4;
+  optional double real_time_factor = 5 [default = 0.0];
+}

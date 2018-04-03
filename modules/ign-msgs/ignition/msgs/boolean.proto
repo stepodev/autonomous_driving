@@ -1,0 +1,18 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "BoolProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Bool 
+/// \brief Boolean message
+
+import "ignition/msgs/header.proto";
+
+message Boolean
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  /// \brief Boolean data
+  optional bool data     = 2 [default = false];
+}

@@ -1,0 +1,18 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "UInt32VProtos";
+
+/// \ingroup ignition.msgs
+/// \interface UInt32_V
+/// \brief A message for a vector of int data
+
+import "ignition/msgs/header.proto";
+
+message UInt32_V
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  /// \brief Vector of int data
+  repeated uint32 data = 2;
+}

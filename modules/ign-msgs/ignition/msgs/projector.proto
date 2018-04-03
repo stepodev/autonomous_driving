@@ -1,0 +1,24 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "ProjectorProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Projector 
+/// \brief Information about a projector
+
+import "ignition/msgs/pose.proto";
+import "ignition/msgs/header.proto";
+
+message Projector
+{
+  /// \brief Optional header data
+  optional Header header        = 1;
+
+  optional string name          = 2;
+  optional string texture       = 3;
+  optional Pose pose            = 4;
+  optional double fov           = 5[default=0.785];
+  optional double near_clip     = 6[default=0.1];
+  optional double far_clip      = 7[default=10.0];
+  optional bool enabled         = 8[default=true];
+}

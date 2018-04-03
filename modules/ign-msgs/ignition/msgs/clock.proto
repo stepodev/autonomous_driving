@@ -1,0 +1,20 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "ClockProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Clock
+/// \brief A message with clock information
+
+import "ignition/msgs/time.proto";
+import "ignition/msgs/header.proto";
+
+message Clock
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  optional Time system = 2;
+  optional Time real   = 3;
+  optional Time sim    = 4;
+}

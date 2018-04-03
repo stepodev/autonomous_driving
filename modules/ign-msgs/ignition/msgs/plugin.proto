@@ -1,0 +1,19 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "PluginProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Plugin
+/// \brief A message containing visual information for gazebo::Plugin
+
+import "ignition/msgs/header.proto";
+
+message Plugin
+{
+  /// \brief Optional header data
+  optional Header header       = 1;
+
+  optional string name         = 2;
+  optional string filename     = 3;
+  optional string innerxml     = 4 [default = ""];
+}

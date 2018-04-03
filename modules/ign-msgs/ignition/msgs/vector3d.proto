@@ -1,0 +1,19 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "Vector3dProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Vector3d 
+/// \brief Message for a vector3 double
+
+import "ignition/msgs/header.proto";
+
+message Vector3d
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  optional double x = 2;
+  optional double y = 3;
+  optional double z = 4;
+}

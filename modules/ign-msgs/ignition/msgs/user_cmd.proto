@@ -1,0 +1,59 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "UserCmdProtos";
+
+import "ignition/msgs/light.proto";
+import "ignition/msgs/model.proto";
+import "ignition/msgs/world_control.proto";
+import "ignition/msgs/wrench.proto";
+import "ignition/msgs/header.proto";
+
+/// \ingroup ignition.msgs
+/// \interface UserCmd
+/// \brief Notifies that a new command has been executed by a user
+
+message UserCmd
+{
+  /// \brief Types of user commands
+  enum Type
+  {
+    /// \brief Moving an entity.
+    MOVING = 1;
+
+    /// \brief Controlling the world.
+    WORLD_CONTROL = 2;
+
+    /// \brief Applying wrench.
+    WRENCH = 3;
+
+    /// \brief Scaling an entity.
+    SCALING = 4;
+  }
+
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  /// \brief Unique id for user command.
+  optional uint32 id = 2;
+
+  /// \brief Description for the command.
+  optional string description = 3;
+
+  /// \brief Type of command.
+  optional Type type = 4;
+
+  /// \brief For model modify commands.
+  repeated Model model = 5;
+
+  /// \brief For light modify commands.
+  repeated Light light = 6;
+
+  /// \brief Name of entity targeted by command
+  optional string entity_name = 7;
+
+  /// \brief For World Control commands.
+  optional WorldControl world_control = 8;
+
+  /// \brief Wrench for apply wrench commands.
+  optional Wrench wrench = 9;
+}

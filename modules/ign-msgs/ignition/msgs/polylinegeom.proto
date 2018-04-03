@@ -1,0 +1,19 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "Protos";
+
+/// \ingroup ignition.msgs
+/// \interface Polyline 
+/// \brief Information about Polyline geometry
+
+import "ignition/msgs/vector2d.proto";
+import "ignition/msgs/header.proto";
+
+message Polyline
+{
+  /// \brief Optional header data
+  optional Header header  = 1;
+
+  optional double height  = 2;
+  repeated Vector2d point = 3;  
+}

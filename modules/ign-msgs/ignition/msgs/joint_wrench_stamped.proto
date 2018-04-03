@@ -1,0 +1,21 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "Protos";
+
+/// \ingroup ignition.msgs
+/// \interface ForceTorque
+/// \brief ForceTorque from constraint solving
+
+import "ignition/msgs/header.proto";
+import "ignition/msgs/joint_wrench.proto";
+import "ignition/msgs/time.proto";
+
+message ForceTorque
+{
+  /// \brief Optional header data
+  optional Header header      = 1;
+
+  repeated JointWrench wrench = 2;
+  optional Time time          = 3;
+}
+

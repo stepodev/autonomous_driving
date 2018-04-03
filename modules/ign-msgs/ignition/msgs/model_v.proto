@@ -1,0 +1,18 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "ModelVProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Model_V
+/// \brief An array of models.
+
+import "ignition/msgs/header.proto";
+import "ignition/msgs/model.proto";
+
+message Model_V
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  repeated Model models  = 2;
+}

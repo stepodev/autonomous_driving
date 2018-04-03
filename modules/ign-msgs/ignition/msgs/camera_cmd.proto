@@ -1,0 +1,17 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "CameraCmdProtos";
+
+/// \ingroup ignition.msgs
+/// \interface CameraCmd
+/// \brief Message for camera command
+
+import "ignition/msgs/header.proto";
+
+message CameraCmd
+{
+  /// \brief Optional header data
+  optional Header header         = 1;
+
+  optional string follow_model   = 2;
+}

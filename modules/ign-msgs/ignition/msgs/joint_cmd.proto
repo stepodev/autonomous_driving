@@ -1,0 +1,24 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "JointCmdProtos";
+
+/// \ingroup ignition.msgs
+/// \interface JointCmd
+/// \brief Message for joint command, used by physics::JointControlWidget
+
+import "ignition/msgs/pid.proto";
+import "ignition/msgs/header.proto";
+
+message JointCmd
+{
+  /// \brief Optional header data
+  optional Header header   = 1;
+
+  optional string name     = 2;
+  optional int32 axis      = 3 [default=0];
+  optional double force    = 4;
+
+  optional PID position    = 5;
+  optional PID velocity    = 6;
+  optional bool reset      = 7;
+}

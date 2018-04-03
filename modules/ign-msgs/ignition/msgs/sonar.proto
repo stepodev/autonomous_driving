@@ -1,0 +1,27 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "SonarProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Sonar
+/// \brief Message for a sonar value
+
+import "ignition/msgs/pose.proto";
+import "ignition/msgs/vector3d.proto";
+import "ignition/msgs/header.proto";
+
+message Sonar
+{
+  /// \brief Optional header data
+  optional Header header    = 1;
+
+  optional string frame     = 2;
+  optional Pose world_pose  = 3;
+  optional double range_min = 4;
+  optional double range_max = 5;
+  optional double radius    = 6;
+  optional double range     = 7;
+
+  /// Location of the contact in the world frame.
+  optional Vector3d contact  = 8;
+}

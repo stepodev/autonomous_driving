@@ -1,0 +1,25 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "AxisProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Axis
+/// \brief msgs::Joint axis message
+
+import "ignition/msgs/vector3d.proto";
+import "ignition/msgs/header.proto";
+
+message Axis
+{
+  /// \brief Optional header data
+  optional Header header               = 1;
+
+  optional Vector3d xyz                = 2;
+  optional double limit_lower          = 3 [default = 0];
+  optional double limit_upper          = 4 [default = 0];
+  optional double limit_effort         = 5 [default = 0];
+  optional double limit_velocity       = 6 [default = 0];
+  optional double damping              = 7 [default = 0];
+  optional double friction             = 8 [default = 0];
+  optional bool use_parent_model_frame = 9 [default = false];
+}

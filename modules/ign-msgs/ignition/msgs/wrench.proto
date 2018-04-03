@@ -1,0 +1,20 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "WrenchProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Wrench
+/// \brief Message for a wrench value
+
+import "ignition/msgs/vector3d.proto";
+import "ignition/msgs/header.proto";
+
+message Wrench
+{
+  /// \brief Optional header data
+  optional Header header         = 1;
+
+  optional Vector3d force        = 2;
+  optional Vector3d torque       = 3;
+  optional Vector3d force_offset = 4;
+}

@@ -1,0 +1,16 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "TimeProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Time
+/// \brief A message for time data
+
+message Time
+{
+  /// \brief Seconds
+  optional int64 sec = 1;
+
+  /// \brief Nanoseconds
+  optional int32 nsec = 2;
+}

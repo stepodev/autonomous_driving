@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <include file="$(find platooning_sim)/launch/gazeboadapter.launch"/>
-    <include file="$(find platooning_sim)/launch/world.launch"/>
-    <include file="$(find platooning_sim)/launch/prius1.launch"/>
-    <include file="$(find platooning_sim)/launch/prius2.launch"/>
-</launch>

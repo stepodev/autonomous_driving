@@ -1,0 +1,21 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "BatteryProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Battery
+/// \brief Message for a battery
+
+import "ignition/msgs/header.proto";
+
+message Battery
+{
+  /// \brief Optional header data
+  optional Header header  = 1;
+
+  /// \brief Name of the battery
+  optional string name    = 2 [default = ""];
+
+  /// \brief Real voltage in volts.
+  optional double voltage = 3 [default = 0];
+}

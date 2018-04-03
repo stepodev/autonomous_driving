@@ -1,0 +1,21 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "ImagesStampedProtos";
+
+/// \ingroup ignition.msgs
+/// \interface ImagesStamped
+/// \brief Message for a multiple image with a time
+
+import "ignition/msgs/time.proto";
+import "ignition/msgs/image.proto";
+import "ignition/msgs/header.proto";
+
+message ImagesStamped
+{
+  /// \brief Optional header data
+  optional Header header      = 1;
+
+  // Time when all the images were captured
+  optional Time time          = 2;
+  repeated Image image        = 3;
+}

@@ -1,0 +1,36 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "SceneProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Scene
+/// \brief A message containing a description of a scene
+
+import "ignition/msgs/color.proto";
+import "ignition/msgs/fog.proto";
+import "ignition/msgs/sky.proto";
+import "ignition/msgs/light.proto";
+import "ignition/msgs/joint.proto";
+import "ignition/msgs/model.proto";
+import "ignition/msgs/header.proto";
+
+message Scene
+{
+  /// \brief Optional header data
+  optional Header header       = 1;
+
+  optional string name         = 2;
+  optional Color ambient       = 3;
+  optional Color background    = 4;
+  optional Sky sky             = 5;
+  optional bool shadows        = 6 [default = true];
+  optional Fog fog             = 7;
+  optional bool grid           = 8;
+
+  repeated Model model         = 9;
+  repeated Light light         = 10;
+  repeated Joint joint         = 11;
+
+  /// \brief Show/hide world origin indicator.
+  optional bool origin_visual  = 12;
+}

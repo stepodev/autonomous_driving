@@ -1,0 +1,19 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "SensorVProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Sensor_V
+/// \brief An array of sensors.
+
+import "ignition/msgs/sensor.proto";
+import "ignition/msgs/header.proto";
+
+message Sensor_V
+{
+  /// \brief Optional header data
+  optional Header header   = 1;
+
+  /// \brief Sensor messages.
+  repeated Sensor sensors  = 2;
+}

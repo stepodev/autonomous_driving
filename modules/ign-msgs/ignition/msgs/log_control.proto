@@ -1,0 +1,21 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "LogControlProtos";
+
+/// \ingroup ignition.msgs
+/// \interface LogControl
+/// \brief A message that allows for control of logging functions
+
+import "ignition/msgs/header.proto";
+
+message LogControl
+{
+  /// \brief Optional header data
+  optional Header header        = 1;
+
+  optional bool start           = 2;
+  optional bool stop            = 3;
+  optional bool paused          = 4;
+  optional string base_path     = 5;
+  optional string encoding      = 6;
+}

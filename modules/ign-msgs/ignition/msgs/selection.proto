@@ -1,0 +1,19 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "SelectionProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Selection
+/// \brief A message for GUI selection data
+
+import "ignition/msgs/header.proto";
+
+message Selection
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  optional uint32 id     = 2;
+  optional string name   = 3;
+  optional bool selected = 4 [default = false];
+}

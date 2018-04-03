@@ -1,0 +1,17 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "StringMsgProtos";
+
+/// \ingroup ignition.msgs
+/// \interface StringMsg
+/// \brief A message for string data
+
+import "ignition/msgs/header.proto";
+
+message StringMsg
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  optional string data = 2;
+}

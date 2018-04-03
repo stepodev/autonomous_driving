@@ -1,0 +1,39 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "MaterialProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Material
+/// \brief Information about a material
+
+import "ignition/msgs/color.proto";
+import "ignition/msgs/header.proto";
+
+message Material
+{
+  enum ShaderType
+  {
+    VERTEX                  = 1;
+    PIXEL                   = 2;
+    NORMAL_MAP_OBJECT_SPACE = 3;
+    NORMAL_MAP_TANGENT_SPACE = 4;
+  }
+
+  message Script
+  {
+    repeated string uri = 1;
+    optional string name = 2;
+  }
+
+  /// \brief Optional header data
+  optional Header header          = 1;
+
+  optional Script script          = 2;
+  optional ShaderType shader_type = 3;
+  optional string normal_map      = 4;
+  optional Color ambient          = 5;
+  optional Color diffuse          = 6;
+  optional Color specular         = 7;
+  optional Color emissive         = 8;
+  optional bool lighting          = 9;
+}

@@ -1,0 +1,23 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "PIDProtos";
+
+/// \ingroup ignition.msgs
+/// \interface PID 
+/// \brief Message for simple PID controllers
+
+import "ignition/msgs/header.proto";
+
+message PID
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  optional double target = 2[default=0.0];
+  optional double p_gain = 3[default=0.0];
+  optional double i_gain = 4[default=0.0];
+  optional double d_gain = 5[default=0.0];
+  optional double i_max  = 6[default=0.0];
+  optional double i_min  = 7[default=0.0];
+  optional double limit  = 8[default=0.0];
+}

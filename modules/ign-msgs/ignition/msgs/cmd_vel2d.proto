@@ -1,0 +1,18 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "CmdVel2DProtos";
+
+/// \ingroup ignition.msgs
+/// \interface CmdVel2D
+/// \brief A planar velocity and orientation.
+
+import "ignition/msgs/header.proto";
+
+message CmdVel2D
+{
+  /// \brief Optional header data
+  optional Header header    = 1;
+
+  optional double velocity  = 2 [default = 0];
+  optional double theta     = 3 [default = 0];
+}

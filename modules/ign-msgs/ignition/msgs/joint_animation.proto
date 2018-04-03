@@ -1,0 +1,27 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "JointAnimationProtos";
+
+/// \ingroup ignition.msgs
+/// \interface JointAnimation 
+/// \brief Message for a model joint animation, does not appear to be used.
+/// \todo Document me.
+
+import "ignition/msgs/time.proto";
+import "ignition/msgs/header.proto";
+
+message JointAnimation
+{
+  message Joint 
+  {
+    repeated string name  = 1;
+    repeated double angle = 2;
+  }
+
+  /// \brief Optional header data
+  optional Header header       = 1;
+
+  optional string model_name   = 2;
+  repeated Joint joint         = 3;
+  repeated Time  time          = 4;
+}

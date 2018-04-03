@@ -1,0 +1,21 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "GUIProtos";
+
+/// \ingroup ignition.msgs
+/// \interface GUI 
+/// \brief Message for a GUI
+
+import "ignition/msgs/gui_camera.proto";
+import "ignition/msgs/plugin.proto";
+import "ignition/msgs/header.proto";
+
+message GUI
+{
+  /// \brief Optional header data
+  optional Header header    = 1;
+
+  optional bool fullscreen  = 2;
+  optional GUICamera camera = 3;
+  repeated Plugin plugin    = 4;
+}

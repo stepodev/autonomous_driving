@@ -1,0 +1,21 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "ResponseProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Response 
+/// \brief Message that encapsulates a respons message with a type description
+
+import "ignition/msgs/header.proto";
+
+message Response
+{
+  /// \brief Optional header data
+  optional Header header         = 1;
+
+  optional int32 id              = 2;
+  optional string request        = 3;
+  optional string response       = 4;
+  optional string type           = 5;
+  optional bytes serialized_data = 6;
+}

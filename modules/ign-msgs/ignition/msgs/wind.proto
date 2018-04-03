@@ -1,0 +1,19 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "WindProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Wind
+/// \brief A message containing a description of the global wind properties
+
+import "ignition/msgs/vector3d.proto";
+import "ignition/msgs/header.proto";
+
+message Wind
+{
+  /// \brief Optional header data
+  optional Header header            = 1;
+
+  optional Vector3d linear_velocity = 2;
+  optional bool enable_wind         = 3;
+}

@@ -1,0 +1,19 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "WirelessNodeProtos";
+
+/// \ingroup ignition.msgs
+/// \interface WirelessNode
+/// \brief Message for sending info about a detected wireless transmitter
+
+import "ignition/msgs/header.proto";
+
+message WirelessNode
+{
+  /// \brief Optional header data
+  optional Header header       = 1;
+
+  optional string essid        = 2;
+  optional double frequency    = 3;
+  optional double signal_level = 4;
+}

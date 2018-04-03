@@ -1,0 +1,18 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "PoseVProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Pose_V
+/// \brief Message for a vector of poses
+
+import "ignition/msgs/pose.proto";
+import "ignition/msgs/header.proto";
+
+message Pose_V
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  repeated Pose pose = 2;
+}

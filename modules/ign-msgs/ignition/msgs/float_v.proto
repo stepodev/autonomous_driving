@@ -1,0 +1,18 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "FloatVProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Float_V
+/// \brief A message for a vector of float data
+
+import "ignition/msgs/header.proto";
+
+message Float_V
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  /// \brief Vector of float data
+  repeated float data = 2;
+}

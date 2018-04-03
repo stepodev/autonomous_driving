@@ -1,0 +1,22 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "WorldControlProtos";
+
+/// \ingroup ignition.msgs
+/// \interface WorldControl
+/// \brief A message that allows for control of world functions
+
+import "ignition/msgs/world_reset.proto";
+import "ignition/msgs/header.proto";
+
+message WorldControl
+{
+  /// \brief Optional header data
+  optional Header header        = 1;
+
+  optional bool pause           = 2;
+  optional bool step            = 3;
+  optional uint32 multi_step    = 4;
+  optional WorldReset reset     = 5;
+  optional uint32 seed          = 6;
+}

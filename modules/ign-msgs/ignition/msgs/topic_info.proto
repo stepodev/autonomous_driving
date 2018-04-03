@@ -1,0 +1,21 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "TopicInfoProtos";
+
+/// \ingroup ignition.msgs
+/// \interface TopicInfo
+/// \brief A message for topic information
+
+import "ignition/msgs/publish.proto";
+import "ignition/msgs/subscribe.proto";
+import "ignition/msgs/header.proto";
+
+message TopicInfo
+{
+  /// \brief Optional header data
+  optional Header header        = 1;
+
+  optional string msg_type      = 2;
+  repeated Publish publisher    = 3;
+  repeated Subscribe subscriber = 4;
+}

@@ -1,0 +1,18 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "UInt64Protos";
+
+/// \ingroup ignition.msgs
+/// \interface UInt64
+/// \brief Integer message
+
+import "ignition/msgs/header.proto";
+
+message UInt64
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  /// \brief Integer data
+  optional uint64 data = 2;
+}

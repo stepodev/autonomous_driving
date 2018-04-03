@@ -1,0 +1,29 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "ContactProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Contact
+/// \brief Contact message for passing info between two entities
+
+import "ignition/msgs/vector3d.proto";
+import "ignition/msgs/time.proto";
+import "ignition/msgs/joint_wrench.proto";
+import "ignition/msgs/header.proto";
+
+message Contact
+{
+  /// \brief Optional header data
+  optional Header header     = 1;
+
+  optional string collision1 = 2 [default = ""];
+  optional string collision2 = 3 [default = ""];
+
+  repeated Vector3d position  = 4;
+  repeated Vector3d normal    = 5;
+  repeated double depth       = 6;
+  repeated JointWrench wrench = 7;
+
+  optional Time time         = 8;
+  optional string world      = 9 [default = "default"];
+}

@@ -1,0 +1,19 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "PropagationParticleProtos";
+
+/// \ingroup ignition.msgs
+/// \interface PropagationParticle
+/// \brief Wireless strength signal in a point
+
+import "ignition/msgs/header.proto";
+
+message PropagationParticle
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  optional double x = 2;
+  optional double y = 3;
+  optional double signal_level = 4;
+}

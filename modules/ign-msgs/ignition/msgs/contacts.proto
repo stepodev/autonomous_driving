@@ -1,0 +1,20 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "ContactsProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Contacts
+/// \brief Contacts from collision detection
+
+import "ignition/msgs/header.proto";
+import "ignition/msgs/contact.proto";
+import "ignition/msgs/time.proto";
+
+message Contacts
+{
+  /// \brief Optional header data
+  optional Header header     = 1;
+
+  repeated Contact contact   = 2;
+  optional Time time         = 3;
+}

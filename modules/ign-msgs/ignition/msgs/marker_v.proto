@@ -1,0 +1,19 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "MarkerVProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Marker_V
+/// \brief A list of marker visuals
+
+import "ignition/msgs/marker.proto";
+import "ignition/msgs/header.proto";
+
+message Marker_V
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  /// \brief List of marker messages.
+  repeated Marker marker = 2;
+}

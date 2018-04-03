@@ -1,0 +1,19 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "EmptyProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Param_V
+/// \brief Message for a vector of params.
+
+import "ignition/msgs/param.proto";
+import "ignition/msgs/header.proto";
+
+message Param_V
+{
+  /// \brief Optional header data
+  optional Header header = 1;
+
+  /// \brief Repeated params.
+  repeated Param param = 2;
+}

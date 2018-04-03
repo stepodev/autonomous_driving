@@ -1,0 +1,18 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "PoseAnimationProtos";
+
+/// \ingroup ignition.msgs
+/// \interface PoseAnimation 
+/// \brief Message for a model pose animation
+
+import "ignition/msgs/pose.proto";
+import "ignition/msgs/time.proto";
+
+message PoseAnimation
+{
+  optional string model_name      = 1;
+  optional uint32 model_id        = 2;
+  repeated Pose pose              = 3;
+  repeated Time time              = 4;
+}

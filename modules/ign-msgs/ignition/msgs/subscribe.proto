@@ -1,0 +1,21 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "SubscribeProtos";
+
+/// \ingroup ignition.msgs
+/// \interface Subscribe
+/// \brief A message for subscription data
+
+import "ignition/msgs/header.proto";
+
+message Subscribe
+{
+  /// \brief Optional header data
+  optional Header header   = 1;
+
+  optional string topic    = 2;
+  optional string host     = 3;
+  optional uint32 port     = 4;
+  optional string msg_type = 5;
+  optional bool latching   = 6 [default=false];
+}

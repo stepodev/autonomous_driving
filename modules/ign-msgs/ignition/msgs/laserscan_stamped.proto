@@ -1,0 +1,21 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "LaserScanStampedProtos";
+
+/// \ingroup ignition.msgs
+/// \interface LaserScanStamped
+/// \brief Message for an laser scan with a time
+
+import "ignition/msgs/time.proto";
+import "ignition/msgs/laserscan.proto";
+import "ignition/msgs/header.proto";
+
+message LaserScanStamped
+{
+  /// \brief Optional header data
+  optional Header header      = 1;
+
+  // Time when the data was captured
+  optional Time time          = 2;
+  optional LaserScan scan     = 3;
+}

@@ -1,0 +1,18 @@
+package ignition.msgs;
+option java_package = "com.ignition.msgs";
+option java_outer_classname = "PointCloudProtos";
+
+/// \ingroup ignition.msgs
+/// \interface PointCloud
+/// \brief A point cloud
+
+import "ignition/msgs/vector3d.proto";
+import "ignition/msgs/header.proto";
+
+message PointCloud
+{
+  /// \brief Optional header data
+  optional Header header   = 1;
+
+  repeated Vector3d points = 2;
+}
