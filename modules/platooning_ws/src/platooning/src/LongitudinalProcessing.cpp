@@ -30,7 +30,6 @@ LongitudinalProcessing::LongitudinalProcessing()
 
 LongitudinalProcessing::~LongitudinalProcessing() {
 	io_service_.stop();
-	thread_pool_.interrupt_all();
 }
 
 
