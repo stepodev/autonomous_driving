@@ -1,4 +1,0 @@
-<launch>
-    <node pkg="nodelet" type="nodelet" name="environment_mapping" args="load platooning/environment_mapping environment_mapping">
-    </node>
-</launch>

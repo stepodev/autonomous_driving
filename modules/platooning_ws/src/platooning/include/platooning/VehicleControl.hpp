@@ -30,7 +30,6 @@
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 #include "MessageTypes.hpp"
-#include <turtlesim/Pose.h>
 #include <geometry_msgs/Twist.h>
 
 namespace platooning {
@@ -79,24 +78,6 @@ class VehicleControl : public nodelet::Nodelet {
 
   private:
 	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */
-	std::string name_;
-	ros::Subscriber subscriber_pose;
-	ros::Subscriber subscriber;
-	ros::Publisher publisher;
-	turtlesim::PoseConstPtr g_pose;
-	platooning::acceleration g_acceleration;
-	platooning::steeringAngle g_steeringAngle;
-	geometry_msgs::Twist twist;
-
-
-	/**
-	 * @brief to achieve X does Y
-	 * @param msg incoming topic message
-	 */
-	//void poseCallback(const turtlesim::PoseConstPtr& pose);
-	void accelerationCallback(platooning::acceleration prioDrivingVector);
-	void steeringAngleCallback(platooning::steeringAngle prioDrivingVector);
-	void commandTurtle();
 
 };
 

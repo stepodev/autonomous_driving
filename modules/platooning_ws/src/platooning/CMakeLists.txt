@@ -185,17 +185,9 @@ include_directories(
 #######################
 
 ## Declare a C++ library
-add_library(environment_mapping SHARED include/platooning/EnvironmentMapping.hpp src/EnvironmentMapping.cpp src/UdpServer.cpp include/platooning/UdpServer.hpp)
-add_dependencies(environment_mapping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(environment_mapping ${catkin_LIBRARIES})
-
 add_library(lanedetect SHARED include/platooning/LaneDetect.hpp src/LaneDetect.cpp)
 add_dependencies(lanedetect ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(lanedetect ${catkin_LIBRARIES})
-
-add_library(lanekeeping SHARED include/platooning/LaneKeeping.hpp src/LaneKeeping.cpp)
-add_dependencies(lanekeeping ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-target_link_libraries(lanekeeping ${catkin_LIBRARIES})
 
 add_library(prioritization SHARED include/platooning/Prioritization.hpp src/Prioritization.cpp)
 add_dependencies(prioritization ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
@@ -226,7 +218,7 @@ set_target_properties(topics PROPERTIES LINKER_LANGUAGE CXX)
 add_dependencies(topics ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(topics ${catkin_LIBRARIES})
 
-add_library(messagetypes SHARED include/platooning/MessageTypes.hpp src/MessageTypes.cpp)
+add_library(messagetypes SHARED include/platooning/MessageTypes.hpp src/MessageTypes.cpp include/platooning/json.hpp)
 add_dependencies(messagetypes ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(messagetypes ${catkin_LIBRARIES})
 
@@ -323,7 +315,7 @@ target_link_libraries(moduletest_template moduletest ${catkin_LIBRARIES})
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 install(TARGETS
-            environment_mapping prioritization messagedistribution
+            prioritization messagedistribution
             userinterface vehiclecontrol radiointerface platooning udpserver messagetypes
             topics longitudinalprocessing services servicetypes stmsim
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

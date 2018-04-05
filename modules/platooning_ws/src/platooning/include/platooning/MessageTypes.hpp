@@ -44,6 +44,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp> //json parsing and generating
 
+#include <platooning/json.hpp>
+
 #include "platooning/remotecontrolToggle.h"
 #include "platooning/userInterface.h"
 #include "platooning/platoonProtocol.h"
@@ -78,14 +80,6 @@ class MessageTypes {
 
 	template <typename T>
 	static std::string encode_message(const T &message);
-
-  private:
-	template<typename T>
-	static std::vector<T>
-	json_as_vector(boost::property_tree::ptree const &pt, boost::property_tree::ptree::key_type const &key);
-
-	template<typename T>
-	static boost::property_tree::ptree vector_as_json(std::vector<T> const &v);
 
 };
 
