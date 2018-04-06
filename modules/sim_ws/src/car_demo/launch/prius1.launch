@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="model" default="$(find prius_description)/urdf/prius1.urdf"/>
-  <arg name="rvizconfig" default="$(find car_demo)/rviz/world.rviz" />
+  <arg name="rvizconfig" default="$(find car_demo)/rviz/world_car1.rviz" />
 
   <param name="robot_description1" textfile="$(arg model)"/>
 
