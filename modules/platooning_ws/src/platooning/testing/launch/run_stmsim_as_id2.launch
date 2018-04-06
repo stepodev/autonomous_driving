@@ -1,6 +1,0 @@
-<launch>
-    <param name="vehicle_id" value="2" type="int" />
-    <param name="set_role_leader" value="false" type="bool" />
-    <include file="$(find platooning)/launch/run_platoon.launch"/>
-    <include file="$(find platooning)/launch/stmsim.launch"/>
-</launch>

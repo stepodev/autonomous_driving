@@ -449,6 +449,10 @@
   </joint>
 
   <gazebo>
+    <plugin name="gazebo_camera_follow" filename="libcamerafollowplugin.so"/>    
+  </gazebo>
+
+  <gazebo>
     <plugin name="pruis_hybrid_drive" filename="libPriusHybridPlugin.so">
       <chassis>chassis</chassis>
       <control_topic_name>prius1/control</control_topic_name>

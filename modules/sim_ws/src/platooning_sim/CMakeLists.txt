@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
         nodelet
         platooning
         prius_msgs
+        gazebo_ros
         )
 
 find_package(Boost REQUIRED COMPONENTS
@@ -18,10 +19,13 @@ find_package(Boost REQUIRED COMPONENTS
         system
         )
 
+find_package(gazebo 8 REQUIRED)
+find_package(ignition-msgs0 REQUIRED)
+
 catkin_package(
         INCLUDE_DIRS include
-        LIBRARIES gazeboadapter
-        # CATKIN_DEPENDS platooning
+        LIBRARIES gazeboadapter camerafollowplugin
+        CATKIN_DEPENDS gazebo_ros
         # DEPENDS system_lib
 )
 
@@ -30,11 +34,14 @@ include_directories(include ${platooning_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${
 add_library(priustopics include/platooning_sim/topics.hpp )
 set_target_properties(priustopics PROPERTIES LINKER_LANGUAGE CXX)
 
-add_library(gazeboadapter include/platooning_sim/gazeboadapter.hpp src/gazeboadapter.cpp)
+add_library(camerafollowplugin SHARED include/platooning_sim/gazebo_camera_follow.hpp src/gazebo_camera_follow.cpp)
+target_link_libraries(camerafollowplugin ${GAZEBO_LIBRARIES} ${IGNITION-MSGS_LIBRARIES})
+
+add_library(gazeboadapter SHARED include/platooning_sim/gazeboadapter.hpp src/gazeboadapter.cpp)
 add_dependencies(gazeboadapter priustopics )
 target_link_libraries(gazeboadapter priustopics ${platooning_LIBRARIES} ${Boost_LIBRARIES})
 
-install(TARGETS gazeboadapter
+install(TARGETS gazeboadapter camerafollowplugin
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -47,3 +54,4 @@ install(DIRECTORY launch/
 install(DIRECTORY plugins/
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/plugins
         PATTERN ".svn" EXCLUDE)
+

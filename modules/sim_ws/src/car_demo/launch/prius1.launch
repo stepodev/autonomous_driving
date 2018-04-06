@@ -17,7 +17,6 @@
   <node pkg="tf2_ros" type="static_transform_publisher" name="very_inaccurate_odom1" args="0 0 0 0 0 0 odom base_link"/>
 
   <node name="spawn_urdf1" pkg="gazebo_ros" type="spawn_model" args="-param robot_description1 -urdf -x -130 -y -12 -z 0.5 -model prius1">
-    <remap from="prius" to="p1"/>
   </node>
 
   <node name="rviz1" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />

@@ -159,6 +159,8 @@ void StmSim::hndl_vehicleControl(const vehicleControl &msg) {
 		if( acceleration >= 1.f || acceleration <= -1.f) {
 			NODELET_ERROR("[%s] velo %f - calc: %f = %f -> throttle %f ",
 			             name_.c_str(), current_velocity_, msg.velocity, mod_velo, acceleration);
+			NODELET_DEBUG("[%s] accel > 1 or <-1. velo %f - calc: %f = %f -> throttle %f ",
+			              name_.c_str(), current_velocity_, msg.velocity, mod_velo, acceleration);
 		} else {
 			//NODELET_INFO("[%s] velo %f - calc: %f = %f -> throttle %f ",
 			//             name_.c_str(), current_velocity_, msg.velocity, mod_velo, acceleration);
