@@ -1,0 +1,6 @@
+<launch>
+  <include file="$(find platooning)/testing/launch/test_nodeletmanager.launch"/>
+  <include file="$(find platooning)/launch/radiointerface.launch"/>
+  <include file="$(find platooning)/launch/messagedistribution.launch"/>
+  <include file="$(find platooning)/testing/launch/integrationtest_platooning.launch"/>
+</launch>

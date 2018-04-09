@@ -1,5 +1,5 @@
 /**
- * @file testing/include/platooning/RadioInterface.hpp
+ * @file testing/include/platooning/Moduletest.hpp
  * @author stepo
  * @date 22.03.2018
  *
@@ -44,7 +44,7 @@ class Moduletest : public nodelet::Nodelet {
   public:
 	Moduletest();
 
-	~Moduletest();
+	~Moduletest() override;
 
   protected:
 	std::string name_ = "Moduletest";

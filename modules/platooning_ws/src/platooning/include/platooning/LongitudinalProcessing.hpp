@@ -41,7 +41,7 @@ namespace platooning {
  * required to reduce the distance to target distance. Additionally uses a timer to ensure we have up-to-date speed
  * and distance measurements.
  *
- * Treates distances as "distance from point 0" where 0 is an object ahead. Thus distances given as negative values to
+ * Creates distances as "distance from point 0" where 0 is an object ahead. Thus distances given as negative values to
  * the PD controller. Ex: The measurement from the sensor is "5", gets interpreted as "-5 units from the object ahead".
  * Target distance could be "1", so "-1 unit from the object ahead".
  *

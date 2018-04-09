@@ -60,6 +60,7 @@
         <nodelet plugin="${prefix}/testing/plugins/moduletest_messagetypes.xml"/>
         <nodelet plugin="${prefix}/testing/plugins/moduletest_udpserver.xml"/>
         <nodelet plugin="${prefix}/testing/plugins/moduletest_prioritization.xml"/>
+        <nodelet plugin="${prefix}/testing/plugins/integrationtest_platooning.xml"/>
 
     </export>
 </package>

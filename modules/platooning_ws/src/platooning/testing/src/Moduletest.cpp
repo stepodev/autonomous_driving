@@ -1,10 +1,15 @@
-//
-// Created by stepo on 1/22/18.
-//
+/**
+ * @file testing/src/Moduletest.cpp
+ * @author stepo
+ * @date 22,03,2018
+ * @brief Contains implementation of Moduletest class
+ *
+ */
 #include "platooning/Moduletest.hpp"
 
 Moduletest::Moduletest() :
 	testcase_timer_(io_) {
+
 	timeout_ = boost::posix_time::seconds(3);
 	timeout_callback_ = boost::function<void()>();
 
@@ -20,13 +25,16 @@ Moduletest::~Moduletest() {
 		io_.reset();
 		io_.stop();
 
+		if( !io_.stopped() ) {
+			threadpool_.interrupt_all();
+		}
+
 		threadpool_.join_all();
 	} catch (std::exception &ex) {
 		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}
 
 	expects_timeout_ = false;
-
 }
 
 void Moduletest::register_testcases(boost::function<void()> test_case_fun) {
@@ -38,42 +46,50 @@ void Moduletest::register_timeout_callback(boost::function<void()> cb) {
 	expects_timeout_ = true;
 }
 
+/**
+ * @brief start a finalization thread so the nodelet manager is free to send possible cleanup messages
+ */
 void Moduletest::finalize_test(TestResult result) {
 
 	try {
-		testcase_timer_.cancel();
 
-		std::stringstream ss;
-		std::ofstream of;
-		of.open(test_result_filepath_, std::ios::app);
+		threadpool_.create_thread( [this, result] {
+			testcase_timer_.cancel();
 
-		std::time_t t = std::time(nullptr);
-		std::put_time(std::localtime(&t), "%c %Z");
-		ss << "[" << name_ << "]["
-		   << current_test_ << "]["
-		   << (result.success ? "SUCCESS" : "FAILURE") << "] "
-		   << result.comment << std::endl;
+			std::stringstream ss;
+			std::ofstream of;
+			of.open(test_result_filepath_, std::ios::app);
 
-		if (!result.success) {
-			NODELET_ERROR("%s", ss.str().c_str());
-		} else {
-			NODELET_WARN("%s", ss.str().c_str());
-		}
+			std::time_t t = std::time(nullptr);
+			std::put_time(std::localtime(&t), "%c %Z");
+			ss << "[" << name_ << "]["
+			   << current_test_ << "]["
+			   << (result.success ? "SUCCESS" : "FAILURE") << "] "
+			   << result.comment << std::endl;
 
-		of << "[" << t << "]" << ss.str();
+			if (!result.success) {
+				NODELET_ERROR("%s", ss.str().c_str());
+			} else {
+				NODELET_WARN("%s", ss.str().c_str());
+			}
 
-		of.close();
+			of << "[" << t << "]" << ss.str();
 
-		expects_timeout_ = false;
+			of.close();
 
-		pub_map_.clear();
-		sub_map_.clear();
+			expects_timeout_ = false;
 
-		timeout_callback_.clear();
+			pub_map_.clear();
+			sub_map_.clear();
 
-		set_timeout(boost::posix_time::seconds(3));
+			timeout_callback_.clear();
 
-		start_tests();
+			boost::this_thread::sleep_for( boost::chrono::seconds(1));
+
+			set_timeout(boost::posix_time::seconds(3));
+
+			start_tests();
+		});
 
 	} catch (std::exception &ex) {
 		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
@@ -115,8 +131,10 @@ void Moduletest::hndl_testcase_timeout(const boost::system::error_code &ec) {
 
 	NODELET_FATAL("[%s] we shouldnt be here. testcase timeout not caught. boost error was %s",
 	              name_.c_str(), ec.message().c_str());
-	ros::shutdown();
 
+	//raise(SIGINT);
+	//raise(SIGABRT);
+	exit(-1);
 }
 
 void Moduletest::start_tests() {
@@ -124,7 +142,9 @@ void Moduletest::start_tests() {
 	try {
 		if (testcases_to_run_.empty()) {
 			NODELET_WARN("[%s] no more testcases. stopping", name_.c_str());
-			ros::shutdown();
+			//raise(SIGINT);
+			//raise(SIGABRT);
+			exit(0);
 			return;
 		}
 
@@ -142,6 +162,7 @@ void Moduletest::start_tests() {
 		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}
 }
+
 void Moduletest::set_current_test(std::string str) {
 	current_test_ = std::move(str);
 	NODELET_WARN("[%s] %s started", name_.c_str(), current_test_.c_str());

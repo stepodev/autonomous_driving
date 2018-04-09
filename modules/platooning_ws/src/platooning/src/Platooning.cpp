@@ -1,6 +1,15 @@
+/**
+ * @file include/platooning/Platooning.cpp
+ * @author stepo
+ * @date 22.03.2018
+ * @brief Platooning header file
+
+ */
+
 #include "platooning/Platooning.hpp"
 
 namespace platooning {
+
 Platooning::Platooning() :
 	io_worker_(io_service_),
 	fv_heartbeat_sender_(io_service_),
@@ -11,6 +20,7 @@ Platooning::Platooning() :
 	thread_pool_.create_thread( [this]{ io_service_.run();});
 
 }
+
 Platooning::~Platooning() {
 	fv_heartbeat_sender_.cancel();
 	fv_heartbeat_checker_.cancel();
@@ -26,15 +36,6 @@ Platooning::~Platooning() {
 	thread_pool_.join_all();
 
 }
-
-/**
- * TODO:
- * - handle timeouts
- *       start boost::asio::deadline_timer for each vehicle and restart it when package arrives?
- *       what if it doesnt arrive in time?
- *       race conditions?
- * - all the rest.
- */
 
 void Platooning::onInit() {
 
@@ -60,13 +61,19 @@ bool Platooning::provide_vehicle_id(platooning::getVehicleId::Request &req,
 
 void Platooning::reset() {
 
-	thread_pool_.interrupt_all();
-
 	//heartbeat timer
 	fv_heartbeat_sender_.cancel();
 	fv_heartbeat_checker_.cancel();
 	lv_broadcast_sender_.cancel();
 	lv_broadcast_checker_.cancel();
+
+	//io_service_.stop();
+
+	thread_pool_.interrupt_all();
+
+	//thread_pool_.join_all();
+
+	//thread_pool_.create_thread( [this]{ io_service_.run();});
 
 	shutdown_pubs_and_subs();
 
@@ -187,7 +194,6 @@ void Platooning::hndl_msg_lv_reject(const platooning::lv_reject &msg) {
  * @param const platooning::fv_request &
  */
 void Platooning::hndl_msg_fv_request(const platooning::fv_request &msg) {
-
 	if (get_mode() != PlatooningModeEnum::CREATING && get_mode() != PlatooningModeEnum::IDLE) {
 		NODELET_WARN("[%s] ignoring FV_REQUEST dt platooning mode %s",
 		             name_.c_str(), to_string(get_mode()).c_str());
@@ -541,16 +547,22 @@ void Platooning::send_fv_heartbeat(const boost::system::error_code &e) {
 		return;
 	}
 
-	//send fv_heartbeat
-	auto msg_to_send = boost::shared_ptr<fv_heartbeat>(new fv_heartbeat);
-	msg_to_send->src_vehicle = get_vehicle_id();
-	msg_to_send->platoon_id = get_platoon_id();
-	pub_fv_heartbeat_.publish(msg_to_send);
+	try {
+		//send fv_heartbeat
+		auto msg_to_send = boost::shared_ptr<fv_heartbeat>(new fv_heartbeat);
+		msg_to_send->src_vehicle = get_vehicle_id();
+		msg_to_send->platoon_id = get_platoon_id();
+		pub_fv_heartbeat_.publish(msg_to_send);
 
-	//restart timers
-	fv_heartbeat_sender_.expires_from_now(HEARTBEAT_FREQ);
-	fv_heartbeat_sender_.async_wait(boost::bind(&Platooning::send_fv_heartbeat, this,
-	                                            boost::asio::placeholders::error));
+		//restart timers
+		fv_heartbeat_sender_.expires_from_now(HEARTBEAT_FREQ);
+		fv_heartbeat_sender_.async_wait(boost::bind(&Platooning::send_fv_heartbeat, this,
+		                                            boost::asio::placeholders::error));
+	} catch ( std::exception& ex ) {
+		NODELET_ERROR("[%s] send_fv_heartbeat failed with %s", name_.c_str(), ex.what() );
+	}
+
+
 }
 
 /**
@@ -562,6 +574,8 @@ void Platooning::send_lv_broadcast(const boost::system::error_code &e) {
 	if (boost::asio::error::operation_aborted == e) {
 		return;
 	}
+
+	try {
 
 	//send fv_heartbeat
 	auto msg_to_send = boost::shared_ptr<lv_broadcast>(new lv_broadcast);
@@ -575,6 +589,10 @@ void Platooning::send_lv_broadcast(const boost::system::error_code &e) {
 	lv_broadcast_sender_.expires_from_now(BROADCAST_FREQ);
 	lv_broadcast_sender_.async_wait(boost::bind(&Platooning::send_lv_broadcast, this,
 	                                            boost::asio::placeholders::error));
+
+	} catch ( std::exception& ex ) {
+		NODELET_ERROR("[%s] send_lv_broadcast failed with %s", name_.c_str(), ex.what() );
+	}
 }
 
 uint32_t Platooning::get_vehicle_id_param() {
