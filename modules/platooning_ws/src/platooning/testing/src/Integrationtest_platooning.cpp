@@ -68,7 +68,7 @@ void Integrationtest_platooning::onInit() {
 
 void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeats_and_broadcast() {
 
-	set_timeout( boost::posix_time::time_duration(boost::posix_time::seconds(10) ));
+	set_timeout( boost::posix_time::time_duration(boost::posix_time::seconds(20) ));
 	set_current_test("test_send_platooningToggle_recv_heartbeats_and_broadcast");
 
 	//mockup publishers
@@ -179,7 +179,7 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeats_and_
 }
 
 void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data() {
-	set_timeout( boost::posix_time::time_duration(boost::posix_time::seconds(10) ));
+	set_timeout( boost::posix_time::time_duration(boost::posix_time::seconds(20) ));
 	set_current_test("test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data");
 
 	//mockup publishers
@@ -203,7 +203,7 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 	toggle_msg.vehicle_id = 1;
 	toggle_msg.lvfv = "LV";
 	toggle_msg.enable_platooning = true;
-	toggle_msg.inner_platoon_distance = 10.0;
+	toggle_msg.inner_platoon_distance = 10.0f;
 	toggle_msg.platoon_speed = 1.0f;
 
 	auto v1 = boost::shared_ptr<platoonProtocol>( new platoonProtocol );
@@ -321,6 +321,8 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 			member3_found = true;
 		}
 
+
+		std::cout << item.second.platoon_speed << std::endl;
 		if( item.second.platoon_speed == 10.0f) {
 			ipd10_found = true;
 		}

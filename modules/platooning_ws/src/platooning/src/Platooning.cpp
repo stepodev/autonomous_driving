@@ -17,7 +17,7 @@ Platooning::Platooning() :
 	lv_broadcast_sender_(io_service_),
 	lv_broadcast_checker_(io_service_) {
 
-	thread_pool_.create_thread( [this]{ io_service_.run();});
+	thread_pool_.create_thread([this] { io_service_.run(); });
 
 }
 
@@ -29,7 +29,7 @@ Platooning::~Platooning() {
 
 	io_service_.stop();
 
-	if( !io_service_.stopped() ) {
+	if (!io_service_.stopped()) {
 		thread_pool_.interrupt_all();
 	}
 
@@ -217,7 +217,9 @@ void Platooning::hndl_msg_fv_request(const platooning::fv_request &msg) {
 		msg_to_send->platoon_id = get_platoon_id();
 		msg_to_send->dst_vehicle = msg.src_vehicle;
 
+		boost::lock_guard<boost::shared_mutex> l(pub_mtx_);
 		pub_lv_accept_.publish(msg_to_send);
+		pub_mtx_.unlock();
 
 		set_mode(PlatooningModeEnum::RUNNING);
 
@@ -332,7 +334,9 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 			msg_to_send->src_vehicle = get_vehicle_id();
 			msg_to_send->platoon_id = get_platoon_id();
 
+			boost::lock_guard<boost::shared_mutex> l(pub_mtx_);
 			pub_fv_leave_.publish(msg_to_send);
+			pub_mtx_.unlock();
 			reset();
 			return;
 		}
@@ -406,7 +410,9 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 					             to_string(get_role()).c_str(),
 					             to_string(get_mode()).c_str());
 
+					boost::lock_guard<boost::shared_mutex> l(pub_mtx_);
 					pub_fv_request_.publish(msg_to_send);
+					pub_mtx_.unlock();
 					boost::this_thread::sleep_for(boost::chrono::seconds(2));
 				}
 			});
@@ -471,8 +477,11 @@ void Platooning::hndl_timeout_fv_heartbeat(const boost::system::error_code &e) {
 
 		if (dur > HEARTBEAT_TIMEOUT) {
 
-			NODELET_WARN( "[%s] FV_HEARTBEAT vehicle %i timeout with timediff: %i max: %i", name_.c_str(), (int)member.first,
-			              (int)dur.total_milliseconds(), (int)HEARTBEAT_TIMEOUT.total_milliseconds());
+			NODELET_WARN("[%s] FV_HEARTBEAT vehicle %i timeout with timediff: %i max: %i",
+			             name_.c_str(),
+			             (int) member.first,
+			             (int) dur.total_milliseconds(),
+			             (int) HEARTBEAT_TIMEOUT.total_milliseconds());
 
 			to_del.push_back(member.first); //save timed out member
 			//send courtesy reject
@@ -492,7 +501,7 @@ void Platooning::hndl_timeout_fv_heartbeat(const boost::system::error_code &e) {
 
 	if (fv_heartbeat_timeout_tracker_.empty()) {
 
-		if( has_members() ) {
+		if (has_members()) {
 			NODELET_ERROR("[%s] heartbeat tracker empty but still has members", name_.c_str());
 		}
 
@@ -552,16 +561,16 @@ void Platooning::send_fv_heartbeat(const boost::system::error_code &e) {
 		auto msg_to_send = boost::shared_ptr<fv_heartbeat>(new fv_heartbeat);
 		msg_to_send->src_vehicle = get_vehicle_id();
 		msg_to_send->platoon_id = get_platoon_id();
+		boost::lock_guard<boost::shared_mutex> l(pub_mtx_);
 		pub_fv_heartbeat_.publish(msg_to_send);
 
 		//restart timers
 		fv_heartbeat_sender_.expires_from_now(HEARTBEAT_FREQ);
 		fv_heartbeat_sender_.async_wait(boost::bind(&Platooning::send_fv_heartbeat, this,
 		                                            boost::asio::placeholders::error));
-	} catch ( std::exception& ex ) {
-		NODELET_ERROR("[%s] send_fv_heartbeat failed with %s", name_.c_str(), ex.what() );
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] send_fv_heartbeat failed with %s", name_.c_str(), ex.what());
 	}
-
 
 }
 
@@ -577,21 +586,22 @@ void Platooning::send_lv_broadcast(const boost::system::error_code &e) {
 
 	try {
 
-	//send fv_heartbeat
-	auto msg_to_send = boost::shared_ptr<lv_broadcast>(new lv_broadcast);
-	msg_to_send->src_vehicle = get_vehicle_id();
-	msg_to_send->platoon_id = get_platoon_id();
-	msg_to_send->ps = get_platoon_speed();
-	msg_to_send->ipd = get_platoon_distance();
-	msg_to_send->followers = get_members();
-	pub_lv_broadcast_.publish(msg_to_send);
+		//send fv_heartbeat
+		auto msg_to_send = boost::shared_ptr<lv_broadcast>(new lv_broadcast);
+		msg_to_send->src_vehicle = get_vehicle_id();
+		msg_to_send->platoon_id = get_platoon_id();
+		msg_to_send->ps = get_platoon_speed();
+		msg_to_send->ipd = get_platoon_distance();
+		msg_to_send->followers = get_members();
+		boost::lock_guard<boost::shared_mutex> l(pub_mtx_);
+		pub_lv_broadcast_.publish(msg_to_send);
 
-	lv_broadcast_sender_.expires_from_now(BROADCAST_FREQ);
-	lv_broadcast_sender_.async_wait(boost::bind(&Platooning::send_lv_broadcast, this,
-	                                            boost::asio::placeholders::error));
+		lv_broadcast_sender_.expires_from_now(BROADCAST_FREQ);
+		lv_broadcast_sender_.async_wait(boost::bind(&Platooning::send_lv_broadcast, this,
+		                                            boost::asio::placeholders::error));
 
-	} catch ( std::exception& ex ) {
-		NODELET_ERROR("[%s] send_lv_broadcast failed with %s", name_.c_str(), ex.what() );
+	} catch (std::exception &ex) {
+		NODELET_ERROR("[%s] send_lv_broadcast failed with %s", name_.c_str(), ex.what());
 	}
 }
 
@@ -637,13 +647,15 @@ void Platooning::set_role(const PlatoonRoleEnum &roleenum) {
 
 	PlatooningState::set_role(roleenum);
 
+	boost::lock_guard<boost::shared_mutex> l(pub_mtx_);
+
 	//shutdown all
 	shutdown_pubs_and_subs();
 
 	//spin up relevant subs and pubgs
 	if (get_role() == PlatoonRoleEnum::LV) {
 
-		NODELET_WARN( "[%s] starting pubs and subs for LV role", name_.c_str() );
+		NODELET_WARN("[%s] starting pubs and subs for LV role", name_.c_str());
 
 		sub_fv_request_ = nh_.subscribe(topics::IN_FV_REQUEST, 100, &Platooning::hndl_msg_fv_request, this);
 		sub_fv_heartbeat_ = nh_.subscribe(topics::IN_FV_HEARTBEAT, 100, &Platooning::hndl_msg_fv_heartbeat, this);
@@ -654,7 +666,7 @@ void Platooning::set_role(const PlatoonRoleEnum &roleenum) {
 		pub_lv_broadcast_ = nh_.advertise<platooning::lv_broadcast>(topics::OUT_LV_BROADCAST, 1);
 	} else if (get_role() == PlatoonRoleEnum::FV) {
 
-		NODELET_WARN( "[%s] starting pubs and subs for FV role", name_.c_str() );
+		NODELET_WARN("[%s] starting pubs and subs for FV role", name_.c_str());
 
 		sub_lv_accept_ = nh_.subscribe(topics::IN_LV_ACCEPT, 100, &Platooning::hndl_msg_lv_accept, this);
 		sub_lv_reject_ = nh_.subscribe(topics::IN_LV_REJECT, 100, &Platooning::hndl_msg_lv_reject, this);
@@ -667,7 +679,7 @@ void Platooning::set_role(const PlatoonRoleEnum &roleenum) {
 }
 
 PlatooningState::PlatooningState() {
-	pub_platooning_state_= nh_.advertise<platooning::platooningState>(topics::PLATOONINGSTATE, 1);
+	pub_platooning_state_ = nh_.advertise<platooning::platooningState>(topics::PLATOONINGSTATE, 1);
 	reset();
 }
 
@@ -720,13 +732,12 @@ PlatooningModeEnum PlatooningState::get_mode() {
 	return current_mode_;
 }
 
-void PlatooningState::add_member(const uint32_t &m ) {
+void PlatooningState::add_member(const uint32_t &m) {
 	boost::lock_guard<boost::shared_mutex> l(mtx_);
 
 	members_.emplace_back(m);
 
 	mtx_.unlock();
-
 
 	publish_state();
 }
@@ -773,11 +784,11 @@ void PlatooningState::set_members(const std::vector<uint32_t> &v) {
 
 	members_.clear();
 
-	for( auto x : v ) {
+	for (auto x : v) {
 		members_.push_back(x);
 	}
 
-	std::sort(members_.begin(),members_.end(), std::greater<uint32_t>() );
+	std::sort(members_.begin(), members_.end(), std::greater<uint32_t>());
 
 	mtx_.unlock();
 
@@ -801,25 +812,30 @@ uint32_t PlatooningState::get_leader_id() {
 }
 
 void PlatooningState::publish_state() {
-	boost::shared_lock<boost::shared_mutex> l(mtx_);
 
-	auto statemsg = boost::shared_ptr<platooning::platooningState>(new platooning::platooningState);
+	try {
+		boost::shared_lock<boost::shared_mutex> l(mtx_);
 
-	statemsg->vehicle_id = vehicle_id_;
-	statemsg->platoon_id = platoon_id_;
-	statemsg->platooning_state = to_string(current_mode_);
-	statemsg->ipd = platoon_distance_;
-	statemsg->ps = platoon_speed_;
-	if (role_ == PlatoonRoleEnum::FV) {
-		statemsg->i_am_FV = true;
-		statemsg->i_am_LV = false;
-	} else {
-		statemsg->i_am_FV = false;
-		statemsg->i_am_LV = true;
+		auto statemsg = boost::shared_ptr<platooning::platooningState>(new platooning::platooningState);
+
+		statemsg->vehicle_id = vehicle_id_;
+		statemsg->platoon_id = platoon_id_;
+		statemsg->platooning_state = to_string(current_mode_);
+		statemsg->ipd = platoon_distance_;
+		statemsg->ps = platoon_speed_;
+		if (role_ == PlatoonRoleEnum::FV) {
+			statemsg->i_am_FV = true;
+			statemsg->i_am_LV = false;
+		} else {
+			statemsg->i_am_FV = false;
+			statemsg->i_am_LV = true;
+		}
+		statemsg->platoon_members = members_;
+
+		pub_platooning_state_.publish(statemsg);
+	} catch (std::exception &ex) {
+		printf("[%s] publish_state failed with %s", "PlatooningState", ex.what());
 	}
-	statemsg->platoon_members = members_;
-
-	pub_platooning_state_.publish(statemsg);
 
 }
 

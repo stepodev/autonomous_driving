@@ -106,7 +106,7 @@ class PlatooningState {
 
 	ros::Publisher pub_platooning_state_;
 
-	boost::shared_mutex mtx_;
+	boost::shared_mutex mtx_; /**< ensures one write and multiple read access */
 
   public:
 
@@ -181,6 +181,8 @@ class Platooning : public nodelet::Nodelet, private PlatooningState {
 	ros::Publisher pub_lv_broadcast_;
 	ros::Publisher pub_fv_heartbeat_;
 	ros::Publisher pub_platooning_state_;
+
+	boost::shared_mutex pub_mtx_; /**< ensures one write and multiple read access */
 
 	//heartbeat timers
 	boost::asio::io_service io_service_;
