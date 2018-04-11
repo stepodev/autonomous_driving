@@ -489,18 +489,20 @@ backend=biber
 			\paragraph{Beschreibung:} Test LV Broadcast von IN\_PLATOONING\_MSG zu IN\_LV\_BROADCAST
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
 				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
 			\end{itemize}
 			\paragraph{Erwarteter Output:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Vehicle, von dem LV Broadcast kommt:} \emph{src\_vehicle = 3}
+				\item \textbf{Message Type:} \emph{message\_type = IN\_LV\_BROADCAST}
 			\end{itemize}
 
 			\paragraph{Test 2:}{Test LV Broadcast 2}
 			\paragraph{Beschreibung:} Test LV Broadcast von OUT\_LV\_BROADCAST zu OUT\_PLATOONING\_MSG
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{Broadcast msg auf OUT\_LV\_BROADCAST}
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_PLATOONING\_MSG}
 			\end{itemize}
 			\paragraph{Erwarteter Output:}
 			\begin{itemize} \itemsep-0.5em
@@ -511,18 +513,82 @@ backend=biber
 			\paragraph{Beschreibung:} Test ob LV Accept Msg funktioniert
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
 				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
 				\item \textbf{Platoon ID:} \emph{platoon\_id = 4}
 				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 5}
 			\end{itemize}
 			\paragraph{Erwarteter Output:}
 			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = LV\_ACCEPT}
 				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
 				\item \textbf{Platoon ID:} \emph{platoon\_id = 4}
 				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 5}
-			\end{itemize}		
-
+			\end{itemize}	
 			
+			\paragraph{Test 4:}{Test LV\_Accept zu OUT\_PLATOONING\_MSG}
+			\paragraph{Beschreibung:} Test Msg LV Accept zu Out Platooning
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = LV\_Accept}
+
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_PLATOONING\_MSG}
+			\end{itemize}	
+
+			\paragraph{Test 5:}{Test IN\_PLATOONING\_MSG zu IN\_LV\_REJECT}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu LV Reject
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_LV\_REJECT}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			
+			\paragraph{Test 6:}{Test IN\_PLATOONING\_MSG zu IN\_FV\_HEARTBEAT}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu FV Heartbeat
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_FV\_HEARTBEAT}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			
+			\paragraph{Test 7:}{Test OUT\_FV\_HEARTBEAT zu OUT\_PLATOONING\_MSG}
+			\paragraph{Beschreibung:} Test Msg FV Heartbeat zu Platooning
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_FV\_HEARTBEAT}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_PLATOONING\_MSG}
+			\end{itemize}				
+					
+			\paragraph{Test 8:}{Test IN\_PLATOONING\_MSG zu IN\_FV\_LEAVE}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu FV Leave
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_FV\_LEAVE}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			
+						
 		\subsection{Testergebnisse}
 		\label{test_ergebnisse}
 	\section{Nutzerhandbuch} 

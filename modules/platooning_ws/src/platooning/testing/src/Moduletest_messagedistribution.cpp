@@ -172,7 +172,7 @@ void Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_lv_accept() {
 	msg.platoon_id = 4;
 	msg.dst_vehicle = 5;
 
-	inmsg->message_type = LV_ACCEPT;
+        inmsg->message_type = LV_ACCEPT;
 	inmsg->payload = MessageTypes::encode_message(msg);
 
 	pub_map_[topics::IN_PLATOONING_MSG].publish(inmsg);
