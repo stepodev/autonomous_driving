@@ -671,6 +671,34 @@ backend=biber
 			\paragraph{Erwarteter Output:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message kommt nicht an}
+			\end{itemize}
+			
+			\subsubsection{Node UdpServer}
+			\label{node_upd_server}
+			\paragraph{Test:}Stresstest
+				\paragraph{Beschreibung:} 2 threads senden für 10 Sekunden, UPD server sollte alle erhalten
+				\paragraph{Input:}
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Send Counter:} \emph{send\_counter = 0}
+					\item \textbf{Receiver Counter:} \emph{receive\_counter = 0}
+				\end{itemize}
+				\paragraph{Erwarteter Output:}
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Send Counter = Receive Counter:} \emph{send\_counter = receive\_counter}
+				\end{itemize}	
+				
+			\subsubsection{Node RadioInterface}
+			\label{radio_interface}
+			\paragraph{Test 1:}
+			\paragraph{Beschreibung:} 2 threads senden für 10 Sekunden, UPD server sollte alle erhalten
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Send Counter:} \emph{send\_counter = 0}
+				\item \textbf{Receiver Counter:} \emph{receive\_counter = 0}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Send Counter = Receive Counter:} \emph{send\_counter = receive\_counter}
 			\end{itemize}		
 								
 		\subsection{Testergebnisse}
