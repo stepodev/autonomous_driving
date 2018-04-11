@@ -588,7 +588,91 @@ backend=biber
 				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
 			\end{itemize}
 			
-						
+			\paragraph{Test 9:}{Test OUT\_FV\_LEAVE zu OUT\_PLATOONING\_MSG}
+			\paragraph{Beschreibung:} Test Msg In FV Leave zu Platooning
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_FV\_LEAVE}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_PLATOONING\_MSG}
+			\end{itemize}
+
+			\paragraph{Test 10:}{Test IN\_PLATOONING\_MSG zu IN\_FV\_REQUEST}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu FV request
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_FV\_REQUEST}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+
+			\paragraph{Test 11:}{Test OUT\_FV\_REQUEST zu OUT\_PLATOONING\_MSG}
+			\paragraph{Beschreibung:} Test Msg Out FV request zu Out Platooning
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_FV\_REQUEST}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_PLATOONING\_MSG}
+			\end{itemize}	
+			
+			\paragraph{Test 12:}{Test IN\_PLATOONING\_MSG zu INPUT\_REMOTECONTROL}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu Input Remote control request
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = INPUT\_REMOTECONTROL}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}				
+			
+			\paragraph{Test 13:}{Test IN\_PLATOONING\_MSG zu TOGGLE\_REMOTECONTROL}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu  Remote control toggle
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = TOGGLE\_REMOTECONTROL}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			
+			\paragraph{Test 14:}{Test IN\_PLATOONING\_MSG zu TOGGLE\_PLATOONING}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu  platooning toggle
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = TOGGLE\_PLATOONING}
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			
+			\paragraph{Test 15:}{Test IN\_PLATOONING\_MSG zu USERINTERFACE}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu  platooning toggle
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message kommt nicht an}
+			\end{itemize}		
+								
 		\subsection{Testergebnisse}
 		\label{test_ergebnisse}
 	\section{Nutzerhandbuch} 
