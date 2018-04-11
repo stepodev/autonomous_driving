@@ -100,6 +100,13 @@ void Integrationtest_platooning::onInit() {
 ** Testcases
 *****************************************************************************/
 
+/**
+ * Test 1:
+	Ziel: Teste CREATE mit einem Follower.
+	    1. Leader geht in CREATE Zustand
+	    2. Follower1 geht in CREATE Zustand
+	    3. Erwarte, dass beide nun im RUNNING Zustand sind.
+ */
 void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeats_and_broadcast() {
 
 	set_timeout(boost::posix_time::time_duration(boost::posix_time::seconds(20)));
@@ -132,8 +139,8 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeats_and_
 	toggle_msg.vehicle_id = 1;
 	toggle_msg.lvfv = "LV";
 	toggle_msg.enable_platooning = true;
-	toggle_msg.inner_platoon_distance = 1;
-	toggle_msg.platoon_speed = 5;
+	toggle_msg.inner_platoon_distance = 1.0f;
+	toggle_msg.platoon_speed = 5.0f;
 
 	auto v1 = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
 	v1->message_type = REMOTE_PLATOONINGTOGGLE;
@@ -171,17 +178,17 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeats_and_
 
 	if (bclist.empty()) {
 		res.success = false;
-		res.comment += "no broadcast from lv with vehicle id 1 received\n";
+		res.comment += "lv1 no broadcast received\n";
 	}
 
 	if (fv2hb.empty()) {
 		res.success = false;
-		res.comment += "no heartbeat from fv with vehicle id 2 received\n";
+		res.comment += "fv2 no heartbeat received\n";
 	}
 
 	if (fv2hb.empty()) {
 		res.success = false;
-		res.comment += "no heartbeat from fv with vehicle id 3 received\n";
+		res.comment += "fv3 no heartbeat received\n";
 	}
 
 	//cleanup
@@ -191,7 +198,6 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeats_and_
 }
 
 void Integrationtest_platooning::cleanup_test_send_platooningToggle_recv_heartbeats_and_broadcast() {
-
 	//send togglemessages in reverse order
 
 	platooningToggle toggle_msg;
@@ -231,6 +237,16 @@ void Integrationtest_platooning::cleanup_test_send_platooningToggle_recv_heartbe
 	reset();
 }
 
+/**
+	Test 2:
+	Ziel: Teste den Empfang des ersten Platoon-Config Updates.
+	    1. Schritte von Test 1.
+	    2. Leader schickt als erste Platoon Config {PS=1.0, IPD=10.0}.
+	    3. Erwarte dass Follower1 diese Config erhält.
+
+ 	Testet falsches Verhalten. Korrekt wäre diese neue Config zu speichern, aber als FV dürfen die eigenen Userinputwerte
+ 	nicht überschrieben werden.
+ */
 void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data() {
 	set_timeout(boost::posix_time::time_duration(boost::posix_time::seconds(20)));
 	set_current_test("test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data");
@@ -302,24 +318,24 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 	//broadcasts
 	if (bclist.empty()) {
 		res.success = false;
-		res.comment += "no broadcast from lv with vehicle id 1 received\n";
+		res.comment += "lv1 no broadcast received\n";
 	}
 
 	// heartbeats
 	if (fv2hb.empty()) {
 		res.success = false;
-		res.comment += "no heartbeat from fv with vehicle id 2 received\n";
+		res.comment += "fv2 no heartbeat received\n";
 	}
 
 	if (fv3hb.empty()) {
 		res.success = false;
-		res.comment += "no heartbeat from fv with vehicle id 3 received\n";
+		res.comment += "fv3 no heartbeat received\n";
 	}
 
 	//lv ui
 	if (lvui.empty()) {
 		res.success = false;
-		res.comment += "no ui message from lv with vehicle id 1 received\n";
+		res.comment += "lv1 no ui message from received\n";
 	}
 
 	bool running_found = false;
@@ -345,23 +361,23 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 
 	if (!running_found) {
 		res.success = false;
-		res.comment += "lv not RUNNING. lv with vehicle id 1\n";
+		res.comment += "lv1 not RUNNING.\n";
 	}
 
 	if (!member2_found) {
 		res.success = false;
-		res.comment += "lv doesnt have follower 2. lv with vehicle id 1\n";
+		res.comment += "lv1 doesnt have follower 2.\n";
 	}
 
 	if (!member3_found) {
 		res.success = false;
-		res.comment += "lv doesnt have follower 3. lv with vehicle id 1\n";
+		res.comment += "lv1 doesnt have follower 3.\n";
 	}
 
 	//fv 2 ui
 	if (fv2ui.empty()) {
 		res.success = false;
-		res.comment += "no ui message from fv with vehicle id 2 received\n";
+		res.comment += "fv2 no ui message received\n";
 	}
 
 	running_found = false;
@@ -384,6 +400,8 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 			member3_found = true;
 		}
 
+		std::cout << "comp sp " << item.second.platoon_speed <<  " ipd " << item.second.inner_platoon_distance << std::endl;
+
 		if (item.second.platoon_speed == 10.0f) {
 			ipd10_found = true;
 		}
@@ -395,33 +413,33 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 
 	if (!running_found) {
 		res.success = false;
-		res.comment += "fv not RUNNING. fv with vehicle id 2\n";
+		res.comment += "fv2 not RUNNING.\n";
 	}
 
 	if (!member2_found) {
 		res.success = false;
-		res.comment += "fv doesnt have follower 2. fv with vehicle id 2\n";
+		res.comment += "fv2 doesnt have follower 2.\n";
 	}
 
 	if (!member3_found) {
 		res.success = false;
-		res.comment += "fv doesnt have follower 3. fv with vehicle id 2\n";
+		res.comment += "fv2 doesnt have follower 3.\n";
 	}
 
 	if (!ipd10_found) {
 		res.success = false;
-		res.comment += "fv doesnt have correct ipd. fv with vehicle id 2\n";
+		res.comment += "fv2 doesnt have correct ipd.\n";
 	}
 
 	if (!ps1_found) {
 		res.success = false;
-		res.comment += "fv doesnt have correct ps. fv with vehicle id 2\n";
+		res.comment += "fv2 doesnt have correct ps.\n";
 	}
 
 	//fv3 ui
 	if (fv3ui.empty()) {
 		res.success = false;
-		res.comment += "no ui message from fv with vehicle id 2 received\n";
+		res.comment += "fv3 no ui message received\n";
 	}
 
 	running_found = false;
@@ -444,38 +462,38 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 			member3_found = true;
 		}
 
-		if (item.second.platoon_speed == 10.0f) {
+		if (item.second.platoon_speed == 10) {
 			ipd10_found = true;
 		}
 
-		if (item.second.inner_platoon_distance == 1.0f) {
+		if (item.second.inner_platoon_distance == 1) {
 			ps1_found = true;
 		}
 	}
 
 	if (!running_found) {
 		res.success = false;
-		res.comment += "fv not RUNNING. fv with vehicle id 3\n";
+		res.comment += "fv3 not RUNNING.\n";
 	}
 
 	if (!member2_found) {
 		res.success = false;
-		res.comment += "fv doesnt have follower 2. fv with vehicle id 3\n";
+		res.comment += "fv3 doesnt have follower 2.\n";
 	}
 
 	if (!member3_found) {
 		res.success = false;
-		res.comment += "fv doesnt have follower 3. fv with vehicle id 3\n";
+		res.comment += "fv3 doesnt have follower 3.\n";
 	}
 
 	if (!ipd10_found) {
 		res.success = false;
-		res.comment += "fv doesnt have correct ipd. fv with vehicle id 3\n";
+		res.comment += "fv3 doesnt have correct ipd.\n";
 	}
 
 	if (!ps1_found) {
 		res.success = false;
-		res.comment += "fv doesnt have correct ps. fv with vehicle id 3\n";
+		res.comment += "fv3 doesnt have correct ps.\n";
 	}
 
 	//cleanup
@@ -694,10 +712,7 @@ void Integrationtest_platooning::cleanup_test_send_updated_broadcast_receive_use
 }
 
 void Integrationtest_platooning::hndl_lv_broadcast(const lv_broadcast &msg) {
-	std::cout << "fv1bc" << std::endl;
-
 	if (msg.src_vehicle == 1) {
-		std::cout << "fv1bc" << std::endl;
 		std::pair<boost::posix_time::ptime, lv_broadcast> tmp(boost::posix_time::microsec_clock::local_time(), msg);
 		bclist.push_back(tmp);
 	}
@@ -705,16 +720,12 @@ void Integrationtest_platooning::hndl_lv_broadcast(const lv_broadcast &msg) {
 
 void Integrationtest_platooning::hndl_fv_heartbeat(const fv_heartbeat &msg) {
 	if (msg.src_vehicle == 2) {
-		std::cout << "fv2hb" << std::endl;
-
 		auto tmp =
 			std::pair<boost::posix_time::ptime, fv_heartbeat>(boost::posix_time::microsec_clock::local_time(), msg);
 		fv2hb.push_back(tmp);
 	}
 
 	if (msg.src_vehicle == 3) {
-		std::cout << "fv3hb" << std::endl;
-
 		auto tmp =
 			std::pair<boost::posix_time::ptime, fv_heartbeat>(boost::posix_time::microsec_clock::local_time(), msg);
 		fv3hb.push_back(tmp);
