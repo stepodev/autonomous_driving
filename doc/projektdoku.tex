@@ -373,33 +373,33 @@ backend=biber
 				\paragraph{Aufgabe} blablabla.
 				\paragraph{Input} bla
 				\begin{itemize}
-					\item \textbf{A-Wert:} \emph{vehicle_id = 1}
-					\item \textbf{B-Wert:} \emph{remote_speed = 2}
-					\item \textbf{C-Wert:} \emph{remote_angle = 3}
-					\item \textbf{D-Wert:} \emph{emergency_stop = false}
+					\item \textbf{A-Wert:} \emph{vehicle\_id = 1}
+					\item \textbf{B-Wert:} \emph{remote\_speed = 2}
+					\item \textbf{C-Wert:} \emph{remote\_angle = 3}
+					\item \textbf{D-Wert:} \emph{emergency\_stop = false}
 				\end{itemize}
 				\paragraph{Erwarteter Output} bla
 				\begin{itemize}
-					\item \textbf{A-Wert:} \emph{vehicle_id = 1}
-					\item \textbf{B-Wert:} \emph{remote_speed = 2}
-					\item \textbf{C-Wert:} \emph{remote_angle = 3}
-					\item \textbf{D-Wert:} \emph{emergency_stop = false}
+					\item \textbf{A-Wert:} \emph{vehicle\_id = 1}
+					\item \textbf{B-Wert:} \emph{remote\_speed = 2}
+					\item \textbf{C-Wert:} \emph{remote\_angle = 3}
+					\item \textbf{D-Wert:} \emph{emergency\_stop = false}
 				\end{itemize} 				
 				\subsubsection{Test B}
 				\paragraph{Aufgabe} blablabla.
 				\paragraph{Input} bla
 				\begin{itemize}
-					\item \textbf{A-Wert:} \emph{vehicle_id = 1}
-					\item \textbf{B-Wert:} \emph{remote_speed = 2}
-					\item \textbf{C-Wert:} \emph{remote_angle = 3}
-					\item \textbf{D-Wert:} \emph{emergency_stop = false}
+					\item \textbf{A-Wert:} \emph{vehicle\_id = 1}
+					\item \textbf{B-Wert:} \emph{remote\_speed = 2}
+					\item \textbf{C-Wert:} \emph{remote\_angle = 3}
+					\item \textbf{D-Wert:} \emph{emergency\_stop = false}
 				\end{itemize}
 				\paragraph{Erwarteter Output} bla
 				\begin{itemize}
-					\item \textbf{A-Wert:} \emph{vehicle_id = 1}
-					\item \textbf{B-Wert:} \emph{remote_speed = 2}
-					\item \textbf{C-Wert:} \emph{remote_angle = 3}
-					\item \textbf{D-Wert:} \emph{emergency_stop = false}
+					\item \textbf{A-Wert:} \emph{vehicle\_id = 1}
+					\item \textbf{B-Wert:} \emph{remote\_speed = 2}
+					\item \textbf{C-Wert:} \emph{remote\_angle = 3}
+					\item \textbf{D-Wert:} \emph{emergency\_stop = false}
 				\end{itemize}
 				
 			\subsection{Node Prioritization}
@@ -408,54 +408,54 @@ backend=biber
 				\paragraph{Aufgabe} Getestet wird, ob Prioritization Node auf Geschwindigkeitskontrolle durch Remote Control reagiert. Weiterhin wird überprüft, ob das Abschalten der Remote Control funktioniert.
 				\paragraph{Input} Testen der Geschwindigkeitskontrolle
 				\begin{itemize}
-					\item \textbf{Vehicle ID:} \emph{vehicle_id = 1}
-					\item \textbf{Vorgegebene Geschwindigkeit:} \emph{remote_speed = 2}
-					\item \textbf{Vorgegebener Steuerungswinkel:} \emph{remote_angle = 3}
+					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
+					\item \textbf{Vorgegebene Geschwindigkeit:} \emph{remote\_speed = 2}
+					\item \textbf{Vorgegebener Steuerungswinkel:} \emph{remote\_angle = 3}
 				\end{itemize}
 				\paragraph{Erwarteter Output} Werte werden übernommen
 				\begin{itemize}
 					\item \textbf{Geschwindigkeit:} \emph{velocity = 2}
-					\item \textbf{Steuerungswinkel:} \emph{steering_angle = 3}
+					\item \textbf{Steuerungswinkel:} \emph{steering\_angle = 3}
 				\end{itemize}
 				\paragraph{Input} Testen des Abschaltens der Remote Control
 				\begin{itemize}
-					\item \textbf{Remote Control:} \emph{enable_remotecontrol = false}
-					\item \textbf{Vehicle ID:} \emph{vehicle_id = 1}
-					\item \textbf{Vorgegebene Geschwindigkeit:} \emph{remote_speed = 2}
-					\item \textbf{Vorgegebener Steuerungswinkel:} \emph{remote_angle = 3}
+					\item \textbf{Remote Control:} \emph{enable\_remotecontrol = false}
+					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
+					\item \textbf{Vorgegebene Geschwindigkeit:} \emph{remote\_speed = 2}
+					\item \textbf{Vorgegebener Steuerungswinkel:} \emph{remote\_angle = 3}
 				\end{itemize}
 				\paragraph{Erwarteter Output} Änderungen sollen nicht übernommen werden
 				\begin{itemize}
-					\item \textbf{Empfang von Daten:} \emph{vehiclecontrol_received = false}
+					\item \textbf{Empfang von Daten:} \emph{vehiclecontrol\_received = false}
 				\end{itemize} 			
 							
 				\subsubsection{Test Platooning Toggle und Geschwindigkeitskontrolle}
 				\paragraph{Aufgabe} Getestet wird, ob Prioritization Node auf Geschwindigkeitskontrolle durch Platooning Node reagiert. Weiterhin wird überprüft, ob das Abschalten der Kontrolle durch die Platooning Node funktioniert.
 				\paragraph{Input} Testen der Geschwindigkeitskontrolle
 				\begin{itemize}
-					\item \textbf{Vehicle ID:} \emph{vehicle_id = 1}
-					\item \textbf{Leader Vehicle:} \emph{i_am_LV = false}
-					\item \textbf{Follower Vehicle:} \emph{i_am_FV = true}
+					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
+					\item \textbf{Leader Vehicle:} \emph{i\_am\_LV = false}
+					\item \textbf{Follower Vehicle:} \emph{i\_am\_FV = true}
 					\item \textbf{Inner Platoon Distance:} \emph{ipd = 1}
 					\item \textbf{Platoon Speed:} \emph{ps = 1}
-					\item \textbf{Platoon ID:} \emph{platoon_id = 1}
-					\item \textbf{Platooning State:} \emph{platooning_state = RUNNING}
-					\item \textbf{Platoon Members:} \emph{platoon_members = \{ 1, 2 \}}			
+					\item \textbf{Platoon ID:} \emph{platoon\_id = 1}
+					\item \textbf{Platooning State:} \emph{platooning\_state = RUNNING}
+					\item \textbf{Platoon Members:} \emph{platoon\_members = \{ 1, 2 \}}			
 				\end{itemize}
 				\paragraph{Erwarteter Output} Änderungen werden übernommen
 				\begin{itemize}
 					\item \textbf{Geschwindigkeit:} \emph{velocity = 3.0f} %warum???
-					\item \textbf{Steuerungswinkel:} \emph{steering_angle = 0.0f} %warum???
+					\item \textbf{Steuerungswinkel:} \emph{steering\_angle = 0.0f} %warum???
 				\end{itemize} 				
 
 				\paragraph{Input} Testen des Abschaltens der Remote Control
 				\begin{itemize}
-					\item \textbf{Platooning:} \emph{enable_platooning = false}
-					\item \textbf{Vehicle ID:} \emph{vehicle_id = 1}	
+					\item \textbf{Platooning:} \emph{enable\_platooning = false}
+					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}	
 				\end{itemize}
 				\paragraph{Erwarteter Output}  Änderungen sollen nicht übernommen werden
 				\begin{itemize}
-					\item \textbf{Empfang von Daten:} \emph{vehiclecontrol_received = false}
+					\item \textbf{Empfang von Daten:} \emph{vehiclecontrol\_received = false}
 				\end{itemize} 
 			
 		\subsection{Testergebnisse}
