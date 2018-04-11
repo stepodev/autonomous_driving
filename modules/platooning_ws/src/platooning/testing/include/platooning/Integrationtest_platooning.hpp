@@ -27,6 +27,7 @@
 #include "platooning/Topics.hpp"
 #include "platooning/MessageTypes.hpp"
 #include "platooning/UdpServer.hpp"
+#include "platooning/Platooning.hpp"
 
 const boost::posix_time::time_duration HEARTBEAT_FREQ(boost::posix_time::milliseconds(200));
 const boost::posix_time::time_duration HEARTBEAT_TIMEOUT(boost::posix_time::milliseconds(1000));
@@ -55,12 +56,21 @@ class Integrationtest_platooning : public Integrationtest {
 	 * @brief sends platooningToggle via udp to start as LV, adds a FV, expects lv_broadcast with correct vehicle_id
 	 */
 	void test_send_platooningToggle_recv_heartbeats_and_broadcast();
+	void cleanup_test_send_platooningToggle_recv_heartbeats_and_broadcast()
 
 	/**
 	 * @brief starts platooning for all members and expects platooning data to be in lv_broadcast
 	 */
-
 	void test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data();
+	void cleanup_test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data()
+
+
+	/**
+	 * @brief starts local LV, toggles FVs, sends broadcast updates, expects ui to have these updates
+	 */
+
+	void test_send_updated_broadcast_receive_userinterface();
+	void cleanup_test_send_updated_broadcast_receive_userinterface();
 
 	std::list<std::pair<boost::posix_time::ptime, platooning::lv_broadcast>> bclist;
 	std::list<std::pair<boost::posix_time::ptime,platooning::fv_heartbeat>> fv2hb;
