@@ -372,34 +372,34 @@ backend=biber
 				\paragraph{Test 1:}{Test Geschwindigkeitskontrolle durch Remote Control}
 				\paragraph{Beschreibung:} Getestet wird, ob Prioritization Node auf Geschwindigkeitskontrolle durch Remote Control reagiert.
 				\paragraph{Input:}
-				\begin{itemize} \itemsep0em
+				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
 					\item \textbf{Vorgegebene Geschwindigkeit:} \emph{remote\_speed = 2}
 					\item \textbf{Vorgegebener Steuerungswinkel:} \emph{remote\_angle = 3}
 				\end{itemize}
 				\paragraph{Erwarteter Output:}
-				\begin{itemize} \itemsep0em
+				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Geschwindigkeit:} \emph{velocity = 2}
 					\item \textbf{Steuerungswinkel:} \emph{steering\_angle = 3}
 				\end{itemize}
 				\paragraph{Test 2:}{Test Remote Control Toggle}
 				\paragraph{Beschreibung:} Es wird überprüft, ob das Abschalten der Remote Control funktioniert.
-				\paragraph{Input}
-				\begin{itemize} \itemsep0em
+				\paragraph{Input:}
+				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Remote Control:} \emph{enable\_remotecontrol = false}
 					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
 					\item \textbf{Vorgegebene Geschwindigkeit:} \emph{remote\_speed = 2}
 					\item \textbf{Vorgegebener Steuerungswinkel:} \emph{remote\_angle = 3}
 				\end{itemize}
 				\paragraph{Erwarteter Output:}
-				\begin{itemize} \itemsep0em
+				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Empfang von Daten:} \emph{vehiclecontrol\_received = false}
 				\end{itemize} 			
 							
-				\paragraph{Test 3:} {Test Geschwindigkeitskontrolle durch Platooning Node}
-				\paragraph{Beschreibung:} Getestet wird, ob Prioritization Node auf Geschwindigkeitskontrolle durch Platooning Node reagiert. 
+				\paragraph{Test 3:} {Test Geschwindigkeitskontrolle durch Platooning}
+				\paragraph{Beschreibung:} Getestet wird, ob Prioritization Node auf Geschwindigkeitsvorgabe von Platooning reagiert. 
 				\paragraph{Input:}
-				\begin{itemize} \itemsep0em
+				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
 					\item \textbf{Leader Vehicle:} \emph{i\_am\_LV = false}
 					\item \textbf{Follower Vehicle:} \emph{i\_am\_FV = true}
@@ -410,22 +410,25 @@ backend=biber
 					\item \textbf{Platoon Members:} \emph{platoon\_members = \{ 1, 2 \}}			
 				\end{itemize}
 				\paragraph{Erwarteter Output:}
-				\begin{itemize} \itemsep0em
-					\item \textbf{Geschwindigkeit:} \emph{velocity = 3.0f} %warum???
-					\item \textbf{Steuerungswinkel:} \emph{steering\_angle = 0.0f} %warum???
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Geschwindigkeit:} \emph{velocity = 1.0f}
+					\item \textbf{Steuerungswinkel:} \emph{steering\_angle = 0.0f}
 				\end{itemize} 				
 
-				\paragraph{Test 4:} {Test Geschwindigkeitskontrolle durch Platooning Node}
+				\paragraph{Test 4:} {Test Platooning Toggle}
 				\paragraph{Beschreibung:} Es wird überprüft, ob das Abschalten der Kontrolle durch die Platooning Node funktioniert.
 				\paragraph{Input:}
-				\begin{itemize} \itemsep0em
+				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Platooning:} \emph{enable\_platooning = false}
 					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}	
 				\end{itemize}
 				\paragraph{Erwarteter Output:}  
-				\begin{itemize} \itemsep0em
+				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Empfang von Daten:} \emph{vehiclecontrol\_received = false}
-				\end{itemize} 
+				\end{itemize}
+				
+				
+
 			
 		\subsection{Testergebnisse}
 		\label{test_ergebnisse}
