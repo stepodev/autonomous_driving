@@ -427,8 +427,64 @@ backend=biber
 					\item \textbf{Empfang von Daten:} \emph{vehiclecontrol\_received = false}
 				\end{itemize}
 				
-				
+			\subsubsection{Node Longitudinal Processing}
+			\label{node_longitudinal_processing}
+			\paragraph{Test 1:}{Test Geschwindigkeitsupdate}
+			\paragraph{Beschreibung:} Getestet wird, ob Geschwindigkeitsanpassung durch Longitudinal Processing Node funktioniert.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Ziel Geschwindigkeit:} \emph{target\_speed = 3}
+				\item \textbf{Ziel Distanz:} \emph{distance = 3}
+				\item \textbf{Aktuelle Geschwindigkeit:} \emph{current\_speed = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Geschwindigkeit:} \emph{speed = 3}
+			\end{itemize}
+			\paragraph{Test 2:}{Test Geschwindigkeitsanpassung zu LV}
+			\paragraph{Beschreibung:} Es wird überprüft, ob FV auf beschleunigendes LV reagiert.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Ziel Geschwindigkeit:} \emph{target\_speed = 8}
+				\item \textbf{Ziel Distanz:} \emph{distance = 1}
+				\item \textbf{Aktuelle Geschwindigkeit:} \emph{current\_speed = 2}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Distanz:} \emph{(lv\_pos - fv\_pos \textgreater 0) \&\& (lv\_pos - fv\_pos \textless 1)}
+			\end{itemize} 			
+			
+			\subsubsection{Node Platooning}
+			\label{node_platooning}
+			\paragraph{Test 1:}{Test Platoon Erstellung}
+			\paragraph{Beschreibung:} Es wird überprüft, ob die Platoon-Einstellungen übernommen werden
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Platooning Toogle:} \emph{enable\_platooning = true}
+				\item \textbf{Platoon Geschwindigkeit:} \emph{platoon\_speed = 3}
+				\item \textbf{Innerer Platoon Abstand:} \emph{inner\_platoon\_distance = 4}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Platoon Mitglieder:} \emph{platoon\_members.empty() = false}
+				\item \textbf{Innerer Platoon Abstand:} \emph{inner\_platoon\_distance = 4}
+				\item \textbf{Platoon Geschwindigkeit:} \emph{platoon\_speed = 3}
+				\item \textbf{Platoon Zustand:} \emph{platooning\_state = CREATING}
+			\end{itemize}
+			
+			\paragraph{Test 2:}{Test FV Anfrage an LV}
+			\paragraph{Beschreibung:} Es wird überprüft, ob FV Request gelingt.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle, das Request sendet:} \emph{src\_vehicle = 5}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle, von dem Request kommt:} \emph{dst\_vehicle = 5}
+			\end{itemize} 			
 
+
+				
 			
 		\subsection{Testergebnisse}
 		\label{test_ergebnisse}
