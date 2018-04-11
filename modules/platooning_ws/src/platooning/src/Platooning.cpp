@@ -267,9 +267,33 @@ void Platooning::hndl_msg_lv_broadcast(const platooning::lv_broadcast &msg) {
 		return;
 	}
 
-	if (get_role() == PlatoonRoleEnum::FV) {
+	bool i_am_in_platoon = std::find(msg.followers.begin(), msg.followers.end(), get_vehicle_id()) != msg.followers.end();
+
+	if (get_role() == PlatoonRoleEnum::FV && i_am_in_platoon) {
 		update_state(msg);
 		lv_broadcast_timeout_tracker_.second = boost::posix_time::microsec_clock::local_time();
+	}
+
+	//not in lv_broadcast as FV, so we try to rejoin
+	if( get_role() == PlatoonRoleEnum::FV && !i_am_in_platoon) {
+		NODELET_ERROR( "[%s] platoon members do not contain this vehicle_id.", name_.c_str());
+		set_mode(PlatooningModeEnum::CREATING);
+		thread_pool_.create_thread([this] {
+			auto msg_to_send = boost::shared_ptr<fv_request>(new fv_request());
+			msg_to_send->src_vehicle = get_vehicle_id();
+			while (this->get_mode() == PlatooningModeEnum::CREATING) {
+
+				NODELET_INFO("[%s] %s in %s mode. Sending FV_REQUEST",
+				             name_.c_str(),
+				             to_string(get_role()).c_str(),
+				             to_string(get_mode()).c_str());
+
+				boost::lock_guard<boost::shared_mutex> l(pub_mtx_);
+				pub_fv_request_.publish(msg_to_send);
+				pub_mtx_.unlock();
+				boost::this_thread::sleep_for(boost::chrono::seconds(2));
+			}
+		});
 	}
 }
 
@@ -360,42 +384,41 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 	if (msg.enable_platooning) {
 
 		//change platoon role
-		if (msg.lvfv == "FV") {
+		if (msg.lvfv == "FV" && get_role() != PlatoonRoleEnum::FV) {
 			set_role(PlatoonRoleEnum::FV);
 
 			NODELET_INFO(std::string("[%s] changing platooning role to %s").c_str(),
 			             name_.c_str(),
 			             to_string(get_role()).c_str());
-		} else if (msg.lvfv == "LV") {
+		} else if (msg.lvfv == "LV" && get_role()!= PlatoonRoleEnum::LV ) {
 			set_role(PlatoonRoleEnum::LV);
 			set_platoon_id(get_vehicle_id());
 			NODELET_INFO(std::string("[%s] changing platooning role to %s").c_str(),
 			             name_.c_str(),
 			             to_string(get_role()).c_str());
-		} else {
-			NODELET_ERROR("[%s] attempt to change platooning role to unknown role %s ",
-			              name_.c_str(),
-			              msg.lvfv.c_str());
-			return;
 		}
 
 		//received platooning enable, start in creating.
-		//if other state than IDLE, error
 		if (get_mode() == PlatooningModeEnum::IDLE) {
+
 			set_mode(PlatooningModeEnum::CREATING);
 			set_platoon_distance(msg.inner_platoon_distance);
 			set_platoon_speed(msg.platoon_speed);
 			NODELET_INFO(std::string("[%s] going into platooning mode %s").c_str(), name_.c_str(),
 			             to_string(get_mode()).c_str());
 
-		} else if (msg.enable_platooning && get_mode() != PlatooningModeEnum::IDLE) {
-			NODELET_ERROR("[%s] received platooning start while mode was %s", name_.c_str(),
-			              to_string(get_mode()).c_str());
-			return;
 		}
 
-		//if we are fv, start sending fv_requests until we are accepted
-		if (get_role() == PlatoonRoleEnum::FV) {
+		//we are already in RUNNING as LV, just update ps and ipd
+		if (get_role() == PlatoonRoleEnum::LV && msg.lvfv == "LV" &&
+			get_mode() != PlatooningModeEnum::IDLE) {
+
+			set_platoon_distance(msg.inner_platoon_distance);
+			set_platoon_speed(msg.platoon_speed);
+		}
+
+		//if we are fv and are starting platooning, start sending fv_requests until we are accepted
+		if (get_role() == PlatoonRoleEnum::FV && get_mode() == PlatooningModeEnum::IDLE) {
 
 			NODELET_INFO("[%s] %s in %s mode. Sending FV_REQUEST", name_.c_str(), to_string(get_role()).c_str(),
 			             to_string(get_mode()).c_str());
@@ -417,6 +440,8 @@ void Platooning::hndl_msg_platooning_toggle(const platooning::platooningToggle &
 				}
 			});
 		}
+
+
 	} // end msg.enable == true
 
 }

@@ -56,13 +56,13 @@ class Integrationtest_platooning : public Integrationtest {
 	 * @brief sends platooningToggle via udp to start as LV, adds a FV, expects lv_broadcast with correct vehicle_id
 	 */
 	void test_send_platooningToggle_recv_heartbeats_and_broadcast();
-	void cleanup_test_send_platooningToggle_recv_heartbeats_and_broadcast()
+	void cleanup_test_send_platooningToggle_recv_heartbeats_and_broadcast();
 
 	/**
 	 * @brief starts platooning for all members and expects platooning data to be in lv_broadcast
 	 */
 	void test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data();
-	void cleanup_test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data()
+	void cleanup_test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data();
 
 
 	/**

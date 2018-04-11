@@ -235,6 +235,10 @@ void ControllerUi::receive_message( boost::shared_ptr<std::pair<std::string, uin
                 } else {
                     set_platooningbutton_v1(true);
                 }
+
+                std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
+                std::time_t t = std::chrono::system_clock::to_time_t(p);
+                try { ui->info_timestamp_v1->setText( std::ctime(&t) );} catch( std::exception &ex ) { std::cerr << "error info_timestamp_v1" << std::endl;}
             }
 
             if( msg.src_vehicle == 2 ) {
@@ -258,6 +262,10 @@ void ControllerUi::receive_message( boost::shared_ptr<std::pair<std::string, uin
                 } else {
                     set_platooningbutton_v2(true);
                 }
+
+                std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
+                std::time_t t = std::chrono::system_clock::to_time_t(p);
+                try { ui->info_timestamp_v2->setText( std::ctime(&t) );} catch( std::exception &ex ) { std::cerr << "error info_timestamp_v2" << std::endl;}
             }
             break;
         default:

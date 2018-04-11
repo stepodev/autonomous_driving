@@ -67,7 +67,6 @@ class Moduletest : public nodelet::Nodelet {
 
 	/**< timeout callback if any */
 	boost::function<void()> timeout_callback_;
-	bool expects_timeout_;
 
 	/**
 	 * @brief sets the logging filepath

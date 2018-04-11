@@ -11,7 +11,7 @@ Moduletest::Moduletest() :
 	testcase_timer_(io_) {
 
 	timeout_ = boost::posix_time::seconds(3);
-	timeout_callback_ = boost::function<void()>();
+	timeout_callback_.clear();
 
 	work_ = boost::shared_ptr<boost::asio::io_service::work>( new boost::asio::io_service::work(io_));
 
@@ -33,8 +33,6 @@ Moduletest::~Moduletest() {
 	} catch (std::exception &ex) {
 		NODELET_FATAL("[%s] threw %s", name_.c_str(), ex.what());
 	}
-
-	expects_timeout_ = false;
 }
 
 void Moduletest::register_testcases(boost::function<void()> test_case_fun) {
@@ -43,7 +41,6 @@ void Moduletest::register_testcases(boost::function<void()> test_case_fun) {
 
 void Moduletest::register_timeout_callback(boost::function<void()> cb) {
 	timeout_callback_ = std::move(cb);
-	expects_timeout_ = true;
 }
 
 /**
@@ -76,8 +73,6 @@ void Moduletest::finalize_test(TestResult result) {
 			of << "[" << t << "]" << ss.str();
 
 			of.close();
-
-			expects_timeout_ = false;
 
 			pub_map_.clear();
 			sub_map_.clear();
@@ -117,10 +112,10 @@ void Moduletest::hndl_testcase_timeout(const boost::system::error_code &ec) {
 			timeout_callback_();
 
 			TestResult res;
-			res.success = true;
-			res.comment = "expected testcase timeout";
+			res.success = false;
+			res.comment = "timeout callback didnt finalize the test";
 
-			timeout_callback_ = boost::function<void()>();
+			timeout_callback_.clear();
 			finalize_test(res);
 			return;
 		}
