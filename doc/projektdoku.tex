@@ -483,8 +483,45 @@ backend=biber
 				\item \textbf{Vehicle, von dem Request kommt:} \emph{dst\_vehicle = 5}
 			\end{itemize} 			
 
+			\subsubsection{Node MessageDistribution}
+			\label{node_message_distribution}
+			\paragraph{Test 1:}{Test LV Broadcast 1
+			\paragraph{Beschreibung:} Test LV Broadcast von IN\_PLATOONING\_MSG zu IN\_LV\_BROADCAST
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{ID LV:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle, von dem LV Broadcast kommt:} \emph{src\_vehicle = 3}
+			\end{itemize}
 
-				
+			\paragraph{Test 2:}{Test LV Broadcast 2}
+			\paragraph{Beschreibung:} Test LV Broadcast von OUT\_LV\_BROADCAST zu OUT\_PLATOONING\_MSG
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Broadcast msg auf OUT\_LV\_BROADCAST}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = LV\_BROADCAST}
+			\end{itemize}				
+
+			\paragraph{Test 3:}{Test LV Accept Msg}
+			\paragraph{Beschreibung:} Test ob LV Accept Msg funktioniert
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID:} \emph{platoon\_id = 4}
+				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 5}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID:} \emph{platoon\_id = 4}
+				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 5}
+			\end{itemize}		
+
 			
 		\subsection{Testergebnisse}
 		\label{test_ergebnisse}
