@@ -675,7 +675,7 @@ backend=biber
 			
 			\subsubsection{Node UdpServer}
 			\label{node_upd_server}
-			\paragraph{Test:}Stresstest
+			\paragraph{Test:}{Stresstest}
 				\paragraph{Beschreibung:} 2 threads senden für 10 Sekunden, UPD server sollte alle erhalten
 				\paragraph{Input:}
 				\begin{itemize} \itemsep-0.5em
@@ -688,19 +688,44 @@ backend=biber
 				\end{itemize}	
 				
 			\subsubsection{Node RadioInterface}
-			\label{radio_interface}
-			\paragraph{Test 1:}
-			\paragraph{Beschreibung:} 2 threads senden für 10 Sekunden, UPD server sollte alle erhalten
+			\label{node_radio_interface}
+			\paragraph{Test 1:} {Msg UPD server an IN\_PLATOONING\_MSG}
+			\paragraph{Beschreibung:} Überprüft, ob Nachricht von UDP Server an IN\_PLATOONING\_MSG gesendet werden kann
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{Send Counter:} \emph{send\_counter = 0}
-				\item \textbf{Receiver Counter:} \emph{receive\_counter = 0}
+				\item \textbf{Message type:} \emph{message\_type = FV\_REQUEST}
+				\item \textbf{Payload:} \emph{payload = get\_current\_test()}
 			\end{itemize}
 			\paragraph{Erwarteter Output:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{Send Counter = Receive Counter:} \emph{send\_counter = receive\_counter}
-			\end{itemize}		
-								
+				\item \textbf{Message type:} \emph{message\_type = FV\_REQUEST}
+				\item \textbf{Payload:} \emph{payload = get\_current\_test()}
+			\end{itemize}
+			
+			\paragraph{Test 2:}{Msg von OUT\_PLATOONING\_MSG an UDP server}
+			\paragraph{Beschreibung:} Überprüft, ob Nachricht von OUT\_PLATOONING\_MSG an UDP Server gesendet werden kann
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message type:} \emph{message\_type = FV\_LEAVE}
+				\item \textbf{Payload:} \emph{payload = get\_current\_test()}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message type:} \emph{message\_type = FV\_LEAVE}
+				\item \textbf{Payload:} \emph{payload = get\_current\_test()}
+			\end{itemize}						
+			
+		\paragraph{Test 3:}{Stresstest}
+		\paragraph{Beschreibung:} Es werden 100 Nachrichten von IN\_PLATOON\_MSG geschickt und überprüft, ob alle beim UDP Server ankommen.
+		\paragraph{Input:}
+		\begin{itemize} \itemsep-0.5em
+			\item \textbf{Send Counter:} \emph{send\_counter = 0}
+			\item \textbf{Receiver Counter:} \emph{recv\_counter = 0}
+		\end{itemize}
+		\paragraph{Erwarteter Output:}
+		\begin{itemize} \itemsep-0.5em
+			\item \textbf{Send Counter = Receive Counter:} \emph{send\_counter = recv\_counter = 100}
+		\end{itemize}								
 		\subsection{Testergebnisse}
 		\label{test_ergebnisse}
 	\section{Nutzerhandbuch} 
