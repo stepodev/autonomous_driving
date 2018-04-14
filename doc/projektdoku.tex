@@ -88,6 +88,26 @@ backend=biber
 \part{Produktdokumentation}
 	\section{Systemvoraussetzungen} 
 	\label{systemvoraussetzungen}
+	\subsection{Entwicklungsumgebung}
+	Das Projekt wurde mit Hilfe von ROS in C++11 entwickelt. Der Großteil des ROS ecosystems arbeitet momentan mit Ubuntu 16.04 LTS. Demnach sind für die Entwicklung notwending:
+	\begin{itemize}
+		\item Ubuntu 16.04 LTS
+		\item ROS Lunar
+		\begin{itemize}
+			\item referenz: http://wiki.ros.org/lunar/Installation/Ubuntu
+			\item[] \begin{lstlisting}
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+sudo apt-get update
+sudo apt-get install ros-lunar-ros-base
+sudo rosdep init
+rosdep update
+echo "source /opt/ros/lunar/setup.bash" >> ~/.bashrc
+		\end{lstlisting}
+		\end{itemize}
+		\item C++11 toolchain / IDE
+		\item ein PC der dies unterstützt
+	\end{itemize}
 	% ubuntu, SW von assystems, ros. im prinzip beschreibung unserer vm + welche Schritte wurden unternommen ums zum laufen zu bringen und kurze erläuterung dass sw von assystems aufs board geschmissen wurde. und catkin zeugs
 	\section{Fahrzeug-Architektur}
 	\label{hw_architektur}
