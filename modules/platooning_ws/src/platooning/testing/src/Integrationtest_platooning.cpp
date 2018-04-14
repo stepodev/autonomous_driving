@@ -49,7 +49,7 @@ void Integrationtest_platooning::onInit() {
 	int testcaseid;
 	nh_.getParam("testcase", testcaseid);
 
-	if( !nh_.hasParam("testcase")){
+	if (!nh_.hasParam("testcase")) {
 		NODELET_FATAL("[%s] testcase param missing", name_.c_str());
 		exit(-1);
 	}
@@ -71,6 +71,16 @@ void Integrationtest_platooning::onInit() {
 		                               this));
 	}
 
+	if (testcaseid == 4) {
+		register_testcases(boost::bind(&Integrationtest_platooning::test_start_and_stop_broadcasts_expect_fv_in_idle,
+		                               this));
+	}
+
+	if (testcaseid == 5) {
+		register_testcases(boost::bind(&Integrationtest_platooning::test_start_and_stop_heartbeat_expect_lv_in_creating,
+		                               this));
+	}
+
 	if (testcaseid <= 0) {
 		NODELET_INFO("[%s] no testcase selected. running all", name_.c_str());
 
@@ -79,6 +89,10 @@ void Integrationtest_platooning::onInit() {
 		register_testcases(boost::bind(&Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data,
 		                               this));
 		register_testcases(boost::bind(&Integrationtest_platooning::test_send_updated_broadcast_receive_userinterface,
+		                               this));
+		register_testcases(boost::bind(&Integrationtest_platooning::test_start_and_stop_broadcasts_expect_fv_in_idle,
+		                               this));
+		register_testcases(boost::bind(&Integrationtest_platooning::test_start_and_stop_heartbeat_expect_lv_in_creating,
 		                               this));
 	}
 
@@ -148,8 +162,6 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeats_and_
 
 	pub_map_[topics::OUT_PLATOONING_MSG].publish(v1);
 
-	boost::this_thread::sleep_for(boost::chrono::seconds(1));
-
 	//VEHICLE 2
 	toggle_msg.vehicle_id = 2;
 	toggle_msg.lvfv = "FV";
@@ -160,9 +172,8 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeats_and_
 
 	pub_map_[topics::OUT_PLATOONING_MSG].publish(v2);
 
-	boost::this_thread::sleep_for(boost::chrono::seconds(1));
-
 	//VEHICLE 3
+	toggle_msg.vehicle_id = 3;
 	auto v3 = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
 	v3->message_type = REMOTE_PLATOONINGTOGGLE;
 	v3->payload = MessageTypes::encode_message(toggle_msg);
@@ -287,8 +298,6 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 
 	pub_map_[topics::OUT_PLATOONING_MSG].publish(v1);
 
-	boost::this_thread::sleep_for(boost::chrono::seconds(1));
-
 	//VEHICLE 2
 	toggle_msg.vehicle_id = 2;
 	toggle_msg.lvfv = "FV";
@@ -299,9 +308,8 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 
 	pub_map_[topics::OUT_PLATOONING_MSG].publish(v2);
 
-	boost::this_thread::sleep_for(boost::chrono::seconds(1));
-
 	//VEHICLE 3
+	toggle_msg.vehicle_id = 3;
 	auto v3 = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
 	v3->message_type = REMOTE_PLATOONINGTOGGLE;
 	v3->payload = MessageTypes::encode_message(toggle_msg);
@@ -400,13 +408,14 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 			member3_found = true;
 		}
 
-		std::cout << "comp sp " << item.second.platoon_speed <<  " ipd " << item.second.inner_platoon_distance << std::endl;
+		std::cout << "comp sp " << item.second.platoon_speed << " ipd " << item.second.inner_platoon_distance
+		          << std::endl;
 
-		if (item.second.platoon_speed == 10.0f) {
+		if (item.second.platoon_speed == 10) {
 			ipd10_found = true;
 		}
 
-		if (item.second.inner_platoon_distance == 1.0f) {
+		if (item.second.inner_platoon_distance == 1) {
 			ps1_found = true;
 		}
 	}
@@ -580,8 +589,6 @@ void Integrationtest_platooning::test_send_updated_broadcast_receive_userinterfa
 	auto v1 = boost::make_shared<platooningToggle>(toggle_msg);
 	pub_map_[topics::TOGGLE_PLATOONING].publish(v1);
 
-	boost::this_thread::sleep_for(boost::chrono::seconds(1));
-
 	//VEHICLE 2
 	toggle_msg.vehicle_id = 2;
 	toggle_msg.lvfv = "FV";
@@ -592,9 +599,8 @@ void Integrationtest_platooning::test_send_updated_broadcast_receive_userinterfa
 
 	pub_map_[topics::OUT_PLATOONING_MSG].publish(v2);
 
-	boost::this_thread::sleep_for(boost::chrono::seconds(1));
-
 	//VEHICLE 3
+	toggle_msg.vehicle_id = 3;
 	auto v3 = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
 	v3->message_type = REMOTE_PLATOONINGTOGGLE;
 	v3->payload = MessageTypes::encode_message(toggle_msg);
@@ -704,6 +710,209 @@ void Integrationtest_platooning::cleanup_test_send_updated_broadcast_receive_use
 	v3->message_type = REMOTE_PLATOONINGTOGGLE;
 	v3->payload = MessageTypes::encode_message(toggle_msg);
 	pub_map_[topics::OUT_PLATOONING_MSG].publish(v3);
+
+	boost::this_thread::sleep_for(boost::chrono::seconds(2));
+
+	nh_.setParam("/vehicle_id", 0);
+	reset();
+}
+
+void Integrationtest_platooning::test_start_and_stop_broadcasts_expect_fv_in_idle() {
+	set_timeout(boost::posix_time::time_duration(boost::posix_time::seconds(20)));
+	set_current_test("test_start_and_stop_broadcasts_expect_fv_in_idle");
+
+	boost::function<void()> cbfun(boost::bind(boost::mem_fn(
+		&Integrationtest_platooning::cleanup_test_start_and_stop_broadcasts_expect_fv_in_idle), this));
+
+	register_timeout_callback(cbfun);
+
+	//mockup publishers
+	pub_map_.emplace(topics::OUT_PLATOONING_MSG, nh_.advertise<platoonProtocol>(topics::OUT_PLATOONING_MSG, 1));
+	pub_map_.emplace(topics::TOGGLE_PLATOONING, nh_.advertise<platooningToggle>(topics::TOGGLE_PLATOONING, 1));
+
+	while (pub_map_[topics::OUT_PLATOONING_MSG].getNumSubscribers() < 1) {
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(200));
+	}
+
+	//mockup subscriber to velocity to catch calculated velocity
+	sub_map_.emplace(topics::IN_FV_HEARTBEAT, nh_.subscribe(topics::IN_FV_HEARTBEAT, 1,
+	                                                        &Integrationtest_platooning::hndl_fv_heartbeat,
+	                                                        this));
+
+	//setup platooningnode to LV as vehicle 1
+	nh_.setParam("/vehicle_id", 1);
+	{
+
+		Platooning platooningnode;
+		platooningnode.onInit();
+
+		//create toggle messages for all three vehicles, change only relevant fields
+		//VEHICLE 1
+		platooningToggle toggle_msg;
+		toggle_msg.vehicle_id = 1;
+		toggle_msg.lvfv = "LV";
+		toggle_msg.enable_platooning = true;
+		toggle_msg.inner_platoon_distance = 10.0f;
+		toggle_msg.platoon_speed = 1.0f;
+
+		auto v1 = boost::make_shared<platooningToggle>(toggle_msg);
+		pub_map_[topics::TOGGLE_PLATOONING].publish(v1);
+
+		//VEHICLE 2
+		toggle_msg.vehicle_id = 2;
+		toggle_msg.lvfv = "FV";
+
+		auto v2 = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+		v2->message_type = REMOTE_PLATOONINGTOGGLE;
+		v2->payload = MessageTypes::encode_message(toggle_msg);
+
+		pub_map_[topics::OUT_PLATOONING_MSG].publish(v2);
+
+		//VEHICLE 3
+		toggle_msg.vehicle_id = 2;
+		auto v3 = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+		v3->message_type = REMOTE_PLATOONINGTOGGLE;
+		v3->payload = MessageTypes::encode_message(toggle_msg);
+
+	}
+
+	boost::this_thread::sleep_for(boost::chrono::seconds(5));
+
+	TestResult res;
+	res.success = true;
+	res.comment = "";
+
+	if (fv2ui.back().second.platooning_state != "IDLE") {
+		res.success = false;
+		res.comment += "fv2 last status not IDLE was " + fv2ui.back().second.platooning_state + "\n";
+	}
+
+	if (fv2ui.back().second.platooning_state != "IDLE") {
+		res.success = false;
+		res.comment += "fv3 last status not IDLE was " + fv3ui.back().second.platooning_state + "\n";
+	}
+
+	cleanup_test_start_and_stop_broadcasts_expect_fv_in_idle();
+
+	finalize_test(res);
+
+}
+void Integrationtest_platooning::cleanup_test_start_and_stop_broadcasts_expect_fv_in_idle() {
+	platooningToggle toggle_msg;
+
+	//send togglemessages in reverse order
+	toggle_msg.vehicle_id = 2;
+	toggle_msg.lvfv = "FV";
+	toggle_msg.enable_platooning = false;
+	toggle_msg.inner_platoon_distance = 1;
+	toggle_msg.platoon_speed = 5;
+
+	auto v2 = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+	v2->message_type = REMOTE_PLATOONINGTOGGLE;
+	v2->payload = MessageTypes::encode_message(toggle_msg);
+
+	pub_map_[topics::OUT_PLATOONING_MSG].publish(v2);
+
+	toggle_msg.vehicle_id = 3;
+
+	auto v3 = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+	v3->message_type = REMOTE_PLATOONINGTOGGLE;
+	v3->payload = MessageTypes::encode_message(toggle_msg);
+	pub_map_[topics::OUT_PLATOONING_MSG].publish(v3);
+
+	boost::this_thread::sleep_for(boost::chrono::seconds(2));
+
+	nh_.setParam("/vehicle_id", 0);
+	reset();
+}
+
+void Integrationtest_platooning::test_start_and_stop_heartbeat_expect_lv_in_creating() {
+	set_timeout(boost::posix_time::time_duration(boost::posix_time::seconds(20)));
+	set_current_test("test_start_and_stop_heartbeat_expect_lv_in_creating");
+
+	boost::function<void()> cbfun(boost::bind(boost::mem_fn(
+		&Integrationtest_platooning::cleanup_test_start_and_stop_heartbeat_expect_lv_in_creating), this));
+
+	register_timeout_callback(cbfun);
+
+	//mockup publishers
+	pub_map_.emplace(topics::OUT_PLATOONING_MSG, nh_.advertise<platoonProtocol>(topics::OUT_PLATOONING_MSG, 1));
+	pub_map_.emplace(topics::TOGGLE_PLATOONING, nh_.advertise<platooningToggle>(topics::TOGGLE_PLATOONING, 1));
+
+	while (pub_map_[topics::OUT_PLATOONING_MSG].getNumSubscribers() < 1) {
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(200));
+	}
+
+	//mockup subscriber to velocity to catch calculated velocity
+	sub_map_.emplace(topics::IN_FV_HEARTBEAT, nh_.subscribe(topics::IN_FV_HEARTBEAT, 1,
+	                                                        &Integrationtest_platooning::hndl_fv_heartbeat,
+	                                                        this));
+
+	//setup platooningnode to LV as vehicle 1
+	nh_.setParam("/vehicle_id", 2);
+	{
+
+		Platooning platooningnode;
+		platooningnode.onInit();
+
+		//create toggle messages for all three vehicles, change only relevant fields
+		//VEHICLE 1
+		platooningToggle toggle_msg;
+		toggle_msg.vehicle_id = 1;
+		toggle_msg.lvfv = "LV";
+		toggle_msg.enable_platooning = true;
+		toggle_msg.inner_platoon_distance = 10.0f;
+		toggle_msg.platoon_speed = 1.0f;
+
+		auto v1 = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+		v1->message_type = REMOTE_PLATOONINGTOGGLE;
+		v1->payload = MessageTypes::encode_message(toggle_msg);
+
+		pub_map_[topics::OUT_PLATOONING_MSG].publish(v1);
+
+		//VEHICLE 2
+		toggle_msg.vehicle_id = 2;
+		toggle_msg.lvfv = "FV";
+
+		auto v2 = boost::make_shared<platooningToggle>(toggle_msg);
+		pub_map_[topics::TOGGLE_PLATOONING].publish(v2);
+
+		while(	lvui.back().second.platooning_state != "RUNNING") {
+			boost::this_thread::sleep_for(boost::chrono::seconds(1));
+		}
+
+	}
+
+	boost::this_thread::sleep_for(boost::chrono::seconds(5));
+
+	TestResult res;
+	res.success = true;
+	res.comment = "";
+
+	if (lvui.back().second.platooning_state != "CREATING") {
+		res.success = false;
+		res.comment += "lv1 last status not CREATING was " + lvui.back().second.platooning_state + "\n";
+	}
+
+	cleanup_test_start_and_stop_heartbeat_expect_lv_in_creating();
+
+	finalize_test(res);
+}
+
+void Integrationtest_platooning::cleanup_test_start_and_stop_heartbeat_expect_lv_in_creating() {
+	platooningToggle toggle_msg;
+
+	//send togglemessages in reverse order
+	toggle_msg.lvfv = "LV";
+	toggle_msg.enable_platooning = false;
+	toggle_msg.inner_platoon_distance = 1;
+	toggle_msg.platoon_speed = 5;
+	toggle_msg.vehicle_id = 1;
+
+	auto v1 = boost::shared_ptr<platoonProtocol>(new platoonProtocol);
+	v1->message_type = REMOTE_PLATOONINGTOGGLE;
+	v1->payload = MessageTypes::encode_message(toggle_msg);
+	pub_map_[topics::OUT_PLATOONING_MSG].publish(v1);
 
 	boost::this_thread::sleep_for(boost::chrono::seconds(2));
 

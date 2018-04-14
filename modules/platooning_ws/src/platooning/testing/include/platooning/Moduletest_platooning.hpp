@@ -53,7 +53,7 @@ class Moduletest_platooning : public Moduletest {
 	void hndl_test_send_platoontoggle_recv_platoonstate_creating(platooningState msg);
 
 	/**
-	 * @brief tests receipt of platooningtoggle but staying in CREATING as LV when another vehicle is present
+	 * @brief LV tests receipt of platooningtoggle but staying in CREATING as LV when another vehicle is present
 	 */
 	void send_platoontoggle_stay_creating_lv();
 

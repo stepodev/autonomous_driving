@@ -72,6 +72,20 @@ class Integrationtest_platooning : public Integrationtest {
 	void test_send_updated_broadcast_receive_userinterface();
 	void cleanup_test_send_updated_broadcast_receive_userinterface();
 
+	/**
+	 * @brief starts local LV, toggles FVs, kills LV, expects ui to end in IDLE
+	 */
+
+	void test_start_and_stop_broadcasts_expect_fv_in_idle();
+	void cleanup_test_start_and_stop_broadcasts_expect_fv_in_idle();
+
+	/**
+	 * @brief starts local LV, toggles FVs, kills LV, expects ui to end in CREATING
+	 */
+
+	void test_start_and_stop_heartbeat_expect_lv_in_creating();
+	void cleanup_test_start_and_stop_heartbeat_expect_lv_in_creating();
+
 	std::list<std::pair<boost::posix_time::ptime, platooning::lv_broadcast>> bclist;
 	std::list<std::pair<boost::posix_time::ptime,platooning::fv_heartbeat>> fv2hb;
 	std::list<std::pair<boost::posix_time::ptime,platooning::fv_heartbeat>> fv3hb;
