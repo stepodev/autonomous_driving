@@ -102,9 +102,23 @@ backend=biber
 		\subsection{Architekturübersicht} 
 		\label{sw_uebersicht}
 		% grafische Darstellung der Beziehung der module zueinander, uml?
+		\subsubsection*{Systemumfeld}
+
+		Das Systemumfeld ist auf der einen Seite die Kommunikation per Nachrichten des Platooningprotokolls und auf der anderen Seite die Kommunikation mit dem STM board aus welchen Sensornachrichten kommen und in welches Fahrkommandos geschickt werden.
+
+ 		\includegraphics[width=\textwidth]{systemumfeld.png}
+
+ 		\subsubsection*{Softwarearchitektur}
+
+ 		Die funktionalen Einheiten wurden als ROS Nodelets implementiert \ref{ros}. Das public interface jedes Nodelets ist beschränkt auf die ROS-Messages die es verarbeitet. 
+
+		\newpage
+ 		\includegraphics[width=\textwidth]{platooning_architecture.png}
+
 		\subsection{ROS}
 		\label{ros}
-		% kurze erläuterung der nodes, turtle sim
+		% kurze erläuterung der nodes
+		% vorlage 3.3 in https://autonomesfahren-hu.slack.com/messages/C7TR4LWFN/
 		\subsection{Coding-Standard} 
 		\label{coding_standard}
 			Die im Projekt verwendete Programmiersprache ist C++, da diese mit dem ROS-Betriebssystem kompatibel ist. 
