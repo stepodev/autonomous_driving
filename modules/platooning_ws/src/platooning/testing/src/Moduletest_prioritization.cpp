@@ -218,15 +218,15 @@ void Moduletest_prioritization::test_platooning_toggle_and_speed_recv_vehiclecon
 
 	TestResult res;
 
-	if( vc_msg.velocity != 3.0f ) {
-		res.comment = "velo shouldve been 3.0f, was " + std::to_string(vc_msg.velocity) + "\n";
+	if( vc_msg.velocity != 1.0f ) {
+		res.comment = "velo shouldve been 1.0f, was " + std::to_string(vc_msg.velocity) + "\n";
 	}
 
 	if( vc_msg.steering_angle != 0.0f ) {
 		res.comment = "angle shouldve been 0.0f, was " + std::to_string(vc_msg.steering_angle);
 	}
 
-	if( vc_msg.velocity != 1 || vc_msg.steering_angle != 0) {
+	if( vc_msg.velocity != 1.0f || vc_msg.steering_angle != 0.0f) {
 		res.success = false;
 		finalize_test(res);
 		return;
