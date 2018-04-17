@@ -155,8 +155,8 @@ rosdep install --from-paths src --ignore-src -r -y
 		\item Hat alles funktioniert kann man das Programm im sim\_ws Ordner starten mit
 		\item[] \begin{lstlisting}
 //platooning_ws muss vorher gesourced sein
-catkin_make install
-source install/setup.bash
+catkin_make
+source devel/setup.bash
 roslaunch platooning_sim sim_2cars.lauch
 		\end{lstlisting}
 	\end{itemize}
