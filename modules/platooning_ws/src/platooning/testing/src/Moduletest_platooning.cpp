@@ -74,28 +74,8 @@ void Moduletest_platooning::send_platoontoggle_recv_platoonstate_creating() {
 	                                                this);
 
 
-	pub_map_.emplace(topics::IN_FV_REQUEST, ros::Publisher());
-	pub_map_[topics::IN_FV_REQUEST] = nh_.advertise<fv_request>(topics::IN_FV_REQUEST, 1);
-
-	sub_map_.clear();
-	sub_map_.emplace(topics::OUT_LV_ACCEPT, ros::Subscriber());
-	sub_map_[topics::OUT_LV_ACCEPT] = nh_.subscribe(topics::OUT_LV_ACCEPT, 1,
-													&Moduletest_platooning::hndl_tc_send_fv_request_recv_lv_accept,
-													this);
-
 	//wait for platooning nodelet to subscribe
 	while(pub_map_[topics::TOGGLE_PLATOONING].getNumSubscribers() < 1 ) {
-		boost::this_thread::sleep_for( boost::chrono::milliseconds(200));
-	}
-
-
-	//wait for platooning nodelet to subscribe
-	while(pub_map_[topics::IN_FV_REQUEST].getNumSubscribers() < 1 ) {
-		boost::this_thread::sleep_for( boost::chrono::milliseconds(200));
-	}
-
-	//wait for platooning nodelet to subscribe
-	while(sub_map_[topics::OUT_LV_ACCEPT].getNumPublishers() < 1 ) {
 		boost::this_thread::sleep_for( boost::chrono::milliseconds(200));
 	}
 
@@ -105,11 +85,6 @@ void Moduletest_platooning::send_platoontoggle_recv_platoonstate_creating() {
 	msg->inner_platoon_distance = 4;
 
 	pub_map_[topics::TOGGLE_PLATOONING].publish(msg);
-
-
-	auto req_msg = boost::shared_ptr<fv_request>( new fv_request);
-	req_msg->src_vehicle = 5;
-	pub_map_[topics::IN_FV_REQUEST].publish(req_msg);
 
 }
 
