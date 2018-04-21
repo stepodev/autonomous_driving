@@ -269,7 +269,7 @@ void Prioritization::hndl_calc_velocity(const speed &msg) {
 	/**< followers can underceed (new word) min speed to get away from stupid leader
 	and exceed max speed to catch up */
 	if (platooning_state_.i_am_FV) {
-		outmsg->velocity = std::max(LOWEST_SPEED * 1.4f, std::min(msg.speed, std::min(target_speed_ * 1.4f, HIGHEST_SPEED )));
+		outmsg->velocity = std::max(LOWEST_SPEED * 1.2f, std::min(msg.speed, std::min(target_speed_ * 1.2f, HIGHEST_SPEED )));
 	};
 
 	outmsg->steering_angle = target_angle_;

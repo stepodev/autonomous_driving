@@ -112,7 +112,7 @@ void Moduletest_longitudinalprocessing::hndl_test_send_new_data_recv_velocity(co
 	res.success = true;
 
 	//all data sent was 3, which should result in velocity = 3
-	if (msg.speed != 3.0) {
+	if (msg.speed != 3.0f) {
 		res.success = false;
 		res.comment = "velocity was expected to be 3, was " + std::to_string(msg.speed) ;
 	}

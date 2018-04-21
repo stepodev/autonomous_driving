@@ -192,16 +192,17 @@ void LongitudinalProcessing::update_velocity() {
 
 	float relative_velocity = (previous_distance_ - current_distance_) / time_step;
 
-	//if we relative velo diff is slower than 5cm per second and distance is off by less than 5 cm, just keep speed
-	if( fabs(relative_velocity) < 0.05 && fabs(current_distance_ - -pd_controller_.get_target_position()) < 0.05 )  {
+	//if relative velo diff is slower than 5 units per second and distance is off by less than 5 units, just keep speed
+	if( fabsf(relative_velocity) < 0.05 && fabsf(current_distance_ - -pd_controller_.get_target_position()) < 0.05 )  {
 		//dont publish? or publish current velo?
 	} else {
+		//we want to drive the speed of guy in front of us, plus catch-up/breaking velo
 		//distance to negative since we calculate distance to point 0 on x axis
-		float calculated_velocity = current_velocity_ +
+		float calculated_velocity = current_velocity_ - relative_velocity +
 			pd_controller_.calulate_velocity(-current_distance_, relative_velocity);
 
-		//remove! bug happens on one of those variables. invalid memory
-		/*
+		//remove! bug happens on one of those variables. invalid memory?
+/*
 		NODELET_INFO(
 			"ms: %i time_step: %f range_diff: %f relative_vel: %f current_vel: %f calc_vel: %f\ndist:%f target:%f prev_dist %f",
 			(int) (current_distance_timestamp_ - previous_distance_timestamp_).total_milliseconds(),
@@ -213,7 +214,7 @@ void LongitudinalProcessing::update_velocity() {
 			current_distance_,
 			-pd_controller_.get_target_position(),
 			previous_distance_);
-		*/
+*/
 		outmsg->speed = calculated_velocity;
 
 		pub_velocity_.publish(outmsg);
