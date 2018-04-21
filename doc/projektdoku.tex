@@ -367,8 +367,749 @@ backend=biber
 		
 		\subsection{Test-Cases}
 		\label{test_cases}
+			\subsubsection{Node Prioritization}
+			\label{node_prioritization}
+				\paragraph{Test 1:}{Test Geschwindigkeitskontrolle durch Remote Control}
+				\paragraph{Beschreibung:} Getestet wird, ob Prioritization Node auf Geschwindigkeitskontrolle durch Remote Control reagiert.
+				\paragraph{Input:}
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
+					\item \textbf{Vorgegebene Geschwindigkeit:} \emph{remote\_speed = 2}
+					\item \textbf{Vorgegebener Steuerungswinkel:} \emph{remote\_angle = 3}
+				\end{itemize}
+				\paragraph{Erwarteter Output:}
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Geschwindigkeit:} \emph{velocity = 2}
+					\item \textbf{Steuerungswinkel:} \emph{steering\_angle = 3}
+				\end{itemize}
+				\paragraph{Test 2:}{Test Remote Control Toggle}
+				\paragraph{Beschreibung:} Es wird überprüft, ob das Abschalten der Remote Control funktioniert.
+				\paragraph{Input:}
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Remote Control:} \emph{enable\_remotecontrol = false}
+					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
+					\item \textbf{Vorgegebene Geschwindigkeit:} \emph{remote\_speed = 2}
+					\item \textbf{Vorgegebener Steuerungswinkel:} \emph{remote\_angle = 3}
+				\end{itemize}
+				\paragraph{Erwarteter Output:}
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Empfang von Daten:} \emph{vehiclecontrol\_received = false}
+				\end{itemize} 			
+							
+				\paragraph{Test 3:} {Test Geschwindigkeitskontrolle durch Platooning}
+				\paragraph{Beschreibung:} Getestet wird, ob Prioritization Node auf Geschwindigkeitsvorgabe von Platooning reagiert. 
+				\paragraph{Input:}
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
+					\item \textbf{Leader Vehicle:} \emph{i\_am\_LV = false}
+					\item \textbf{Follower Vehicle:} \emph{i\_am\_FV = true}
+					\item \textbf{Inner Platoon Distance:} \emph{ipd = 1}
+					\item \textbf{Platoon Speed:} \emph{ps = 1}
+					\item \textbf{Platoon ID:} \emph{platoon\_id = 1}
+					\item \textbf{Platooning State:} \emph{platooning\_state = RUNNING}
+					\item \textbf{Platoon Members:} \emph{platoon\_members = \{ 1, 2 \}}			
+				\end{itemize}
+				\paragraph{Erwarteter Output:}
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Geschwindigkeit:} \emph{velocity = 1.0f}
+					\item \textbf{Steuerungswinkel:} \emph{steering\_angle = 0.0f}
+				\end{itemize} 				
+
+				\paragraph{Test 4:} {Test Platooning Toggle}
+				\paragraph{Beschreibung:} Es wird überprüft, ob das Abschalten der Kontrolle durch die Platooning Node funktioniert.
+				\paragraph{Input:}
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Platooning:} \emph{enable\_platooning = false}
+					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}	
+				\end{itemize}
+				\paragraph{Erwarteter Output:}  
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Empfang von Daten:} \emph{vehiclecontrol\_received = false}
+				\end{itemize}
+				
+			\subsubsection{Node Longitudinal Processing}
+			\label{node_longitudinal_processing}
+			\paragraph{Test 1:}{Test Geschwindigkeitsupdate}
+			\paragraph{Beschreibung:} Getestet wird, ob Geschwindigkeitsanpassung durch Longitudinal Processing Node funktioniert.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Ziel Geschwindigkeit:} \emph{target\_speed = 3}
+				\item \textbf{Ziel Distanz:} \emph{distance = 3}
+				\item \textbf{Aktuelle Geschwindigkeit:} \emph{current\_speed = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Geschwindigkeit:} \emph{speed = 3}
+			\end{itemize}
+			\paragraph{Test 2:}{Test Geschwindigkeitsanpassung zu LV}
+			\paragraph{Beschreibung:} Es wird überprüft, ob FV auf beschleunigendes LV reagiert.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Ziel Geschwindigkeit:} \emph{target\_speed = 8}
+				\item \textbf{Ziel Distanz:} \emph{distance = 1}
+				\item \textbf{Aktuelle Geschwindigkeit:} \emph{current\_speed = 2}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Distanz:} \emph{(lv\_pos - fv\_pos \textgreater 0) \&\& (lv\_pos - fv\_pos \textless 1)}
+			\end{itemize} 			
+			
+			\subsubsection{Node Platooning}
+			\label{node_platooning}
+			\paragraph{Test 1:}{Test Platoon Erstellung}
+			\paragraph{Beschreibung:} Es wird überprüft, ob die Platoon-Einstellungen übernommen werden
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Platooning Toogle:} \emph{enable\_platooning = true}
+				\item \textbf{Platoon Geschwindigkeit:} \emph{platoon\_speed = 3}
+				\item \textbf{Innerer Platoon Abstand:} \emph{inner\_platoon\_distance = 4}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Platoon Mitglieder:} \emph{platoon\_members.empty() = false}
+				\item \textbf{Innerer Platoon Abstand:} \emph{inner\_platoon\_distance = 4}
+				\item \textbf{Platoon Geschwindigkeit:} \emph{platoon\_speed = 3}
+				\item \textbf{Platoon Zustand:} \emph{platooning\_state = CREATING}
+			\end{itemize}
+			
+			\paragraph{Test 2:}{Test FV Anfrage an LV}
+			\paragraph{Beschreibung:} Es wird überprüft, ob FV Request gelingt.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle, das Request sendet:} \emph{src\_vehicle = 5}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle, von dem Request kommt:} \emph{dst\_vehicle = 5}
+			\end{itemize} 			
+
+			\subsubsection{MessageDistribution}
+			\label{node_message_distribution}
+			\paragraph{Test 1:}{Test LV Broadcast 1
+			\paragraph{Beschreibung:} Test LV Broadcast von IN\_PLATOONING\_MSG zu IN\_LV\_BROADCAST
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle, von dem LV Broadcast kommt:} \emph{src\_vehicle = 3}
+				\item \textbf{Message Type:} \emph{message\_type = IN\_LV\_BROADCAST}
+			\end{itemize}
+
+			\paragraph{Test 2:}{Test LV Broadcast 2}
+			\paragraph{Beschreibung:} Test LV Broadcast von OUT\_LV\_BROADCAST zu OUT\_PLATOONING\_MSG
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_PLATOONING\_MSG}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = LV\_BROADCAST}
+			\end{itemize}				
+
+			\paragraph{Test 3:}{Test LV Accept Msg}
+			\paragraph{Beschreibung:} Test ob LV Accept Msg funktioniert
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID:} \emph{platoon\_id = 4}
+				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 5}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = LV\_ACCEPT}
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID:} \emph{platoon\_id = 4}
+				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 5}
+			\end{itemize}	
+			
+			\paragraph{Test 4:}{Test LV\_Accept zu OUT\_PLATOONING\_MSG}
+			\paragraph{Beschreibung:} Test Msg LV Accept zu Out Platooning
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = LV\_Accept}
+
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_PLATOONING\_MSG}
+			\end{itemize}	
+
+			\paragraph{Test 5:}{Test IN\_PLATOONING\_MSG zu IN\_LV\_REJECT}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu LV Reject
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_LV\_REJECT}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			
+			\paragraph{Test 6:}{Test IN\_PLATOONING\_MSG zu IN\_FV\_HEARTBEAT}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu FV Heartbeat
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_FV\_HEARTBEAT}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			
+			\paragraph{Test 7:}{Test OUT\_FV\_HEARTBEAT zu OUT\_PLATOONING\_MSG}
+			\paragraph{Beschreibung:} Test Msg FV Heartbeat zu Platooning
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_FV\_HEARTBEAT}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_PLATOONING\_MSG}
+			\end{itemize}				
+					
+			\paragraph{Test 8:}{Test IN\_PLATOONING\_MSG zu IN\_FV\_LEAVE}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu FV Leave
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_FV\_LEAVE}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			
+			\paragraph{Test 9:}{Test OUT\_FV\_LEAVE zu OUT\_PLATOONING\_MSG}
+			\paragraph{Beschreibung:} Test Msg In FV Leave zu Platooning
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_FV\_LEAVE}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_PLATOONING\_MSG}
+			\end{itemize}
+
+			\paragraph{Test 10:}{Test IN\_PLATOONING\_MSG zu IN\_FV\_REQUEST}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu FV request
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_FV\_REQUEST}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+
+			\paragraph{Test 11:}{Test OUT\_FV\_REQUEST zu OUT\_PLATOONING\_MSG}
+			\paragraph{Beschreibung:} Test Msg Out FV request zu Out Platooning
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_FV\_REQUEST}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = OUT\_PLATOONING\_MSG}
+			\end{itemize}	
+			
+			\paragraph{Test 12:}{Test IN\_PLATOONING\_MSG zu INPUT\_REMOTECONTROL}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu Input Remote control request
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = INPUT\_REMOTECONTROL}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}				
+			
+			\paragraph{Test 13:}{Test IN\_PLATOONING\_MSG zu TOGGLE\_REMOTECONTROL}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu Remote control toggle
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = TOGGLE\_REMOTECONTROL}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			
+			\paragraph{Test 14:}{Test IN\_PLATOONING\_MSG zu TOGGLE\_PLATOONING}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu platooning toggle
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = TOGGLE\_PLATOONING}
+				\item \textbf{vehicle id:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			
+			\paragraph{Test 15:}{Test IN\_PLATOONING\_MSG zu USERINTERFACE}
+			\paragraph{Beschreibung:} Test Msg In Platooning zu user interface
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message kommt nicht an}
+			\end{itemize}
+			
+			\subsubsection{Node UdpServer}
+			\label{node_upd_server}
+			\paragraph{Test:}{Stresstest}
+				\paragraph{Beschreibung:} 2 threads senden für 10 Sekunden, UPD server sollte alle erhalten
+				\paragraph{Input:}
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Send Counter:} \emph{send\_counter = 0}
+					\item \textbf{Receiver Counter:} \emph{receive\_counter = 0}
+				\end{itemize}
+				\paragraph{Erwarteter Output:}
+				\begin{itemize} \itemsep-0.5em
+					\item \textbf{Send Counter = Receive Counter:} \emph{send\_counter = receive\_counter}
+				\end{itemize}	
+				
+			\subsubsection{Node RadioInterface}
+			\label{node_radio_interface}
+			\paragraph{Test 1:} {Msg UPD server an IN\_PLATOONING\_MSG}
+			\paragraph{Beschreibung:} Überprüft, ob Nachricht von UDP Server an IN\_PLATOONING\_MSG gesendet werden kann
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message type:} \emph{message\_type = FV\_REQUEST}
+				\item \textbf{Payload:} \emph{payload = get\_current\_test()}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message type:} \emph{message\_type = FV\_REQUEST}
+				\item \textbf{Payload:} \emph{payload = get\_current\_test()}
+			\end{itemize}
+			
+			\paragraph{Test 2:}{Msg von OUT\_PLATOONING\_MSG an UDP server}
+			\paragraph{Beschreibung:} Überprüft, ob Nachricht von OUT\_PLATOONING\_MSG an UDP Server gesendet werden kann
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message type:} \emph{message\_type = FV\_LEAVE}
+				\item \textbf{Payload:} \emph{payload = get\_current\_test()}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Message type:} \emph{message\_type = FV\_LEAVE}
+				\item \textbf{Payload:} \emph{payload = get\_current\_test()}
+			\end{itemize}						
+			
+			\paragraph{Test 3:}{Stresstest}
+			\paragraph{Beschreibung:} Es werden 100 Nachrichten von IN\_PLATOON\_MSG geschickt 	und überprüft, ob alle beim UDP Server ankommen.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Send Counter:} \emph{send\_counter = 0}
+				\item \textbf{Receiver Counter:} \emph{recv\_counter = 0}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Send Counter = Receive Counter:} \emph{send\_counter = recv\_counter 	= 100}
+			\end{itemize}
+		
+		
+			\subsubsection{Messagetypes}
+			\label{message_types}
+			\paragraph{Test 1:}{decode/encode userInterface msg}
+			\paragraph{Beschreibung:} testet encode/decode für userInterface.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Remote Control:} \emph{remotecontrol\_enabled = false}
+				\item \textbf{LV:} \emph{leading\_vehicle = false}
+				\item \textbf{FV:} \emph{following\_vehicle = false}
+				\item \textbf{PFV:} \emph{potential\_following\_vehicle = false}
+				\item \textbf{Platooning State:} \emph{platooning\_state = IDLE}
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon Size:} \emph{platoon\_size = 3}
+				\item \textbf{IPD:} \emph{inner\_platoon\_distance = 0}
+				\item \textbf{PS:} \emph{platoon\_speed = 0}
+				\item \textbf{Distance:} \emph{actual\_distance = 0}
+				\item \textbf{Speed:} \emph{speed = 0}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 0}
+				\item \textbf{Platoon Members:} \emph{platoon\_members = {1, 2, 3}}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Remote Control:} \emph{remotecontrol\_enabled = false}
+				\item \textbf{LV:} \emph{leading\_vehicle = false}
+				\item \textbf{FV:} \emph{following\_vehicle = false}
+				\item \textbf{PFV:} \emph{potential\_following\_vehicle = false}
+				\item \textbf{Platooning State:} \emph{platooning\_state = IDLE}
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon Size:} \emph{platoon\_size = 3}
+				\item \textbf{IPD:} \emph{inner\_platoon\_distance = 0}
+				\item \textbf{PS:} \emph{platoon\_speed = 0}
+				\item \textbf{Distance:} \emph{actual\_distance = 0}
+				\item \textbf{Speed:} \emph{speed = 0}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 0}
+				\item \textbf{Platoon Members:} \emph{platoon\_members = {1, 2, 3}}
+			\end{itemize}
+			
+			\paragraph{Test 2:}{decode/encode lv\_broadcast msg}
+			\paragraph{Beschreibung:} testet encode/decode für lv\_broadcast.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 1}
+				\item \textbf{IPD:} \emph{inner\_platoon\_distance = 4}
+				\item \textbf{PS:} \emph{platoon\_speed = 3}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 2}
+				\item \textbf{followers:} \emph{followers = {1, 2, 3}}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 1}
+				\item \textbf{IPD:} \emph{inner\_platoon\_distance = 4}
+				\item \textbf{PS:} \emph{platoon\_speed = 3}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 2}
+				\item \textbf{followers:} \emph{followers = {1, 2, 3}}
+			\end{itemize}
+
+			\paragraph{Test 3:}{decode/encode lv\_accept msg}
+			\paragraph{Beschreibung:} testet encode/decode für lv\_broadcast.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 2}
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 1}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 2}
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 1}
+			\end{itemize}
+			
+			\paragraph{Test 4:}{decode/encode lv\_reject msg}
+			\paragraph{Beschreibung:} testet encode/decode für lv\_reject.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 2}
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 1}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 2}
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 1}
+			\end{itemize}
+			
+			
+			\paragraph{Test 5:}{decode/encode fv\_request msg}
+			\paragraph{Beschreibung:} testet encode/decode für fv\_request.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+			\end{itemize}		
+
+			\paragraph{Test 6:}{decode/encode fv\_hearbeat msg}
+			\paragraph{Beschreibung:} testet encode/decode für fv\_hearbeat.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 2}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 2}
+			\end{itemize}
+
+			\paragraph{Test 7:}{decode/encode fv\_leave msg}
+			\paragraph{Beschreibung:} testet encode/decode für fv\_leave.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 2}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 2}
+			\end{itemize}	
+
+			\paragraph{Test 8:}{decode/encode platooningToggle msg}
+			\paragraph{Beschreibung:} testet encode/decode für platooningToggle.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle ID:} \emph{vehicle\_id = 3}
+				\item \textbf{Enable Platooning} \emph{enable\_platooning = true}
+				\item \textbf{PS:} \emph{platoon\_speed = 1}
+				\item \textbf{IPD:} \emph{inner\_platoon\_distance = 5}
+				\item \textbf{LVFV:} \emph{lvfv = LV}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle ID:} \emph{vehicle\_id = 3}
+				\item \textbf{Enable Platooning} \emph{enable\_platooning = true}
+				\item \textbf{PS:} \emph{platoon\_speed = 1}
+				\item \textbf{IPD:} \emph{inner\_platoon\_distance = 5}
+				\item \textbf{LVFV:} \emph{lvfv = LV}
+			\end{itemize}			
+	
+			\paragraph{Test 9:}{decode/encode platooningState msg}
+			\paragraph{Beschreibung:} testet encode/decode für platooningState.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
+				\item \textbf{Platooning State:} \emph{platooning\_state = IDLE}
+				\item \textbf{PS:} \emph{platoon\_speed = 4}
+				\item \textbf{IPD:} \emph{inner\_platoon\_distance = 3}
+				\item \textbf{FV:} \emph{i\_am\_fv = false}
+				\item \textbf{LV:} \emph{i\_am\_lv = false}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 2}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
+				\item \textbf{Platooning State:} \emph{platooning\_state = IDLE}
+				\item \textbf{PS:} \emph{platoon\_speed = 4}
+				\item \textbf{IPD:} \emph{inner\_platoon\_distance = 3}
+				\item \textbf{FV:} \emph{i\_am\_fv = false}
+				\item \textbf{LV:} \emph{i\_am\_lv = false}
+				\item \textbf{Platoon ID} \emph{platoon\_id = 2}
+			\end{itemize}
+				
+			\paragraph{Test 10:}{decode/encode remotecontrolInput msg}
+			\paragraph{Beschreibung:} testet encode/decode für remotecontrolInput.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
+				\item \textbf{Emergency Stop:} \emph{emergency\_stop = true}
+				\item \textbf{Remote Angle:} \emph{remote\_angle = 1.3f}
+				\item \textbf{Remote Speed} \emph{remote\_speed = 23.f}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
+				\item \textbf{Emergency Stop:} \emph{emergency\_stop = true}
+				\item \textbf{Remote Angle:} \emph{remote\_angle = 1.3f}
+				\item \textbf{Remote Speed} \emph{remote\_speed = 23.f}
+			\end{itemize}
+			
+			\paragraph{Test 11:}{decode/encode acceleration msg}
+			\paragraph{Beschreibung:} testet encode/decode für acceleration.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Acceleration:} \emph{acceleration = 2.1f}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Acceleration:} \emph{acceleration = 2.1f}
+			\end{itemize}
+			
+			\paragraph{Test 12:}{decode/encode steeringAngle msg}
+			\paragraph{Beschreibung:} testet encode/decode für steeringAngle.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Steering Angle:} \emph{steering\_angle = 2.1f}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Steering Angle::} \emph{steering\_angle = 2.1f}
+			\end{itemize}
+			
+			\paragraph{Test 13:}{decode/encode gazupdate msg}
+			\paragraph{Beschreibung:} testet encode/decode für gazupdate.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Speed} \emph{speed = 2.1f}
+				\item \textbf{ID} \emph{id = 5}
+				\item \textbf{distance} \emph{distance = 123.0f}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Speed} \emph{speed = 2.1f}
+				\item \textbf{ID} \emph{id = 5}
+				\item \textbf{distance} \emph{distance = 123.0f}
+			\end{itemize}
+			
+			\paragraph{Test 14:}{decode/encode stmupdate msg}
+			\paragraph{Beschreibung:} testet encode/decode für stmupdate.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Acceleration:} \emph{acceleration = 1.2f}
+				\item \textbf{ID} \emph{id = 5}
+				\item \textbf{Steering Angle:} \emph{steering\_angle = 1.5f}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Acceleration:} \emph{acceleration = 1.2f}
+				\item \textbf{ID} \emph{id = 5}
+				\item \textbf{Steering Angle:} \emph{steering\_angle = 1.5f}
+			\end{itemize}
+			
+			\paragraph{Test 15:}{decode/encode targetSpeed msg}
+			\paragraph{Beschreibung:} testet encode/decode für targetSpeed.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Target Speed:} \emph{target\_speed = 5.5f}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Target Speed:} \emph{target\_speed = 5.5f}
+			\end{itemize}
+			
+			\paragraph{Test 16:}{decode/encode targetAngle msg}
+			\paragraph{Beschreibung:} testet encode/decode für targetAngle.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Target Angle:} \emph{target\_angle = 5.5f}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Target Angle:} \emph{target\_angle = 5.5f}
+			\end{itemize}
+			
+			\paragraph{Test 17:}{decode/encode targetDistance msg}
+			\paragraph{Beschreibung:} testet encode/decode für targetDistance.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Target Distance:} \emph{target\_distance = 324.4f}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{Target Distance:} \emph{target\_distance = 324.4f}
+			\end{itemize}
+			
+			\paragraph{Test 18:}{decode/encode speed msg}
+			\paragraph{Beschreibung:} testet encode/decode für speed.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{speed:} \emph{target\_distance = 12.0f}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{speed:} \emph{target\_distance = 12.0f}
+			\end{itemize}
+			
+			\paragraph{Test 19:}{decode/encode distance msg}
+			\paragraph{Beschreibung:} testet encode/decode für distance.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{distance:} \emph{distance = 12.0f}
+			\end{itemize}
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{distance:} \emph{distance = 12.0f}
+			\end{itemize}
+									
 		\subsection{Testergebnisse}
 		\label{test_ergebnisse}
+
+		\begin{lstlisting}[basicstyle=\tiny]
+
+#####################################################################
+MODULETESTS
+
+
+#####################################################################
+moduletest_longitudinalprocessing
+
+[1524321492][Moduletest_longitudinalprocessing][test_send_new_data_recv_velocity][SUCCESS] 
+[1524321502][Moduletest_longitudinalprocessing][test_change_velocity_keep_up][SUCCESS] moduletest scenario timer ran out.
+
+
+#####################################################################
+moduletest_messagedistribution
+
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_broadcast][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_lv_broadcast_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_accept][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_lv_accept_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_reject][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_lv_reject_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_fv_heartbeat_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_heartbeat][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_leave][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_fv_leave_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_request][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_fv_request_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_remotecontrolInput][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_remotecontrolToggle][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_platooningToggle][SUCCESS] 
+[1524321510][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_userInterface][SUCCESS] 
+[1524321510][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_userInterface][SUCCESS] expected testcase timeout
+[1524321510][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_userInterface][SUCCESS] 
+
+
+#####################################################################
+moduletest_messagetypes
+
+[1524321515][Moduletest_messagetypes][test_encode_decode_messages][SUCCESS] 
+
+
+#####################################################################
+moduletest_platooning
+
+
+[1524321527][Moduletest_platooning][send_platoontoggle_recv_platoonstate_creating][SUCCESS] 
+[1524321527][Moduletest_platooning][send_fv_request_recv_lv_accept][SUCCESS] 
+
+
+#####################################################################
+moduletest_prioritization
+
+
+[1524321541][Moduletest_prioritization][test_remotecontrol_toggle_and_speed_recv_vehiclecontrol][SUCCESS] 
+[1524321543][Moduletest_prioritization][test_platooning_toggle_and_speed_recv_vehiclecontrol][SUCCESS] no vehiclecontrol received
+
+
+#####################################################################
+moduletest_radiointerface
+
+
+[1524321549][Moduletest][test_send_udp_recv_protocolIn][SUCCESS] test_send_udp_recv_protocolIn
+[1524321549][Moduletest][test_send_protocolOut_recv_udp][SUCCESS] 
+[1524321550][Moduletest][test_stresstest_send_udp_recv_protocolIn][SUCCESS] 
+[1524321551][Moduletest][test_stresstest_send_protocolOut_recv_upd][SUCCESS] 
+
+
+#####################################################################
+moduletest_udpserver
+
+
+[1524321567][Moduletest_udpserver][test_stresstest_send_and_receive][FAILURE] sent packets 8269603 recvd 91577
+
+
+#####################################################################
+INTEGRATION TESTS
+
+
+
+
+#####################################################################
+RESULTS
+
+
+failed 1 of 30 tests
+
+		\end{lstlisting}
+		
 	\section{Nutzerhandbuch} 
 	\label{nutzerhandbuch}
 	%brumm brumm auto fahren (wie lasse ich=schlingloff die autos fahren/kann ich die simulation starten? was kann ich alles anstellen und wie? steuerung, hindernisse...)

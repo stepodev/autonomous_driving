@@ -76,6 +76,33 @@ void Moduletest_platooning::onInit() {
 		}
 	});
 
+	vehicle_id_ = 1;
+
+	thread_pool_.create_thread([this] {
+
+	  try {
+		  //Services
+		  ros::ServiceClient
+			  srv_client_ = nh_.serviceClient<platooning::getVehicleId>(platooning_services::VEHICLE_ID);
+
+		  ros::Duration sec;
+		  sec.sec = 20;
+		  if (srv_client_.waitForExistence(ros::Duration(sec))) {
+
+			  platooning::getVehicleId::Request req;
+			  platooning::getVehicleId::Response res;
+
+			  if (srv_client_.call(req, res)) {
+				  this->vehicle_id_ = res.vehicle_id;
+			  }
+		  }
+	  }
+	  catch (std::exception &ex) {
+		  NODELET_ERROR("[%s] hndl_gazupdate failed with %s ", name_.c_str(), ex.what());
+	  }
+
+	});
+
 	NODELET_INFO("[%s] init done", name_.c_str());
 
 }
@@ -88,11 +115,11 @@ void Moduletest_platooning::test_send_platoontoggle_recv_platoonstate_creating()
 
 	set_current_test("test_send_platoontoggle_recv_platoonstate_creating");
 
-	pub_map_.clear();
+	register_timeout_callback(boost::bind(&Moduletest_platooning::hndl_test_send_platoontoggle_recv_platoonstate_creating_timeout, this));
+
 	pub_map_.emplace(topics::TOGGLE_PLATOONING, ros::Publisher());
 	pub_map_[topics::TOGGLE_PLATOONING] = nh_.advertise<platooningToggle>(topics::TOGGLE_PLATOONING, 1);
 
-	sub_map_.clear();
 	sub_map_.emplace(topics::PLATOONINGSTATE, ros::Subscriber());
 	sub_map_[topics::PLATOONINGSTATE] = nh_.subscribe(topics::PLATOONINGSTATE, 1,
 	                                                  &Moduletest_platooning::hndl_test_send_platoontoggle_recv_platoonstate_creating,
@@ -109,6 +136,8 @@ void Moduletest_platooning::test_send_platoontoggle_recv_platoonstate_creating()
 	msg->enable_platooning = true;
 	msg->platoon_speed = 3;
 	msg->inner_platoon_distance = 4;
+	msg->lvfv = "LV";
+	msg->vehicle_id = vehicle_id_;
 
 	pub_map_[topics::TOGGLE_PLATOONING].publish(msg);
 
@@ -124,12 +153,12 @@ void Moduletest_platooning::hndl_test_send_platoontoggle_recv_platoonstate_creat
 		res.comment = "platoon not empty. was " + std::to_string(msg.platoon_members.size());
 	}
 
-	if( msg.ipd != 4 ) {
+	if( msg.ipd != 4.0f ) {
 		res.success = false;
 		res.comment += "\nidp should be 4 was " + std::to_string( msg.ipd);
 	}
 
-	if( msg.ps != 3) {
+	if( msg.ps != 3.0f) {
 		res.success = false;
 		res.comment += "\nps should be 3 was " + std::to_string( msg.ps);
 	}
@@ -139,8 +168,48 @@ void Moduletest_platooning::hndl_test_send_platoontoggle_recv_platoonstate_creat
 		res.comment += "\nmode should be CREATING, was \"" + to_string(PlatooningModeEnum::CREATING) + "\"";
 	}
 
-	if (!res.success) {
-		NODELET_ERROR("[%s] error with %s", name_.c_str(), res.comment.c_str());
+	platooningstate_.i_am_FV = msg.i_am_FV;
+	platooningstate_.i_am_LV = msg.i_am_LV;
+	platooningstate_.ipd = msg.ipd;
+	platooningstate_.platoon_id = msg.platoon_id;
+	platooningstate_.platoon_members = msg.platoon_members;
+	platooningstate_.platooning_state = msg.platooning_state;
+	platooningstate_.ps = msg.ps;
+	platooningstate_.vehicle_id = msg.vehicle_id;
+
+	if( res.success ) {
+		//cleanup
+		auto msg_to_send = boost::shared_ptr<platooningToggle>( new platooningToggle);
+		msg_to_send->enable_platooning = false;
+		pub_map_[topics::TOGGLE_PLATOONING].publish(msg_to_send);
+
+		finalize_test(res);
+	}
+}
+
+void Moduletest_platooning::hndl_test_send_platoontoggle_recv_platoonstate_creating_timeout() {
+	TestResult res;
+	res.success = false;
+	res.comment = "timeout before proper platooningstate was received.";
+
+	if (!platooningstate_.platoon_members.empty()) {
+		res.success = false;
+		res.comment = "platoon not empty. was " + std::to_string(platooningstate_.platoon_members.size());
+	}
+
+	if( platooningstate_.ipd != 4 ) {
+		res.success = false;
+		res.comment += "\nidp should be 4 was " + std::to_string( platooningstate_.ipd);
+	}
+
+	if( platooningstate_.ps != 3) {
+		res.success = false;
+		res.comment += "\nps should be 3 was " + std::to_string( platooningstate_.ps);
+	}
+
+	if( platooningstate_.platooning_state != to_string(PlatooningModeEnum::CREATING) ) {
+		res.success = false;
+		res.comment += "\nstate should be \"CREATING\", was \"" + to_string(PlatooningModeEnum::CREATING) + "\"";
 	}
 
 	//cleanup
@@ -150,7 +219,6 @@ void Moduletest_platooning::hndl_test_send_platoontoggle_recv_platoonstate_creat
 	pub_map_[topics::TOGGLE_PLATOONING].publish(msg_to_send);
 
 	finalize_test(res);
-
 }
 
 void Moduletest_platooning::test_send_fv_request_recv_lv_accept() {

@@ -77,7 +77,7 @@ void Moduletest_prioritization::test_remotecontrol_toggle_and_speed_recv_vehicle
 	//toggle remotecontrol on
 	auto togglemsg = boost::shared_ptr<platooning::remotecontrolToggle>( new platooning::remotecontrolToggle );
 	togglemsg->enable_remotecontrol = true;
-	togglemsg->vehicle_id = 1;
+	togglemsg->vehicle_id = vehicle_id_;
 
 	pub_map_[topics::TOGGLE_REMOTECONTROL].publish(togglemsg);
 
@@ -144,7 +144,6 @@ void Moduletest_prioritization::test_remotecontrol_toggle_and_speed_recv_vehicle
 	}
 
 	res.success = true;
-	res.comment = "no vehiclecontrol received";
 	finalize_test(res);
 
 }
@@ -159,7 +158,7 @@ void Moduletest_prioritization::hndl_test_remotecontrol_toggle_and_speed_recv_ve
 
 bool Moduletest_prioritization::provide_vehicle_id(platooning::getVehicleId::Request &req,
                                                    platooning::getVehicleId::Response &res) {
-		res.vehicle_id = 1;
+		res.vehicle_id = vehicle_id_;
 		return true;
 }
 
@@ -218,15 +217,15 @@ void Moduletest_prioritization::test_platooning_toggle_and_speed_recv_vehiclecon
 
 	TestResult res;
 
-	if( vc_msg.velocity != 3.0f ) {
-		res.comment = "velo shouldve been 3.0f, was " + std::to_string(vc_msg.velocity) + "\n";
+	if( vc_msg.velocity != 1.0f ) {
+		res.comment = "velo shouldve been 1.0f, was " + std::to_string(vc_msg.velocity) + "\n";
 	}
 
 	if( vc_msg.steering_angle != 0.0f ) {
 		res.comment = "angle shouldve been 0.0f, was " + std::to_string(vc_msg.steering_angle);
 	}
 
-	if( vc_msg.velocity != 1 || vc_msg.steering_angle != 0) {
+	if( vc_msg.velocity != 1.0f || vc_msg.steering_angle != 0.0f) {
 		res.success = false;
 		finalize_test(res);
 		return;

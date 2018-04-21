@@ -28,6 +28,8 @@
 #include "Moduletest.hpp"
 #include "platooning/Topics.hpp"
 #include "platooning/MessageTypes.hpp"
+#include "platooning/Services.hpp"
+#include "platooning/ServiceTypes.hpp"
 
 namespace platooning {
 
@@ -45,12 +47,20 @@ class Moduletest_platooning : public Moduletest {
 	~Moduletest_platooning();
 
   private:
+	/**
+	* @brief template_testcase does x,y,z and expects a,b,c
+	*/
+	void pub_templatemsg_recv_othermsg();
+
+	void hndl_recv_othermsg(const platooning::templateMsg &msg);
 
 	/**
-	 * @brief tests receipt of platooningtoggle and resulting state change into creating
+	 * @brief send platooningToggle and expect platooningState to be CREATING
 	 */
+	platooningState platooningstate_;
 	void test_send_platoontoggle_recv_platoonstate_creating();
 	void hndl_test_send_platoontoggle_recv_platoonstate_creating(platooningState msg);
+	void hndl_test_send_platoontoggle_recv_platoonstate_creating_timeout();
 
 	/**
 	 * @brief LV tests receipt of platooningtoggle but staying in CREATING as LV when another vehicle is present
@@ -154,7 +164,7 @@ class Moduletest_platooning : public Moduletest {
 	void send_fv_request_receive_two_lv_accept();
 
 
-	uint32_t vehicle_id_ = 0;
+	uint32_t vehicle_id_ = 1;
 	boost::thread_group thread_pool_;
 };
 

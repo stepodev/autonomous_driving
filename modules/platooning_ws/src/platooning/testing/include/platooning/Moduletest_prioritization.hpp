@@ -45,6 +45,9 @@ class Moduletest_prioritization : public Moduletest {
 	~Moduletest_prioritization();
 
   private:
+
+	uint32_t vehicle_id_ = 1;
+
 	/**
 	 * @brief toggles remotecontrol, sends speed, expects to receive vehicleControl, toggle remotecontrol, send speed
 	 * and dont receive vehiclecontrol

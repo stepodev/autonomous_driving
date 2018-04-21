@@ -1,3 +1,7 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="moduletest_longitudinalprocessing" args="load platooning/moduletest_longitudinalprocessing nodeletmanager" required="true"></node>
+<arg name="logfile" default=""/>
+<node pkg="nodelet" type="nodelet" name="moduletest_longitudinalprocessing" args="load platooning/moduletest_longitudinalprocessing nodeletmanager"
+    required="true">
+    <param name="logfile" value="$(arg logfile)"/>
+</node>
 </launch>

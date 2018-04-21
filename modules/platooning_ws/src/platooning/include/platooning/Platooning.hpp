@@ -33,6 +33,7 @@ const boost::posix_time::time_duration BROADCAST_TIMEOUT(boost::posix_time::mill
 /**
  * @brief enum class for PlatooningMode
  */
+
 enum class PlatooningModeEnum {
 	IDLE,
 	RUNNING,
@@ -183,8 +184,6 @@ class Platooning : public nodelet::Nodelet, private PlatooningState {
 	ros::Publisher pub_platooning_state_;
 
 	boost::shared_mutex pub_mtx_; /**< ensures one write and multiple read access */
-
-	//heartbeat timers
 	boost::asio::io_service io_service_;
 	boost::asio::io_service::work io_worker_;
 	boost::asio::deadline_timer fv_heartbeat_sender_;
