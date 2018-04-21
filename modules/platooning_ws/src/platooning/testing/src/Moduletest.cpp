@@ -8,9 +8,15 @@ Moduletest::Moduletest() :
 	timeout_ = boost::posix_time::seconds(3);
 	timeout_callback_ = boost::function<void()>();
 
-	work_ = boost::shared_ptr<boost::asio::io_service::work>( new boost::asio::io_service::work(io_));
+	work_ = boost::shared_ptr<boost::asio::io_service::work>(new boost::asio::io_service::work(io_));
 
-	threadpool_.create_thread( [this] { io_.run(); });
+	threadpool_.create_thread([this] { io_.run(); });
+
+	test_result_filepath_ = "";
+	if (nh_.hasParam("logfile")) {
+		nh_.getParam("logfile", test_result_filepath_);
+	}
+
 }
 
 Moduletest::~Moduletest() {
@@ -45,7 +51,13 @@ void Moduletest::finalize_test(TestResult result) {
 
 		std::stringstream ss;
 		std::ofstream of;
-		of.open(test_result_filepath_, std::ios::app);
+
+		if( test_result_filepath_.empty() ) {
+			of.open("test_log.txt", std::ios::app);
+		}  else {
+			of.open(get_current_test() + "_log.txt", std::ios::app);
+		}
+
 
 		std::time_t t = std::time(nullptr);
 		std::put_time(std::localtime(&t), "%c %Z");
@@ -132,7 +144,7 @@ void Moduletest::start_tests() {
 		testcases_to_run_.pop_front();
 
 		threadpool_.create_thread([test_case_fun] {
-			test_case_fun();
+		  test_case_fun();
 		});
 
 		testcase_timer_.expires_from_now(timeout_);
