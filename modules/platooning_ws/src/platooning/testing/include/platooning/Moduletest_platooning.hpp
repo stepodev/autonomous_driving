@@ -84,9 +84,13 @@ class Moduletest_platooning : public Moduletest {
 
 	//test rc
 	void send_platoontoggle_recv_platoonstate_creating();
-	void hndl_testcase_send_platoontoggle_recv_platoonstate_creating(platooningState msg);
+	void hndl_testcase_send_platoontoggle_recv_platoonstate_creating(const platooningState &msg);
 
+	/**
+	 * @brief tests whether
+	 */
 	void send_platoontoggle_recv_error_lv();
+    void hndl_testcase_send_platoontoggle_recv_error_lv(const platooningState &msg);
 
 	//test timeouts
 	void send_heartbeats_dont_recv_platoonstate_timeout();

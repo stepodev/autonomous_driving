@@ -63,11 +63,9 @@ void Moduletest_platooning::send_platoontoggle_recv_platoonstate_creating() {
 
 	set_current_test("send_platoontoggle_recv_platoonstate_creating");
 
-	pub_map_.clear();
 	pub_map_.emplace(topics::TOGGLE_PLATOONING, ros::Publisher());
 	pub_map_[topics::TOGGLE_PLATOONING] = nh_.advertise<platooningToggle>(topics::TOGGLE_PLATOONING, 1);
 
-	sub_map_.clear();
 	sub_map_.emplace(topics::PLATOONINGSTATE, ros::Subscriber());
 	sub_map_[topics::PLATOONINGSTATE] = nh_.subscribe(topics::PLATOONINGSTATE, 1,
 	                                                &Moduletest_platooning::hndl_testcase_send_platoontoggle_recv_platoonstate_creating,
@@ -88,7 +86,7 @@ void Moduletest_platooning::send_platoontoggle_recv_platoonstate_creating() {
 
 }
 
-void Moduletest_platooning::hndl_testcase_send_platoontoggle_recv_platoonstate_creating( platooningState msg ) {
+void Moduletest_platooning::hndl_testcase_send_platoontoggle_recv_platoonstate_creating(const platooningState &msg) {
 
 	TestResult res;
 	res.success = true;
@@ -130,11 +128,9 @@ void Moduletest_platooning::send_platoontoggle_recv_error_lv() {
 
 	set_current_test("send_platoontoggle_recv_error_lv");
 
-	pub_map_.clear();
 	pub_map_.emplace(topics::TOGGLE_PLATOONING, ros::Publisher());
 	pub_map_[topics::TOGGLE_PLATOONING] = nh_.advertise<platooningToggle>(topics::TOGGLE_PLATOONING, 1);
 
-	sub_map_.clear();
 	sub_map_.emplace(topics::PLATOONINGSTATE, ros::Subscriber());
 	sub_map_[topics::PLATOONINGSTATE] = nh_.subscribe(topics::PLATOONINGSTATE, 1,
 													  &Moduletest_platooning::hndl_testcase_send_platoontoggle_recv_error_lv,
@@ -143,9 +139,9 @@ void Moduletest_platooning::send_platoontoggle_recv_error_lv() {
 	pub_map_.emplace(topics::IN_FV_REQUEST, ros::Publisher());
 	pub_map_[topics::IN_FV_REQUEST] = nh_.advertise<fv_request>(topics::IN_FV_REQUEST, 1);
 
-	sub_map_.clear();
-	sub_map_.emplace(topics::OUT_LV_ACCEPT, ros::Subscriber());
-	sub_map_[topics::OUT_LV_ACCEPT] = nh_.subscribe(topics::OUT_LV_ACCEPT, 1);
+	//TODO: du brauchst hier noch einen handler, der das lv_accept nimmt.
+//	sub_map_.emplace(topics::OUT_LV_ACCEPT, ros::Subscriber());
+//	sub_map_[topics::OUT_LV_ACCEPT] = nh_.subscribe(topics::OUT_LV_ACCEPT, 1);
 
 
 	//wait for platooning nodelet to subscribe
@@ -179,25 +175,29 @@ void Moduletest_platooning::send_platoontoggle_recv_error_lv() {
 	// actual test starts: lv turns off platoonign while platoon has fv
 	auto toggle_msg_off = boost::shared_ptr<platooningToggle>( new platooningToggle);
 	toggle_msg_off->enable_platooning = false;
-	toggle_msg_off->fvlv = "lv";
+	toggle_msg_off->lvfv = "LV";
 
 	pub_map_[topics::TOGGLE_PLATOONING].publish(toggle_msg_off);
 }
 
-void hndl_testcase_send_platoontoggle_recv_error_lv() {
+//TODO: ich glaube es wird keine platooningState message geschickt wenn ein platooningToggle nicht angenommen wird. das wird nur geschickt wenn sich am platoon was ändert.
+	// ich würde auf die platooningState warten und erwarten, dass das timeout kommt.
+void Moduletest_platooning::hndl_testcase_send_platoontoggle_recv_error_lv(const platooningState &msg) {
 
 	TestResult res;
 	res.success = true;
 
-	if( msg.platooning_state != to_string(PlatooningModeEnum::RUNNING ||
-										  msg.platooning_state != to_string(
-												  PlatooningModeEnum::CREATING) )) {
+	if( msg.platooning_state != to_string(PlatooningModeEnum::RUNNING) ||
+										  msg.platooning_state != to_string( PlatooningModeEnum::CREATING) ) {
 		res.success = false;
 		res.comment += "\nps should be CREATING or RUNNING, was " + to_string(PlatooningModeEnum::CREATING);
 	}
 
-	msg_to_send->enable_platooning = false;
-	pub_map_[topics::TOGGLE_PLATOONING].publish(msg_to_send);
+	//TODO: warum schickst du die toggle message?
+	//msg_to_send->enable_platooning = false;
+	//pub_map_[topics::TOGGLE_PLATOONING].publish(msg_to_send);
+
+	//TODO: wieder die platooningNode in IDLE setzen bevor wir finalizen, damit der nächste test eine node im startzustand bekommt
 	finalize_test(res);
 }
 
@@ -205,14 +205,12 @@ void Moduletest_platooning::send_fv_request_recv_lv_accept() {
 
 	set_current_test("send_fv_request_recv_lv_accept");
 
-	pub_map_.clear();
 	pub_map_.emplace(topics::TOGGLE_PLATOONING, ros::Publisher());
 	pub_map_[topics::TOGGLE_PLATOONING] = nh_.advertise<platooningToggle>(topics::TOGGLE_PLATOONING, 1);
 
 	pub_map_.emplace(topics::IN_FV_REQUEST, ros::Publisher());
 	pub_map_[topics::IN_FV_REQUEST] = nh_.advertise<fv_request>(topics::IN_FV_REQUEST, 1);
 
-	sub_map_.clear();
 	sub_map_.emplace(topics::OUT_LV_ACCEPT, ros::Subscriber());
 	sub_map_[topics::OUT_LV_ACCEPT] = nh_.subscribe(topics::OUT_LV_ACCEPT, 1,
 	                                                  &Moduletest_platooning::hndl_tc_send_fv_request_recv_lv_accept,
