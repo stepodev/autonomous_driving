@@ -82,3 +82,15 @@ echo "INTEGRATION TESTS" >> $logfilepath
 echo "" >> $logfilepath
 echo "" >> $logfilepath
 
+
+#append overall result
+echo "" >> $logfilepath
+echo "" >> $logfilepath
+echo "#####################################################################" >> $logfilepath
+echo "RESULTS" >> $logfilepath
+echo "" >> $logfilepath
+echo "" >> $logfilepath
+
+echo "failed $(cat $logfilepath | grep '\[FAILURE\]' | wc -l) of $(cat $logfilepath | grep '\]\[' | wc -l) tests" >> $logfilepath
+
+cat $logfilepath

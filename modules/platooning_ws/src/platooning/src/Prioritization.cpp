@@ -141,6 +141,8 @@ void Prioritization::hndl_remotecontrolToggle(const remotecontrolToggle &msg) {
  */
 void Prioritization::hndl_remotecontrolInput(const remotecontrolInput &msg) {
 
+	std::cout << "ASADFASDF" << std::endl;
+
 	if( msg.vehicle_id != vehicle_id_) {
 		return;
 	}
@@ -174,6 +176,8 @@ void Prioritization::hndl_remotecontrolInput(const remotecontrolInput &msg) {
 			auto outmsg = boost::shared_ptr<platooning::vehicleControl>(new platooning::vehicleControl);
 			outmsg->steering_angle = target_angle_;
 			outmsg->velocity = target_speed_;
+
+			std::cout << outmsg->steering_angle << " " << outmsg->velocity << std::endl;
 
 			pub_vehicleControl_.publish(outmsg);
 		}

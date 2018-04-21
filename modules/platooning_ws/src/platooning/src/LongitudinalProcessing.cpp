@@ -173,7 +173,7 @@ void LongitudinalProcessing::hndl_targetSpeed(const platooning::targetSpeed &msg
  */
 void LongitudinalProcessing::update_velocity() {
 
-	//wait for second ranging
+    //wait for second ranging
 	if (previous_distance_timestamp_ == boost::posix_time::min_date_time) {
 		return;
 	}
@@ -198,7 +198,7 @@ void LongitudinalProcessing::update_velocity() {
 	} else {
 		//we want to drive the speed of guy in front of us, plus catch-up/breaking velo
 		//distance to negative since we calculate distance to point 0 on x axis
-		float calculated_velocity = current_velocity_ - relative_velocity +
+		float calculated_velocity = current_velocity_ +
 			pd_controller_.calulate_velocity(-current_distance_, relative_velocity);
 
 		//remove! bug happens on one of those variables. invalid memory?
@@ -219,9 +219,6 @@ void LongitudinalProcessing::update_velocity() {
 
 		pub_velocity_.publish(outmsg);
 	}
-
-
-
 }
 
 /**

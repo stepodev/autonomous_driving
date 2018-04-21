@@ -25,10 +25,13 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
+#include <boost/thread.hpp>
 
 #include "Moduletest.hpp"
 #include "platooning/Topics.hpp"
 #include "platooning/MessageTypes.hpp"
+#include "platooning/Services.hpp"
+#include "platooning/ServiceTypes.hpp"
 
 namespace platooning {
 
@@ -75,6 +78,9 @@ class Moduletest_platooning : public Moduletest {
 	~Moduletest_platooning();
 
   private:
+    uint32_t vehicle_id_;
+    boost::thread_group thread_pool_;
+
 	/**
 	* @brief template_testcase does x,y,z and expects a,b,c
 	*/
@@ -82,9 +88,13 @@ class Moduletest_platooning : public Moduletest {
 
 	void hndl_recv_othermsg(const platooning::templateMsg &msg);
 
-	//test rc
+	/**
+	 * @brief send platooningToggle and expect platooningState to be CREATING
+	 */
+	platooningState platooningstate_;
 	void send_platoontoggle_recv_platoonstate_creating();
 	void hndl_testcase_send_platoontoggle_recv_platoonstate_creating(platooningState msg);
+    void hndl_test_send_platoontoggle_recv_platoonstate_creating_timeout();
 
 	void send_platoontoggle_recv_error_lv();
 
