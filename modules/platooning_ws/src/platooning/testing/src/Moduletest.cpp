@@ -48,10 +48,9 @@ void Moduletest::finalize_test(TestResult result) {
 
 		if( test_result_filepath_.empty() ) {
 			of.open("test_log.txt", std::ios::app);
-			std::cout << "writing to test_log.txt" << std::endl;
+			NODELET_ERROR("[%s] no logfilepath for testcase %s", name_.c_str(), get_current_test().c_str());
 		}  else {
 			of.open(test_result_filepath_, std::ios::app);
-			std::cout << "writing to " << test_result_filepath_ << std::endl;
 		}
 
 		std::time_t t = std::time(nullptr);

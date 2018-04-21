@@ -89,22 +89,24 @@ void Moduletest_longitudinalprocessing::test_send_new_data_recv_velocity(){
 	target_dist->distance = 3;
 	pub_map_[topics::TARGET_DISTANCE].publish(target_dist);
 
-	auto current_speed = boost::shared_ptr<platooning::speed>(new platooning::speed);
-	current_speed->speed = 3;
-	pub_map_[topics::SENSOR_VELOCITY].publish(current_speed);
-	pub_map_[topics::SENSOR_VELOCITY].publish(current_speed);
-
 	//mockup subscriber to velocity to catch calculated velocity
-	sub_map_.emplace(topics::CALCULATED_VELOCITY, ros::Subscriber());
-	sub_map_[topics::CALCULATED_VELOCITY] = nh_.subscribe(topics::CALCULATED_VELOCITY, 1,
+	sub_map_.emplace(topics::CALCULATED_VELOCITY, nh_.subscribe(topics::CALCULATED_VELOCITY, 1,
 	                                               &Moduletest_longitudinalprocessing::hndl_test_send_new_data_recv_velocity,
-	                                               this);
+	                                               this));
 
-	auto sensor_distance = boost::shared_ptr<platooning::distance>(new platooning::distance);
-	sensor_distance->distance = 3;
-	pub_map_[topics::SENSOR_DISTANCE].publish(sensor_distance);
-	boost::this_thread::sleep_for( boost::chrono::milliseconds(20));
-	pub_map_[topics::SENSOR_DISTANCE].publish(sensor_distance);
+	threadpool_.create_thread( [this] {
+	  while( true ) {
+		  auto current_speed = boost::shared_ptr<platooning::speed>(new platooning::speed);
+		  auto sensor_distance = boost::shared_ptr<platooning::distance>(new platooning::distance);
+		  sensor_distance->distance = 3;
+		  current_speed->speed = 3;
+
+		  pub_map_[topics::SENSOR_VELOCITY].publish(current_speed);
+		  pub_map_[topics::SENSOR_DISTANCE].publish(sensor_distance);
+		  boost::this_thread::sleep_for( boost::chrono::milliseconds(20));
+	  }
+	});
+
 }
 
 void Moduletest_longitudinalprocessing::hndl_test_send_new_data_recv_velocity(const speed &msg) {
