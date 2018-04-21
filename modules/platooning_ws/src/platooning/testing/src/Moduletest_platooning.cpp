@@ -197,7 +197,7 @@ void Moduletest_platooning::hndl_testcase_send_platoontoggle_recv_error_lv(const
 	//msg_to_send->enable_platooning = false;
 	//pub_map_[topics::TOGGLE_PLATOONING].publish(msg_to_send);
 
-	//TODO: wieder die platooningNode in IDLE setzen bevor wir finalizen, damit der nächste test eine node im startzustand bekommt
+	//TODO: wieder die platooningNode in IDLE setzen bevor wir finalizen, damit der nächste test eine node im startzustand bekommt. siehe cleanup in dem ersten test
 	finalize_test(res);
 }
 
