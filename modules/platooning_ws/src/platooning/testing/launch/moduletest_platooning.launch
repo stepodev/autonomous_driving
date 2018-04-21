@@ -1,4 +1,6 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="moduletest_platooning" args="load platooning/moduletest_platooning nodeletmanager">
+<arg name="logfile" default=""/>
+    <node pkg="nodelet" type="nodelet" name="moduletest_platooning" args="load platooning/moduletest_platooning nodeletmanager" required="true">
+    <param name="logfile" value="$(arg logfile)"/>
     </node>
 </launch>

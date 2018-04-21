@@ -17,6 +17,11 @@
 
 namespace platooning {
 
+const boost::posix_time::time_duration HEARTBEAT_FREQ = boost::posix_time::milliseconds(200);
+const boost::posix_time::time_duration HEARTBEAT_TIMEOUT = boost::posix_time::milliseconds(1000);
+const boost::posix_time::time_duration BROADCAST_FREQ = boost::posix_time::milliseconds(50);
+const boost::posix_time::time_duration BROADCAST_TIMEOUT = boost::posix_time::milliseconds(1000);
+
 enum class PlatooningModeEnum {
 	IDLE,
 	RUNNING,
@@ -141,10 +146,6 @@ class Platooning : public nodelet::Nodelet, private PlatooningState {
 	ros::Publisher pub_platooning_state_;
 
 	//heartbeat timer
-	boost::posix_time::time_duration HEARTBEAT_FREQ = boost::posix_time::milliseconds(200);
-	boost::posix_time::time_duration HEARTBEAT_TIMEOUT = boost::posix_time::milliseconds(1000);
-	boost::posix_time::time_duration BROADCAST_FREQ = boost::posix_time::milliseconds(50);
-	boost::posix_time::time_duration BROADCAST_TIMEOUT = boost::posix_time::milliseconds(1000);
 	boost::asio::io_service io_service_;
 	boost::asio::io_service::work io_worker_;
 	boost::asio::deadline_timer fv_heartbeat_sender_;

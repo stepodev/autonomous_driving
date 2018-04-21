@@ -141,6 +141,8 @@ void Prioritization::hndl_remotecontrolToggle(const remotecontrolToggle &msg) {
  */
 void Prioritization::hndl_remotecontrolInput(const remotecontrolInput &msg) {
 
+	std::cout << "ASADFASDF" << std::endl;
+
 	if( msg.vehicle_id != vehicle_id_) {
 		return;
 	}
@@ -174,6 +176,8 @@ void Prioritization::hndl_remotecontrolInput(const remotecontrolInput &msg) {
 			auto outmsg = boost::shared_ptr<platooning::vehicleControl>(new platooning::vehicleControl);
 			outmsg->steering_angle = target_angle_;
 			outmsg->velocity = target_speed_;
+
+			std::cout << outmsg->steering_angle << " " << outmsg->velocity << std::endl;
 
 			pub_vehicleControl_.publish(outmsg);
 		}
@@ -269,7 +273,7 @@ void Prioritization::hndl_calc_velocity(const speed &msg) {
 	/**< followers can underceed (new word) min speed to get away from stupid leader
 	and exceed max speed to catch up */
 	if (platooning_state_.i_am_FV) {
-		outmsg->velocity = std::max(LOWEST_SPEED * 1.4f, std::min(msg.speed, std::min(target_speed_ * 1.4f, HIGHEST_SPEED )));
+		outmsg->velocity = std::max(LOWEST_SPEED * 1.2f, std::min(msg.speed, std::min(target_speed_ * 1.2f, HIGHEST_SPEED )));
 	};
 
 	outmsg->steering_angle = target_angle_;

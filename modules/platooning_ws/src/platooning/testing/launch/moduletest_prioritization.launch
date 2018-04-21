@@ -1,4 +1,6 @@
 <launch>
-    <node pkg="nodelet" type="nodelet" name="moduletest_prioritization" args="load platooning/moduletest_prioritization nodeletmanager">
+<arg name="logfile" default=""/>
+    <node pkg="nodelet" type="nodelet" name="moduletest_prioritization" args="load platooning/moduletest_prioritization nodeletmanager" required="true">
+    <param name="logfile" value="$(arg logfile)"/>
     </node>
 </launch>

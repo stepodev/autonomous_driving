@@ -56,7 +56,7 @@ void Moduletest_longitudinalprocessing::onInit() {
 ** Testcases
 *****************************************************************************/
 
-void Moduletest_longitudinalprocessing::test_send_new_data_recv_velocity(){
+void Moduletest_longitudinalprocessing::test_send_new_data_recv_velocity() {
 
 	set_current_test("test_send_new_data_recv_velocity");
 	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
@@ -75,8 +75,8 @@ void Moduletest_longitudinalprocessing::test_send_new_data_recv_velocity(){
 	pub_map_[topics::TARGET_SPEED] = nh_.advertise<platooning::targetSpeed>(topics::TARGET_SPEED, 1);
 
 	//wait for nodelet to subscribe to topic
-	while(pub_map_[topics::SENSOR_DISTANCE].getNumSubscribers() < 1 ) {
-		boost::this_thread::sleep_for( boost::chrono::milliseconds(200));
+	while (pub_map_[topics::SENSOR_DISTANCE].getNumSubscribers() < 1) {
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(200));
 	}
 
 	//send sensor distance, target distance, current speed
@@ -89,32 +89,39 @@ void Moduletest_longitudinalprocessing::test_send_new_data_recv_velocity(){
 	target_dist->distance = 3;
 	pub_map_[topics::TARGET_DISTANCE].publish(target_dist);
 
-	auto current_speed = boost::shared_ptr<platooning::speed>(new platooning::speed);
-	current_speed->speed = 3;
-	pub_map_[topics::SENSOR_VELOCITY].publish(current_speed);
-	pub_map_[topics::SENSOR_VELOCITY].publish(current_speed);
-
 	//mockup subscriber to velocity to catch calculated velocity
-	sub_map_.emplace(topics::CALCULATED_VELOCITY, ros::Subscriber());
-	sub_map_[topics::CALCULATED_VELOCITY] = nh_.subscribe(topics::CALCULATED_VELOCITY, 1,
-	                                               &Moduletest_longitudinalprocessing::hndl_test_send_new_data_recv_velocity,
-	                                               this);
+	sub_map_.emplace(topics::CALCULATED_VELOCITY, nh_.subscribe(topics::CALCULATED_VELOCITY, 1,
+	                                                            &Moduletest_longitudinalprocessing::hndl_test_send_new_data_recv_velocity,
+	                                                            this));
 
-	auto sensor_distance = boost::shared_ptr<platooning::distance>(new platooning::distance);
-	sensor_distance->distance = 3;
-	pub_map_[topics::SENSOR_DISTANCE].publish(sensor_distance);
-	boost::this_thread::sleep_for( boost::chrono::milliseconds(20));
-	pub_map_[topics::SENSOR_DISTANCE].publish(sensor_distance);
+	threadpool_.create_thread([this] {
+		auto current_speed = boost::shared_ptr<platooning::speed>(new platooning::speed);
+		auto sensor_distance = boost::shared_ptr<platooning::distance>(new platooning::distance);
+		sensor_distance->distance = 2;
+		current_speed->speed = 0;
+
+		while (get_current_test() == "test_send_new_data_recv_velocity") {
+
+			if( pub_map_.empty() ) {
+				break;
+			}
+
+			pub_map_[topics::SENSOR_VELOCITY].publish(current_speed);
+			pub_map_[topics::SENSOR_DISTANCE].publish(sensor_distance);
+			boost::this_thread::sleep_for(boost::chrono::milliseconds(20));
+		}
+	});
+
 }
 
 void Moduletest_longitudinalprocessing::hndl_test_send_new_data_recv_velocity(const speed &msg) {
 	TestResult res;
 	res.success = true;
 
-	//all data sent was 3, which should result in velocity = 3
-	if (msg.speed != 3.0) {
+	//distance is off of target. should have a speed value
+	if (msg.speed == 0.0f) {
 		res.success = false;
-		res.comment = "velocity was expected to be 3, was " + std::to_string(msg.speed) ;
+		res.comment = "velocity was expected to not be 0, was " + std::to_string(msg.speed);
 	}
 
 	if (!res.success) {
@@ -129,7 +136,8 @@ void Moduletest_longitudinalprocessing::test_change_velocity_keep_up() {
 
 	set_timeout(boost::posix_time::time_duration(boost::posix_time::seconds(10)));
 
-	register_timeout_callback(boost::bind(&Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_scenario_over, this));
+	register_timeout_callback(boost::bind(&Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_scenario_over,
+	                                      this));
 
 	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
 
@@ -147,8 +155,8 @@ void Moduletest_longitudinalprocessing::test_change_velocity_keep_up() {
 	pub_map_[topics::TARGET_SPEED] = nh_.advertise<platooning::targetSpeed>(topics::TARGET_SPEED, 1);
 
 	//wait for nodelet to subscribe to topic
-	while(pub_map_[topics::SENSOR_DISTANCE].getNumSubscribers() < 1 ) {
-		boost::this_thread::sleep_for( boost::chrono::milliseconds(200));
+	while (pub_map_[topics::SENSOR_DISTANCE].getNumSubscribers() < 1) {
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(200));
 	}
 
 	//send sensor distance, target distance, current speed
@@ -175,7 +183,7 @@ void Moduletest_longitudinalprocessing::test_change_velocity_keep_up() {
 	auto sensor_distance = boost::shared_ptr<platooning::distance>(new platooning::distance);
 	sensor_distance->distance = 1;
 	pub_map_[topics::SENSOR_DISTANCE].publish(sensor_distance);
-	boost::this_thread::sleep_for( boost::chrono::milliseconds(20));
+	boost::this_thread::sleep_for(boost::chrono::milliseconds(20));
 	pub_map_[topics::SENSOR_DISTANCE].publish(sensor_distance);
 
 	lv_pos = 1;
@@ -187,8 +195,9 @@ void Moduletest_longitudinalprocessing::test_change_velocity_keep_up() {
 	start_time = boost::posix_time::second_clock::local_time();
 
 	update_timer.expires_from_now(TIMER_FREQ);
-	update_timer.async_wait(boost::bind(&Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_timer, this,
-	                                                    boost::asio::placeholders::error));
+	update_timer.async_wait(boost::bind(&Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_timer,
+	                                    this,
+	                                    boost::asio::placeholders::error));
 }
 
 /**
@@ -212,11 +221,11 @@ void Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_timer(
 	          << "\ndistdiff " << lv_pos - fv_pos << std::endl;
 	*/
 
-	if( lv_pos - fv_pos <= 0.0f ) {
+	if (lv_pos - fv_pos <= 0.0f) {
 		TestResult res;
 		res.success = false;
-		res.comment = "lv_pos is " + std::to_string(lv_pos) +  " fv_pos is:" + std::to_string(fv_pos)
-			+ " distance is: " + std::to_string( lv_pos -fv_pos ) + " so crash";
+		res.comment = "lv_pos is " + std::to_string(lv_pos) + " fv_pos is:" + std::to_string(fv_pos)
+			+ " distance is: " + std::to_string(lv_pos - fv_pos) + " so crash";
 
 		update_timer.cancel();
 		finalize_test(res);
@@ -224,17 +233,17 @@ void Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_timer(
 	}
 
 	//changes velos of lv 2 -> 4 -> 6 -> 1
-	int runtime = (boost::posix_time::second_clock::local_time() - start_time ).total_seconds();
+	int runtime = (boost::posix_time::second_clock::local_time() - start_time).total_seconds();
 
-	if( runtime >= 1 && runtime < 2) {
+	if (runtime >= 1 && runtime < 2) {
 		lv_velo = 4;
 	}
 
-	if( runtime >= 4 && runtime < 5) {
+	if (runtime >= 4 && runtime < 5) {
 		lv_velo = 6;
 	}
 
-	if( runtime >= 6 && runtime < 7) {
+	if (runtime >= 6 && runtime < 7) {
 		lv_velo = 1;
 	}
 
@@ -248,12 +257,13 @@ void Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_timer(
 	pub_map_[topics::SENSOR_DISTANCE].publish(sensor_distance);
 
 	update_timer.expires_from_now(TIMER_FREQ);
-	update_timer.async_wait(boost::bind(&Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_timer, this,
-	                                                    boost::asio::placeholders::error));
+	update_timer.async_wait(boost::bind(&Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_timer,
+	                                    this,
+	                                    boost::asio::placeholders::error));
 }
 
 void Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_velo(const platooning::speed &s) {
-	fv_velo = std::min(s.speed,10.0f);
+	fv_velo = std::min(s.speed, 10.0f);
 }
 
 void Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_scenario_over() {
@@ -261,10 +271,10 @@ void Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_scenar
 	res.success = true;
 	res.comment = "moduletest scenario timer ran out.";
 
-	if( lv_pos - fv_pos >= 1.1 ) {
+	if (lv_pos - fv_pos >= 1.1) {
 		res.success = false;
-		res.comment = "lv_pos is " + std::to_string(lv_pos) +  " fv_pos is:" + std::to_string(fv_pos)
-			+ " distance is: " + std::to_string( lv_pos - fv_pos ) + " so too far";
+		res.comment = "lv_pos is " + std::to_string(lv_pos) + " fv_pos is:" + std::to_string(fv_pos)
+			+ " distance is: " + std::to_string(lv_pos - fv_pos) + " so too far";
 
 		update_timer.cancel();
 		finalize_test(res);

@@ -1,0 +1,84 @@
+#####################################################################
+MODULETESTS
+
+
+#####################################################################
+moduletest_longitudinalprocessing
+
+[1524321492][Moduletest_longitudinalprocessing][test_send_new_data_recv_velocity][SUCCESS] 
+[1524321502][Moduletest_longitudinalprocessing][test_change_velocity_keep_up][SUCCESS] moduletest scenario timer ran out.
+
+
+#####################################################################
+moduletest_messagedistribution
+
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_broadcast][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_lv_broadcast_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_accept][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_lv_accept_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_reject][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_lv_reject_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_fv_heartbeat_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_heartbeat][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_leave][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_fv_leave_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_request][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_fv_request_recv_platoonMsg][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_remotecontrolInput][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_remotecontrolToggle][SUCCESS] 
+[1524321507][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_platooningToggle][SUCCESS] 
+[1524321510][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_userInterface][SUCCESS] 
+[1524321510][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_userInterface][SUCCESS] expected testcase timeout
+[1524321510][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_userInterface][SUCCESS] 
+
+
+#####################################################################
+moduletest_messagetypes
+
+[1524321515][Moduletest_messagetypes][test_encode_decode_messages][SUCCESS] 
+
+
+#####################################################################
+moduletest_platooning
+
+
+[1524321527][Moduletest_platooning][send_platoontoggle_recv_platoonstate_creating][SUCCESS] 
+[1524321527][Moduletest_platooning][send_fv_request_recv_lv_accept][SUCCESS] 
+
+
+#####################################################################
+moduletest_prioritization
+
+
+[1524321541][Moduletest_prioritization][test_remotecontrol_toggle_and_speed_recv_vehiclecontrol][SUCCESS] 
+[1524321543][Moduletest_prioritization][test_platooning_toggle_and_speed_recv_vehiclecontrol][SUCCESS] no vehiclecontrol received
+
+
+#####################################################################
+moduletest_radiointerface
+
+
+[1524321549][Moduletest][test_send_udp_recv_protocolIn][SUCCESS] test_send_udp_recv_protocolIn
+[1524321549][Moduletest][test_send_protocolOut_recv_udp][SUCCESS] 
+[1524321550][Moduletest][test_stresstest_send_udp_recv_protocolIn][SUCCESS] 
+[1524321551][Moduletest][test_stresstest_send_protocolOut_recv_upd][SUCCESS] 
+
+
+#####################################################################
+moduletest_udpserver
+
+
+[1524321567][Moduletest_udpserver][test_stresstest_send_and_receive][FAILURE] sent packets 8269603 recvd 91577
+
+
+#####################################################################
+INTEGRATION TESTS
+
+
+
+
+#####################################################################
+RESULTS
+
+
+failed 1 of 30 tests
