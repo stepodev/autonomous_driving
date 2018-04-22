@@ -1,15 +1,11 @@
 /**
- * @file doxygen_c.h
- * @author My Self
- * @date 9 Sep 2012
- * @brief File containing example of doxygen usage for quick reference.
+ * @file testing/include/platooning/Moduletest_platooning.hpp
+ * @author stepo
+ * @date 24.03.2018
+ * @brief Header for platooning modultest
  *
- * Here typically goes a more extensive explanation of what the header
- * defines. Doxygens tags are words preceeded by either a backslash @\
- * or by an at symbol @@.
- * @see http://www.stack.nl/~dimitri/doxygen/docblocks.html
- * @see http://www.stack.nl/~dimitri/doxygen/commands.html
  */
+
 
 /*****************************************************************************
 ** Ifdefs
@@ -23,6 +19,8 @@
 *****************************************************************************/
 
 #include <nodelet/nodelet.h>
+#include <nodelet/NodeletUnload.h>
+#include <nodelet/NodeletLoad.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 #include <boost/thread.hpp>
@@ -36,37 +34,8 @@
 namespace platooning {
 
 /**
- * @brief Example showing how to document a function with Doxygen.
- *
- * Description of what the function does. This part may refer to the parameters
- * of the function, like @p param1 or @p param2. A word of code can also be
- * inserted like @c this which is equivalent to <tt>this</tt> and can be useful
- * to say that the function returns a @c void or an @c int. If you want to have
- * more than one word in typewriter font, then just use @<tt@>.
- * We can also include text verbatim,
- * @verbatim like this@endverbatim
- * Sometimes it is also convenient to include an example of usage:
- * @code
- * BoxStruct *out = Box_The_Function_Name(param1, param2);
- * printf("something...\n");
- * @endcode
- * Or,
- * @code{.py}
- * pyval = python_func(arg1, arg2)
- * print pyval
- * @endcode
- * when the language is not the one used in the current source file (but
- * <b>be careful</b> as this may be supported only by recent versions
- * of Doxygen). By the way, <b>this is how you write bold text</b> or,
- * if it is just one word, then you can just do @b this.
- * @param param1 Description of the first parameter of the function.
- * @param param2 The second one, which follows @p param1.
- * @return Describe what the function returns.
- * @see Box_The_Second_Function
- * @see Box_The_Last_One
- * @see http://website/
- * @note Something to note.
- * @warning Warning.
+ * @class Moduletest_platooning
+ * @brief class that tests platooning module
  */
 
 class Moduletest_platooning : public Moduletest {
@@ -78,9 +47,6 @@ class Moduletest_platooning : public Moduletest {
 	~Moduletest_platooning();
 
   private:
-    uint32_t vehicle_id_;
-    boost::thread_group thread_pool_;
-
 	/**
 	* @brief template_testcase does x,y,z and expects a,b,c
 	*/
@@ -92,49 +58,114 @@ class Moduletest_platooning : public Moduletest {
 	 * @brief send platooningToggle and expect platooningState to be CREATING
 	 */
 	platooningState platooningstate_;
-	void send_platoontoggle_recv_platoonstate_creating();
-	void hndl_testcase_send_platoontoggle_recv_platoonstate_creating(platooningState msg);
-    void hndl_test_send_platoontoggle_recv_platoonstate_creating_timeout();
+	void test_send_platoontoggle_recv_platoonstate_creating();
+	void hndl_test_send_platoontoggle_recv_platoonstate_creating(platooningState msg);
+	void hndl_test_send_platoontoggle_recv_platoonstate_creating_timeout();
 
-	void send_platoontoggle_recv_error_lv();
+	/**
+	 * @brief LV tests receipt of platooningtoggle but staying in CREATING as LV when another vehicle is present
+	 */
+	void send_platoontoggle_stay_creating_lv();
 
-	//test timeouts
+	/**
+	 * @brief sends fv heartbeats to lv and expects platooning not to timeout
+	 */
 	void send_heartbeats_dont_recv_platoonstate_timeout();
-	void send_broadcast_dont_recv_platoonstate_timeout();
-	void lv_broadcast_timeout_recv_platoonstate_idle();
-	void fv_heartbeat_timeout_recv_platoonstate_without_member_timedout();
-	void fv_heartbeat_timeout_recv_platoonstate_idle();
 
-	//test join
-	void send_fv_request_recv_lv_accept();
+	/**
+	 * @brief sends lv broadcasts to fv and expects platooning not to timeout
+	 */
+	void send_broadcast_dont_recv_platoonstate_timeout();
+
+	/**
+	 * @brief stops sending lv broadcast to fv and expects platooning to return to IDLE
+	 */
+	void lv_broadcast_timeout_recv_platoonstate_idle();
+
+	/**
+	 * @brief stops sending fv heartbeat without a member and expects platooning to go CREATING
+	 */
+	void fv_heartbeat_timeout_recv_platoonstate_without_member_timedout();
+
+	/**
+	 * @brief sends fv_request while lv is CREATING and expects lv_accept
+	 */
+	void test_send_fv_request_recv_lv_accept();
 	void hndl_tc_send_fv_request_recv_lv_accept( lv_accept msg );
 
+	/**
+	 * @brief sends fv_request while lv is RUNNING and expects lv_accept
+	 */
 	void send_fv_request_recv_platoonstate_running();
+
+	/**
+	 * @brief sends fv_request while lv is RUNNING and expects lv_broadcast
+	 */
 	void send_fv_request_recv_broadcast();
 
-	//test accept
+	/**
+	 * @brief sends lv_accept and expects fv_heartbeat
+	 */
 	void send_lv_accept_recv_heartbeat();
 
-	//send to wrong role
+	/**
+	 * @brief sends lv_broadcast to lv, expects to receive nothing
+	 */
 	void send_broadcast_to_lv_recv_nothing();
+
+	/**
+	 * @brief sends fv_heartbeat to fv, expects to receive nothing
+	 */
 	void send_heartbeat_to_fv_recv_nothing();
 
-	//send to idle
+	/**
+	 * @brief sends fv_heartbeat to IDLE, expects to receive nothing
+	 */
 	void send_heartbeat_to_idle_recv_nothing();
+
+	/**
+	 * @brief sends fv_request to IDLE, expects to receive nothing
+	 */
 	void send_fv_request_to_idle_recv_nothing();
+
+	/**
+	 * @brief sends fv_leave to IDLE, expects to receive nothing
+	 */
 	void send_fv_leave_to_idle_recv_nothing();
+
+	/**
+	 * @brief sends fv_heartbeat to IDLE, expects to receive nothing
+	 */
 	void send_fv_heartbeat_to_idle_recv_nothing();
 
+	/**
+	 * @brief sends lv_accept to IDLE, expects to receive nothing
+	 */
 	void send_lv_accept_to_idle_recv_nothing();
+
+	/**
+	 * @brief sends lv_reject to IDLE, expects to receive nothing
+	 */
 	void send_lv_reject_to_idle_recv_nothing();
+
+	/**
+	 * @brief sends lv_broadcast to IDLE, expects to receive nothing
+	 */
 	void send_lv_broadcast_to_idle_recv_nothing();
 
-	//send wrong source
+	/**
+	 * @brief sends fv_leave lv with wrong source_id, expects no change
+	 */
 	void send_fv_leave_non_member_recv_nothing();
 
-	//send duplicates
+	/**
+	 * @brief sends two lv_accept expects no change
+	 */
 	void send_fv_request_receive_two_lv_accept();
 
+
+	uint32_t vehicle_id_ = 1;
+	boost::thread_group thread_pool_;
 };
 
 } // namespace platooning

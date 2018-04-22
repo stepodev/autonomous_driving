@@ -1,3 +1,11 @@
+/**
+ * @file include/platooning/Platooning.hpp
+ * @author stepo
+ * @date 22.03.2018
+ * @brief Platooning header file
+
+ */
+
 #ifndef PLATOONING_PLATOONINGNODE_HPP
 #define PLATOONING_PLATOONINGNODE_HPP
 
@@ -17,10 +25,14 @@
 
 namespace platooning {
 
-const boost::posix_time::time_duration HEARTBEAT_FREQ = boost::posix_time::milliseconds(200);
-const boost::posix_time::time_duration HEARTBEAT_TIMEOUT = boost::posix_time::milliseconds(1000);
-const boost::posix_time::time_duration BROADCAST_FREQ = boost::posix_time::milliseconds(50);
-const boost::posix_time::time_duration BROADCAST_TIMEOUT = boost::posix_time::milliseconds(1000);
+const boost::posix_time::time_duration HEARTBEAT_FREQ( boost::posix_time::milliseconds(200));
+const boost::posix_time::time_duration HEARTBEAT_TIMEOUT(boost::posix_time::milliseconds(1000));
+const boost::posix_time::time_duration BROADCAST_FREQ(boost::posix_time::milliseconds(50));
+const boost::posix_time::time_duration BROADCAST_TIMEOUT(boost::posix_time::milliseconds(1000));
+
+/**
+ * @brief enum class for PlatooningMode
+ */
 
 enum class PlatooningModeEnum {
 	IDLE,
@@ -28,12 +40,20 @@ enum class PlatooningModeEnum {
 	CREATING
 };
 
+/**
+ * @brief Enum class for PlatoonRole
+ */
 enum class PlatoonRoleEnum {
 	NONE,
 	LV,
 	FV
 };
 
+/**
+ * @brief Provides pretty string for PlatooningModeEnum
+ * @param e PlatooningModeEnum
+ * @return pretty string
+ */
 std::string to_string( const PlatooningModeEnum& e ) {
 	switch ( e ) {
 		case PlatooningModeEnum::CREATING:
@@ -47,6 +67,11 @@ std::string to_string( const PlatooningModeEnum& e ) {
 	return "";
 }
 
+/**
+ * @brief Provides pretty string for PlatoonRoleEnum
+ * @param e PlatoonRoleEnum
+ * @return pretty string
+ */
 std::string to_string( const PlatoonRoleEnum& e ) {
 	switch ( e ) {
 		case PlatoonRoleEnum::NONE:
@@ -60,6 +85,14 @@ std::string to_string( const PlatoonRoleEnum& e ) {
 	return "";
 }
 
+/**
+ * @class PlatooningState
+ *
+ * @brief Holds all state information about the platoon, provides read and write access to them in a thread-safe manner.
+ *
+ * @bugs No known.
+ *
+ */
 class PlatooningState {
   private:
 	ros::NodeHandle nh_;
@@ -74,7 +107,7 @@ class PlatooningState {
 
 	ros::Publisher pub_platooning_state_;
 
-	boost::shared_mutex mtx_;
+	boost::shared_mutex mtx_; /**< ensures one write and multiple read access */
 
   public:
 
@@ -114,6 +147,11 @@ class PlatooningState {
 
 };
 
+/**
+ * @class Platooning
+ *
+ * @brief Provides handlers to platooning state
+ */
 class Platooning : public nodelet::Nodelet, private PlatooningState {
 
   public:
@@ -145,7 +183,7 @@ class Platooning : public nodelet::Nodelet, private PlatooningState {
 	ros::Publisher pub_fv_heartbeat_;
 	ros::Publisher pub_platooning_state_;
 
-	//heartbeat timer
+	boost::shared_mutex pub_mtx_; /**< ensures one write and multiple read access */
 	boost::asio::io_service io_service_;
 	boost::asio::io_service::work io_worker_;
 	boost::asio::deadline_timer fv_heartbeat_sender_;
@@ -172,11 +210,32 @@ class Platooning : public nodelet::Nodelet, private PlatooningState {
 	void send_lv_broadcast(const boost::system::error_code &e);
 
 	void reset() override ;
-	void set_role( const PlatoonRoleEnum& r) override ;
-	bool provide_vehicle_id(getVehicleId::Request &res, getVehicleId::Response& );
-	void shutdown_pubs_and_subs();
-	void update_state(const lv_broadcast &bc);
+	void set_role( const PlatoonRoleEnum& r) override;
+
+	/**
+	 * @brief reads vehicle_id parameter provided by launch file if any
+	 * @return vehicle_id
+	 */
 	uint32_t get_vehicle_id_param();
+
+	/**
+	 * @brief vehicle id service callable in whole ros graph
+	 * @param req request, empty
+	 * @param res vehicle_id in response
+	 * @return true on success, false otherwise
+	 */
+	bool provide_vehicle_id(getVehicleId::Request &res, getVehicleId::Response& );
+
+	/**
+	 * @brief shuts down all pubs and subs handled in this class
+	 */
+	void shutdown_pubs_and_subs();
+
+	/**
+	 * @brief updates internal state based on received lv_broadcast
+	 * @param bc
+	 */
+	void update_state(const lv_broadcast &bc);
 };
 }
 

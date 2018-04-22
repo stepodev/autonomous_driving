@@ -311,7 +311,7 @@ void Moduletest_radiointerface::test_stresstest_send_protocolOut_recv_upd() {
 		server_->shutdown();
 
 		boost::function<void(boost::shared_ptr<std::pair<std::string, uint32_t>>)>
-			cbfun(boost::bind(boost::mem_fn(&Moduletest_radiointerface::hdnl_test_stresstest_send_udp_recv_protocolIn), this, _1));
+			cbfun(boost::bind(boost::mem_fn(&Moduletest_radiointerface::handl_test_stresstest_send_protocolOut_recv_upd), this, _1));
 
 		server_ = std::unique_ptr<UdpServer>(new UdpServer(
 			cbfun, udp::endpoint(udp::v4(), 10000), udp::endpoint(boost::asio::ip::address_v4::broadcast(), 10000)));

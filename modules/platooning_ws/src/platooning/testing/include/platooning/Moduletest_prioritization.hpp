@@ -1,5 +1,5 @@
 /**
- * @file testing/src/Moduletest_prioritization.hpp
+ * @file testing/include/platooning/Moduletest_prioritization.hpp
  * @author stepo
  * @date 22,03,2018
  * @brief Contains header of Moduletest_longitudinalprocessing class

@@ -82,6 +82,7 @@ echo "INTEGRATION TESTS" >> $logfilepath
 echo "" >> $logfilepath
 echo "" >> $logfilepath
 
+roslaunch platooning integrationtest_platooning.test logfile:="$logfilepath"
 
 #append overall result
 echo "" >> $logfilepath

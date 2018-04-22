@@ -1,5 +1,5 @@
 /**
- * @file /testing/include/Moduletest_messagedistribution.hpp
+ * @file /testing/include/platooning/Moduletest_messagedistribution.hpp
  *
  * @brief Header file for Moduletest_messagedistribution class
  *

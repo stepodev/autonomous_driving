@@ -1,5 +1,5 @@
 /**
- * @file testing/src/Moduletest_longitudinalprocessing.hpp
+ * @file testing/include/platooning/Moduletest_longitudinalprocessing.hpp
  * @author stepo
  * @date 22,03,2018
  * @brief Contains header of Moduletest_longitudinalprocessing class
@@ -9,8 +9,8 @@
 ** Ifdefs
 *****************************************************************************/
 
-#ifndef PLATOONING_MODULETEST_PLATOONING_HPP
-#define PLATOONING_MODULETEST_PLATOONING_HPP
+#ifndef PLATOONING_MODULETEST_LONGITUDINAL_HPP
+#define PLATOONING_MODULETEST_LONGITUDINAL_HPP
 
 /*****************************************************************************
 ** Includes
@@ -84,4 +84,4 @@ class Moduletest_longitudinalprocessing : public Moduletest {
 
 } // namespace platooning
 
-#endif //PLATOONING_MODULETEST_PLATOONING_HPP
+#endif //PLATOONING_MODULETEST_LONGITUDINAL_HPP

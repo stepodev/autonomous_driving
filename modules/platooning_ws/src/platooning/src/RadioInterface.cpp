@@ -84,6 +84,10 @@ void RadioInterface::hndl_platoonProtocolOut(platooning::platoonProtocol msg) {
 		case REMOTE_USERINTERFACE:
 			controller_server_ptr_->start_send(msg.payload, msg.message_type);
 			break;
+		case REMOTE_PLATOONINGTOGGLE:
+			platooning_server_ptr_->start_send(msg.payload, msg.message_type);
+			NODELET_WARN("[%s] sending REMOTE_PLATOONINGTOGGLE. Only for testing purposes!", name_.c_str());
+			break;
 		default:
 			NODELET_ERROR("[%s] trying to send unknown messagetype %#010x paypload %s", name_.c_str(), msg.message_type, msg.payload.c_str());
 			break;
