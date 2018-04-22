@@ -3,7 +3,16 @@
 \usepackage[utf8]{inputenc}
 \usepackage[toc,title,page]{appendix} % Anhang 
 
+\usepackage{lmodern}  % for bold teletype font
+\usepackage{amsmath}  % for \hookrightarrow
+\usepackage{xcolor}   % for \textcolor
 \usepackage{listings}  % zum Codeeinbinden, Doku: http://users.ecs.soton.ac.uk/srg/softwaretools/document/start/listings.pdf
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+}
 \lstdefinestyle{customcpp}{
 	belowcaptionskip=1\baselineskip,
 	title=\lstname,
@@ -12,15 +21,16 @@
 	flexiblecolumns=true,
 	tabsize=2, % ein tab = 2 spaces
 	numbers=left,
-	frame=leftline,
+	frame=single,
 	language=C++,
-	showstringspaces=false 
+	showstringspaces=false
 }
+
 
 \pagenumbering{arabic} 
 \usepackage{graphicx}
 \usepackage[onehalfspacing]{setspace}
-\usepackage[left=3cm,right=3cm,top=2.5cm,bottom=2.5cm,includeheadfoot]{geometry}
+\usepackage[left=1.5cm,right=1.5cm,top=2.5cm,bottom=2.5cm,includeheadfoot]{geometry}
 
 \usepackage{url}
 
@@ -88,6 +98,68 @@ backend=biber
 \part{Produktdokumentation}
 	\section{Systemvoraussetzungen} 
 	\label{systemvoraussetzungen}
+	\subsection{Entwicklungsumgebung}
+	Das Projekt wurde mit Hilfe von ROS in C++11 entwickelt. Der Großteil des ROS ecosystems arbeitet momentan mit Ubuntu 16.04 LTS. Demnach sind für die Entwicklung notwending:
+	\begin{itemize}
+		\item Ubuntu 16.04 LTS
+		\item ROS Lunar
+		\begin{itemize}
+			\item referenz: http://wiki.ros.org/lunar/Installation/Ubuntu
+			\item[] \begin{lstlisting}
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+sudo apt-get update
+sudo apt-get install ros-lunar-ros-base
+sudo rosdep init
+rosdep update
+echo "source /opt/ros/lunar/setup.bash" >> ~/.bashrc
+//build tools
+sudo apt-get install python-rosinstall python-rosinstall-generator python-wstool build-essential
+		\end{lstlisting}
+		\end{itemize}
+		\item C++11 toolchain / IDE
+		\item ein PC der dies unterstützt
+	\end{itemize}
+	\subsection{Platooning Projekt Setup}
+	\begin{itemize}
+		\item git lfs installieren
+		\item clonen vom Repo
+		\item im platooning\_ws Ordner ausführen um ROS dependencies zu installieren:
+		\item[] \begin{lstlisting}
+rosdep install --from-paths src --ignore-src -r -y
+		\end{lstlisting}
+		\item Hat alles funktioniert kann man das Programm im platooning\_ws Ordner starten mit
+		\item[] \begin{lstlisting}
+catkin_make
+source devel/setup.bash
+roslaunch platooning run_platooning.lauch vehicle_id:=1
+		\end{lstlisting}
+	\end{itemize}
+	\subsection{Platooning Simulation Setup}
+	\begin{itemize}
+		\item Grafikkarte und i5 CPU einbauen
+		\item Projekt benötigt Gazebo 8 und Ignition Math Bibliotheken. Packages werden von der ORSF zur Verfügung gestellt.
+		\item ORSF repo hinzufügen
+		\item[] \begin{lstlisting}
+//referenz: http://gazebosim.org/tutorials?tut=install_ubuntu
+sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable \`lsb_release -cs\` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+sudo apt-get update
+sudo apt install ros-lunar-gazebo8-ros-pkgs
+sudo apt-get install ros-lunar-desktop
+		\end{lstlisting}
+		\item Im sim\_ws Ordner ausführen um ROS dependencies zu bekommen:
+		\item[] \begin{lstlisting}
+rosdep install --from-paths src --ignore-src -r -y
+		\end{lstlisting}
+		\item Hat alles funktioniert kann man das Programm im sim\_ws Ordner starten mit
+		\item[] \begin{lstlisting}
+//platooning_ws muss vorher gesourced sein
+catkin_make
+source devel/setup.bash
+roslaunch platooning_sim sim_2cars.lauch
+		\end{lstlisting}
+	\end{itemize}
 	% ubuntu, SW von assystems, ros. im prinzip beschreibung unserer vm + welche Schritte wurden unternommen ums zum laufen zu bringen und kurze erläuterung dass sw von assystems aufs board geschmissen wurde. und catkin zeugs
 	\section{Fahrzeug-Architektur}
 	\label{hw_architektur}
