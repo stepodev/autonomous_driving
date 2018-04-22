@@ -104,7 +104,15 @@ backend=biber
 		% grafische Darstellung der Beziehung der module zueinander, uml?
 		\subsection{ROS}
 		\label{ros}
-		% kurze erläuterung der nodes, turtle sim
+		ROS, kurz für robot operating system, ist entgegen des Namens ein Framework, welches Werkzeuge zur Entwicklung von Software für Roboter bereitstellt. Dazu gehört ein System wie Module bzw. Nodelets miteinander kommunizieren können, Visualisierer der Interaktion der Nodelets und Simulatoranbindungen.\\
+
+		Die wichtigesten Komponenten von ROS sind die ROS Nodelets, Topics und Messages. \\
+
+		Die Nodelets sind die einzelnen Softwarekomponenten. Sie werden durch einen Nodeletmanager geladen und initiiert. Die Interaktion der Nodelets erfolgt meist über Topics auf denen Messages versandt werden. Der Nodeletmanager bzw. der ROS Master registriert welche Nodelets auf einer Topic Nachrichten verschicken und welche Nodelets informiert werden müssen, wenn auf einer Topic eine neue Nachricht versandt wurde.\\
+
+		Einen tieferen Einblick findet man unter\\
+		https://www.generationrobots.com/blog/de/2016/03/ros-robot-operating-system/
+
 		\subsection{Coding-Standard} 
 		\label{coding_standard}
 			Die im Projekt verwendete Programmiersprache ist C++, da diese mit dem ROS-Betriebssystem kompatibel ist. 
