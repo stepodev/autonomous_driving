@@ -164,8 +164,8 @@ backend=biber
 				
 			\subsubsection{Prioritization}
 			\label{prioritization}
-				\paragraph{Aufgabe} Der Prioritization-Node erhält Fahrdaten vom Platooning-Node und der MessageTranslation und entscheidet dann, wie sich das Fahrzeug zu verhalten hat. Er entscheidet also zwischen verschiedenen Steuersignalen, welches gerade benutzt werden soll. 
-				\paragraph{Assoziationen} Der Prioritization-Node ist Subscriber vom Platooning-Node und dem MessageTranslation-Node. Er ist Publisher für den LongitudinalProcessing-Node und den LateralProcessing-Node. 
+				\paragraph{Aufgabe} Der Prioritization-Node erhält Fahrdaten vom Platooning-Node und der MessageDistribution und entscheidet dann, wie sich das Fahrzeug zu verhalten hat. Er entscheidet also zwischen verschiedenen Steuersignalen, welches gerade benutzt werden soll. 
+				\paragraph{Assoziationen} Der Prioritization-Node ist Subscriber vom Platooning-Node und dem MessageDistribution-Node. Er ist Publisher für den LongitudinalProcessing-Node und den LateralProcessing-Node. 
 				\paragraph{Attribute}
 					\begin{itemize}
 						\item float \_speed\_ Die Geschwindigkeit, mit der das Auto fahren soll.
@@ -179,9 +179,9 @@ backend=biber
 					\subparagraph{hndl\_platooningState} Wird aufgerufen, sobald eine PlatooningState Message empfangen wurde. Wenn state\_ auf Platooning gesetzt ist, sorgt die Methode dafür, dass das Auto als FV zur Kolonne aufschließt. ‘
 				\paragraph{Input}
 				    \begin{itemize}
-				        \item remotecontrolInput von Node MessageTranslation
-				        \item remotecontrolToggle von Node MessageTranslation 
-				        \item platooningToggle von Node MessageTranslation 
+				        \item remotecontrolInput von Node MessageDistribution
+				        \item remotecontrolToggle von Node MessageDistribution 
+				        \item platooningToggle von Node MessageDistribution 
 				        \item platooningState von Node Platooning
 				    \end{itemize}
 				\paragraph{Output}
@@ -194,20 +194,20 @@ backend=biber
 			\subsubsection{Platooning}
 			\label{platooning}
 				\paragraph{Aufgabe} Der Platooning-Node kommuniziert mit den anderen Fahrzeugen und tauscht mit diesen Daten aus. Zu den Daten gehören Geschwindigkeit des Platoons, die im Platoon einzuhaltende Distanz, Heartbeats sowie Broadcasts. 
-				\paragraph{Assoziationen} Zu den Subscribern des Platooning-Node gehören der Prioritization-Node und der MessageTranslation-Node. Publisher für den Platooning-Node ist der MessageTranslation-Node. 
+				\paragraph{Assoziationen} Zu den Subscribern des Platooning-Node gehören der Prioritization-Node und der MessageDistribution-Node. Publisher für den Platooning-Node ist der MessageDistribution-Node. 
 				\paragraph{Methoden}
 					\subparagraph{} 
 				\paragraph{Input} 
 				    \begin{itemize}
-    					\item platooningToggle von Node MessageTranslation
-    					\item in/FV\_REQUEST von Node MessageTranslation
-    					\item in/LV\_BROADCAST von Node MessageTranslation
+    					\item platooningToggle von Node MessageDistribution
+    					\item in/FV\_REQUEST von Node MessageDistribution
+    					\item in/LV\_BROADCAST von Node MessageDistribution
     				\end{itemize}
 				\paragraph{Output}
 					\begin{itemize}
     					\item PlatooningState an Node Prioritization
-    					\item out/FV\_REQUEST an Node MessageTranslation
-    					\item out/LV\_BROADCAST an Node MessageTranslation
+    					\item out/FV\_REQUEST an Node MessageDistribution
+    					\item out/LV\_BROADCAST an Node MessageDistribution
     				\end{itemize}
 						
 		    \subsubsection{User Interface}
@@ -234,7 +234,7 @@ backend=biber
 			\subsubsection{UserInterfaceData}
 			\label{user_interface_data}
 				\paragraph{Aufgabe} Der UserInterfaceData-Node hält die Daten, die das UserInterface anzeigt, stets aktuell. Somit hat der Nutzer immer die aktuellsten Fahr-Daten vorliegen. 
-				\paragraph{Assoziationen} Der UserInterfaceData-Node ist Subscriber von Messagetranslation. Er ist Publisher für UserInterface. 
+				\paragraph{Assoziationen} Der UserInterfaceData-Node ist Subscriber von MessageDistribution. Er ist Publisher für UserInterface. 
 				\paragraph{Attribute}
 					\subparagraph{Platooning Messages}
 				\paragraph{Methoden}
@@ -244,8 +244,8 @@ backend=biber
 			
 			\subsubsection{Message Translation}
 			\label{message_translation}
-				\paragraph{Aufgabe} Der MessageTranslation-Node ist dafür verantwortlich, Messages in Datentypen zu übersetzen, damit diese dann von den unterschiedlichen Nodes verwendet werden können. 
-				\paragraph{Assoziationen} Der MessageTranslation-Node ist Subscriber vom RadioInterface-Node und dem Platooning-Node. Er ist Publisher für den UserInterface-Node, den RadioInterface-Node, den Platooning-Node und den Prioritization-Node. 
+				\paragraph{Aufgabe} Der MessageDistribution-Node ist dafür verantwortlich, Messages in Datentypen zu übersetzen, damit diese dann von den unterschiedlichen Nodes verwendet werden können. 
+				\paragraph{Assoziationen} Der MessageDistribution-Node ist Subscriber vom RadioInterface-Node und dem Platooning-Node. Er ist Publisher für den UserInterface-Node, den RadioInterface-Node, den Platooning-Node und den Prioritization-Node. 
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
@@ -320,12 +320,12 @@ backend=biber
 					\subparagraph{hndl\_radio\_receive} Kümmert sich um die empfangenen Nachrichten aus dem Netzwerk. Je nach MessageType muss mit den empfangenen Nachrichten anders verfahren werden. Darum kümmmert sich diese Methode. 
 				\paragraph{Input} 
 				    \begin{itemize}
-				        \item in/platooningProtocol von Node MessageTranslation
+				        \item in/platooningProtocol von Node MessageDistribution
 				        \item Daten vom UdpServer
 				    \end{itemize}
 				\paragraph{Output}
 				    \begin{itemize}
-				        \item out/platooningProtocol an Node MessageTranslation
+				        \item out/platooningProtocol an Node MessageDistribution
 				        \item Daten an UdpServer
 				    \end{itemize}
 				
@@ -1028,8 +1028,8 @@ backend=biber
 									
 		\subsubsection{Integrationtest Platooning}
 			\label{integrationtest_platooning}
-			\paragraph{Test 1:}{Platoon erstellen, LV_BROADCAST erhalten}
-			\paragraph{Beschreibung:} Setzt LV und zwei FVs in CREATING, erwartet, dass LV_BROADCAST und FV_HEARTBEAT kommen
+			\paragraph{Test 1:}{Platoon erstellen, LV\_BROADCAST erhalten}
+			\paragraph{Beschreibung:} Setzt LV und zwei FVs in CREATING, erwartet, dass LV\_BROADCAST und FV\_HEARTBEAT kommen
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{platooningToggle} toggle LV und zwei FVs 
@@ -1037,12 +1037,12 @@ backend=biber
 
 			\paragraph{Erwarteter Output:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{lv_broadcast:} mit ipd, ps, followers
-				\item \textbf{fv_heartbeat:} von beiden FVs
+				\item \textbf{lv\_broadcast:} mit ipd, ps, followers
+				\item \textbf{fv\_heartbeat:} von beiden FVs
 			\end{itemize}
 
-			\paragraph{Test 2:}{Platoon erstellen, korrektes LV_BROADCAST erhalten}
-			\paragraph{Beschreibung:} Setzt LV und zwei FVs in CREATING, erwartet, dass LV_BROADCAST alle FVs enthält und die FVs heartbeats senden.
+			\paragraph{Test 2:}{Platoon erstellen, korrektes LV\_BROADCAST erhalten}
+			\paragraph{Beschreibung:} Setzt LV und zwei FVs in CREATING, erwartet, dass LV\_BROADCAST alle FVs enthält und die FVs heartbeats senden.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{platooningToggle} toggle LV und zwei FVs 
@@ -1050,15 +1050,15 @@ backend=biber
 
 			\paragraph{Erwarteter Output:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{lv_broadcast:} mit ipd, ps, followers
-				\item \textbf{fv_heartbeat:} von beiden FVs
+				\item \textbf{lv\_broadcast:} mit ipd, ps, followers
+				\item \textbf{fv\_heartbeat:} von beiden FVs
 			\end{itemize}
 
 			\paragraph{Test 3:}{LV ändert platooning Parameter}
 			\paragraph{Beschreibung:} LV ändert inner platoon distance, platoonspeed, FVs registrieren das Update
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{lv_broadcast} mit geänderten Werten 
+				\item \textbf{lv\_broadcast} mit geänderten Werten 
 			\end{itemize}
 
 			\paragraph{Erwarteter Output:}
@@ -1067,10 +1067,10 @@ backend=biber
 			\end{itemize}
 
 			\paragraph{Test 4:}{LV timeout}
-			\paragraph{Beschreibung:} LV hört auf lv_broadcast zu senden. FVs müssen im IDLE modus gehen.
+			\paragraph{Beschreibung:} LV hört auf lv\_broadcast zu senden. FVs müssen im IDLE modus gehen.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{lv_broadcast} stoppt 
+				\item \textbf{lv\_broadcast} stoppt 
 			\end{itemize}
 
 			\paragraph{Erwarteter Output:}
@@ -1079,10 +1079,10 @@ backend=biber
 			\end{itemize}
 
 			\paragraph{Test 5:}{FV timeout}
-			\paragraph{Beschreibung:} FV hört auf fv_heartbeat zu senden. LV geht in CREATING
+			\paragraph{Beschreibung:} FV hört auf fv\_heartbeat zu senden. LV geht in CREATING
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{fv_heartbeat} stoppt 
+				\item \textbf{fv\_heartbeat} stoppt 
 			\end{itemize}
 
 			\paragraph{Erwarteter Output:}
