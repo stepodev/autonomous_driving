@@ -194,12 +194,6 @@ void Platooning::hndl_msg_lv_reject(const platooning::lv_reject &msg) {
  * @param const platooning::fv_request &
  */
 void Platooning::hndl_msg_fv_request(const platooning::fv_request &msg) {
-	if (get_mode() != PlatooningModeEnum::CREATING && get_mode() != PlatooningModeEnum::IDLE) {
-		NODELET_WARN("[%s] ignoring FV_REQUEST dt platooning mode %s",
-		             name_.c_str(), to_string(get_mode()).c_str());
-		return;
-	}
-
 	//max platoonsize 5
 	if (member_count() > 5) {
 		NODELET_WARN("[%s] ignoring FV_REQUEST dt platoonsize exceeded", name_.c_str());
@@ -484,7 +478,20 @@ void Platooning::update_state(const lv_broadcast &bc) {
 
 	if (bc.followers != get_members()) {
 
-		NODELET_INFO("[%s] LV_BROADCAST change received. platoon members changed", name_.c_str());
+		std::string bc_follower_str = "";
+		for( auto& i : bc.followers ) {
+			bc_follower_str += i + ",";
+		}
+
+		std::string curr_follower_str = "";
+		for( auto& i : get_members() ) {
+			curr_follower_str += i + ",";
+		}
+
+		NODELET_INFO("[%s] LV_BROADCAST change received. platoon members changed. from %s to %s",
+		             name_.c_str(),
+		             curr_follower_str.c_str(),
+		             bc_follower_str.c_str());
 
 		set_members(bc.followers);
 	}
@@ -773,6 +780,8 @@ void PlatooningState::add_member(const uint32_t &m) {
 
 	members_.emplace_back(m);
 
+	std::sort(members_.begin(), members_.end(), std::less<uint32_t>());
+
 	mtx_.unlock();
 
 	publish_state();
@@ -824,7 +833,7 @@ void PlatooningState::set_members(const std::vector<uint32_t> &v) {
 		members_.push_back(x);
 	}
 
-	std::sort(members_.begin(), members_.end(), std::greater<uint32_t>());
+	std::sort(members_.begin(), members_.end(), std::less<uint32_t>());
 
 	mtx_.unlock();
 

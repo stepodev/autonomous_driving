@@ -62,6 +62,7 @@ void Moduletest_prioritization::onInit() {
 void Moduletest_prioritization::test_remotecontrol_toggle_and_speed_recv_vehiclecontrol() {
 	set_current_test("test_remotecontrol_toggle_and_speed_recv_vehiclecontrol");
 	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
+	set_timeout(boost::posix_time::time_duration(boost::posix_time::seconds(5)));
 
 	//mockup publishers
 	pub_map_.emplace(topics::TOGGLE_REMOTECONTROL, nh_.advertise<platooning::remotecontrolToggle>(topics::TOGGLE_REMOTECONTROL, 1));

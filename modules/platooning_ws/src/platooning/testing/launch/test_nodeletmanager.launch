@@ -1,3 +1,3 @@
 <launch>
-  <node pkg="nodelet" type="nodelet" name="nodeletmanager" args="manager" output="screen" launch-prefix="valgrind --log-file=val.log"/>
+  <node pkg="nodelet" type="nodelet" name="nodeletmanager" args="manager" output="screen"/>
 </launch>

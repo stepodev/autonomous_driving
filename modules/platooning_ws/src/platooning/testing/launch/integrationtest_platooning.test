@@ -1,6 +1,8 @@
 <launch>
   <arg name="testcase" default="0" />
   <param name="testcase" value="$(arg testcase)"/>
+  <arg name="logfile" default=""/>
+  <param name="logfile" value="$(arg logfile)"/>
   <include file="$(find platooning)/testing/launch/test_nodeletmanager.launch"/>
   <include file="$(find platooning)/launch/radiointerface.launch"/>
   <include file="$(find platooning)/launch/messagedistribution.launch"/>

@@ -40,12 +40,17 @@ private slots:
     void on_togglePlatooning_v2_clicked();
     void on_toggleRemote_v2_clicked();
 
+    void on_togglePlatooning_v3_clicked();
+    void on_toggleRemote_v3_clicked();
+
 private:
     Ui::ControllerUi *ui;
     bool remoteEnabled_v1_ = false;
     bool remoteEnabled_v2_ = false;
+    bool remoteEnabled_v3_ = false;
     bool platooningEnabled_v1_ = false;
     bool platooningEnabled_v2_ = false;
+    bool platooningEnabled_v3_ = false;
 
     std::unique_ptr<UdpServer> server_ptr_;
     boost::function<void (boost::shared_ptr<std::pair<std::string, uint32_t>>)> recv_udp_msg_cb;
@@ -56,13 +61,17 @@ private:
     float remote_speed_v1_ = 0;
     float remote_lat_angle_v2_ = 0;
     float remote_speed_v2_ = 0;
+    float remote_lat_angle_v3_ = 0;
+    float remote_speed_v3_ = 0;
 
     void receive_message( boost::shared_ptr<std::pair<std::string, uint32_t>> msgpair ) ;
     void keypresspoll();
     void set_platooningbutton_v1( const bool& enabled );
     void set_platooningbutton_v2( const bool& enabled );
+    void set_platooningbutton_v3( const bool& enabled );
     void set_remotecontrolbutton_v1( const bool& enabled );
     void set_remotecontrolbutton_v2( const bool& enabled );
+    void set_remotecontrolbutton_v3( const bool& enabled );
 };
 
 #endif // CONTROLLERUI_H

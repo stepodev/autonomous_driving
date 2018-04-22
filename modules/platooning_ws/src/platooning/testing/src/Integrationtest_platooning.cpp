@@ -411,11 +411,11 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 		std::cout << "comp sp " << item.second.platoon_speed << " ipd " << item.second.inner_platoon_distance
 		          << std::endl;
 
-		if (item.second.platoon_speed == 10) {
+		if ( fabsf(item.second.platoon_speed - 10.0f) < 0.0005f ) {
 			ipd10_found = true;
 		}
 
-		if (item.second.inner_platoon_distance == 1) {
+		if ( fabsf(item.second.inner_platoon_distance - 1.0f) < 0.0005f) {
 			ps1_found = true;
 		}
 	}
@@ -471,11 +471,11 @@ void Integrationtest_platooning::test_send_platooningToggle_recv_heartbeat_data_
 			member3_found = true;
 		}
 
-		if (item.second.platoon_speed == 10) {
+		if ( fabsf(item.second.platoon_speed - 10.0f) < 0.0005f ) {
 			ipd10_found = true;
 		}
 
-		if (item.second.inner_platoon_distance == 1) {
+		if ( fabsf(item.second.inner_platoon_distance - 1.0f) < 0.0005f) {
 			ps1_found = true;
 		}
 	}
