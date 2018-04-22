@@ -102,6 +102,21 @@ backend=biber
 		\subsection{Architekturübersicht} 
 		\label{sw_uebersicht}
 		% grafische Darstellung der Beziehung der module zueinander, uml?
+		\subsubsection*{Systemumfeld}
+
+		Auf der einen Seite kommuniziert die Software über eine Netzwerkanbindung per Platooning Messages mit dem Platoon und sendet UI messages an der controller PC. Die Software bekommt über dieses Interface Platooning messages und Kommandos des controller PC. 
+
+		Auf der anderen Seite kommuniziert die Software per mavlink Kommandos an das Fahrzeug und erhält Sensornachrichten.
+
+ 		\includegraphics[width=0.7\textwidth]{systemumfeld.jpg}
+
+ 		\subsubsection*{Softwarearchitekturübersicht}
+
+ 		Die funktionalen Einheiten wurden als ROS Nodelets implementiert \ref{ros}. Das public interface jedes Nodelets ist beschränkt auf die ROS-Messages die es verarbeitet.
+
+		\newpage
+ 		\includegraphics[width=\textwidth]{platooning_architecture.png}
+
 		\subsection{ROS}
 		\label{ros}
 		ROS, kurz für robot operating system, ist entgegen des Namens ein Framework, welches Werkzeuge zur Entwicklung von Software für Roboter bereitstellt. Dazu gehört ein System wie Module bzw. Nodelets miteinander kommunizieren können, Visualisierer der Interaktion der Nodelets und Simulatoranbindungen.\\
