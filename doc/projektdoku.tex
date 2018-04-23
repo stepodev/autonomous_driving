@@ -104,12 +104,12 @@ backend=biber
 	\section{Systemvoraussetzungen} 
 	\label{systemvoraussetzungen}
 	\subsection{Entwicklungsumgebung}
-	Das Projekt wurde mit Hilfe von ROS in C++11 entwickelt. Der Großteil des ROS ecosystems arbeitet momentan mit Ubuntu 16.04 LTS. Demnach sind für die Entwicklung notwending:
+	Das Projekt wurde mit Hilfe von ROS in C++11 entwickelt. Der Großteil des ROS Ecosystems arbeitet momentan unter Ubuntu 16.04 LTS. Demnach sind für die Entwicklung notwending:
 	\begin{itemize}
 		\item Ubuntu 16.04 LTS
 		\item ROS Lunar
 		\begin{itemize}
-			\item referenz: http://wiki.ros.org/lunar/Installation/Ubuntu
+			\item Referenzinstallation: http://wiki.ros.org/lunar/Installation/Ubuntu
 			\item[] \begin{lstlisting}
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
@@ -122,18 +122,17 @@ echo "source /opt/ros/lunar/setup.bash" >> ~/.bashrc
 sudo apt-get install python-rosinstall python-rosinstall-generator python-wstool build-essential
 		\end{lstlisting}
 		\end{itemize}
-		\item C++11 toolchain / IDE
-		\item ein PC der dies unterstützt
+		\item C++11 Toolchain / IDE
 	\end{itemize}
 	\subsection{Platooning Projekt Setup}
 	\begin{itemize}
-		\item git lfs installieren
-		\item clonen vom Repo
-		\item im platooning\_ws Ordner ausführen um ROS dependencies zu installieren:
+		\item Git und git-lfs installieren.
+		\item Das Repository mit git clonen.
+		\item Im Ordner \texttt{platooning\_ws} folgendes ausführen um ROS dependencies zu installieren:
 		\item[] \begin{lstlisting}
 rosdep install --from-paths src --ignore-src -r -y
 		\end{lstlisting}
-		\item Hat alles funktioniert kann man das Programm im platooning\_ws Ordner starten mit
+		\item Hat alles funktioniert kann man das Programm im \texttt{platooning\_ws} Ordner starten mit
 		\item[] \begin{lstlisting}
 catkin_make
 source devel/setup.bash
@@ -142,9 +141,8 @@ roslaunch platooning run_platooning.lauch vehicle_id:=1
 	\end{itemize}
 	\subsection{Platooning Simulation Setup}
 	\begin{itemize}
-		\item Grafikkarte und i5 CPU einbauen
-		\item Projekt benötigt Gazebo 8 und Ignition Math Bibliotheken. Packages werden von der ORSF zur Verfügung gestellt.
-		\item ORSF repo hinzufügen
+		\item Das Projekt benötigt Gazebo 8\footnote{https://gazebosim.org/} und Ignition Math Bibliotheken. Packages werden von der OSRF\footnote{https://www.osrfoundation.org/} zur Verfügung gestellt. Es gilt die recht hohen Anforderungen von Gazebo an die Hardware zu beachten\footnote{https://gazebosim.org/tutorials?tut=guided\_b1\&cat=} .
+		\item OSRF Repository hinzufügen:
 		\item[] \begin{lstlisting}
 //referenz: http://gazebosim.org/tutorials?tut=install_ubuntu
 sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable \`lsb_release -cs\` main" > /etc/apt/sources.list.d/gazebo-stable.list'
@@ -153,11 +151,11 @@ sudo apt-get update
 sudo apt install ros-lunar-gazebo8-ros-pkgs
 sudo apt-get install ros-lunar-desktop
 		\end{lstlisting}
-		\item Im sim\_ws Ordner ausführen um ROS dependencies zu bekommen:
+		\item Im Ordner \texttt{sim\_ws} folgendes ausführen um ROS dependencies zu installieren:
 		\item[] \begin{lstlisting}
 rosdep install --from-paths src --ignore-src -r -y
 		\end{lstlisting}
-		\item Hat alles funktioniert kann man das Programm im sim\_ws Ordner starten mit
+		\item Hat alles funktioniert kann man das Programm im Ordner \texttt{sim\_ws} starten mit:
 		\item[] \begin{lstlisting}
 //platooning_ws muss vorher gesourced sein
 catkin_make
@@ -181,9 +179,9 @@ roslaunch platooning_sim sim_2cars.lauch
 		% grafische Darstellung der Beziehung der module zueinander, uml?
 		\subsubsection*{Systemumfeld}
 
-		Auf der einen Seite kommuniziert die Software über eine Netzwerkanbindung per Platooning Messages mit dem Platoon und sendet UI messages an der controller PC. Die Software bekommt über dieses Interface Platooning messages und Kommandos des controller PC. 
+		Auf der einen Seite kommuniziert die Software über eine Netzwerkanbindung per Platooning Messages mit dem Platoon und sendet UI messages an den kontrollierenden PC. Die Software bekommt über dieses Interface Platooning messages und Kommandos des controller PC. 
 
-		Auf der anderen Seite kommuniziert die Software per mavlink Kommandos an das Fahrzeug und erhält Sensornachrichten.
+		Auf der anderen Seite kommuniziert die Software per MAVlink\footnote{MAVLink -- Micro Air Vehicle Message Marshalling Library, https://github.com/mavlink/mavlink} Kommandos an das Fahrzeug und erhält Sensornachrichten.
 
  		\includegraphics[width=0.7\textwidth]{systemumfeld.jpg}
 
@@ -198,7 +196,7 @@ roslaunch platooning_sim sim_2cars.lauch
 		\label{ros}
 		ROS, kurz für robot operating system, ist entgegen des Namens ein Framework, welches Werkzeuge zur Entwicklung von Software für Roboter bereitstellt. Dazu gehört ein System wie Module bzw. Nodelets miteinander kommunizieren können, Visualisierer der Interaktion der Nodelets und Simulatoranbindungen.\\
 
-		Die wichtigesten Komponenten von ROS sind die ROS Nodelets, Topics und Messages. \\
+		Die wichtigsten Komponenten von ROS sind die ROS Nodelets, Topics und Messages. \\
 
 		Die Nodelets sind die einzelnen Softwarekomponenten. Sie werden durch einen Nodeletmanager geladen und initiiert. Die Interaktion der Nodelets erfolgt meist über Topics auf denen Messages versandt werden. Der Nodeletmanager bzw. der ROS Master registriert welche Nodelets auf einer Topic Nachrichten verschicken und welche Nodelets informiert werden müssen, wenn auf einer Topic eine neue Nachricht versandt wurde.\\
 
@@ -224,12 +222,12 @@ roslaunch platooning_sim sim_2cars.lauch
 		% Beschreibung der Nodes inkl. (Aktivitäts-)Diagramme
 			\subsubsection{Beispielnode A}
 			\label{node_a}
-				\paragraph{Aufgabe} Node A sammelt Daten bezüglich der aktuellen Radierfähigkeit verschiedener Radiergummis. Die Daten werden kontinuierlich ausgewertet, sodass bei Überschreitung von bestimmten, festgelegter Werte andere Nodes über die Änderung informiert werden. Der Quellcode ist im Anhang \ref{appendix:abcnode} hinterlegt. 
+				\paragraph{Aufgabe} Nodelet A sammelt Daten bezüglich der aktuellen Radierfähigkeit verschiedener Radiergummis. Die Daten werden kontinuierlich ausgewertet, sodass bei Überschreitung von bestimmten, festgelegter Werte anderer Nodelets über die Änderung informiert werden. Der Quellcode ist im Anhang \ref{appendix:abcnode} hinterlegt. 
 				
-				\paragraph{Assoziationen} Zu den Subscribern gehören Node B (vgl. dazu \ref{node_b}) und Node C (ich tue so als ob ich hier eine Referenz einfüge). Die Publisher sind Node X, Y, und Z (Referenz und so, ne?).
+				\paragraph{Assoziationen} Zu den Subscribern gehören Nodelet B (vgl. dazu \ref{node_b}) und Nodelet C (ich tue so als ob ich hier eine Referenz einfüge). Die Publisher sind Nodelet X, Y, und Z (Referenz und so, ne?).
 				\begin{figure}[h!]
 					\centering
-					\caption{Prozesse von Node A, hat nicht unbedingt viel mit der vorhergehenden Beschreibung zu tun}
+					\caption{Prozesse von Nodelet A, hat nicht unbedingt viel mit der vorhergehenden Beschreibung zu tun}
 					\label{fig:node_a}
 				\end{figure}
 				
@@ -241,13 +239,13 @@ roslaunch platooning_sim sim_2cars.lauch
 				
 				\paragraph{Methoden}
 				
-					\subparagraph{Z-Methode} Berechnet die Differenz zwischen dem A- und dem B-Wert. Überschreitet diese den Wert 7, wird ein String generiert und an die Subscriber des Topics \emph{Bleistiftgeflüster} geschickt, vlg. dazu Output von Node A.
+					\subparagraph{Z-Methode} Berechnet die Differenz zwischen dem A- und dem B-Wert. Überschreitet diese den Wert 7, wird ein String generiert und an die Subscriber des Topics \emph{Bleistiftgeflüster} geschickt, vlg. dazu Output von Nodelet A.
 					\subparagraph{Y-Methode} Sofern von der Z-Methode keine Überschreitung festgestellt worden ist, überschreibt die Y-Methode den A-Wert mit dem B-Wert und setzt an Stelle des B-Wertes den neu eingetroffenen Wert des Topics \emph{Nieder mit den Tintenkillern} ein. 
 				
-				\paragraph{Input} Node A ist Subscriber zum Topic \emph{Nieder mit den Tintenkillern} und empfängt im Integer-Format einen kontinuierlichen Datenstrom über die aktuelle Radierleistung. Die Daten werden von Sensor X geliefert. 
+				\paragraph{Input} Nodelet A ist Subscriber zum Topic \emph{Nieder mit den Tintenkillern} und empfängt im Integer-Format einen kontinuierlichen Datenstrom über die aktuelle Radierleistung. Die Daten werden von Sensor X geliefert. 
 				
 				% es werden sich vmtl. Themen aus dem Bereich 'Methoden' ueberschneiden
-				\paragraph{Output} Node A ist Publisher zum Topic \emph{Bleistiftgeflüster} und verschickt Daten, die von der Z-Methode berechnet worden sind und einen bestimmten Wert überschritten haben. Die ausgehende Nachricht erfolgt im String-Format und kann von folgender Form sein:
+				\paragraph{Output} Nodelet A ist Publisher zum Topic \emph{Bleistiftgeflüster} und verschickt Daten, die von der Z-Methode berechnet worden sind und einen bestimmten Wert überschritten haben. Die ausgehende Nachricht erfolgt im String-Format und kann von folgender Form sein:
 				\begin{itemize}
 					\item STR\_ACC
 					\item STR\_ERR
@@ -256,14 +254,14 @@ roslaunch platooning_sim sim_2cars.lauch
 				
 			\subsubsection{Prioritization}
 			\label{prioritization}
-				\paragraph{Aufgabe} Der Prioritization-Node erhält Fahrdaten vom Platooning-Node und der MessageDistribution und entscheidet dann, wie sich das Fahrzeug zu verhalten hat. Er entscheidet also zwischen verschiedenen Steuersignalen, welches gerade benutzt werden soll. 
-				\paragraph{Assoziationen} Der Prioritization-Node ist Subscriber vom Platooning-Node und dem MessageDistribution-Node. Er ist Publisher für den LongitudinalProcessing-Node und den LateralProcessing-Node. 
+				\paragraph{Aufgabe} Das Prioritization-Nodelet erhält Fahrdaten vom Platooning-Nodelet und der MessageDistribution und entscheidet dann, wie sich das Fahrzeug zu verhalten hat. Er entscheidet also zwischen verschiedenen Steuersignalen, welches gerade benutzt werden soll. 
+				\paragraph{Assoziationen} Das Prioritization-Nodelet ist Subscriber vom Platooning-Nodelet und dem MessageDistribution-Nodelet. Es ist Publisher für den LongitudinalProcessing-Nodelet und das LateralProcessing-Nodelet. 
 				\paragraph{Attribute}
 					\begin{itemize}
 						\item float \_speed\_ Die Geschwindigkeit, mit der das Auto fahren soll.
 						\item float \_distance\_ Die Distanz, die innerhalb des Platoons zwischen den Fahrzeugen beibehalten werden soll. 
 						\item float target\_angle\_ Der Winkel, auf den die Steuerung eingestellt werden soll.
-						\item PrioritizationState state\_ Gibt an, in welchem Modus der Prioritization-Node derzeit ist. Der Modus gibt an, ob das Auto derzeit zum Beispiel die Fernsteuerung oder die Nachrichten aus dem Platoon priorisieren soll. 
+						\item PrioritizationState state\_ Gibt an, in welchem Modus das Prioritization-Nodelet derzeit ist. Der Modus gibt an, ob das Auto derzeit zum Beispiel die Fernsteuerung oder die Nachrichten aus dem Platoon priorisieren soll. 
 					\end{itemize}
 				\paragraph{Methoden}
 					\subparagraph{hndl\_remotecontrolInput} Wird aufgerufen, wenn Daten der RemoteControl empfangen wurden und veröffentlicht diese via Topic, falls das Auto im State REMOTECONTROL ist.
@@ -271,56 +269,56 @@ roslaunch platooning_sim sim_2cars.lauch
 					\subparagraph{hndl\_platooningState} Wird aufgerufen, sobald eine PlatooningState Message empfangen wurde. Wenn state\_ auf Platooning gesetzt ist, sorgt die Methode dafür, dass das Auto als FV zur Kolonne aufschließt. ‘
 				\paragraph{Input}
 				    \begin{itemize}
-				        \item remotecontrolInput von Node MessageDistribution
-				        \item remotecontrolToggle von Node MessageDistribution 
-				        \item platooningToggle von Node MessageDistribution 
-				        \item platooningState von Node Platooning
+				        \item remotecontrolInput von Nodelet MessageDistribution
+				        \item remotecontrolToggle von Nodelet MessageDistribution 
+				        \item platooningToggle von Nodelet MessageDistribution 
+				        \item platooningState von Nodelet Platooning
 				    \end{itemize}
 				\paragraph{Output}
 				    \begin{itemize}
-				        \item targetSpeed an Node LongitudinalProcessing
-				        \item targetDistance an Node LongitudinalProcessing
-				        \item targetAngle an Node LateralProcessing
+				        \item targetSpeed an Nodelet LongitudinalProcessing
+				        \item targetDistance an Nodelet LongitudinalProcessing
+				        \item targetAngle an Nodelet LateralProcessing
 				    \end{itemize}
 				
 			\subsubsection{Platooning}
 			\label{platooning}
-				\paragraph{Aufgabe} Der Platooning-Node kommuniziert mit den anderen Fahrzeugen und tauscht mit diesen Daten aus. Zu den Daten gehören Geschwindigkeit des Platoons, die im Platoon einzuhaltende Distanz, Heartbeats sowie Broadcasts. 
-				\paragraph{Assoziationen} Zu den Subscribern des Platooning-Node gehören der Prioritization-Node und der MessageDistribution-Node. Publisher für den Platooning-Node ist der MessageDistribution-Node. 
+				\paragraph{Aufgabe} Das Platooning-Nodelet kommuniziert mit den anderen Fahrzeugen und tauscht mit diesen Daten aus. Zu den Daten gehören Geschwindigkeit des Platoons, die im Platoon einzuhaltende Distanz, Heartbeats sowie Broadcasts. 
+				\paragraph{Assoziationen} Zu den Subscribern des Platooning-Nodelet gehören das Prioritization-Nodelet und das MessageDistribution-Nodelet. Publisher für das Platooning-Nodelet ist das MessageDistribution-Nodelet. 
 				\paragraph{Methoden}
 					\subparagraph{} 
 				\paragraph{Input} 
 				    \begin{itemize}
-    					\item platooningToggle von Node MessageDistribution
-    					\item in/FV\_REQUEST von Node MessageDistribution
-    					\item in/LV\_BROADCAST von Node MessageDistribution
+    					\item platooningToggle von Nodelet MessageDistribution
+    					\item in/FV\_REQUEST von Nodelet MessageDistribution
+    					\item in/LV\_BROADCAST von Nodelet MessageDistribution
     				\end{itemize}
 				\paragraph{Output}
 					\begin{itemize}
-    					\item PlatooningState an Node Prioritization
-    					\item out/FV\_REQUEST an Node MessageDistribution
-    					\item out/LV\_BROADCAST an Node MessageDistribution
+    					\item PlatooningState an Nodelet Prioritization
+    					\item out/FV\_REQUEST an Nodelet MessageDistribution
+    					\item out/LV\_BROADCAST an Nodelet MessageDistribution
     				\end{itemize}
 						
 		    \subsubsection{User Interface}
 			\label{user_interfcae}
-				\paragraph{Aufgabe} Der UserInterface-Node zeigt dem Nutzer aktuelle Daten des Fahrzeugs an. Dazu gehören zum Beispiel Nachrichten aus dem Platoon, Geschwindigkeit oder Distanz zu anderen Objekten. Aus diesen Daten soll der Nutzer nachvollziehen können, warum sich das Auto verhält, wie es sich verhält.
-				\paragraph{Assoziationen} Der UserInterface-Node ist Subscriber vom UdpServer-Node.  
+				\paragraph{Aufgabe} Das UserInterface-Nodelet zeigt dem Nutzer aktuelle Daten des Fahrzeugs an. Dazu gehören zum Beispiel Nachrichten aus dem Platoon, Geschwindigkeit oder Distanz zu anderen Objekten. Aus diesen Daten soll der Nutzer nachvollziehen können, warum sich das Auto verhält, wie es sich verhält.
+				\paragraph{Assoziationen} Das UserInterface-Nodelet ist Subscriber vom UdpServer-Nodelet.
 				\paragraph{Attribute}
 					\begin{itemize}
-					    \item Alle Attribute sind selbsterklaerend
+					    \item Alle Attribute sind selbsterkl"arend
 					\end{itemize}
 				\paragraph{Methoden}
-					\subparagraph{hndl\_*} (Wobei * eine der verschiedenen Variablen oder Nachrichten ist) Für jede Variable (Wie zum Beispiel Geschwindigkeit, Beschleunigung etc.) gibt es im UserInterface-Node eine Methode. Die Methoden empfangen die jeweilige Variable und geben diese dann auf dem User Interface aus.
+					\subparagraph{hndl\_*} (Wobei * eine der verschiedenen Variablen oder Nachrichten ist.) Für jede Variable (wie zum Beispiel Geschwindigkeit, Beschleunigung etc.) gibt es im UserInterface-Nodelet eine Methode. Die Methoden empfangen die jeweilige Variable und geben diese dann auf dem User Interface aus.
 				\paragraph{Input}
 				    \begin{itemize}
-				        \item userInterfaceData von Node UdpServer
+				        \item userInterfaceData von Nodelet UdpServer
 				    \end{itemize}
 				\paragraph{Output}
 				    \begin{itemize}
-				        \item remoteControlInput an Node UdpServer
-				        \item platooningToggle an Node UdpServer
-				        \item remoteControlToggle an Node UdpServer
+				        \item remoteControlInput an Nodelet UdpServer
+				        \item platooningToggle an Nodelet UdpServer
+				        \item remoteControlToggle an Nodelet UdpServer
 				    \end{itemize}
 				    
 			\subsubsection{UserInterfaceData}
@@ -333,11 +331,22 @@ roslaunch platooning_sim sim_2cars.lauch
 					\subparagraph{Tolle Methode A}
 				\paragraph{Input}
 				\paragraph{Output}
+			
+			\subsubsection{Message Translation}
+			\label{message_translation}
+				\paragraph{Aufgabe} Der MessageDistribution-Node ist dafür verantwortlich, Messages in Datentypen zu übersetzen, damit diese dann von den unterschiedlichen Nodes verwendet werden können. 
+				\paragraph{Assoziationen} Der MessageDistribution-Node ist Subscriber vom RadioInterface-Node und dem Platooning-Node. Er ist Publisher für den UserInterface-Node, den RadioInterface-Node, den Platooning-Node und den Prioritization-Node. 
+				\paragraph{Attribute}
+					\subparagraph{Tolles Attribut A}
+				\paragraph{Methoden}
+					\subparagraph{Tolle Methode A}
+				\paragraph{Input}
+				\paragraph{Output}
 
 			\subsubsection{Message Distribution}
 			\label{message_distribution}
-				\paragraph{Aufgabe} Der MessageDistribution-Node erhält alle einkommenden Nachrichten. Je nach MessageType werden diese Nachrichten dann vom MessageDistribution-Node auf den passenden Topics veröffentlicht. Dadurch erhalten alle Nodes immer die richtigen Nachrichten. 
-				\paragraph{Assoziationen} Der MessageDistribution-Node ist Subscriber vom RadioInterface-Node, vom Platooning-Node und vom UserInterFaceData-Node. Er ist Publisher für den RadioInterface-Node, den Platooning-Node und den Prioritization-Node. 
+				\paragraph{Aufgabe} Das MessageDistribution-Nodelet erhält alle eingehenden Nachrichten. Je nach Typ werden diese Nachrichten dann vom MessageDistribution-Nodelet auf den passenden Topics veröffentlicht. Dadurch erhalten alle Nodelet immer die richtigen Nachrichten. 
+				\paragraph{Assoziationen} ???
 				\paragraph{Attribute}
 				    \begin{itemize}
 				        \item Alle Attribute sind selbsterklärend. 
@@ -351,22 +360,8 @@ roslaunch platooning_sim sim_2cars.lauch
                     \subparagraph{hndl\_fv\_leave} Verpackt die zu übertragenden Daten in eine FV\_LEAVE-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_fv\_request} Verpackt die zu übertragenden Daten in eine FV\_REQEUEST-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_ui} Verpackt die zu übertragenden Daten in eine REMOTE\_USERINTERFACE-Nachricht und veröffentlicht diese im Netzwerk. 
-				\paragraph{Input} 
-				    \begin{itemize}
-				        \item out/platooningProtocol von Node MessageDistribution
-						\item userInterface von Node UserInterfaceData
-				        \item out/FV\_REQUEST von Node Platooning
-				        \item out/LV\_BROADCAST von Node Platooning
-				    \end{itemize}
-				\paragraph{Output}
-				    \begin{itemize}
-				        \item in/platooningProtocol an Node MessageDistribution
-				        \item in/FV\_REQUEST an Node Platooning
-						\item in/LV\_BROADCAST an Node Platooning
-						\item platooningToggle an Node Prioritization
-						\item remoteControlToggle an Node Prioritization
-						\item remoteControlInput an Node Prioritization
-				    \end{itemize}
+				\paragraph{Input} ???
+				\paragraph{Output} ???
 
 			\subsubsection{MessageTypes}
 			\label{messages_types}
@@ -381,8 +376,8 @@ roslaunch platooning_sim sim_2cars.lauch
 
 			\subsubsection{Distance Processing}
 			\label{distance_processing}
-				\paragraph{Aufgabe} Der DistanceProcessing-Node misst, wie weit er von den nächstgelegenen Objekten entfernt ist und stellt diese Information anderen Knoten zur Verfügung. 
-				\paragraph{Assoziationen} Der DistanceProcessing-Node erhält seine Informationen von einem Ultraschall-Sensor. Er ist Publisher für den LongitudinalProcessing-Node.  
+				\paragraph{Aufgabe} Der DistanceProcessing-Nodelet misst, wie weit er von den nächstgelegenen Objekten entfernt ist und stellt diese Information anderen Knoten zur Verfügung. 
+				\paragraph{Assoziationen} Der DistanceProcessing-Nodelet erhält seine Informationen von einem Ultraschall-Sensor. Es ist Publisher für das LongitudinalProcessing-Nodelet.
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
@@ -392,8 +387,8 @@ roslaunch platooning_sim sim_2cars.lauch
 			
 			\subsubsection{Longitudinal Processing}
 			\label{longitudinal_processing}
-				\paragraph{Aufgabe} Der LongitudinalProcessing-Node ist für die Beschleunigung des Autos verantwortlich. Er erhält die gewünschte Geschwindigkeit aus dem Prioritization-Node und schickt dann die gewünschte Beschleunigung an den VehicleControl-Node. 
-				\paragraph{Assoziationen} Der LongitudinalProcessing-Node ist Subscriber vom Prioritization-Node, dem DistancePreprocessing-Node und dem Speed Sensor. Er ist Publisher für den VehicleControl-Node. 
+				\paragraph{Aufgabe} Das LongitudinalProcessing-Nodelet ist für die Beschleunigung des Autos verantwortlich. Er erhält die gewünschte Geschwindigkeit aus dem Prioritization-Nodelet und schickt dann die gewünschte Beschleunigung an den VehicleControl-Nodelet. 
+				\paragraph{Assoziationen} Der LongitudinalProcessing-Nodelet ist Subscriber vom Prioritization-Nodelet, dem DistancePreprocessing-Nodelet und dem Speed Sensor. Es ist Publisher für das VehicleControl-Nodelet. 
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
@@ -403,8 +398,8 @@ roslaunch platooning_sim sim_2cars.lauch
 						
 			\subsubsection{Radio Interface}
 			\label{radio_interface}
-				\paragraph{Aufgabe} Der RadioInterface-Node wickelt den Nachrichtenverkehr über UDP ab. Er benutzt den UDP-Server, um das Senden und Empfangen von Netzwerk-Nachrichten über UDP zu ermöglichen. 
-				\paragraph{Assoziationen} Der RadioInterface-Node ist Subscriber vom MessageDistribution-Node. Er ist Publisher für den MessageDistribution-Node. Er ermpfaengt außerdem Daten vom UdpServer und den anderen Autos und schickt Daten an diese. 
+				\paragraph{Aufgabe} Das RadioInterface-Nodelet wickelt den Nachrichtenverkehr über UDP ab. Er benutzt den UDP-Server, um das Senden und Empfangen von Netzwerk-Nachrichten über UDP zu ermöglichen. 
+				\paragraph{Assoziationen} Das RadioInterface-Nodelet ist 
 				\paragraph{Attribute}
 					\begin{itemize}
 					    \item std::unique\_ptr<UdpServer> platooning\_server\_ptr\_ Ein einmaliger Pointer für den Platooning Server. 
@@ -412,24 +407,22 @@ roslaunch platooning_sim sim_2cars.lauch
 					\end{itemize}
 				\paragraph{Methoden}
 				    \subparagraph{hndl\_platoonProtocolOut} Sendet Nachrichten in das Netzwerk. Je nach MessageType muss die Nachricht anders verschickt werden. Daher wird hierfür eine extra Methode benötigt. 
-					\subparagraph{hndl\_radio\_receive} Kümmert sich um die empfangenen Nachrichten aus dem Netzwerk. Je nach MessageType muss mit den empfangenen Nachrichten anders verfahren werden. Darum kümmmert sich diese Methode. 
+					\subparagraph{hndl\_radio\_receive} Kümmert sich um die empfangenen Nachrichten aus dem Netzwerk. Je nach MessageType muss mit den empfangenen Nachrichten anders verfahren werden.
 				\paragraph{Input} 
 				    \begin{itemize}
-				        \item in/platooningProtocol von Node MessageDistribution
+				        \item in/platooningProtocol von Nodelet MessageDistribution
 				        \item Daten vom UdpServer
-						\item Daten von den anderen Autos
 				    \end{itemize}
 				\paragraph{Output}
 				    \begin{itemize}
-				        \item out/platooningProtocol an Node MessageDistribution
+				        \item out/platooningProtocol an Nodelet MessageDistribution
 				        \item Daten an UdpServer
-						\item Daten an die anderen Autos
 				    \end{itemize}
 				
 		    \subsubsection{UdpServer}
 			\label{udpserver}
-				\paragraph{Aufgabe} Der UdpServer-Node wird vom RadioInterface-Node verwendet, um den Nachrichtenverkehr über das Netzwerk realisieren zu können. 
-				\paragraph{Assoziationen} Der UdpServer-Node ist Subscriber vom UserInterface-Node und Publisher für den UserInterface-Node. 
+				\paragraph{Aufgabe} Das UdpServer-Nodelet wird vom RadioInterface-Nodelet verwendet, um den Nachrichtenverkehr über das Netzwerk realisieren zu können. 
+				\paragraph{Assoziationen} Das UdpServer-Nodelet ist Subscriber vom UserInterface-Nodelet und Publisher für den UserInterface-Nodelet. 
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
@@ -452,7 +445,7 @@ roslaunch platooning_sim sim_2cars.lauch
 	\label{tests}
 		\subsection{Test-Standard}
 		\label{test_standard}
-		Als Testing Framework für unsere Unit Tests haben wir im Rahmen des Projektes Google Test verwendet.
+		Als Test-Framework für unsere Unit Tests haben wir im Rahmen des Projektes Google Test verwendet.
 		Hierbei handelt es sich um eine plattformübergreifende\footnote{Verfügbar auf den Betriebssystemen Linux, Windows, Mac OS},
 		von Google entwickelte Test-Bibliothek für die Programmiersprache C++. Diese zeichnet sich durch schnelle Performanz und 
 		Wiederverwertbarkeit aus. Letzteres war im Projekt von Vorteil, da die gleichen Tests auf unterschiedlichen Systemen der 
@@ -472,10 +465,10 @@ roslaunch platooning_sim sim_2cars.lauch
 		
 		\subsection{Test-Cases}
 		\label{test_cases}
-			\subsubsection{Node Prioritization}
+			\subsubsection{Nodelet Prioritization}
 			\label{node_prioritization}
 				\paragraph{Test 1:}{Test Geschwindigkeitskontrolle durch Remote Control}
-				\paragraph{Beschreibung:} Getestet wird, ob Prioritization Node auf Geschwindigkeitskontrolle durch Remote Control reagiert.
+				\paragraph{Beschreibung:} Getestet wird, ob Prioritization Nodelet auf Geschwindigkeitskontrolle durch Remote Control reagiert.
 				\paragraph{Input:}
 				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
@@ -502,7 +495,7 @@ roslaunch platooning_sim sim_2cars.lauch
 				\end{itemize} 			
 							
 				\paragraph{Test 3:} {Test Geschwindigkeitskontrolle durch Platooning}
-				\paragraph{Beschreibung:} Getestet wird, ob Prioritization Node auf Geschwindigkeitsvorgabe von Platooning reagiert. 
+				\paragraph{Beschreibung:} Getestet wird, ob das Prioritization Nodelet auf Geschwindigkeitsvorgabe von Platooning reagiert. 
 				\paragraph{Input:}
 				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
@@ -521,7 +514,7 @@ roslaunch platooning_sim sim_2cars.lauch
 				\end{itemize} 				
 
 				\paragraph{Test 4:} {Test Platooning Toggle}
-				\paragraph{Beschreibung:} Es wird überprüft, ob das Abschalten der Kontrolle durch die Platooning Node funktioniert.
+				\paragraph{Beschreibung:} Es wird überprüft, ob das Abschalten der Kontrolle durch das Platooning Nodelet funktioniert.
 				\paragraph{Input:}
 				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Platooning:} \emph{enable\_platooning = false}
@@ -532,10 +525,10 @@ roslaunch platooning_sim sim_2cars.lauch
 					\item \textbf{Empfang von Daten:} \emph{vehiclecontrol\_received = false}
 				\end{itemize}
 				
-			\subsubsection{Node Longitudinal Processing}
+			\subsubsection{Nodelet Longitudinal Processing}
 			\label{node_longitudinal_processing}
 			\paragraph{Test 1:}{Test Geschwindigkeitsupdate}
-			\paragraph{Beschreibung:} Getestet wird, ob Geschwindigkeitsanpassung durch Longitudinal Processing Node funktioniert.
+			\paragraph{Beschreibung:} Getestet wird, ob Geschwindigkeitsanpassung durch das Longitudinal Processing Nodelet funktioniert.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Ziel Geschwindigkeit:} \emph{target\_speed = 3}
@@ -559,10 +552,10 @@ roslaunch platooning_sim sim_2cars.lauch
 				\item \textbf{Distanz:} \emph{(lv\_pos - fv\_pos \textgreater 0) \&\& (lv\_pos - fv\_pos \textless 1)}
 			\end{itemize} 			
 			
-			\subsubsection{Node Platooning}
+			\subsubsection{Nodelet Platooning}
 			\label{node_platooning}
 			\paragraph{Test 1:}{Test Platoon Erstellung}
-			\paragraph{Beschreibung:} Es wird überprüft, ob die Platoon-Einstellungen übernommen werden
+			\paragraph{Beschreibung:} Es wird überprüft, ob die Platoon-Einstellungen übernommen werden.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Platooning Toogle:} \emph{enable\_platooning = true}
@@ -588,10 +581,10 @@ roslaunch platooning_sim sim_2cars.lauch
 				\item \textbf{Vehicle, von dem Request kommt:} \emph{dst\_vehicle = 5}
 			\end{itemize} 			
 
-			\subsubsection{MessageDistribution}
+			\subsubsection{Nodelet MessageDistribution}
 			\label{node_message_distribution}
 			\paragraph{Test 1:}{Test LV Broadcast 1
-			\paragraph{Beschreibung:} Test LV Broadcast von IN\_PLATOONING\_MSG zu IN\_LV\_BROADCAST
+			\paragraph{Beschreibung:} Test LV Broadcast von IN\_PLATOONING\_MSG zu IN\_LV\_BROADCAST.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
@@ -604,7 +597,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 
 			\paragraph{Test 2:}{Test LV Broadcast 2}
-			\paragraph{Beschreibung:} Test LV Broadcast von OUT\_LV\_BROADCAST zu OUT\_PLATOONING\_MSG
+			\paragraph{Beschreibung:} Test LV Broadcast von OUT\_LV\_BROADCAST zu OUT\_PLATOONING\_MSG.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = OUT\_PLATOONING\_MSG}
@@ -615,7 +608,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}				
 
 			\paragraph{Test 3:}{Test LV Accept Msg}
-			\paragraph{Beschreibung:} Test ob LV Accept Msg funktioniert
+			\paragraph{Beschreibung:} Test ob LV Accept Msg funktioniert.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
@@ -632,7 +625,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}	
 			
 			\paragraph{Test 4:}{Test LV\_Accept zu OUT\_PLATOONING\_MSG}
-			\paragraph{Beschreibung:} Test Msg LV Accept zu Out Platooning
+			\paragraph{Beschreibung:} Test Msg LV Accept zu Out Platooning.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = LV\_Accept}
@@ -644,7 +637,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}	
 
 			\paragraph{Test 5:}{Test IN\_PLATOONING\_MSG zu IN\_LV\_REJECT}
-			\paragraph{Beschreibung:} Test Msg In Platooning zu LV Reject
+			\paragraph{Beschreibung:} Test Msg In Platooning zu LV Reject.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
@@ -657,7 +650,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 6:}{Test IN\_PLATOONING\_MSG zu IN\_FV\_HEARTBEAT}
-			\paragraph{Beschreibung:} Test Msg In Platooning zu FV Heartbeat
+			\paragraph{Beschreibung:} Test Msg In Platooning zu FV Heartbeat.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
@@ -670,7 +663,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 7:}{Test OUT\_FV\_HEARTBEAT zu OUT\_PLATOONING\_MSG}
-			\paragraph{Beschreibung:} Test Msg FV Heartbeat zu Platooning
+			\paragraph{Beschreibung:} Test Msg FV Heartbeat zu Platooning.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = OUT\_FV\_HEARTBEAT}
@@ -681,7 +674,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}				
 					
 			\paragraph{Test 8:}{Test IN\_PLATOONING\_MSG zu IN\_FV\_LEAVE}
-			\paragraph{Beschreibung:} Test Msg In Platooning zu FV Leave
+			\paragraph{Beschreibung:} Test Msg In Platooning zu FV Leave.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
@@ -694,7 +687,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 9:}{Test OUT\_FV\_LEAVE zu OUT\_PLATOONING\_MSG}
-			\paragraph{Beschreibung:} Test Msg In FV Leave zu Platooning
+			\paragraph{Beschreibung:} Test Msg In FV Leave zu Platooning.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = OUT\_FV\_LEAVE}
@@ -705,7 +698,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 
 			\paragraph{Test 10:}{Test IN\_PLATOONING\_MSG zu IN\_FV\_REQUEST}
-			\paragraph{Beschreibung:} Test Msg In Platooning zu FV request
+			\paragraph{Beschreibung:} Test Msg In Platooning zu FV request.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
@@ -718,7 +711,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 
 			\paragraph{Test 11:}{Test OUT\_FV\_REQUEST zu OUT\_PLATOONING\_MSG}
-			\paragraph{Beschreibung:} Test Msg Out FV request zu Out Platooning
+			\paragraph{Beschreibung:} Test Msg Out FV request zu Out Platooning.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = OUT\_FV\_REQUEST}
@@ -729,7 +722,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}	
 			
 			\paragraph{Test 12:}{Test IN\_PLATOONING\_MSG zu INPUT\_REMOTECONTROL}
-			\paragraph{Beschreibung:} Test Msg In Platooning zu Input Remote control request
+			\paragraph{Beschreibung:} Test Msg In Platooning zu Input Remote control request.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
@@ -742,7 +735,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}				
 			
 			\paragraph{Test 13:}{Test IN\_PLATOONING\_MSG zu TOGGLE\_REMOTECONTROL}
-			\paragraph{Beschreibung:} Test Msg In Platooning zu Remote control toggle
+			\paragraph{Beschreibung:} Test Msg In Platooning zu Remote control toggle.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
@@ -755,7 +748,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 14:}{Test IN\_PLATOONING\_MSG zu TOGGLE\_PLATOONING}
-			\paragraph{Beschreibung:} Test Msg In Platooning zu platooning toggle
+			\paragraph{Beschreibung:} Test Msg In Platooning zu platooning toggle.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
@@ -768,7 +761,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 15:}{Test IN\_PLATOONING\_MSG zu USERINTERFACE}
-			\paragraph{Beschreibung:} Test Msg In Platooning zu user interface
+			\paragraph{Beschreibung:} Test Msg In Platooning zu user interface.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message Type:} \emph{message\_type = IN\_PLATOONING\_MSG}
@@ -778,10 +771,10 @@ roslaunch platooning_sim sim_2cars.lauch
 				\item \textbf{Message kommt nicht an}
 			\end{itemize}
 			
-			\subsubsection{Node UdpServer}
+			\subsubsection{Nodelet UdpServer}
 			\label{node_upd_server}
 			\paragraph{Test:}{Stresstest}
-				\paragraph{Beschreibung:} 2 threads senden für 10 Sekunden, UPD server sollte alle erhalten
+				\paragraph{Beschreibung:} 2 Threads senden für 10 Sekunden, UPD server sollte alle erhalten.
 				\paragraph{Input:}
 				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Send Counter:} \emph{send\_counter = 0}
@@ -792,10 +785,10 @@ roslaunch platooning_sim sim_2cars.lauch
 					\item \textbf{Send Counter = Receive Counter:} \emph{send\_counter = receive\_counter}
 				\end{itemize}	
 				
-			\subsubsection{Node RadioInterface}
+			\subsubsection{Nodelet RadioInterface}
 			\label{node_radio_interface}
 			\paragraph{Test 1:} {Msg UPD server an IN\_PLATOONING\_MSG}
-			\paragraph{Beschreibung:} Überprüft, ob Nachricht von UDP Server an IN\_PLATOONING\_MSG gesendet werden kann
+			\paragraph{Beschreibung:} Überprüft, ob Nachricht von UDP Server an IN\_PLATOONING\_MSG gesendet werden kann.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message type:} \emph{message\_type = FV\_REQUEST}
@@ -808,7 +801,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 2:}{Msg von OUT\_PLATOONING\_MSG an UDP server}
-			\paragraph{Beschreibung:} Überprüft, ob Nachricht von OUT\_PLATOONING\_MSG an UDP Server gesendet werden kann
+			\paragraph{Beschreibung:} Überprüft, ob Nachricht von OUT\_PLATOONING\_MSG an UDP Server gesendet werden kann.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Message type:} \emph{message\_type = FV\_LEAVE}
@@ -836,7 +829,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\subsubsection{Messagetypes}
 			\label{message_types}
 			\paragraph{Test 1:}{decode/encode userInterface msg}
-			\paragraph{Beschreibung:} testet encode/decode für userInterface.
+			\paragraph{Beschreibung:} Testet encode/decode für userInterface.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Remote Control:} \emph{remotecontrol\_enabled = false}
@@ -871,7 +864,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 2:}{decode/encode lv\_broadcast msg}
-			\paragraph{Beschreibung:} testet encode/decode für lv\_broadcast.
+			\paragraph{Beschreibung:} Testet encode/decode für lv\_broadcast.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 1}
@@ -890,7 +883,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 
 			\paragraph{Test 3:}{decode/encode lv\_accept msg}
-			\paragraph{Beschreibung:} testet encode/decode für lv\_broadcast.
+			\paragraph{Beschreibung:} Testet encode/decode für lv\_broadcast.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 2}
@@ -905,7 +898,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 4:}{decode/encode lv\_reject msg}
-			\paragraph{Beschreibung:} testet encode/decode für lv\_reject.
+			\paragraph{Beschreibung:} Testet encode/decode für lv\_reject.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Destination Vehicle:} \emph{dst\_vehicle = 2}
@@ -921,7 +914,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			
 			
 			\paragraph{Test 5:}{decode/encode fv\_request msg}
-			\paragraph{Beschreibung:} testet encode/decode für fv\_request.
+			\paragraph{Beschreibung:} Testet encode/decode für fv\_request.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
@@ -932,7 +925,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}		
 
 			\paragraph{Test 6:}{decode/encode fv\_hearbeat msg}
-			\paragraph{Beschreibung:} testet encode/decode für fv\_hearbeat.
+			\paragraph{Beschreibung:} Testet encode/decode für fv\_hearbeat.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
@@ -945,7 +938,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 
 			\paragraph{Test 7:}{decode/encode fv\_leave msg}
-			\paragraph{Beschreibung:} testet encode/decode für fv\_leave.
+			\paragraph{Beschreibung:} Testet encode/decode für fv\_leave.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Source Vehicle:} \emph{src\_vehicle = 3}
@@ -958,7 +951,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}	
 
 			\paragraph{Test 8:}{decode/encode platooningToggle msg}
-			\paragraph{Beschreibung:} testet encode/decode für platooningToggle.
+			\paragraph{Beschreibung:} Testet encode/decode für platooningToggle.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Vehicle ID:} \emph{vehicle\_id = 3}
@@ -977,7 +970,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}			
 	
 			\paragraph{Test 9:}{decode/encode platooningState msg}
-			\paragraph{Beschreibung:} testet encode/decode für platooningState.
+			\paragraph{Beschreibung:} Testet encode/decode für platooningState.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
@@ -1000,7 +993,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 				
 			\paragraph{Test 10:}{decode/encode remotecontrolInput msg}
-			\paragraph{Beschreibung:} testet encode/decode für remotecontrolInput.
+			\paragraph{Beschreibung:} Testet encode/decode für remotecontrolInput.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Vehicle ID:} \emph{vehicle\_id = 1}
@@ -1017,7 +1010,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 11:}{decode/encode acceleration msg}
-			\paragraph{Beschreibung:} testet encode/decode für acceleration.
+			\paragraph{Beschreibung:} Testet encode/decode für acceleration.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Acceleration:} \emph{acceleration = 2.1f}
@@ -1028,7 +1021,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 12:}{decode/encode steeringAngle msg}
-			\paragraph{Beschreibung:} testet encode/decode für steeringAngle.
+			\paragraph{Beschreibung:} Testet encode/decode für steeringAngle.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Steering Angle:} \emph{steering\_angle = 2.1f}
@@ -1039,7 +1032,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 13:}{decode/encode gazupdate msg}
-			\paragraph{Beschreibung:} testet encode/decode für gazupdate.
+			\paragraph{Beschreibung:} Testet encode/decode für gazupdate.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Speed} \emph{speed = 2.1f}
@@ -1054,7 +1047,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 14:}{decode/encode stmupdate msg}
-			\paragraph{Beschreibung:} testet encode/decode für stmupdate.
+			\paragraph{Beschreibung:} Testet encode/decode für stmupdate.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Acceleration:} \emph{acceleration = 1.2f}
@@ -1069,7 +1062,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 15:}{decode/encode targetSpeed msg}
-			\paragraph{Beschreibung:} testet encode/decode für targetSpeed.
+			\paragraph{Beschreibung:} Testet encode/decode für targetSpeed.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Target Speed:} \emph{target\_speed = 5.5f}
@@ -1080,7 +1073,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 16:}{decode/encode targetAngle msg}
-			\paragraph{Beschreibung:} testet encode/decode für targetAngle.
+			\paragraph{Beschreibung:} Testet encode/decode für targetAngle.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Target Angle:} \emph{target\_angle = 5.5f}
@@ -1091,7 +1084,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 17:}{decode/encode targetDistance msg}
-			\paragraph{Beschreibung:} testet encode/decode für targetDistance.
+			\paragraph{Beschreibung:} Testet encode/decode für targetDistance.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{Target Distance:} \emph{target\_distance = 324.4f}
@@ -1102,7 +1095,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 18:}{decode/encode speed msg}
-			\paragraph{Beschreibung:} testet encode/decode für speed.
+			\paragraph{Beschreibung:} Testet encode/decode für speed.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{speed:} \emph{target\_distance = 12.0f}
@@ -1113,7 +1106,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 			
 			\paragraph{Test 19:}{decode/encode distance msg}
-			\paragraph{Beschreibung:} testet encode/decode für distance.
+			\paragraph{Beschreibung:} Testet encode/decode für distance.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{distance:} \emph{distance = 12.0f}
@@ -1126,7 +1119,7 @@ roslaunch platooning_sim sim_2cars.lauch
 		\subsubsection{Integrationtest Platooning}
 			\label{integrationtest_platooning}
 			\paragraph{Test 1:}{Platoon erstellen, LV\_BROADCAST erhalten}
-			\paragraph{Beschreibung:} Setzt LV und zwei FVs in CREATING, erwartet, dass LV\_BROADCAST und FV\_HEARTBEAT kommen
+			\paragraph{Beschreibung:} Setzt LV und zwei FVs in CREATING, erwartet, dass LV\_BROADCAST und FV\_HEARTBEAT kommen.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{platooningToggle} toggle LV und zwei FVs 
@@ -1152,7 +1145,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\end{itemize}
 
 			\paragraph{Test 3:}{LV ändert platooning Parameter}
-			\paragraph{Beschreibung:} LV ändert inner platoon distance, platoonspeed, FVs registrieren das Update
+			\paragraph{Beschreibung:} LV ändert inner platoon distance, platoonspeed, FVs registrieren das Update.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{lv\_broadcast} mit geänderten Werten 
@@ -1160,7 +1153,7 @@ roslaunch platooning_sim sim_2cars.lauch
 
 			\paragraph{Erwarteter Output:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{nix:} FVs reagieren momentan nicht auf platooing Parameter, da diese vom User pro Vehicle gesetzt werden und nicht vom Platoon
+				\item \textbf{nix:} FVs reagieren momentan nicht auf platooing Parameter, da diese vom User pro Vehicle gesetzt werden und nicht vom Platoon.
 			\end{itemize}
 
 			\paragraph{Test 4:}{LV timeout}
@@ -1288,7 +1281,7 @@ failed 3 of 32 tests
 \label{eigenleistung}
 	\section{Cooles Kind 1}
 		Für nähere Informationen siehe Anhang \ref{appendix:xynode}. Vergleiche dazu auch \cite{ibm}.
-	\section{Falco Becker}
+	\section{Falko Becker}
 	\section{Yannick Boerner}
 	\section{Anne Borchard}
 	\section{Franz Eichberg}
