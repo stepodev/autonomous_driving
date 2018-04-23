@@ -333,22 +333,11 @@ roslaunch platooning_sim sim_2cars.lauch
 					\subparagraph{Tolle Methode A}
 				\paragraph{Input}
 				\paragraph{Output}
-			
-			\subsubsection{Message Translation}
-			\label{message_translation}
-				\paragraph{Aufgabe} Der MessageDistribution-Node ist dafür verantwortlich, Messages in Datentypen zu übersetzen, damit diese dann von den unterschiedlichen Nodes verwendet werden können. 
-				\paragraph{Assoziationen} Der MessageDistribution-Node ist Subscriber vom RadioInterface-Node und dem Platooning-Node. Er ist Publisher für den UserInterface-Node, den RadioInterface-Node, den Platooning-Node und den Prioritization-Node. 
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
 
 			\subsubsection{Message Distribution}
 			\label{message_distribution}
 				\paragraph{Aufgabe} Der MessageDistribution-Node erhält alle einkommenden Nachrichten. Je nach MessageType werden diese Nachrichten dann vom MessageDistribution-Node auf den passenden Topics veröffentlicht. Dadurch erhalten alle Nodes immer die richtigen Nachrichten. 
-				\paragraph{Assoziationen} ???
+				\paragraph{Assoziationen} Der MessageDistribution-Node ist Subscriber vom RadioInterface-Node, vom Platooning-Node und vom UserInterFaceData-Node. Er ist Publisher für den RadioInterface-Node, den Platooning-Node und den Prioritization-Node. 
 				\paragraph{Attribute}
 				    \begin{itemize}
 				        \item Alle Attribute sind selbsterklärend. 
@@ -362,8 +351,22 @@ roslaunch platooning_sim sim_2cars.lauch
                     \subparagraph{hndl\_fv\_leave} Verpackt die zu übertragenden Daten in eine FV\_LEAVE-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_fv\_request} Verpackt die zu übertragenden Daten in eine FV\_REQEUEST-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_ui} Verpackt die zu übertragenden Daten in eine REMOTE\_USERINTERFACE-Nachricht und veröffentlicht diese im Netzwerk. 
-				\paragraph{Input} ???
-				\paragraph{Output} ???
+				\paragraph{Input} 
+				    \begin{itemize}
+				        \item out/platooningProtocol von Node MessageDistribution
+						\item userInterface von Node UserInterfaceData
+				        \item out/FV\_REQUEST von Node Platooning
+				        \item out/LV\_BROADCAST von Node Platooning
+				    \end{itemize}
+				\paragraph{Output}
+				    \begin{itemize}
+				        \item in/platooningProtocol an Node MessageDistribution
+				        \item in/FV\_REQUEST an Node Platooning
+						\item in/LV\_BROADCAST an Node Platooning
+						\item platooningToggle an Node Prioritization
+						\item remoteControlToggle an Node Prioritization
+						\item remoteControlInput an Node Prioritization
+				    \end{itemize}
 
 			\subsubsection{MessageTypes}
 			\label{messages_types}
