@@ -404,7 +404,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\subsubsection{Radio Interface}
 			\label{radio_interface}
 				\paragraph{Aufgabe} Der RadioInterface-Node wickelt den Nachrichtenverkehr über UDP ab. Er benutzt den UDP-Server, um das Senden und Empfangen von Netzwerk-Nachrichten über UDP zu ermöglichen. 
-				\paragraph{Assoziationen} Der RadioInterface-Node ist 
+				\paragraph{Assoziationen} Der RadioInterface-Node ist Subscriber vom MessageDistribution-Node. Er ist Publisher für den MessageDistribution-Node. Er ermpfaengt außerdem Daten vom UdpServer und den anderen Autos und schickt Daten an diese. 
 				\paragraph{Attribute}
 					\begin{itemize}
 					    \item std::unique\_ptr<UdpServer> platooning\_server\_ptr\_ Ein einmaliger Pointer für den Platooning Server. 
@@ -417,11 +417,13 @@ roslaunch platooning_sim sim_2cars.lauch
 				    \begin{itemize}
 				        \item in/platooningProtocol von Node MessageDistribution
 				        \item Daten vom UdpServer
+						\item Daten von den anderen Autos
 				    \end{itemize}
 				\paragraph{Output}
 				    \begin{itemize}
 				        \item out/platooningProtocol an Node MessageDistribution
 				        \item Daten an UdpServer
+						\item Daten an die anderen Autos
 				    \end{itemize}
 				
 		    \subsubsection{UdpServer}
