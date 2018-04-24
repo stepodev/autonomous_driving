@@ -1,7 +1,8 @@
 \documentclass[a4paper, 12pt, titlepage]{scrartcl}
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage[toc,title,page]{appendix} % Anhang 
+\usepackage[toc,title,page]{appendix} % Anhang
+\usepackage{pdfpages} % Einbinden von PDFs im Anhang
 
 \usepackage{listings}  % zum Codeeinbinden, Doku: http://users.ecs.soton.ac.uk/srg/softwaretools/document/start/listings.pdf
 \lstdefinestyle{customcpp}{
@@ -51,9 +52,25 @@ backend=biber
 		Zum anderen, worauf in diesem Projekt ein großes Augenmerk gelegt worden ist, kommuniziert das führende Fahrzeug mit den Mitgliedern seiner Kolonne über eine drahtlose Verbindung. 
 		Erwartet wird, dass diese Kommunikation schneller durchgeführt wird als die Auswertung der Sensordaten jedes einzelnen Kolonnen-Teilnehmers. 
 		In Folge dessen können die Sicherheitsabstände zwischen den Fahrzeugen signifikant geringer gehalten werden. 
-	\section{Lastenheft} 
-	\label{lastenheft}
-	%(nicht-)funktionale anforderungen, was liefern wir am ende, use cases. nur grob erwähnen und dann im anhang auf das lastenheft verweisen??
+	\section{Anforderungen} 
+	\label{anforderungen}
+		Um eine funktionierende Kolonnenfahrt demonstrieren zu können, mussten wir zu Beginn des Projekts mit einem fingierten Kunden verbindliche Ziele festlegen. 
+		Als Kunde agierte der Leiter des Semesterprojekts, Prof. Dr. Schlingloff. 
+		
+		Als Minimum wurde gefordert, dass die Fahrzeuge der drei Arbeitsgruppen als Kolonne auf gerader Strecke fahren und zu einem unbekannten 
+		Zeitpunkt eigenständig vor einem Hindernis bremsen sollen. Dabei sollen die Fahrzeuge jederzeit den festgelegten Mindestabstand zueinander 
+		einhalten und Unfälle vermeiden. Positionen und Abstand der Fahrzeuge sind im Voraus festgelegt, die Organisierung als Kolonne erfolgt ohne 
+		externen Befehl, da ein Eingriff von Außen i.A. nicht vorgesehen ist, abgesehen vom initialen Startsignal über einen mit den
+		Fahrzeugen verbundenen Computer. Die potentiellen Ausbaustufen sehen einen komplexeren Ablauf der Kolonnenfahrweise vor:
+		\begin{itemize}
+			\item Unterschiedliche Abstände zwischen den Fahrzeugen zu Beginn der Demonstration
+			\item Veränderung des Mindestabstandes zwischen den Fahrzeugen während der Demonstration
+			\item Variable Anzahl an Teilnehmern der Kolonne während der Demonstration (Fahrzeug kommt im laufenden Betrieb dazu bzw. entfernt sich)
+			\item Fahrstrecke in Kreisform
+		\end{itemize}
+		
+		Eine detailliertere Auflistung der Anforderungen und Ausbaustufen sind im Anhang \ref{appendix:lastenheft} in Form eines Lastenheftes vorhanden.
+	
 	\section{Projekt-Organisation und Umfeld} 
 	\label{umfeld}
 		Wie bereits in Abschnitt \ref{projektbeschreibung} erwähnt, beteiligten sich an diesem Projekt drei parallel zueinander arbeitende Gruppen. 
@@ -1092,5 +1109,10 @@ backend=biber
 		\item libgtest\_main.so -- libgtest\_main.so
 		\item libgtest.so -- libgtest.so
 	\end{itemize}
+
+\section{Lastenheft}
+\label{appendix:lastenheft}
+\includepdf[pages=-]{lastenheft.pdf}
+
 \end{appendices}
 \end{document}
