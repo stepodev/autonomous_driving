@@ -93,7 +93,7 @@ backend=biber
 
 	Das Projekt wurde in vier Workstreams aufgeteilt: Planung, Software, Fahrzeug und Abnahme. Jeder Workstream wurde grob in drei Meilensteine eingeteilt: ''at least it's something", "getting there'' und "final", welche jeweils verfeinerte Prototypen des finalen Produkts darstellen. Den Meilensteinen sind jeweils Gitlab issues zugeteilt. Jede issue ist durch eine user story beschrieben und wird durch Erfüllung der Akzeptanzkriterien und einem code review abgeschlossen.
 
-	\includegraphics[width=\textwidth]{projektplan.pdf}
+	%\includegraphics[width=\textwidth]{projektplan.pdf}
 
 	\section{Projektablauf} 
 	\label{projektablauf}
@@ -391,11 +391,34 @@ roslaunch platooning_sim sim_2cars.lauch
 			\label{longitudinal_processing}
 				\paragraph{Aufgabe} Der LongitudinalProcessing-Node ist für die Beschleunigung des Autos verantwortlich. Er erhält die gewünschte Geschwindigkeit aus dem Prioritization-Node und schickt dann die gewünschte Beschleunigung an den VehicleControl-Node. 
 				\paragraph{Assoziationen} Der LongitudinalProcessing-Node ist Subscriber vom Prioritization-Node, dem DistancePreprocessing-Node und dem Speed Sensor. Er ist Publisher für den VehicleControl-Node. 
+				
+				
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
+					\subparagraph{hndl_distance_from_sensor} Empfängt den Abstand vom Sensor *TODO* (Was für ein Sensor?) und prüft ob es zwei Messungen gibt (warum das?). Ist das der Fall so wird die Beschleunigung angepasst und die ensprechenden Flags für die erfolgte Distanzmessung gesetzt. 
+					
+					\subparagraph{hndl_target_distance} Empfängt die aktuelle Zieldistanz *TODO* (platoon distance?) und prüft ob diese in einem angemessenen Bereich liegt. Ist das der Fall so wird die Zieldistanz des der PD Steuerung übermittelt. Bei unangemessen niedriger Zieldistanz (kleiner als 0,5) wird diese auf 1 gesetzt.
+					
+					\subparagraph{hndl_current_velocity} Empfängt die aktuellen Beschleunigungsdaten. Falls diese von der derzeitigen Beschleunigung abweicht, wird der Wert angepasst und das entsprechende Flag gesetzt.
+					
+					\subparagraph{hndl_targetSpeed} Empfängt die aktuelle Zielgeschwindigkeit. Falls diese von der derzeitigen Geschwindigkeit abweicht, wird der Wert angepasst und das entsprechende Flag gesetzt.
+					
+					\subparagraph{update_velocity} Berechnet die Beschleunigung anhand der aktuellen Zielgeschwindigkeit, Zieldistanz, Beschleunigung und des Abstands. Außerdem wird die relative Geschwindigkeit anhand der Veränderung des Abstands berechnet um daraus die Anpassung des Zielabstands zu berechnen und die Beschleunigung zu versenden.
+					
+					\subparagraph{check_dead_datasrc} Verarbeitet eine Ablaufzeit, in der auf eine Aktualisierung des Abstands- und Beschleunigungsmessung gewartet wird. Läuft die Zeit ab, wird derzeit ein Notstopp durchgeführt.
+					
+					\subparagraph{calulate_velocity} Hilfsfunktion zur Berechnung der aktuellen Beschleunigung.	
+					
+					\subparagraph{set_target_position} Hilfsfunktion zum Berechnen und Setzen der Zielposition.	
+
+					
+				\paragraph{Input} 
+				    \begin{itemize}
+				    	\item in/platooningProtocol von Node MessageDistribution
+				    	\item Daten vom UdpServer
+				    \end{itemize}
+				
 				\paragraph{Output}
 						
 			\subsubsection{Radio Interface}
