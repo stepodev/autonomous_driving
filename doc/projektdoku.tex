@@ -1,7 +1,8 @@
 \documentclass[a4paper, 12pt, titlepage]{scrartcl}
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage[toc,title,page]{appendix} % Anhang 
+\usepackage[toc,title,page]{appendix} % Anhang
+\usepackage{pdfpages} % Einbinden von PDFs im Anhang
 
 \usepackage{lmodern}  % for bold teletype font
 \usepackage{amsmath}  % for \hookrightarrow
@@ -61,9 +62,25 @@ backend=biber
 		Zum anderen, worauf in diesem Projekt ein großes Augenmerk gelegt worden ist, kommuniziert das führende Fahrzeug mit den Mitgliedern seiner Kolonne über eine drahtlose Verbindung. 
 		Erwartet wird, dass diese Kommunikation schneller durchgeführt wird als die Auswertung der Sensordaten jedes einzelnen Kolonnen-Teilnehmers. 
 		In Folge dessen können die Sicherheitsabstände zwischen den Fahrzeugen signifikant geringer gehalten werden. 
-	\section{Lastenheft} 
-	\label{lastenheft}
-	%(nicht-)funktionale anforderungen, was liefern wir am ende, use cases. nur grob erwähnen und dann im anhang auf das lastenheft verweisen??
+	\section{Anforderungen} 
+	\label{anforderungen}
+		Um eine funktionierende Kolonnenfahrt demonstrieren zu können, mussten wir zu Beginn des Projekts mit einem fingierten Kunden verbindliche Ziele festlegen. 
+		Als Kunde agierte der Leiter des Semesterprojekts, Prof. Dr. Schlingloff. 
+		
+		Als Minimum wurde gefordert, dass die Fahrzeuge der drei Arbeitsgruppen als Kolonne auf gerader Strecke fahren und zu einem unbekannten 
+		Zeitpunkt eigenständig vor einem Hindernis bremsen sollen. Dabei sollen die Fahrzeuge jederzeit den festgelegten Mindestabstand zueinander 
+		einhalten und Unfälle vermeiden. Positionen und Abstand der Fahrzeuge sind im Voraus festgelegt, die Organisierung als Kolonne erfolgt ohne 
+		externen Befehl, da ein Eingriff von Außen i.A. nicht vorgesehen ist, abgesehen vom initialen Startsignal über einen mit den
+		Fahrzeugen verbundenen Computer. Die potentiellen Ausbaustufen sehen einen komplexeren Ablauf der Kolonnenfahrweise vor:
+		\begin{itemize}
+			\item Unterschiedliche Abstände zwischen den Fahrzeugen zu Beginn der Demonstration
+			\item Veränderung des Mindestabstandes zwischen den Fahrzeugen während der Demonstration
+			\item Variable Anzahl an Teilnehmern der Kolonne während der Demonstration (Fahrzeug kommt im laufenden Betrieb dazu bzw. entfernt sich)
+			\item Fahrstrecke in Kreisform
+		\end{itemize}
+		
+		Eine detailliertere Auflistung der Anforderungen und Ausbaustufen sind im Anhang \ref{appendix:lastenheft} in Form eines Lastenheftes vorhanden.
+	
 	\section{Projekt-Organisation und Umfeld} 
 	\label{umfeld}
 		Wie bereits in Abschnitt \ref{projektbeschreibung} erwähnt, beteiligten sich an diesem Projekt drei parallel zueinander arbeitende Gruppen. 
@@ -333,22 +350,11 @@ roslaunch platooning_sim sim_2cars.lauch
 					\subparagraph{Tolle Methode A}
 				\paragraph{Input}
 				\paragraph{Output}
-			
-			\subsubsection{Message Translation}
-			\label{message_translation}
-				\paragraph{Aufgabe} Der MessageDistribution-Node ist dafür verantwortlich, Messages in Datentypen zu übersetzen, damit diese dann von den unterschiedlichen Nodes verwendet werden können. 
-				\paragraph{Assoziationen} Der MessageDistribution-Node ist Subscriber vom RadioInterface-Node und dem Platooning-Node. Er ist Publisher für den UserInterface-Node, den RadioInterface-Node, den Platooning-Node und den Prioritization-Node. 
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
 
 			\subsubsection{Message Distribution}
 			\label{message_distribution}
 				\paragraph{Aufgabe} Der MessageDistribution-Node erhält alle einkommenden Nachrichten. Je nach MessageType werden diese Nachrichten dann vom MessageDistribution-Node auf den passenden Topics veröffentlicht. Dadurch erhalten alle Nodes immer die richtigen Nachrichten. 
-				\paragraph{Assoziationen} ???
+				\paragraph{Assoziationen} Der MessageDistribution-Node ist Subscriber vom RadioInterface-Node, vom Platooning-Node und vom UserInterFaceData-Node. Er ist Publisher für den RadioInterface-Node, den Platooning-Node und den Prioritization-Node. 
 				\paragraph{Attribute}
 				    \begin{itemize}
 				        \item Alle Attribute sind selbsterklärend. 
@@ -362,8 +368,22 @@ roslaunch platooning_sim sim_2cars.lauch
                     \subparagraph{hndl\_fv\_leave} Verpackt die zu übertragenden Daten in eine FV\_LEAVE-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_fv\_request} Verpackt die zu übertragenden Daten in eine FV\_REQEUEST-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_ui} Verpackt die zu übertragenden Daten in eine REMOTE\_USERINTERFACE-Nachricht und veröffentlicht diese im Netzwerk. 
-				\paragraph{Input} ???
-				\paragraph{Output} ???
+				\paragraph{Input} 
+				    \begin{itemize}
+				        \item out/platooningProtocol von Node MessageDistribution
+						\item userInterface von Node UserInterfaceData
+				        \item out/FV\_REQUEST von Node Platooning
+				        \item out/LV\_BROADCAST von Node Platooning
+				    \end{itemize}
+				\paragraph{Output}
+				    \begin{itemize}
+				        \item in/platooningProtocol an Node MessageDistribution
+				        \item in/FV\_REQUEST an Node Platooning
+						\item in/LV\_BROADCAST an Node Platooning
+						\item platooningToggle an Node Prioritization
+						\item remoteControlToggle an Node Prioritization
+						\item remoteControlInput an Node Prioritization
+				    \end{itemize}
 
 			\subsubsection{MessageTypes}
 			\label{messages_types}
@@ -424,7 +444,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\subsubsection{Radio Interface}
 			\label{radio_interface}
 				\paragraph{Aufgabe} Der RadioInterface-Node wickelt den Nachrichtenverkehr über UDP ab. Er benutzt den UDP-Server, um das Senden und Empfangen von Netzwerk-Nachrichten über UDP zu ermöglichen. 
-				\paragraph{Assoziationen} Der RadioInterface-Node ist 
+				\paragraph{Assoziationen} Der RadioInterface-Node ist Subscriber vom MessageDistribution-Node. Er ist Publisher für den MessageDistribution-Node. Er ermpfaengt außerdem Daten vom UdpServer und den anderen Autos und schickt Daten an diese. 
 				\paragraph{Attribute}
 					\begin{itemize}
 					    \item std::unique\_ptr<UdpServer> platooning\_server\_ptr\_ Ein einmaliger Pointer für den Platooning Server. 
@@ -437,11 +457,13 @@ roslaunch platooning_sim sim_2cars.lauch
 				    \begin{itemize}
 				        \item in/platooningProtocol von Node MessageDistribution
 				        \item Daten vom UdpServer
+						\item Daten von den anderen Autos
 				    \end{itemize}
 				\paragraph{Output}
 				    \begin{itemize}
 				        \item out/platooningProtocol an Node MessageDistribution
 				        \item Daten an UdpServer
+						\item Daten an die anderen Autos
 				    \end{itemize}
 				
 		    \subsubsection{UdpServer}
@@ -1370,5 +1392,10 @@ failed 3 of 32 tests
 		\item libgtest\_main.so -- libgtest\_main.so
 		\item libgtest.so -- libgtest.so
 	\end{itemize}
+
+\section{Lastenheft}
+\label{appendix:lastenheft}
+\includepdf[pages=-]{lastenheft.pdf}
+
 \end{appendices}
 \end{document}
