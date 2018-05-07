@@ -27,7 +27,6 @@
 	showstringspaces=false
 }
 
-
 \pagenumbering{arabic} 
 \usepackage{graphicx}
 \usepackage[onehalfspacing]{setspace}
@@ -43,7 +42,7 @@ backend=biber
 
 \begin{document}	
 \author{Supercoole Kinder}
-\title{Projektdokumentation} 
+\title{Projektdokumentation\\Hochautomatisiertes Fahren} 
 \publishers{Humboldt-Universit\"at zu Berlin}
 \maketitle
 \tableofcontents
@@ -238,39 +237,7 @@ roslaunch platooning_sim sim_2cars.lauch
 
 		\subsection{Modulbeschreibung} 
 		\label{modulbeschreibung}
-		% Beschreibung der Nodes inkl. (Aktivitäts-)Diagramme
-			\subsubsection{Beispielnode A}
-			\label{node_a}
-				\paragraph{Aufgabe} Node A sammelt Daten bezüglich der aktuellen Radierfähigkeit verschiedener Radiergummis. Die Daten werden kontinuierlich ausgewertet, sodass bei Überschreitung von bestimmten, festgelegter Werte andere Nodes über die Änderung informiert werden. Der Quellcode ist im Anhang \ref{appendix:abcnode} hinterlegt. 
-				
-				\paragraph{Assoziationen} Zu den Subscribern gehören Node B (vgl. dazu \ref{node_b}) und Node C (ich tue so als ob ich hier eine Referenz einfüge). Die Publisher sind Node X, Y, und Z (Referenz und so, ne?).
-				\begin{figure}[h!]
-					\centering
-					\caption{Prozesse von Node A, hat nicht unbedingt viel mit der vorhergehenden Beschreibung zu tun}
-					\label{fig:node_a}
-				\end{figure}
-				
-				\paragraph{Attribute} % nur die, die eurer Meinung nach relevant sind um die Methoden besser erklären zu können, auf jeden Fall kurz halten
-				\begin{itemize}
-					\item \textbf{A-Wert:} Speichert im Integer-Format den vorletzten, vom Topic \emph{Nieder mit den Tintenkillern} erhaltenen Wert.
-					\item \textbf{B-Wert:} Speichert im Integer-Format den aktuellen, vom Topic \emph{Nieder mit den Tintenkillern} erhaltenen Wert.
-				\end{itemize} 
-				
-				\paragraph{Methoden}
-				
-					\subparagraph{Z-Methode} Berechnet die Differenz zwischen dem A- und dem B-Wert. Überschreitet diese den Wert 7, wird ein String generiert und an die Subscriber des Topics \emph{Bleistiftgeflüster} geschickt, vlg. dazu Output von Node A.
-					\subparagraph{Y-Methode} Sofern von der Z-Methode keine Überschreitung festgestellt worden ist, überschreibt die Y-Methode den A-Wert mit dem B-Wert und setzt an Stelle des B-Wertes den neu eingetroffenen Wert des Topics \emph{Nieder mit den Tintenkillern} ein. 
-				
-				\paragraph{Input} Node A ist Subscriber zum Topic \emph{Nieder mit den Tintenkillern} und empfängt im Integer-Format einen kontinuierlichen Datenstrom über die aktuelle Radierleistung. Die Daten werden von Sensor X geliefert. 
-				
-				% es werden sich vmtl. Themen aus dem Bereich 'Methoden' ueberschneiden
-				\paragraph{Output} Node A ist Publisher zum Topic \emph{Bleistiftgeflüster} und verschickt Daten, die von der Z-Methode berechnet worden sind und einen bestimmten Wert überschritten haben. Die ausgehende Nachricht erfolgt im String-Format und kann von folgender Form sein:
-				\begin{itemize}
-					\item STR\_ACC
-					\item STR\_ERR
-					\item STR\_DEF
-				\end{itemize}
-				
+		% Beschreibung der Nodes inkl. (Aktivitäts-)Diagramme	
 			\subsubsection{Prioritization}
 			\label{prioritization}
 				\paragraph{Aufgabe} Der Prioritization-Node erhält Fahrdaten vom Platooning-Node und der MessageDistribution und entscheidet dann, wie sich das Fahrzeug zu verhalten hat. Er entscheidet also zwischen verschiedenen Steuersignalen, welches gerade benutzt werden soll. 
@@ -416,21 +383,21 @@ roslaunch platooning_sim sim_2cars.lauch
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
-					\subparagraph{hndl_distance_from_sensor} Empfängt den Abstand vom Sensor *TODO* (Was für ein Sensor?) und prüft ob es zwei Messungen gibt (warum das?). Ist das der Fall so wird die Beschleunigung angepasst und die ensprechenden Flags für die erfolgte Distanzmessung gesetzt. 
+					\subparagraph{hndl\_distance\_from\_sensor} Empfängt den Abstand vom Sensor *TODO* (Was für ein Sensor?) und prüft ob es zwei Messungen gibt (warum das?). Ist das der Fall so wird die Beschleunigung angepasst und die ensprechenden Flags für die erfolgte Distanzmessung gesetzt. 
 					
-					\subparagraph{hndl_target_distance} Empfängt die aktuelle Zieldistanz *TODO* (platoon distance?) und prüft ob diese in einem angemessenen Bereich liegt. Ist das der Fall so wird die Zieldistanz des der PD Steuerung übermittelt. Bei unangemessen niedriger Zieldistanz (kleiner als 0,5) wird diese auf 1 gesetzt.
+					\subparagraph{hndl\_target\_distance} Empfängt die aktuelle Zieldistanz *TODO* (platoon distance?) und prüft ob diese in einem angemessenen Bereich liegt. Ist das der Fall so wird die Zieldistanz des der PD Steuerung übermittelt. Bei unangemessen niedriger Zieldistanz (kleiner als 0,5) wird diese auf 1 gesetzt.
 					
-					\subparagraph{hndl_current_velocity} Empfängt die aktuellen Beschleunigungsdaten. Falls diese von der derzeitigen Beschleunigung abweicht, wird der Wert angepasst und das entsprechende Flag gesetzt.
+					\subparagraph{hndl\_current\_velocity} Empfängt die aktuellen Beschleunigungsdaten. Falls diese von der derzeitigen Beschleunigung abweicht, wird der Wert angepasst und das entsprechende Flag gesetzt.
 					
-					\subparagraph{hndl_targetSpeed} Empfängt die aktuelle Zielgeschwindigkeit. Falls diese von der derzeitigen Geschwindigkeit abweicht, wird der Wert angepasst und das entsprechende Flag gesetzt.
+					\subparagraph{hndl\_targetSpeed} Empfängt die aktuelle Zielgeschwindigkeit. Falls diese von der derzeitigen Geschwindigkeit abweicht, wird der Wert angepasst und das entsprechende Flag gesetzt.
 					
-					\subparagraph{update_velocity} Berechnet die Beschleunigung anhand der aktuellen Zielgeschwindigkeit, Zieldistanz, Beschleunigung und des Abstands. Außerdem wird die relative Geschwindigkeit anhand der Veränderung des Abstands berechnet um daraus die Anpassung des Zielabstands zu berechnen und die Beschleunigung zu versenden.
+					\subparagraph{update\_velocity} Berechnet die Beschleunigung anhand der aktuellen Zielgeschwindigkeit, Zieldistanz, Beschleunigung und des Abstands. Außerdem wird die relative Geschwindigkeit anhand der Veränderung des Abstands berechnet um daraus die Anpassung des Zielabstands zu berechnen und die Beschleunigung zu versenden.
 					
-					\subparagraph{check_dead_datasrc} Verarbeitet eine Ablaufzeit, in der auf eine Aktualisierung des Abstands- und Beschleunigungsmessung gewartet wird. Läuft die Zeit ab, wird derzeit ein Notstopp durchgeführt.
+					\subparagraph{check\_dead\_datasrc} Verarbeitet eine Ablaufzeit, in der auf eine Aktualisierung des Abstands- und Beschleunigungsmessung gewartet wird. Läuft die Zeit ab, wird derzeit ein Notstopp durchgeführt.
 					
-					\subparagraph{calulate_velocity} Hilfsfunktion zur Berechnung der aktuellen Beschleunigung.	
+					\subparagraph{calulate\_velocity} Hilfsfunktion zur Berechnung der aktuellen Beschleunigung.	
 					
-					\subparagraph{set_target_position} Hilfsfunktion zum Berechnen und Setzen der Zielposition.	
+					\subparagraph{set\_target\_position} Hilfsfunktion zum Berechnen und Setzen der Zielposition.	
 
 					
 				\paragraph{Input} 
@@ -470,17 +437,6 @@ roslaunch platooning_sim sim_2cars.lauch
 			\label{udpserver}
 				\paragraph{Aufgabe} Der UdpServer-Node wird vom RadioInterface-Node verwendet, um den Nachrichtenverkehr über das Netzwerk realisieren zu können. 
 				\paragraph{Assoziationen} Der UdpServer-Node ist Subscriber vom UserInterface-Node und Publisher für den UserInterface-Node. 
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
-				
-			\subsubsection{Toller neuer Node}
-			\label{controller_ui}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
@@ -1326,8 +1282,6 @@ failed 3 of 32 tests
 \newpage
 \part{Beschreibung der Eigenleistung}
 \label{eigenleistung}
-	\section{Cooles Kind 1}
-		Für nähere Informationen siehe Anhang \ref{appendix:xynode}. Vergleiche dazu auch \cite{ibm}.
 	\section{Falco Becker}
 	\section{Yannick Boerner}
 	\section{Anne Borchard}
