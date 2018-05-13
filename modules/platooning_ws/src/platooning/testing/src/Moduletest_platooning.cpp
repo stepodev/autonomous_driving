@@ -125,6 +125,7 @@ void Moduletest_platooning::test_send_platoontoggle_recv_platoonstate_creating()
 	                                                  &Moduletest_platooning::hndl_test_send_platoontoggle_recv_platoonstate_creating,
 	                                                this);
 
+
 	//wait for platooning nodelet to subscribe
 	while(pub_map_[topics::TOGGLE_PLATOONING].getNumSubscribers() < 1 ) {
 		boost::this_thread::sleep_for( boost::chrono::milliseconds(200));
@@ -289,6 +290,8 @@ void Moduletest_platooning::hndl_tc_send_fv_request_recv_lv_accept( lv_accept ms
 
 	finalize_test(res);
 }
+
+
 
 } // namespace platooning
 
