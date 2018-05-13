@@ -116,6 +116,7 @@ void gazeboadapter::hndl_p2_speed(const prius_msgs::Speed &msg) {
 }
 
 void gazeboadapter::hndl_p3_sonar(const sensor_msgs::Range &msg) {
+	src_flags_ |= P3_RANGE;
 	p3gazupdate.distance = msg.range;
 }
 
@@ -124,6 +125,7 @@ void gazeboadapter::hndl_p3_camera(const sensor_msgs::Image &msg) {
 }
 
 void gazeboadapter::hndl_p3_speed(const prius_msgs::Speed &msg) {
+	src_flags_ |= P3_SPEED;
 	p3gazupdate.speed = msg.speed;
 }
 
@@ -150,6 +152,7 @@ void gazeboadapter::send_gazupdate(const boost::system::error_code &e) {
 	gazupdate_send_timer_.async_wait(boost::bind(&gazeboadapter::send_gazupdate, this,
 	                                            boost::asio::placeholders::error));
 }
+
 void gazeboadapter::process_stmsim(const platooning::stmupdate &stmupdate) {
 
 	auto c = boost::shared_ptr<prius_msgs::Control>( new prius_msgs::Control);
@@ -166,17 +169,14 @@ void gazeboadapter::process_stmsim(const platooning::stmupdate &stmupdate) {
 	c->steer = stmupdate.steeringAngle;
 
 	//assumes accel between -1 and 1
+	//todo use brake instead of accell
 	if( stmupdate.acceleration < 0 ) {
-		c->throttle = stmupdate.acceleration * -1;
+		c-> throttle = stmupdate.acceleration * -1;
 	} else if( stmupdate.acceleration == 0 ) {
 		c->throttle = 0;
 	} else if( stmupdate.acceleration > 0) {
 		c->throttle = stmupdate.acceleration;
 	}
-
-	std::cout << "id:" << stmupdate.id << " gear:" << c->shift_gears
-	          << " throttle:" << c->throttle
-	          << " accel:" << stmupdate.acceleration << std::endl;
 
 	if( stmupdate.id == 3 ) {
 		pub_p3_control_.publish(c);
@@ -187,6 +187,9 @@ void gazeboadapter::process_stmsim(const platooning::stmupdate &stmupdate) {
 	}
 
 	if( stmupdate.id == 1 ) {
+		std::cout << "id:" << stmupdate.id << " gear:" << (int)c->shift_gears
+		          << " throttle:" << c->throttle
+		          << " brake:" << c->brake << " speed " << p1gazupdate.speed << std::endl;
 		pub_p1_control_.publish(c);
 	}
 }
@@ -205,12 +208,20 @@ void gazeboadapter::check_dead_datasrc(const boost::system::error_code &e) {
 		NODELET_ERROR("[%s] P2_RANGE not updated", name_.c_str());
 	}
 
+	if( (src_flags_ & P3_RANGE) != P3_RANGE ) {
+		NODELET_ERROR("[%s] P3_RANGE not updated", name_.c_str());
+	}
+
 	if( (src_flags_ & P1_SPEED) != P1_SPEED ) {
 		NODELET_ERROR("[%s] P1_SPEED not updated", name_.c_str());
 	}
 
 	if( (src_flags_ & P2_SPEED) != P2_SPEED ) {
 		NODELET_ERROR("[%s] P2_SPEED not updated", name_.c_str());
+	}
+
+	if( (src_flags_ & P3_SPEED) != P3_SPEED ) {
+		NODELET_ERROR("[%s] P3_SPEED not updated", name_.c_str());
 	}
 
 	src_flags_ = 0;
