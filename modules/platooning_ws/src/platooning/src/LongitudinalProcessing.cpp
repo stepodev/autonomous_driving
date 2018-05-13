@@ -110,9 +110,9 @@ void LongitudinalProcessing::hndl_target_distance(const platooning::targetDistan
 
 			boost::recursive_mutex::scoped_lock l(calc_mutex_);
 
-			if (msg.distance < 0.5) {
+			if (msg.distance < MINIMUM_DISTANCE) {
 				NODELET_ERROR("[%s] target distance shorter than 0.5. Setting to 1.", name_.c_str());
-				pd_controller_.set_target_position(-1);
+				pd_controller_.set_target_position(-MINIMUM_DISTANCE);
 
 			} else {
 				pd_controller_.set_target_position(-msg.distance);
@@ -192,6 +192,15 @@ void LongitudinalProcessing::update_velocity() {
 
 	float relative_velocity = (previous_distance_ - current_distance_) / time_step;
 
+	//less than 0.8 units distance and driving towards: should emergency stop
+	if( current_distance_ <= EMERGENCY_DISTANCE && relative_velocity < 0) {
+		outmsg->speed = -3.0f;
+
+		pub_velocity_.publish(outmsg);
+		return;
+	}
+
+
 	//if relative velo diff is slower than 5 units per second and distance is off by less than 5 units, just keep speed
 	if( fabsf(relative_velocity) < 0.05 && fabsf(current_distance_ - -pd_controller_.get_target_position()) < 0.05 )  {
 		//dont publish? or publish current velo?
@@ -201,7 +210,6 @@ void LongitudinalProcessing::update_velocity() {
 		float calculated_velocity = current_velocity_ +
 			pd_controller_.calulate_velocity(-current_distance_, relative_velocity);
 
-		//remove! bug happens on one of those variables. invalid memory?
 /*
 		NODELET_INFO(
 			"ms: %i time_step: %f range_diff: %f relative_vel: %f current_vel: %f calc_vel: %f\ndist:%f target:%f prev_dist %f",

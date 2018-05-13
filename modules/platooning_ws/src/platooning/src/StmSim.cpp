@@ -148,10 +148,11 @@ void StmSim::hndl_vehicleControl(const vehicleControl &msg) {
 		//normalize to 0 to 7 to 0 to 1
 		if( mod_velo > 0.0f ) {
 			acceleration = (mod_velo/7.0f);
+			//reduce the acceleration bc 1 is too fast.
+			acceleration *= 0.3f;
 		} else if ( mod_velo == 0 ) {
 			acceleration = 0;
-		}
-		else {
+		} else {
 			//normalize -5 to 0 to -1 to 0
 			acceleration = -((-mod_velo/5.0f));
 		}

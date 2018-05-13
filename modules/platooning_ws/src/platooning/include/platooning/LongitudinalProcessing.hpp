@@ -51,6 +51,8 @@ namespace platooning {
 
 #define RANGE_DATA_CHECK (unsigned int)1
 #define VELOCITY_DATA_CHECK (unsigned int)2
+#define MINIMUM_DISTANCE 2.0f
+#define EMERGENCY_DISTANCE 0.8f
 
 using TimeStep = float;
 using Distance = float;

@@ -1280,11 +1280,9 @@ void PriusHybridPlugin::Update() {
 		this->dataPtr->posePub.Publish(
 			ignition::msgs::Convert(this->dataPtr->model->WorldPose()));
 
+		//todo: figure out forward - backward velo
 		boost::shared_ptr<prius_msgs::Speed> speedmsg = boost::shared_ptr<prius_msgs::Speed>(new prius_msgs::Speed);
 		speedmsg->speed = this->dataPtr->chassisLinearVelocity.Length();
-		if (this->dataPtr->directionState == PriusHybridPluginPrivate::REVERSE) {
-			speedmsg->speed *= -1;
-		}
 		this->dataPtr->speedPub.publish(speedmsg);
 
 		ignition::msgs::Double_V consoleMsg;

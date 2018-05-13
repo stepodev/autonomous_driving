@@ -141,8 +141,6 @@ void Prioritization::hndl_remotecontrolToggle(const remotecontrolToggle &msg) {
  */
 void Prioritization::hndl_remotecontrolInput(const remotecontrolInput &msg) {
 
-	std::cout << "ASADFASDF" << std::endl;
-
 	if( msg.vehicle_id != vehicle_id_) {
 		return;
 	}
