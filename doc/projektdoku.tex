@@ -1286,6 +1286,26 @@ failed 3 of 32 tests
 		
 	\section{Nutzerhandbuch} 
 	\label{nutzerhandbuch}
+
+	\subsection*{Controller UI}
+	\includegraphics[width=\textwidth]{modules/controllerUi/controllerUiScreenAnnotated.png}
+
+	Die ControllerUi wird entweder direkt aus Qt Creator gestartet oder die entsprechende binary.\\
+
+	\begin{itemize}
+		\item Über die \textcolor{red}{1} Reiter wird das zu steuernde Fahrzeug ausgewählt.
+		\item Per klick auf \textcolor{red}{2} wird das Platooning Startsignal gesendet.
+		\item Beim klick auf \textcolor{red}{2} werden die Soll-Parameter die in \textcolor{red}{3} festgelegt wurden mit übermittelt.
+		\item In \textcolor{red}{4} sieht man den momentanten Status des Fahrzeugs.
+	\end{itemize}
+
+	Die Sektion rechts mit Remotecontrol Einstellungen ist momentan nicht verfügbar.
+
+	\subsection*{Simulation}
+	Die Simulation wird gestartet mit "roslaunch platooning\_sim sim\_3cars.launch", wobei die Anzahl der Autos von 1-3 festgelegt werden kann. Daraufhin startet Gazebo. Die gespawnten Autos befinden sich alle in IDLE und werden über die ControllerUi gesteuert.\\
+
+	Die einzelnen Fahrzeuge müssen mit dem StmSim Modul geladen werden, beispielsweise in einer VM mit dem Befehl "roslaunch platooning run\_stmsim.launch vehicle\_id:=''1'' "
+
 	%brumm brumm auto fahren (wie lasse ich=schlingloff die autos fahren/kann ich die simulation starten? was kann ich alles anstellen und wie? steuerung, hindernisse...)
 \newpage
 \part{Beschreibung der Eigenleistung}
