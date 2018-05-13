@@ -448,7 +448,7 @@ roslaunch platooning_sim sim_2cars.lauch
 	\label{tests}
 		\subsection{Test-Standard}
 		\label{test_standard}
-		Als Testing Framework für unsere Unit Tests haben wir im Rahmen des Projektes Google Test verwendet.
+		Als Testing Framework für unsere Unit Tests wurde im Rahmen des Projektes zuerst Google Test verwendet.
 		Hierbei handelt es sich um eine plattformübergreifende\footnote{Verfügbar auf den Betriebssystemen Linux, Windows, Mac OS},
 		von Google entwickelte Test-Bibliothek für die Programmiersprache C++. Diese zeichnet sich durch schnelle Performanz und 
 		Wiederverwertbarkeit aus. Letzteres war im Projekt von Vorteil, da die gleichen Tests auf unterschiedlichen Systemen der 
@@ -458,12 +458,16 @@ roslaunch platooning_sim sim_2cars.lauch
 		Einander ähnelnde Test bzw. Tests, die sich auf eine bestimmte Komponente beziehen, können in sog. \emph{Test Cases} 
 		organisiert und bei Bedarf einzeln oder im Verbund getestet werden. In diesem Zusammenhang muss jedoch erwähnt werden, 
 		dass der Ausdruck \emph{Test Case} dem ISTQB\footnote{International Software Testing Qualificatios Board}-Ausdruck 
-		\emph{Test Suite} entspricht\cite{google}. 
+		\emph{Test Suite} entspricht \cite{google}. 
 		
 		Die Testergebnisse werden automatisch generiert und in der Konsole ausgegeben. Bei Bedarf kann ein XML-Report erzeugt werden. 
 		
 		Eine beispielhafte Anleitung zum globalen Einbinden von Google Test für das Betriebssystem Ubuntu 16.04 befindet sich im Anhang \ref{appendix:gtest_install}. 
 		
+		Im späteren Verlauf stellte sich die Integration von Google Test mit ROS als schwierig heraus: Die meisten Tests benötigen einen laufenden ROS master, welcher entweder aus per launch-Datei gestartet werden muss oder manuell selbst. Dies erschwert das gewünschte automatisierte Testprotokoll.	Deswegen wurde ein einfaches eigenes Framework aufgesetzt. Siehe dazu die Doku zu den Modulen Modultest und Integrationstest.
+
+		Alternativ ist eine Integration von Google Test mit ROS Test möglich, wurde im Projekt aufgrund des weiteren Aufwands jedoch abgelehnt.
+
 		% Probleme in Verbindung mit ROS, Erzeugen von Reports zB als xml output
 		
 		\subsection{Test-Cases}
@@ -1121,6 +1125,10 @@ roslaunch platooning_sim sim_2cars.lauch
 									
 		\subsubsection{Integrationtest Platooning}
 			\label{integrationtest_platooning}
+
+			\paragraph{Vorwort}
+			Hierzu werden drei erreichbare laufende Platooningteilnehmer benötigt. Das wurde im Projekt mit drei lokalen VMs realisiert, welche vor dem Start der Integrationstests im IDLE modus sind.
+
 			\paragraph{Test 1:}{Platoon erstellen, LV\_BROADCAST erhalten}
 			\paragraph{Beschreibung:} Setzt LV und zwei FVs in CREATING, erwartet, dass LV\_BROADCAST und FV\_HEARTBEAT kommen
 			\paragraph{Input:}
