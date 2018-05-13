@@ -661,6 +661,8 @@ void Moduletest_messagedistribution::test_pub_in_platoonMsg_recv_userInterface()
 	set_current_test("test_pub_in_platoonMsg_recv_userInterface");
 	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
 
+	set_timeout(boost::posix_time::time_duration(boost::posix_time::seconds(5)));
+
 	//mockup publishers
 	pub_map_.emplace(topics::IN_PLATOONING_MSG, ros::Publisher());
 	pub_map_[topics::IN_PLATOONING_MSG] = nh_.advertise<platooning::platoonProtocol>(topics::IN_PLATOONING_MSG, 1);

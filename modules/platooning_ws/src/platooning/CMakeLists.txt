@@ -255,6 +255,10 @@ add_library(moduletest SHARED testing/include/platooning/Moduletest.hpp testing/
 add_dependencies(moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest ${catkin_LIBRARIES})
 
+add_library(integrationtest SHARED testing/include/platooning/Integrationtest.hpp testing/src/Integrationtest.cpp)
+add_dependencies(integrationtest moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(integrationtest moduletest ${catkin_LIBRARIES})
+
 add_library(moduletest_messagedistribution SHARED testing/include/platooning/Moduletest_messagedistribution.hpp testing/src/Moduletest_messagedistribution.cpp)
 add_dependencies(moduletest_messagedistribution topics messagetypes moduletest messagedistribution ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_messagedistribution topics messagetypes moduletest ${catkin_LIBRARIES})
@@ -286,6 +290,10 @@ target_link_libraries(moduletest_udpserver udpserver messagetypes moduletest ${c
 add_library(moduletest_template SHARED testing/include/platooning/Moduletest_template.hpp testing/src/Moduletest_template.cpp)
 add_dependencies(moduletest_template moduletest ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(moduletest_template moduletest ${catkin_LIBRARIES})
+
+add_library(integrationtest_platooning SHARED testing/include/platooning/Integrationtest_platooning.hpp testing/src/Integrationtest_platooning.cpp)
+add_dependencies(integrationtest_platooning integrationtest platooning messagedistribution radiointerface ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+target_link_libraries(integrationtest_platooning integrationtest messagedistribution radiointerface platooning ${catkin_LIBRARIES})
 
 #add_library(pcap test/Pcap.hpp test/Pcap.cpp)
 #target_link_libraries(pcap libpcap.so)

@@ -1,0 +1,86 @@
+#####################################################################
+MODULETESTS
+
+
+#####################################################################
+moduletest_longitudinalprocessing
+
+[1524389366][Moduletest_longitudinalprocessing][test_send_new_data_recv_velocity][SUCCESS] 
+[1524389377][Moduletest_longitudinalprocessing][test_change_velocity_keep_up][SUCCESS] moduletest scenario timer ran out.
+
+#####################################################################
+moduletest_messagedistribution
+
+[1524389383][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_broadcast][SUCCESS] 
+[1524389384][Moduletest_messagedistribution][test_pub_in_lv_broadcast_recv_platoonMsg][SUCCESS] 
+[1524389385][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_accept][SUCCESS] 
+[1524389386][Moduletest_messagedistribution][test_pub_in_lv_accept_recv_platoonMsg][SUCCESS] 
+[1524389387][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_reject][SUCCESS] 
+[1524389388][Moduletest_messagedistribution][test_pub_in_lv_reject_recv_platoonMsg][SUCCESS] 
+[1524389389][Moduletest_messagedistribution][test_pub_in_fv_heartbeat_recv_platoonMsg][SUCCESS] 
+[1524389390][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_heartbeat][SUCCESS] 
+[1524389391][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_leave][SUCCESS] 
+[1524389392][Moduletest_messagedistribution][test_pub_in_fv_leave_recv_platoonMsg][SUCCESS] 
+[1524389393][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_request][SUCCESS] 
+[1524389394][Moduletest_messagedistribution][test_pub_in_fv_request_recv_platoonMsg][SUCCESS] 
+[1524389395][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_remotecontrolInput][SUCCESS] 
+[1524389396][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_remotecontrolToggle][SUCCESS] 
+[1524389397][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_platooningToggle][SUCCESS] 
+[1524389403][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_userInterface][SUCCESS] 
+
+#####################################################################
+moduletest_messagetypes
+
+[1524389409][Moduletest_messagetypes][test_encode_decode_messages][SUCCESS] 
+
+
+#####################################################################
+moduletest_platooning
+
+
+[1524389421][Moduletest_platooning][test_send_platoontoggle_recv_platoonstate_creating][SUCCESS] 
+[1524389422][Moduletest_platooning][test_send_fv_request_recv_lv_accept][SUCCESS] 
+
+
+#####################################################################
+moduletest_prioritization
+
+
+[1524389431][Moduletest_prioritization][test_remotecontrol_toggle_and_speed_recv_vehiclecontrol][SUCCESS] 
+[1524389434][Moduletest_prioritization][test_platooning_toggle_and_speed_recv_vehiclecontrol][SUCCESS] no vehiclecontrol received
+
+
+#####################################################################
+moduletest_radiointerface
+
+
+[1524389441][Moduletest][test_send_udp_recv_protocolIn][SUCCESS] test_send_udp_recv_protocolIn
+[1524389442][Moduletest][test_send_protocolOut_recv_udp][SUCCESS] 
+[1524389444][Moduletest][test_stresstest_send_udp_recv_protocolIn][SUCCESS] 
+[1524389446][Moduletest][test_stresstest_send_protocolOut_recv_upd][SUCCESS] 
+
+
+#####################################################################
+moduletest_udpserver
+
+
+[1524389464][Moduletest_udpserver][test_stresstest_send_and_receive][FAILURE] sent packets 4092614 recvd 81978
+
+
+#####################################################################
+INTEGRATION TESTS
+
+
+[1524389481][Integrationtest_platooning][test_send_platooningToggle_recv_heartbeats_and_broadcast][SUCCESS] 
+[1524389491][Integrationtest_platooning][test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data][FAILURE] fv2 doesnt have correct ipd.
+fv3 doesnt have correct ipd.
+
+[1524389496][Integrationtest_platooning][test_send_updated_broadcast_receive_userinterface][FAILURE] fv3 reported less than 20 different ipd values. values were 10.000000,
+
+
+
+#####################################################################
+RESULTS
+
+
+failed 3 of 32 tests

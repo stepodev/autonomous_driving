@@ -1,5 +1,5 @@
 /**
- * @file testing/include/platooning/RadioInterface.hpp
+ * @file testing/include/platooning/Moduletest.hpp
  * @author stepo
  * @date 22.03.2018
  *
@@ -44,7 +44,7 @@ class Moduletest : public nodelet::Nodelet {
   public:
 	Moduletest();
 
-	~Moduletest();
+	~Moduletest() override;
 
   protected:
 	std::string name_ = "Moduletest";
@@ -67,7 +67,6 @@ class Moduletest : public nodelet::Nodelet {
 
 	/**< timeout callback if any */
 	boost::function<void()> timeout_callback_;
-	bool expects_timeout_;
 
 	/**
 	 * @brief sets the logging filepath

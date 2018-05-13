@@ -42,7 +42,7 @@ MessageDistribution::~MessageDistribution() = default;
 void MessageDistribution::onInit() {
 
 	//subscribers of protocolmsg to decode and publish
-	sub_platooningIn = nh_.subscribe(topics::IN_PLATOONING_MSG, 1,
+	sub_platooningIn = nh_.subscribe(topics::IN_PLATOONING_MSG, 100,
 	                                 &MessageDistribution::hndl_platooningIn, this);
 
 	sub_ui = nh_.subscribe(topics::USERINTERFACE, 1,

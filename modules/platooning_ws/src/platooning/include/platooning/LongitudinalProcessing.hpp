@@ -41,7 +41,7 @@ namespace platooning {
  * required to reduce the distance to target distance. Additionally uses a timer to ensure we have up-to-date speed
  * and distance measurements.
  *
- * Treates distances as "distance from point 0" where 0 is an object ahead. Thus distances given as negative values to
+ * Creates distances as "distance from point 0" where 0 is an object ahead. Thus distances given as negative values to
  * the PD controller. Ex: The measurement from the sensor is "5", gets interpreted as "-5 units from the object ahead".
  * Target distance could be "1", so "-1 unit from the object ahead".
  *
@@ -87,8 +87,8 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 		float get_target_position() { return target_relative_position_; }
 
 	  private:
-		float kp_ = 0.5; /**< proportional value. The higher the error, respond proportinally */
-		float kd_ = 0.1; /**< derivative value. The closer to error 0, reduce response */
+		float kp_ = 0.8; /**< proportional value. The higher the error, respond proportinally */
+		float kd_ = 0.4; /**< derivative value. The closer to error 0, reduce response */
 		float target_relative_position_ = -1;
 	};
 

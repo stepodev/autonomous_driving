@@ -358,8 +358,8 @@ def plot_platoon_lv_speed_change():
 
     plot_platoon(platoon=platoon, header="PD LV speeds change")
 
-#plot_distance_5to1()
-#plot_distance_1to5()
-#plot_platoon_catchup()
-#plot_platoon_brake()
+plot_distance_5to1()
+plot_distance_1to5()
+plot_platoon_catchup()
+plot_platoon_brake()
 plot_platoon_lv_speed_change()

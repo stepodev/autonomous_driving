@@ -1,5 +1,5 @@
 /**
- * @file testing/src/Moduletest_prioritization.hpp
+ * @file testing/include/platooning/Moduletest_prioritization.hpp
  * @author stepo
  * @date 22,03,2018
  * @brief Contains header of Moduletest_longitudinalprocessing class
@@ -45,6 +45,9 @@ class Moduletest_prioritization : public Moduletest {
 	~Moduletest_prioritization();
 
   private:
+
+	uint32_t vehicle_id_ = 1;
+
 	/**
 	 * @brief toggles remotecontrol, sends speed, expects to receive vehicleControl, toggle remotecontrol, send speed
 	 * and dont receive vehiclecontrol

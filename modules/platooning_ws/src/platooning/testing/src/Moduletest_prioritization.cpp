@@ -62,6 +62,7 @@ void Moduletest_prioritization::onInit() {
 void Moduletest_prioritization::test_remotecontrol_toggle_and_speed_recv_vehiclecontrol() {
 	set_current_test("test_remotecontrol_toggle_and_speed_recv_vehiclecontrol");
 	NODELET_INFO("[%s] started testcase %s", name_.c_str(), get_current_test().c_str());
+	set_timeout(boost::posix_time::time_duration(boost::posix_time::seconds(5)));
 
 	//mockup publishers
 	pub_map_.emplace(topics::TOGGLE_REMOTECONTROL, nh_.advertise<platooning::remotecontrolToggle>(topics::TOGGLE_REMOTECONTROL, 1));
@@ -77,7 +78,7 @@ void Moduletest_prioritization::test_remotecontrol_toggle_and_speed_recv_vehicle
 	//toggle remotecontrol on
 	auto togglemsg = boost::shared_ptr<platooning::remotecontrolToggle>( new platooning::remotecontrolToggle );
 	togglemsg->enable_remotecontrol = true;
-	togglemsg->vehicle_id = 1;
+	togglemsg->vehicle_id = vehicle_id_;
 
 	pub_map_[topics::TOGGLE_REMOTECONTROL].publish(togglemsg);
 
@@ -144,7 +145,6 @@ void Moduletest_prioritization::test_remotecontrol_toggle_and_speed_recv_vehicle
 	}
 
 	res.success = true;
-	res.comment = "no vehiclecontrol received";
 	finalize_test(res);
 
 }
@@ -159,7 +159,7 @@ void Moduletest_prioritization::hndl_test_remotecontrol_toggle_and_speed_recv_ve
 
 bool Moduletest_prioritization::provide_vehicle_id(platooning::getVehicleId::Request &req,
                                                    platooning::getVehicleId::Response &res) {
-		res.vehicle_id = 1;
+		res.vehicle_id = vehicle_id_;
 		return true;
 }
 

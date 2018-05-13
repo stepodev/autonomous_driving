@@ -1,5 +1,5 @@
 /**
- * @file testing/src/Moduletest_radiointerface.hpp
+ * @file testing/include/platooning/Moduletest_radiointerface.hpp
  * @author stepo
  * @date 22,03,2018
  * @brief Contains header of Moduletest_radiointerface class

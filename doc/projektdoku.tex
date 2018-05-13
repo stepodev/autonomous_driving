@@ -1,9 +1,19 @@
 \documentclass[a4paper, 12pt, titlepage]{scrartcl}
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage[toc,title,page]{appendix} % Anhang 
+\usepackage[toc,title,page]{appendix} % Anhang
+\usepackage{pdfpages} % Einbinden von PDFs im Anhang
 
+\usepackage{lmodern}  % for bold teletype font
+\usepackage{amsmath}  % for \hookrightarrow
+\usepackage{xcolor}   % for \textcolor
 \usepackage{listings}  % zum Codeeinbinden, Doku: http://users.ecs.soton.ac.uk/srg/softwaretools/document/start/listings.pdf
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+}
 \lstdefinestyle{customcpp}{
 	belowcaptionskip=1\baselineskip,
 	title=\lstname,
@@ -12,15 +22,15 @@
 	flexiblecolumns=true,
 	tabsize=2, % ein tab = 2 spaces
 	numbers=left,
-	frame=leftline,
+	frame=single,
 	language=C++,
-	showstringspaces=false 
+	showstringspaces=false
 }
 
 \pagenumbering{arabic} 
 \usepackage{graphicx}
 \usepackage[onehalfspacing]{setspace}
-\usepackage[left=3cm,right=3cm,top=2.5cm,bottom=2.5cm,includeheadfoot]{geometry}
+\usepackage[left=1.5cm,right=1.5cm,top=2.5cm,bottom=2.5cm,includeheadfoot]{geometry}
 
 \usepackage{url}
 
@@ -32,7 +42,7 @@ backend=biber
 
 \begin{document}	
 \author{Supercoole Kinder}
-\title{Projektdokumentation} 
+\title{Projektdokumentation\\Hochautomatisiertes Fahren} 
 \publishers{Humboldt-Universit\"at zu Berlin}
 \maketitle
 \tableofcontents
@@ -51,9 +61,25 @@ backend=biber
 		Zum anderen, worauf in diesem Projekt ein großes Augenmerk gelegt worden ist, kommuniziert das führende Fahrzeug mit den Mitgliedern seiner Kolonne über eine drahtlose Verbindung. 
 		Erwartet wird, dass diese Kommunikation schneller durchgeführt wird als die Auswertung der Sensordaten jedes einzelnen Kolonnen-Teilnehmers. 
 		In Folge dessen können die Sicherheitsabstände zwischen den Fahrzeugen signifikant geringer gehalten werden. 
-	\section{Lastenheft} 
-	\label{lastenheft}
-	%(nicht-)funktionale anforderungen, was liefern wir am ende, use cases. nur grob erwähnen und dann im anhang auf das lastenheft verweisen??
+	\section{Anforderungen} 
+	\label{anforderungen}
+		Um eine funktionierende Kolonnenfahrt demonstrieren zu können, mussten wir zu Beginn des Projekts mit einem fingierten Kunden verbindliche Ziele festlegen. 
+		Als Kunde agierte der Leiter des Semesterprojekts, Prof. Dr. Schlingloff. 
+		
+		Als Minimum wurde gefordert, dass die Fahrzeuge der drei Arbeitsgruppen als Kolonne auf gerader Strecke fahren und zu einem unbekannten 
+		Zeitpunkt eigenständig vor einem Hindernis bremsen sollen. Dabei sollen die Fahrzeuge jederzeit den festgelegten Mindestabstand zueinander 
+		einhalten und Unfälle vermeiden. Positionen und Abstand der Fahrzeuge sind im Voraus festgelegt, die Organisierung als Kolonne erfolgt ohne 
+		externen Befehl, da ein Eingriff von Außen i.A. nicht vorgesehen ist, abgesehen vom initialen Startsignal über einen mit den
+		Fahrzeugen verbundenen Computer. Die potentiellen Ausbaustufen sehen einen komplexeren Ablauf der Kolonnenfahrweise vor:
+		\begin{itemize}
+			\item Unterschiedliche Abstände zwischen den Fahrzeugen zu Beginn der Demonstration
+			\item Veränderung des Mindestabstandes zwischen den Fahrzeugen während der Demonstration
+			\item Variable Anzahl an Teilnehmern der Kolonne während der Demonstration (Fahrzeug kommt im laufenden Betrieb dazu bzw. entfernt sich)
+			\item Fahrstrecke in Kreisform
+		\end{itemize}
+		
+		Eine detailliertere Auflistung der Anforderungen und Ausbaustufen sind im Anhang \ref{appendix:lastenheft} in Form eines Lastenheftes vorhanden.
+	
 	\section{Projekt-Organisation und Umfeld} 
 	\label{umfeld}
 		Wie bereits in Abschnitt \ref{projektbeschreibung} erwähnt, beteiligten sich an diesem Projekt drei parallel zueinander arbeitende Gruppen. 
@@ -71,14 +97,19 @@ backend=biber
 		mit dessen Hilfe wir die Fahrzeuge steuern und deren Sensoren auswerten konnten, vgl. dazu \ref{ros}. 
 		Nicht verbindlich vorgeschrieben, jedoch von Vorteil war die Nutzung der IDE\footnote{Integrated development environment} 
 		\emph{CLion}\footnote{JetBrains s.r.o., https://www.jetbrains.com/clion/}, da diese diverse von uns geforderte Funktionalitäten unterstützt (vgl. dazu die Abschnitte \ref{coding_standard} und \ref{test_standard}).
-		Die Kommunikation innerhalb unserer Gruppe fand über die Software \emph{slack}\footnote{Slack Technologies, Inc., https://slack.com/intl/de-de/features} statt, die Aufgaben wurden zunächst mit dem Tool \emph{meistertask}\footnote{MeisterLabs GmbH, https://www.meistertask.com/de} zugewiesen. Im Verlauf des Projekts sind wir jedoch komplett auf \emph{GitLab-Issues} umgestiegen, vgl. dazu Abschnitt \ref{projektablauf}. 
+		Die Kommunikation innerhalb unserer Gruppe fand über die Software \emph{slack}\footnote{Slack Technologies, Inc., https://slack.com/intl/de-de/features} statt, die Aufgaben wurden zunächst mit dem Tool \emph{meistertask}\footnote{MeisterLabs GmbH, https://www.meistertask.com/de} zugewiesen. Im Verlauf des Projekts sind wir jedoch komplett auf \emph{GitLab-Issues} umgestiegen, vgl. dazu Abschnitt \ref{projektablauf}. Informationstransfer innerhalb der Gruppe fand im wöchtenlichen Treffen vor dem Seminar statt. 
 	
 	\section{Projektplan}
 	\label{projektplan} 
 	%agiler Ansatz
 	% vgl. project charter http://sce2.umkc.edu/BIT/burrise/pl/appendix/Software_Documentation_Templates/Project_Charter_Template.html
 	%Meilensteine, Routinen, Treffen, Planänderungen (mal gucken was die anderen Gruppe da haben), Designänderungen der Architektur nach treffen mit assystem?
-  \includegraphics[width=\textwidth]{projektplan.pdf}
+
+	Methodisch wurde Elemente der Agilen Entwicklung zurückgegriffen, hauptsächlich mit Augenmerk auf code ownership, testing, coding standards und rapid prototyping. 
+
+	Das Projekt wurde in vier Workstreams aufgeteilt: Planung, Software, Fahrzeug und Abnahme. Jeder Workstream wurde grob in drei Meilensteine eingeteilt: ''at least it's something", "getting there'' und "final", welche jeweils verfeinerte Prototypen des finalen Produkts darstellen. Den Meilensteinen sind jeweils Gitlab issues zugeteilt. Jede issue ist durch eine user story beschrieben und wird durch Erfüllung der Akzeptanzkriterien und einem code review abgeschlossen.
+
+	%\includegraphics[width=\textwidth]{projektplan.pdf}
 
 	\section{Projektablauf} 
 	\label{projektablauf}
@@ -88,6 +119,68 @@ backend=biber
 \part{Produktdokumentation}
 	\section{Systemvoraussetzungen} 
 	\label{systemvoraussetzungen}
+	\subsection{Entwicklungsumgebung}
+	Das Projekt wurde mit Hilfe von ROS in C++11 entwickelt. Der Großteil des ROS ecosystems arbeitet momentan mit Ubuntu 16.04 LTS. Demnach sind für die Entwicklung notwending:
+	\begin{itemize}
+		\item Ubuntu 16.04 LTS
+		\item ROS Lunar
+		\begin{itemize}
+			\item referenz: http://wiki.ros.org/lunar/Installation/Ubuntu
+			\item[] \begin{lstlisting}
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+sudo apt-get update
+sudo apt-get install ros-lunar-ros-base
+sudo rosdep init
+rosdep update
+echo "source /opt/ros/lunar/setup.bash" >> ~/.bashrc
+//build tools
+sudo apt-get install python-rosinstall python-rosinstall-generator python-wstool build-essential
+		\end{lstlisting}
+		\end{itemize}
+		\item C++11 toolchain / IDE
+		\item ein PC der dies unterstützt
+	\end{itemize}
+	\subsection{Platooning Projekt Setup}
+	\begin{itemize}
+		\item git lfs installieren
+		\item clonen vom Repo
+		\item im platooning\_ws Ordner ausführen um ROS dependencies zu installieren:
+		\item[] \begin{lstlisting}
+rosdep install --from-paths src --ignore-src -r -y
+		\end{lstlisting}
+		\item Hat alles funktioniert kann man das Programm im platooning\_ws Ordner starten mit
+		\item[] \begin{lstlisting}
+catkin_make
+source devel/setup.bash
+roslaunch platooning run_platooning.lauch vehicle_id:=1
+		\end{lstlisting}
+	\end{itemize}
+	\subsection{Platooning Simulation Setup}
+	\begin{itemize}
+		\item Grafikkarte und i5 CPU einbauen
+		\item Projekt benötigt Gazebo 8 und Ignition Math Bibliotheken. Packages werden von der ORSF zur Verfügung gestellt.
+		\item ORSF repo hinzufügen
+		\item[] \begin{lstlisting}
+//referenz: http://gazebosim.org/tutorials?tut=install_ubuntu
+sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable \`lsb_release -cs\` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+sudo apt-get update
+sudo apt install ros-lunar-gazebo8-ros-pkgs
+sudo apt-get install ros-lunar-desktop
+		\end{lstlisting}
+		\item Im sim\_ws Ordner ausführen um ROS dependencies zu bekommen:
+		\item[] \begin{lstlisting}
+rosdep install --from-paths src --ignore-src -r -y
+		\end{lstlisting}
+		\item Hat alles funktioniert kann man das Programm im sim\_ws Ordner starten mit
+		\item[] \begin{lstlisting}
+//platooning_ws muss vorher gesourced sein
+catkin_make
+source devel/setup.bash
+roslaunch platooning_sim sim_2cars.lauch
+		\end{lstlisting}
+	\end{itemize}
 	% ubuntu, SW von assystems, ros. im prinzip beschreibung unserer vm + welche Schritte wurden unternommen ums zum laufen zu bringen und kurze erläuterung dass sw von assystems aufs board geschmissen wurde. und catkin zeugs
 	\section{Fahrzeug-Architektur}
 	\label{hw_architektur}
@@ -102,9 +195,32 @@ backend=biber
 		\subsection{Architekturübersicht} 
 		\label{sw_uebersicht}
 		% grafische Darstellung der Beziehung der module zueinander, uml?
+		\subsubsection*{Systemumfeld}
+
+		Auf der einen Seite kommuniziert die Software über eine Netzwerkanbindung per Platooning Messages mit dem Platoon und sendet UI messages an der controller PC. Die Software bekommt über dieses Interface Platooning messages und Kommandos des controller PC. 
+
+		Auf der anderen Seite kommuniziert die Software per mavlink Kommandos an das Fahrzeug und erhält Sensornachrichten.
+
+ 		\includegraphics[width=0.7\textwidth]{systemumfeld.jpg}
+
+ 		\subsubsection*{Softwarearchitekturübersicht}
+
+ 		Die funktionalen Einheiten wurden als ROS Nodelets implementiert \ref{ros}. Das public interface jedes Nodelets ist beschränkt auf die ROS-Messages die es verarbeitet.
+
+		\newpage
+ 		\includegraphics[width=\textwidth]{platooning_architecture.png}
+
 		\subsection{ROS}
 		\label{ros}
-		% kurze erläuterung der nodes, turtle sim
+		ROS, kurz für robot operating system, ist entgegen des Namens ein Framework, welches Werkzeuge zur Entwicklung von Software für Roboter bereitstellt. Dazu gehört ein System wie Module bzw. Nodelets miteinander kommunizieren können, Visualisierer der Interaktion der Nodelets und Simulatoranbindungen.\\
+
+		Die wichtigesten Komponenten von ROS sind die ROS Nodelets, Topics und Messages. \\
+
+		Die Nodelets sind die einzelnen Softwarekomponenten. Sie werden durch einen Nodeletmanager geladen und initiiert. Die Interaktion der Nodelets erfolgt meist über Topics auf denen Messages versandt werden. Der Nodeletmanager bzw. der ROS Master registriert welche Nodelets auf einer Topic Nachrichten verschicken und welche Nodelets informiert werden müssen, wenn auf einer Topic eine neue Nachricht versandt wurde.\\
+
+		Einen tieferen Einblick findet man unter\\
+		https://www.generationrobots.com/blog/de/2016/03/ros-robot-operating-system/
+
 		\subsection{Coding-Standard} 
 		\label{coding_standard}
 			Die im Projekt verwendete Programmiersprache ist C++, da diese mit dem ROS-Betriebssystem kompatibel ist. 
@@ -121,43 +237,11 @@ backend=biber
 
 		\subsection{Modulbeschreibung} 
 		\label{modulbeschreibung}
-		% Beschreibung der Nodes inkl. (Aktivitäts-)Diagramme
-			\subsubsection{Beispielnode A}
-			\label{node_a}
-				\paragraph{Aufgabe} Node A sammelt Daten bezüglich der aktuellen Radierfähigkeit verschiedener Radiergummis. Die Daten werden kontinuierlich ausgewertet, sodass bei Überschreitung von bestimmten, festgelegter Werte andere Nodes über die Änderung informiert werden. Der Quellcode ist im Anhang \ref{appendix:abcnode} hinterlegt. 
-				
-				\paragraph{Assoziationen} Zu den Subscribern gehören Node B (vgl. dazu \ref{node_b}) und Node C (ich tue so als ob ich hier eine Referenz einfüge). Die Publisher sind Node X, Y, und Z (Referenz und so, ne?).
-				\begin{figure}[h!]
-					\centering
-					\caption{Prozesse von Node A, hat nicht unbedingt viel mit der vorhergehenden Beschreibung zu tun}
-					\label{fig:node_a}
-				\end{figure}
-				
-				\paragraph{Attribute} % nur die, die eurer Meinung nach relevant sind um die Methoden besser erklären zu können, auf jeden Fall kurz halten
-				\begin{itemize}
-					\item \textbf{A-Wert:} Speichert im Integer-Format den vorletzten, vom Topic \emph{Nieder mit den Tintenkillern} erhaltenen Wert.
-					\item \textbf{B-Wert:} Speichert im Integer-Format den aktuellen, vom Topic \emph{Nieder mit den Tintenkillern} erhaltenen Wert.
-				\end{itemize} 
-				
-				\paragraph{Methoden}
-				
-					\subparagraph{Z-Methode} Berechnet die Differenz zwischen dem A- und dem B-Wert. Überschreitet diese den Wert 7, wird ein String generiert und an die Subscriber des Topics \emph{Bleistiftgeflüster} geschickt, vlg. dazu Output von Node A.
-					\subparagraph{Y-Methode} Sofern von der Z-Methode keine Überschreitung festgestellt worden ist, überschreibt die Y-Methode den A-Wert mit dem B-Wert und setzt an Stelle des B-Wertes den neu eingetroffenen Wert des Topics \emph{Nieder mit den Tintenkillern} ein. 
-				
-				\paragraph{Input} Node A ist Subscriber zum Topic \emph{Nieder mit den Tintenkillern} und empfängt im Integer-Format einen kontinuierlichen Datenstrom über die aktuelle Radierleistung. Die Daten werden von Sensor X geliefert. 
-				
-				% es werden sich vmtl. Themen aus dem Bereich 'Methoden' ueberschneiden
-				\paragraph{Output} Node A ist Publisher zum Topic \emph{Bleistiftgeflüster} und verschickt Daten, die von der Z-Methode berechnet worden sind und einen bestimmten Wert überschritten haben. Die ausgehende Nachricht erfolgt im String-Format und kann von folgender Form sein:
-				\begin{itemize}
-					\item STR\_ACC
-					\item STR\_ERR
-					\item STR\_DEF
-				\end{itemize}
-				
+		% Beschreibung der Nodes inkl. (Aktivitäts-)Diagramme	
 			\subsubsection{Prioritization}
 			\label{prioritization}
-				\paragraph{Aufgabe} Der Prioritization-Node erhält Fahrdaten vom Platooning-Node und der MessageTranslation und entscheidet dann, wie sich das Fahrzeug zu verhalten hat. Er entscheidet also zwischen verschiedenen Steuersignalen, welches gerade benutzt werden soll. 
-				\paragraph{Assoziationen} Der Prioritization-Node ist Subscriber vom Platooning-Node und dem MessageTranslation-Node. Er ist Publisher für den LongitudinalProcessing-Node und den LateralProcessing-Node. 
+				\paragraph{Aufgabe} Der Prioritization-Node erhält Fahrdaten vom Platooning-Node und der MessageDistribution und entscheidet dann, wie sich das Fahrzeug zu verhalten hat. Er entscheidet also zwischen verschiedenen Steuersignalen, welches gerade benutzt werden soll. 
+				\paragraph{Assoziationen} Der Prioritization-Node ist Subscriber vom Platooning-Node und dem MessageDistribution-Node. Er ist Publisher für den LongitudinalProcessing-Node und den LateralProcessing-Node. 
 				\paragraph{Attribute}
 					\begin{itemize}
 						\item float \_speed\_ Die Geschwindigkeit, mit der das Auto fahren soll.
@@ -171,9 +255,9 @@ backend=biber
 					\subparagraph{hndl\_platooningState} Wird aufgerufen, sobald eine PlatooningState Message empfangen wurde. Wenn state\_ auf Platooning gesetzt ist, sorgt die Methode dafür, dass das Auto als FV zur Kolonne aufschließt. ‘
 				\paragraph{Input}
 				    \begin{itemize}
-				        \item remotecontrolInput von Node MessageTranslation
-				        \item remotecontrolToggle von Node MessageTranslation 
-				        \item platooningToggle von Node MessageTranslation 
+				        \item remotecontrolInput von Node MessageDistribution
+				        \item remotecontrolToggle von Node MessageDistribution 
+				        \item platooningToggle von Node MessageDistribution 
 				        \item platooningState von Node Platooning
 				    \end{itemize}
 				\paragraph{Output}
@@ -186,20 +270,20 @@ backend=biber
 			\subsubsection{Platooning}
 			\label{platooning}
 				\paragraph{Aufgabe} Der Platooning-Node kommuniziert mit den anderen Fahrzeugen und tauscht mit diesen Daten aus. Zu den Daten gehören Geschwindigkeit des Platoons, die im Platoon einzuhaltende Distanz, Heartbeats sowie Broadcasts. 
-				\paragraph{Assoziationen} Zu den Subscribern des Platooning-Node gehören der Prioritization-Node und der MessageTranslation-Node. Publisher für den Platooning-Node ist der MessageTranslation-Node. 
+				\paragraph{Assoziationen} Zu den Subscribern des Platooning-Node gehören der Prioritization-Node und der MessageDistribution-Node. Publisher für den Platooning-Node ist der MessageDistribution-Node. 
 				\paragraph{Methoden}
 					\subparagraph{} 
 				\paragraph{Input} 
 				    \begin{itemize}
-    					\item platooningToggle von Node MessageTranslation
-    					\item in/FV\_REQUEST von Node MessageTranslation
-    					\item in/LV\_BROADCAST von Node MessageTranslation
+    					\item platooningToggle von Node MessageDistribution
+    					\item in/FV\_REQUEST von Node MessageDistribution
+    					\item in/LV\_BROADCAST von Node MessageDistribution
     				\end{itemize}
 				\paragraph{Output}
 					\begin{itemize}
     					\item PlatooningState an Node Prioritization
-    					\item out/FV\_REQUEST an Node MessageTranslation
-    					\item out/LV\_BROADCAST an Node MessageTranslation
+    					\item out/FV\_REQUEST an Node MessageDistribution
+    					\item out/LV\_BROADCAST an Node MessageDistribution
     				\end{itemize}
 						
 		    \subsubsection{User Interface}
@@ -226,20 +310,9 @@ backend=biber
 			\subsubsection{UserInterfaceData}
 			\label{user_interface_data}
 				\paragraph{Aufgabe} Der UserInterfaceData-Node hält die Daten, die das UserInterface anzeigt, stets aktuell. Somit hat der Nutzer immer die aktuellsten Fahr-Daten vorliegen. 
-				\paragraph{Assoziationen} Der UserInterfaceData-Node ist Subscriber von Messagetranslation. Er ist Publisher für UserInterface. 
+				\paragraph{Assoziationen} Der UserInterfaceData-Node ist Subscriber von MessageDistribution. Er ist Publisher für UserInterface. 
 				\paragraph{Attribute}
 					\subparagraph{Platooning Messages}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
-			
-			\subsubsection{Message Translation}
-			\label{message_translation}
-				\paragraph{Aufgabe} Der MessageTranslation-Node ist dafür verantwortlich, Messages in Datentypen zu übersetzen, damit diese dann von den unterschiedlichen Nodes verwendet werden können. 
-				\paragraph{Assoziationen} Der MessageTranslation-Node ist Subscriber vom RadioInterface-Node und dem Platooning-Node. Er ist Publisher für den UserInterface-Node, den RadioInterface-Node, den Platooning-Node und den Prioritization-Node. 
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
 					\subparagraph{Tolle Methode A}
 				\paragraph{Input}
@@ -248,7 +321,7 @@ backend=biber
 			\subsubsection{Message Distribution}
 			\label{message_distribution}
 				\paragraph{Aufgabe} Der MessageDistribution-Node erhält alle einkommenden Nachrichten. Je nach MessageType werden diese Nachrichten dann vom MessageDistribution-Node auf den passenden Topics veröffentlicht. Dadurch erhalten alle Nodes immer die richtigen Nachrichten. 
-				\paragraph{Assoziationen} ???
+				\paragraph{Assoziationen} Der MessageDistribution-Node ist Subscriber vom RadioInterface-Node, vom Platooning-Node und vom UserInterFaceData-Node. Er ist Publisher für den RadioInterface-Node, den Platooning-Node und den Prioritization-Node. 
 				\paragraph{Attribute}
 				    \begin{itemize}
 				        \item Alle Attribute sind selbsterklärend. 
@@ -262,8 +335,22 @@ backend=biber
                     \subparagraph{hndl\_fv\_leave} Verpackt die zu übertragenden Daten in eine FV\_LEAVE-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_fv\_request} Verpackt die zu übertragenden Daten in eine FV\_REQEUEST-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_ui} Verpackt die zu übertragenden Daten in eine REMOTE\_USERINTERFACE-Nachricht und veröffentlicht diese im Netzwerk. 
-				\paragraph{Input} ???
-				\paragraph{Output} ???
+				\paragraph{Input} 
+				    \begin{itemize}
+				        \item out/platooningProtocol von Node MessageDistribution
+						\item userInterface von Node UserInterfaceData
+				        \item out/FV\_REQUEST von Node Platooning
+				        \item out/LV\_BROADCAST von Node Platooning
+				    \end{itemize}
+				\paragraph{Output}
+				    \begin{itemize}
+				        \item in/platooningProtocol an Node MessageDistribution
+				        \item in/FV\_REQUEST an Node Platooning
+						\item in/LV\_BROADCAST an Node Platooning
+						\item platooningToggle an Node Prioritization
+						\item remoteControlToggle an Node Prioritization
+						\item remoteControlInput an Node Prioritization
+				    \end{itemize}
 
 			\subsubsection{MessageTypes}
 			\label{messages_types}
@@ -291,17 +378,40 @@ backend=biber
 			\label{longitudinal_processing}
 				\paragraph{Aufgabe} Der LongitudinalProcessing-Node ist für die Beschleunigung des Autos verantwortlich. Er erhält die gewünschte Geschwindigkeit aus dem Prioritization-Node und schickt dann die gewünschte Beschleunigung an den VehicleControl-Node. 
 				\paragraph{Assoziationen} Der LongitudinalProcessing-Node ist Subscriber vom Prioritization-Node, dem DistancePreprocessing-Node und dem Speed Sensor. Er ist Publisher für den VehicleControl-Node. 
+				
+				
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
+					\subparagraph{hndl\_distance\_from\_sensor} Empfängt den Abstand vom Sensor *TODO* (Was für ein Sensor?) und prüft ob es zwei Messungen gibt (warum das?). Ist das der Fall so wird die Beschleunigung angepasst und die ensprechenden Flags für die erfolgte Distanzmessung gesetzt. 
+					
+					\subparagraph{hndl\_target\_distance} Empfängt die aktuelle Zieldistanz *TODO* (platoon distance?) und prüft ob diese in einem angemessenen Bereich liegt. Ist das der Fall so wird die Zieldistanz des der PD Steuerung übermittelt. Bei unangemessen niedriger Zieldistanz (kleiner als 0,5) wird diese auf 1 gesetzt.
+					
+					\subparagraph{hndl\_current\_velocity} Empfängt die aktuellen Beschleunigungsdaten. Falls diese von der derzeitigen Beschleunigung abweicht, wird der Wert angepasst und das entsprechende Flag gesetzt.
+					
+					\subparagraph{hndl\_targetSpeed} Empfängt die aktuelle Zielgeschwindigkeit. Falls diese von der derzeitigen Geschwindigkeit abweicht, wird der Wert angepasst und das entsprechende Flag gesetzt.
+					
+					\subparagraph{update\_velocity} Berechnet die Beschleunigung anhand der aktuellen Zielgeschwindigkeit, Zieldistanz, Beschleunigung und des Abstands. Außerdem wird die relative Geschwindigkeit anhand der Veränderung des Abstands berechnet um daraus die Anpassung des Zielabstands zu berechnen und die Beschleunigung zu versenden.
+					
+					\subparagraph{check\_dead\_datasrc} Verarbeitet eine Ablaufzeit, in der auf eine Aktualisierung des Abstands- und Beschleunigungsmessung gewartet wird. Läuft die Zeit ab, wird derzeit ein Notstopp durchgeführt.
+					
+					\subparagraph{calulate\_velocity} Hilfsfunktion zur Berechnung der aktuellen Beschleunigung.	
+					
+					\subparagraph{set\_target\_position} Hilfsfunktion zum Berechnen und Setzen der Zielposition.	
+
+					
+				\paragraph{Input} 
+				    \begin{itemize}
+				    	\item in/platooningProtocol von Node MessageDistribution
+				    	\item Daten vom UdpServer
+				    \end{itemize}
+				
 				\paragraph{Output}
 						
 			\subsubsection{Radio Interface}
 			\label{radio_interface}
 				\paragraph{Aufgabe} Der RadioInterface-Node wickelt den Nachrichtenverkehr über UDP ab. Er benutzt den UDP-Server, um das Senden und Empfangen von Netzwerk-Nachrichten über UDP zu ermöglichen. 
-				\paragraph{Assoziationen} Der RadioInterface-Node ist 
+				\paragraph{Assoziationen} Der RadioInterface-Node ist Subscriber vom MessageDistribution-Node. Er ist Publisher für den MessageDistribution-Node. Er ermpfaengt außerdem Daten vom UdpServer und den anderen Autos und schickt Daten an diese. 
 				\paragraph{Attribute}
 					\begin{itemize}
 					    \item std::unique\_ptr<UdpServer> platooning\_server\_ptr\_ Ein einmaliger Pointer für den Platooning Server. 
@@ -312,30 +422,21 @@ backend=biber
 					\subparagraph{hndl\_radio\_receive} Kümmert sich um die empfangenen Nachrichten aus dem Netzwerk. Je nach MessageType muss mit den empfangenen Nachrichten anders verfahren werden. Darum kümmmert sich diese Methode. 
 				\paragraph{Input} 
 				    \begin{itemize}
-				        \item in/platooningProtocol von Node MessageTranslation
+				        \item in/platooningProtocol von Node MessageDistribution
 				        \item Daten vom UdpServer
+						\item Daten von den anderen Autos
 				    \end{itemize}
 				\paragraph{Output}
 				    \begin{itemize}
-				        \item out/platooningProtocol an Node MessageTranslation
+				        \item out/platooningProtocol an Node MessageDistribution
 				        \item Daten an UdpServer
+						\item Daten an die anderen Autos
 				    \end{itemize}
 				
 		    \subsubsection{UdpServer}
 			\label{udpserver}
 				\paragraph{Aufgabe} Der UdpServer-Node wird vom RadioInterface-Node verwendet, um den Nachrichtenverkehr über das Netzwerk realisieren zu können. 
 				\paragraph{Assoziationen} Der UdpServer-Node ist Subscriber vom UserInterface-Node und Publisher für den UserInterface-Node. 
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
-				
-			\subsubsection{Toller neuer Node}
-			\label{controller_ui}
-				\paragraph{Aufgabe}
-				\paragraph{Assoziationen}
 				\paragraph{Attribute}
 					\subparagraph{Tolles Attribut A}
 				\paragraph{Methoden}
@@ -1018,16 +1119,169 @@ backend=biber
 				\item \textbf{distance:} \emph{distance = 12.0f}
 			\end{itemize}
 									
+		\subsubsection{Integrationtest Platooning}
+			\label{integrationtest_platooning}
+			\paragraph{Test 1:}{Platoon erstellen, LV\_BROADCAST erhalten}
+			\paragraph{Beschreibung:} Setzt LV und zwei FVs in CREATING, erwartet, dass LV\_BROADCAST und FV\_HEARTBEAT kommen
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{platooningToggle} toggle LV und zwei FVs 
+			\end{itemize}
+
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{lv\_broadcast:} mit ipd, ps, followers
+				\item \textbf{fv\_heartbeat:} von beiden FVs
+			\end{itemize}
+
+			\paragraph{Test 2:}{Platoon erstellen, korrektes LV\_BROADCAST erhalten}
+			\paragraph{Beschreibung:} Setzt LV und zwei FVs in CREATING, erwartet, dass LV\_BROADCAST alle FVs enthält und die FVs heartbeats senden.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{platooningToggle} toggle LV und zwei FVs 
+			\end{itemize}
+
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{lv\_broadcast:} mit ipd, ps, followers
+				\item \textbf{fv\_heartbeat:} von beiden FVs
+			\end{itemize}
+
+			\paragraph{Test 3:}{LV ändert platooning Parameter}
+			\paragraph{Beschreibung:} LV ändert inner platoon distance, platoonspeed, FVs registrieren das Update
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{lv\_broadcast} mit geänderten Werten 
+			\end{itemize}
+
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{nix:} FVs reagieren momentan nicht auf platooing Parameter, da diese vom User pro Vehicle gesetzt werden und nicht vom Platoon
+			\end{itemize}
+
+			\paragraph{Test 4:}{LV timeout}
+			\paragraph{Beschreibung:} LV hört auf lv\_broadcast zu senden. FVs müssen im IDLE modus gehen.
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{lv\_broadcast} stoppt 
+			\end{itemize}
+
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{userinterface:} FV platooning status IDLE
+			\end{itemize}
+
+			\paragraph{Test 5:}{FV timeout}
+			\paragraph{Beschreibung:} FV hört auf fv\_heartbeat zu senden. LV geht in CREATING
+			\paragraph{Input:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{fv\_heartbeat} stoppt 
+			\end{itemize}
+
+			\paragraph{Erwarteter Output:}
+			\begin{itemize} \itemsep-0.5em
+				\item \textbf{userinterface:} LV platooning status IDLE
+			\end{itemize}
+
 		\subsection{Testergebnisse}
 		\label{test_ergebnisse}
+
+		\begin{lstlisting}[basicstyle=\tiny]
+
+####################################################################
+MODULETESTS
+
+
+#####################################################################
+moduletest_longitudinalprocessing
+
+[1524389366][Moduletest_longitudinalprocessing][test_send_new_data_recv_velocity][SUCCESS] 
+[1524389377][Moduletest_longitudinalprocessing][test_change_velocity_keep_up][SUCCESS] moduletest scenario timer ran out.
+
+#####################################################################
+moduletest_messagedistribution
+
+[1524389383][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_broadcast][SUCCESS] 
+[1524389384][Moduletest_messagedistribution][test_pub_in_lv_broadcast_recv_platoonMsg][SUCCESS] 
+[1524389385][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_accept][SUCCESS] 
+[1524389386][Moduletest_messagedistribution][test_pub_in_lv_accept_recv_platoonMsg][SUCCESS] 
+[1524389387][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_lv_reject][SUCCESS] 
+[1524389388][Moduletest_messagedistribution][test_pub_in_lv_reject_recv_platoonMsg][SUCCESS] 
+[1524389389][Moduletest_messagedistribution][test_pub_in_fv_heartbeat_recv_platoonMsg][SUCCESS] 
+[1524389390][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_heartbeat][SUCCESS] 
+[1524389391][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_leave][SUCCESS] 
+[1524389392][Moduletest_messagedistribution][test_pub_in_fv_leave_recv_platoonMsg][SUCCESS] 
+[1524389393][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_fv_request][SUCCESS] 
+[1524389394][Moduletest_messagedistribution][test_pub_in_fv_request_recv_platoonMsg][SUCCESS] 
+[1524389395][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_remotecontrolInput][SUCCESS] 
+[1524389396][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_remotecontrolToggle][SUCCESS] 
+[1524389397][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_platooningToggle][SUCCESS] 
+[1524389403][Moduletest_messagedistribution][test_pub_in_platoonMsg_recv_userInterface][SUCCESS] 
+
+#####################################################################
+moduletest_messagetypes
+
+[1524389409][Moduletest_messagetypes][test_encode_decode_messages][SUCCESS] 
+
+
+#####################################################################
+moduletest_platooning
+
+
+[1524389421][Moduletest_platooning][test_send_platoontoggle_recv_platoonstate_creating][SUCCESS] 
+[1524389422][Moduletest_platooning][test_send_fv_request_recv_lv_accept][SUCCESS] 
+
+
+#####################################################################
+moduletest_prioritization
+
+
+[1524389431][Moduletest_prioritization][test_remotecontrol_toggle_and_speed_recv_vehiclecontrol][SUCCESS] 
+[1524389434][Moduletest_prioritization][test_platooning_toggle_and_speed_recv_vehiclecontrol][SUCCESS] no vehiclecontrol received
+
+
+#####################################################################
+moduletest_radiointerface
+
+
+[1524389441][Moduletest][test_send_udp_recv_protocolIn][SUCCESS] test_send_udp_recv_protocolIn
+[1524389442][Moduletest][test_send_protocolOut_recv_udp][SUCCESS] 
+[1524389444][Moduletest][test_stresstest_send_udp_recv_protocolIn][SUCCESS] 
+[1524389446][Moduletest][test_stresstest_send_protocolOut_recv_upd][SUCCESS] 
+
+
+#####################################################################
+moduletest_udpserver
+
+
+[1524389464][Moduletest_udpserver][test_stresstest_send_and_receive][FAILURE] sent packets 4092614 recvd 81978
+
+
+#####################################################################
+INTEGRATION TESTS
+
+
+[1524389481][Integrationtest_platooning][test_send_platooningToggle_recv_heartbeats_and_broadcast][SUCCESS] 
+[1524389491][Integrationtest_platooning][test_send_platooningToggle_recv_heartbeat_data_and_broadcast_data][FAILURE] fv2 doesnt have correct ipd.
+fv3 doesnt have correct ipd.
+
+[1524389496][Integrationtest_platooning][test_send_updated_broadcast_receive_userinterface][FAILURE] fv3 reported less than 20 different ipd values. values were 10.000000,
+
+
+
+#####################################################################
+RESULTS
+
+
+failed 3 of 32 tests
+\end{lstlisting}
+		
 	\section{Nutzerhandbuch} 
 	\label{nutzerhandbuch}
 	%brumm brumm auto fahren (wie lasse ich=schlingloff die autos fahren/kann ich die simulation starten? was kann ich alles anstellen und wie? steuerung, hindernisse...)
 \newpage
 \part{Beschreibung der Eigenleistung}
 \label{eigenleistung}
-	\section{Cooles Kind 1}
-		Für nähere Informationen siehe Anhang \ref{appendix:xynode}. Vergleiche dazu auch \cite{ibm}.
 	\section{Falco Becker}
 	\section{Yannick Boerner}
 	\section{Anne Borchard}
@@ -1092,5 +1346,10 @@ backend=biber
 		\item libgtest\_main.so -- libgtest\_main.so
 		\item libgtest.so -- libgtest.so
 	\end{itemize}
+
+\section{Lastenheft}
+\label{appendix:lastenheft}
+\includepdf[pages=-]{lastenheft.pdf}
+
 \end{appendices}
 \end{document}

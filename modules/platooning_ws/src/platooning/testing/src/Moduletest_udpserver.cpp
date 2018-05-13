@@ -101,7 +101,7 @@ void Moduletest_udpserver::test_stresstest_send_and_receive() {
 	if (send_counter != recv_counter) {
 
 		res.success = false;
-		res.comment = get_current_test() + " failed. sent packets " + std::to_string(send_counter) + " recvd "
+		res.comment = "sent packets " + std::to_string(send_counter) + " recvd "
 			+ std::to_string(recv_counter);
 
 	}
