@@ -303,7 +303,7 @@ roslaunch platooning_sim sim_2cars.lauch
 						
 		    \subsubsection{User Interface}
 			\label{user_interfcae}
-				\paragraph{Aufgabe} Das UserInterface-Nodelet zeigt dem Nutzer aktuelle Daten des Fahrzeugs an. Dazu gehören zum Beispiel Nachrichten aus dem Platoon, Geschwindigkeit oder Distanz zu anderen Objekten. Aus diesen Daten soll der Nutzer nachvollziehen können, warum sich das Auto verhält, wie es sich verhält.
+				\paragraph{Aufgabe} Das UserInterface-Nodelet zeigt dem Nutzer aktuelle Daten des Fahrzeugs an. Dazu gehören zum Beispiel Nachrichten aus dem Platoon, Geschwindigkeit und Distanz zu anderen Objekten. Aus diesen Daten soll der Nutzer das Verhalten des Autos nachvollziehen können.
 				\paragraph{Assoziationen} Das UserInterface-Nodelet ist Subscriber vom UdpServer-Nodelet.
 				\paragraph{Attribute}
 					\begin{itemize}
@@ -322,17 +322,6 @@ roslaunch platooning_sim sim_2cars.lauch
 				        \item remoteControlToggle an Nodelet UdpServer
 				    \end{itemize}
 				    
-			\subsubsection{UserInterfaceData}
-			\label{user_interface_data}
-				\paragraph{Aufgabe} Der UserInterfaceData-Node hält die Daten, die das UserInterface anzeigt, stets aktuell. Somit hat der Nutzer immer die aktuellsten Fahr-Daten vorliegen. 
-				\paragraph{Assoziationen} Der UserInterfaceData-Node ist Subscriber von MessageDistribution. Er ist Publisher für UserInterface. 
-				\paragraph{Attribute}
-					\subparagraph{Platooning Messages}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
-			
 			\subsubsection{Message Translation}
 			\label{message_translation}
 				\paragraph{Aufgabe} Der MessageDistribution-Node ist dafür verantwortlich, Messages in Datentypen zu übersetzen, damit diese dann von den unterschiedlichen Nodes verwendet werden können. 
@@ -1304,30 +1293,66 @@ failed 3 of 32 tests
 
 \newpage
 \begin{appendices}
-
-\section{XY-Node Code}
-\label{appendix:xynode}
-	Hier der Code zum Node XY...
-
-\section{Code in Latex-Dokument kopiert}
-\label{appendix:abcnode}  
-	\begin{lstlisting}[style=customcpp]
-	class Animal 
-	{
-		int x_value;
-	public:
-		int y_value;
-		int x = 42;
-	};
-	
-	class Dog : public Animal 
-	{}; \end{lstlisting}
-
-% cpp-file befindet sich im gleichen Ordner wie das tex-file
-% der Stil wird global definiert, siehe oben customcpp
-%\section{Code per File importiert}
-%\label{appendix:importcode}
-%	\lstinputlisting[style=customcpp]{lambda_test.cpp}
+\section{Code Nodelet LaneDetect}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={LaneDetect.hpp}]{LaneDetect.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={LaneDetect.cpp}]{LaneDetect.cpp}
+\section{Code Nodelet LongitudinalProcessing}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={LongitudinalProcessing.hpp}]{LongitudinalProcessing.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={LongitudinalProcessing.cpp}]{LongitudinalProcessing.cpp}
+\section{Code Nodelet MessageDistribution}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={MessageDistribution.hpp}]{MessageDistribution.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={MessageDistribution.cpp}]{MessageDistribution.cpp}
+\section{Code Nodelet MessageTypes}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={MessageTypes.hpp}]{MessageTypes.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={MessageTypes.cpp}]{MessageTypes.cpp}
+\section{Code Nodelet Platooning}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={Platooning.hpp}]{Platooning.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={Platooning.cpp}]{Platooning.cpp}
+\section{Code Nodelet Prioritization}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={Prioritization.hpp}]{Prioritization.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={Prioritization.cpp}]{Prioritization.cpp}
+\section{Code Nodelet RadioInterface}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={RadioInterface.hpp}]{RadioInterface.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={RadioInterface.cpp}]{RadioInterface.cpp}
+\section{Code Nodelet StmSim}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={StmSim.hpp}]{StmSim.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={StmSim.cpp}]{StmSim.cpp}
+\section{Code Nodelet UdpPackageSet}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={UdpPackageSet.hpp}]{UdpPackageSet.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={UdpPackageSet.cpp}]{UdpPackageSet.cpp}
+\section{Code Nodelet UdpServer}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={UdpServer.hpp}]{UdpServer.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={UdpServer.cpp}]{UdpServer.cpp}
+\section{Code Nodelet UserInterface}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={UserInterface.hpp}]{UserInterface.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={UserInterface.cpp}]{UserInterface.cpp}
+\section{Code Nodelet VehicleControl}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+\lstinputlisting[caption={VehicleControl.hpp}]{VehicleControl.hpp}
+\lstset{inputpath=../modules/platooning_ws/src/platooning/src}
+\lstinputlisting[caption={VehicleControl.cpp}]{VehicleControl.cpp}
 
 \section{Google Test Installation}
 \label{appendix:gtest_install}
