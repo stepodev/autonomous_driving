@@ -315,7 +315,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.10000000149011612
       Style: Flat Squares
-      Topic: /prius/front_right_laser/scan
+      Topic: /prius3/front_right_laser/scan
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -345,7 +345,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.10000000149011612
       Style: Flat Squares
-      Topic: /prius/front_left_laser/scan
+      Topic: /prius3/front_left_laser/scan
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -405,7 +405,7 @@ Visualization Manager:
       Enabled: true
       Name: back_left_far
       Queue Size: 100
-      Topic: /prius/back_sonar/left_far_range
+      Topic: /prius3/back_sonar/left_far_range
       Unreliable: false
       Value: true
     - Alpha: 0.5
@@ -415,7 +415,7 @@ Visualization Manager:
       Enabled: true
       Name: back_left_mid
       Queue Size: 100
-      Topic: /prius/back_sonar/left_middle_range
+      Topic: /prius3/back_sonar/left_middle_range
       Unreliable: false
       Value: true
     - Alpha: 0.5
@@ -425,7 +425,7 @@ Visualization Manager:
       Enabled: true
       Name: back_right_mid
       Queue Size: 100
-      Topic: /prius/back_sonar/right_middle_range
+      Topic: /prius3/back_sonar/right_middle_range
       Unreliable: false
       Value: true
     - Alpha: 0.5
@@ -435,7 +435,7 @@ Visualization Manager:
       Enabled: true
       Name: back_right_far
       Queue Size: 100
-      Topic: /prius/back_sonar/right_far_range
+      Topic: /prius3/back_sonar/right_far_range
       Unreliable: false
       Value: true
     - Alpha: 0.5
@@ -445,7 +445,7 @@ Visualization Manager:
       Enabled: true
       Name: front_left_far
       Queue Size: 100
-      Topic: /prius/front_sonar/left_far_range
+      Topic: /prius3/front_sonar/left_far_range
       Unreliable: false
       Value: true
     - Alpha: 0.5
@@ -455,7 +455,7 @@ Visualization Manager:
       Enabled: true
       Name: front_left_mid
       Queue Size: 100
-      Topic: /prius/front_sonar/left_middle_range
+      Topic: /prius3/front_sonar/left_middle_range
       Unreliable: false
       Value: true
     - Alpha: 0.5
@@ -465,7 +465,7 @@ Visualization Manager:
       Enabled: true
       Name: front_right_mid
       Queue Size: 100
-      Topic: /prius/front_sonar/right_middle_range
+      Topic: /prius3/front_sonar/right_middle_range
       Unreliable: false
       Value: true
     - Alpha: 0.5
@@ -475,7 +475,7 @@ Visualization Manager:
       Enabled: true
       Name: front_right_far
       Queue Size: 100
-      Topic: /prius/front_sonar/right_far_range
+      Topic: /prius3/front_sonar/right_far_range
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -503,7 +503,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.029999999329447746
       Style: Flat Squares
-      Topic: /prius/center_laser/scan
+      Topic: /prius3/center_laser/scan
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true

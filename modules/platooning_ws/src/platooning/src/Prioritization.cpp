@@ -175,8 +175,6 @@ void Prioritization::hndl_remotecontrolInput(const remotecontrolInput &msg) {
 			outmsg->steering_angle = target_angle_;
 			outmsg->velocity = target_speed_;
 
-			std::cout << outmsg->steering_angle << " " << outmsg->velocity << std::endl;
-
 			pub_vehicleControl_.publish(outmsg);
 		}
 	}

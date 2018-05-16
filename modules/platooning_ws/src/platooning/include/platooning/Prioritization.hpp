@@ -28,7 +28,7 @@
 #include "Services.hpp"
 #include "ServiceTypes.hpp"
 
-#define LOWEST_SPEED -5.0f /**< lower bound of velocity our car can go */
+#define LOWEST_SPEED 0.0f /**< lower bound of velocity our car can go */
 #define HIGHEST_SPEED 7.0f /**< upper bound of velocity our car can go */
 
 namespace platooning {

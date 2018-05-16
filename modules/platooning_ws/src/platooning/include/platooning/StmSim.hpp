@@ -31,6 +31,7 @@
 #include <ros/ros.h>
 #include <boost/thread.hpp>
 #include <boost/asio.hpp>
+#include <algorithm>
 
 #include "Topics.hpp"
 #include "MessageTypes.hpp"

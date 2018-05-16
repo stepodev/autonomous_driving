@@ -172,6 +172,7 @@ void gazeboadapter::process_stmsim(const platooning::stmupdate &stmupdate) {
 	//todo use brake instead of accell
 	if( stmupdate.acceleration < 0 ) {
 		c-> throttle = stmupdate.acceleration * -1;
+		c-> brake = stmupdate.acceleration * -1;
 	} else if( stmupdate.acceleration == 0 ) {
 		c->throttle = 0;
 	} else if( stmupdate.acceleration > 0) {

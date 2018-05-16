@@ -111,7 +111,7 @@ void LongitudinalProcessing::hndl_target_distance(const platooning::targetDistan
 			boost::recursive_mutex::scoped_lock l(calc_mutex_);
 
 			if (msg.distance < MINIMUM_DISTANCE) {
-				NODELET_ERROR("[%s] target distance shorter than 0.5. Setting to 1.", name_.c_str());
+				NODELET_WARN("[%s] target distance shorter than 2. Setting to 2.", name_.c_str());
 				pd_controller_.set_target_position(-MINIMUM_DISTANCE);
 
 			} else {
@@ -194,12 +194,11 @@ void LongitudinalProcessing::update_velocity() {
 
 	//less than 0.8 units distance and driving towards: should emergency stop
 	if( current_distance_ <= EMERGENCY_DISTANCE && relative_velocity < 0) {
-		outmsg->speed = -3.0f;
+		outmsg->speed = -5.0f;
 
 		pub_velocity_.publish(outmsg);
 		return;
 	}
-
 
 	//if relative velo diff is slower than 5 units per second and distance is off by less than 5 units, just keep speed
 	if( fabsf(relative_velocity) < 0.05 && fabsf(current_distance_ - -pd_controller_.get_target_position()) < 0.05 )  {

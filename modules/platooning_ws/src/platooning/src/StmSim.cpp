@@ -137,10 +137,6 @@ void StmSim::hndl_vehicleControl(const vehicleControl &msg) {
 
 		float mod_velo = msg.velocity - current_velocity_ ;
 
-		if( msg.velocity == 0 ){
-			mod_velo = 0;
-		}
-
 		float acceleration = 0;
 
 		//remap velocity to -1 to 1 range. assumes original range of -5 to 7
@@ -152,19 +148,18 @@ void StmSim::hndl_vehicleControl(const vehicleControl &msg) {
 			acceleration *= 0.3f;
 		} else if ( mod_velo == 0 ) {
 			acceleration = 0;
-		} else {
+		} else if ( mod_velo < 0 ) {
 			//normalize -5 to 0 to -1 to 0
-			acceleration = -((-mod_velo/5.0f));
+			acceleration = -((-mod_velo/3.0f));
 		}
 
-		if( acceleration >= 1.f || acceleration <= -1.f) {
-			NODELET_ERROR("[%s] velo %f - calc: %f = %f -> throttle %f ",
-			             name_.c_str(), current_velocity_, msg.velocity, mod_velo, acceleration);
-			NODELET_DEBUG("[%s] accel > 1 or <-1. velo %f - calc: %f = %f -> throttle %f ",
-			              name_.c_str(), current_velocity_, msg.velocity, mod_velo, acceleration);
-		} else {
-			//NODELET_INFO("[%s] velo %f - calc: %f = %f -> throttle %f ",
-			//             name_.c_str(), current_velocity_, msg.velocity, mod_velo, acceleration);
+		//happens if we change speed from -5 to 7, mod_velo = 13.
+		if( acceleration >= 1.f ) {
+			acceleration = 1.f;
+		}
+
+		if ( acceleration <= -1.f ) {
+			acceleration = -1.f;
 		}
 
 		platooning::stmupdate outmsg;

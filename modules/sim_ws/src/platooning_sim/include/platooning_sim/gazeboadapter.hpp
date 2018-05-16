@@ -25,10 +25,10 @@ const boost::posix_time::milliseconds SOURCECHECK_FREQ(1000);
 
 #define P1_RANGE 1
 #define P2_RANGE 2
-#define P3_RANGE 8
-#define P1_SPEED 16
-#define P2_SPEED 32
-#define P3_SPEED 64
+#define P3_RANGE 4
+#define P1_SPEED 8
+#define P2_SPEED 16
+#define P3_SPEED 32
 
 namespace platooning_sim {
 

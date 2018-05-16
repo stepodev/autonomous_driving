@@ -166,7 +166,7 @@ void Moduletest_longitudinalprocessing::test_change_velocity_keep_up() {
 	pub_map_[topics::TARGET_SPEED].publish(target_speed);
 
 	auto target_dist = boost::shared_ptr<platooning::targetDistance>(new platooning::targetDistance);
-	target_dist->distance = 1;
+	target_dist->distance = 2;
 	pub_map_[topics::TARGET_DISTANCE].publish(target_dist);
 
 	auto current_speed = boost::shared_ptr<platooning::speed>(new platooning::speed);
@@ -271,7 +271,7 @@ void Moduletest_longitudinalprocessing::hndl_test_change_velocity_keep_up_scenar
 	res.success = true;
 	res.comment = "moduletest scenario timer ran out.";
 
-	if (lv_pos - fv_pos >= 1.1) {
+	if (lv_pos - fv_pos >= 2.2) {
 		res.success = false;
 		res.comment = "lv_pos is " + std::to_string(lv_pos) + " fv_pos is:" + std::to_string(fv_pos)
 			+ " distance is: " + std::to_string(lv_pos - fv_pos) + " so too far";

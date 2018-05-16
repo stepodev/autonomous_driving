@@ -317,7 +317,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.10000000149011612
       Style: Flat Squares
-      Topic: /prius/front_right_laser/scan
+      Topic: /prius1/front_right_laser/scan
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -347,7 +347,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.10000000149011612
       Style: Flat Squares
-      Topic: /prius/front_left_laser/scan
+      Topic: /prius1/front_left_laser/scan
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -505,7 +505,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.029999999329447746
       Style: Flat Squares
-      Topic: /prius/center_laser/scan
+      Topic: /prius1/center_laser/scan
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true

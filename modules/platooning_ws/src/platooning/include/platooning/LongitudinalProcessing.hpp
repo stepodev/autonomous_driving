@@ -89,9 +89,9 @@ class LongitudinalProcessing : public nodelet::Nodelet {
 		float get_target_position() { return target_relative_position_; }
 
 	  private:
-		float kp_ = 0.8; /**< proportional value. The higher the error, respond proportinally */
-		float kd_ = 0.4; /**< derivative value. The closer to error 0, reduce response */
-		float target_relative_position_ = -1;
+		float kp_ = 2; /**< proportional value. The higher the error, respond proportionally */
+		float kd_ = 0.9; /**< derivative value. The closer to error 0, reduce response */
+		float target_relative_position_ = -MINIMUM_DISTANCE;
 	};
 
 	ros::NodeHandle nh_; /**< Some documentation for the member nh_. */

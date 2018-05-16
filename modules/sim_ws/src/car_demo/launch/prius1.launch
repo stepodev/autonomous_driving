@@ -19,5 +19,5 @@
   <node name="spawn_urdf1" pkg="gazebo_ros" type="spawn_model" args="-param robot_description1 -urdf -x -115 -y 20 -z 0.5 -model prius1">
   </node>
 
-  <node name="rviz1" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+  <!-- <node name="rviz1" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" /> -->
 </launch>
