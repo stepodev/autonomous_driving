@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="model" default="$(find prius_description)/urdf/prius1.urdf"/>
+  <arg name="rvizconfig" default="$(find car_demo)/rviz/world_car1.rviz" />
+
+  <param name="robot_description1" textfile="$(arg model)"/>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher1" >
+    <remap from="robot_description" to="robot_description1"/>
+    <!-- <remap from="joint_states" to="/prius/joint_states" /> -->
+  </node>
+
+  <node pkg="fake_localization" type="fake_localization" name="fake_localization1">
+    <remap from="base_pose_ground_truth" to="/prius1/base_pose_ground_truth"/>
+  </node>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="very_inaccurate_odom1" args="0 0 0 0 0 0 odom base_link"/>
+
+  <node name="spawn_urdf1" pkg="gazebo_ros" type="spawn_model" args="-param robot_description1 -urdf -x -115 -y 20 -z 0.5 -model prius1">
+  </node>
+
+  <!-- <node name="rviz1" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" /> -->
+</launch>

@@ -1,0 +1,8 @@
+<launch>
+    <arg name="logfile" default=""/>
+    <arg name="testcase" default="0" />
+    <node pkg="nodelet" type="nodelet" name="integrationtest_platooning" args="load platooning/integrationtest_platooning nodeletmanager" required="true">
+    <param name="testcase" value="$(arg testcase)"/>
+    <param name="logfile" value="$(arg logfile)"/>
+    </node>
+</launch>

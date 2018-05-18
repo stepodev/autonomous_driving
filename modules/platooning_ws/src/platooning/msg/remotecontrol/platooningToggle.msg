@@ -1,0 +1,5 @@
+uint32 vehicle_id
+bool enable_platooning
+float32 inner_platoon_distance
+float32 platoon_speed
+string lvfv

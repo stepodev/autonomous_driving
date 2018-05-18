@@ -1,0 +1,37 @@
+% Demonstration of pgf-umlsd.sty, a set of convenient macros for drawing
+% UML sequence diagrams. Written by Xu Yuan <xuyuan.cn AT gmail.com> from
+% Southeast University, China.
+% The project is hosted at Google code: http://code.google.com/p/pgf-umlsd/ 
+\documentclass{article}
+
+\usepackage{tikz}
+\usepackage[underline=true,rounded corners=false]{pgf-umlsd}
+\usepgflibrary{arrows} % for pgf-umlsd
+
+\begin{document}
+
+  \begin{sequencediagram}
+    \newthread {nm} {NodeletManager}
+    \newinst {pt} {Platooning}
+    \newinst {pub} {Publisher \textless fv\_request \textgreater}
+
+
+    \begin{sdblock}{alt}{enable\_platooning=false}
+    \begin{call}{nm}{hndl\_platooning\_toggle()} {pt}{}
+    \end{call}
+
+    \stepcounter{seqlevel} %Vertical empty space between `calls`
+
+    
+    \begin{call}{nm}{hndl\_platooning\_toggle()} {pt}{}
+    \end{call}
+    \end{sdblock}
+
+    \path (nw)--coordinate (aux) (se); 
+    \draw[dashed] (nw|-aux)--(aux-|se);
+    \end{sequencediagram}
+
+
+\end{document}
+
+this is cancer

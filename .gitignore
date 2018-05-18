@@ -2,10 +2,14 @@
 *.aux
 *.fdb_*
 *.fls
-*.pdf
 *.synctex.*
 *.toc
-
+# bibtex
+*.bbl
+*.bcf
+*.run.xml
+*.pdf
+*.blg
 
 # Prerequisites
 *.d
@@ -61,5 +65,4 @@ cmake-build-release/
 # QtCreator
 Debug/
 *.autosave
-*.pro.user
-
+build-ControllerUi-Desktop_Qt_5_10_0_GCC_64bit-Debug/

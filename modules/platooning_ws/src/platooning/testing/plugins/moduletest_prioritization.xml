@@ -1,0 +1,9 @@
+<library path="lib/libmoduletest_prioritization">
+    <class name="platooning/moduletest_prioritization"
+	         type="platooning::Moduletest_prioritization"
+            base_class_type="nodelet::Nodelet">
+        <description>
+            Moduletest Nodelet longitudinalprocessing
+        </description>
+    </class>
+</library>

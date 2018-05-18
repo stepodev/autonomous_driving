@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="nodelet" type="nodelet" name="vehiclecontrol" args="load platooning/vehiclecontrol nodeletmanager">
+    </node>
+</launch>

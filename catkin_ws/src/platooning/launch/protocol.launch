@@ -1,4 +1,0 @@
-<launch>
-    <node pkg="nodelet" type="nodelet" name="protocol" args="load platooning/protocol nodeletmanager">
-    </node>
-</launch>

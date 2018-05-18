@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find platooning_sim)/launch/gazeboadapter.launch"/>
+    <include file="$(find car_demo)/launch/world.launch"/>
+    <include file="$(find car_demo)/launch/prius1.launch"/>
+    <include file="$(find car_demo)/launch/prius2.launch"/>
+    <include file="$(find car_demo)/launch/prius3.launch"/>
+</launch>

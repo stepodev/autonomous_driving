@@ -1,2 +1,0 @@
-string payload
-int32 message_type

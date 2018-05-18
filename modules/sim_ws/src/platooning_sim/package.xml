@@ -1,0 +1,23 @@
+<package format="2">
+    <name>platooning_sim</name>
+    <version>0.0.1</version>
+    <description>
+        Platooning Sim
+    </description>
+    <maintainer email="stephan.orlowsky@gmail.com">Stephan Orlowsky</maintainer>
+    <license>APACHE 2.0</license>
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <depend>roscpp</depend>
+    <depend>nodelet</depend>
+    <depend>platooning</depend>
+    <depend>prius_msgs</depend>
+    <depend>gazebo_ros</depend>
+
+    <exec_depend>car_demo</exec_depend>
+
+    <export>
+        <nodelet plugin="${prefix}/plugins/gazeboadapter.xml"/>
+        <gazebo_ros plugin_path="${prefix}/lib" gazebo_media_path="${prefix}" gazebo_model_path="${prefix}/models"/>
+    </export>
+</package>

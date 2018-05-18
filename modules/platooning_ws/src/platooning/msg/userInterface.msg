@@ -1,0 +1,13 @@
+bool leading_vehicle
+bool following_vehicle
+bool potential_following_vehicle
+float32 inner_platoon_distance
+float32 actual_distance
+float32 platoon_speed
+float32 speed
+string platooning_state
+uint32 src_vehicle
+uint32 platoon_size
+uint32[] platoon_members
+bool remotecontrol_enabled
+uint32 platoon_id
