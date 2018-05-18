@@ -194,6 +194,21 @@ roslaunch platooning_sim sim_2cars.lauch
 		\label{fahrzeugzusammenbau}
 		% tutorial zum zusammenbau, fotos, ggf. ausführliche Beschreibung in den Anhang verbannen und darauf verweisen
 	\newpage
+
+	\section{Software-Architektur Gruppe B}
+    		\subsection*{Platoon/Wifi}
+    		\subsection*{State-Machine}
+    		Das Verhalten der Autos in einem Platoon wurde von Gruppe B mithilfe einer UML-Statechart modelliert. HierfÃŒr wurde die Open Source Software Papyrus verwendet. Die State-Machine wurde in die drei Sub-State-Machines PlatoonMain, PlatoonLeaderMain und PlatoonFollowerMain unterteilt.
+
+    PlatoonMain beschreibt die m\"oglichen Zust\"ande eines Platoons im Anfangsstadium, d.h. hier werden die Platoon-Konfigurationen verarbeitet.
+
+    PlatoonLeaderMain beschreibt das erlaubte Verhalten des Leader Vehicles in einem Platoon, analog gilt das gleiche f\"ur PlatoonFollowerMain. Zus\"atzlich zum Eintrittspunkt der beiden Sub-State-Machinen wird parallel ein Sub-Sub-State-Machine initialisiert, welches die m\"oglichen Zust\"ande eines einzelnen Autos im Betrieb beschreibt.
+
+    Die UML-Statechart wurde mithilfe der Boost Statechart Library, eine freie C++ Bibliothek, in ausf\"uhrbaren C++ Code \"uberf\"uhrt. Die State-Machine wird initialisiert mittels der Master Nodelet. Details zur State-Machine kann man dem Anhang N entnemmen.
+
+
+
+
 	\section{Software-Architektur}
 	\label{sw_architektur}
 		\subsection{Architekturübersicht}
@@ -1321,6 +1336,18 @@ failed 3 of 32 tests
 
 	\section{Benjamin Lorenz}
 	\section{Stephan Orlowsky}
+	\section{Paul Waljaew}
+    Die Spezifikation des Verhaltens der Autos in einem Platoon wurde von mir mittels einer State Machine beschrieben. Dies entspricht der g\"angigen Praxis im Bereich Embedded Systems und dient dazu den gesamten Lebenszyklus abzubilden, was zu einem besseren Verst\"andnis des zustandsbasierten Systems beigetragen hat. Um die State Machine zu realisieren wurde von mir - mit der Open Source Software Papyrus - ein Diagramm(s. Anhang N) modelliert. Dies diente als Vorlage f\"ur die sp\"atere Implementation. Anschlie\"send gelang mir die Transformation der UML-Statechart in ausf\"uhrbaren C++ Code, mithilfe der Boost Statechart Library.
+
+    Zu meinen weiteren T\"atigkeiten z\"ahlen:
+     \begin{itemize}
+       \item Einarbeitung in ROS
+       \item Einrichtung und Bereitstellung einer Virtuellen Maschine mit Ubuntu 16.04 und ROS Lunar f\"ur die Gruppe B
+       \item Einrichtung eines Kommunikationskanals und Projektmanagementtools  (Slack, ClickUp)
+       \item Mithilfe Dokumentation
+       \item Mithilfe bei der UseCase Erstellung
+       \item Mithilfe beim Testen der Protokollimplementation
+     \end{itemize}
 
 \newpage
 \printbibliography
@@ -1414,6 +1441,13 @@ failed 3 of 32 tests
 		\item libgtest\_main.so -- libgtest\_main.so
 		\item libgtest.so -- libgtest.so
 	\end{itemize}
+
+\section{Statechart}
+\includegraphics[width=\textwidth]{sm_PlatoonMain.jpg}
+\newpage
+\includegraphics[width=\textwidth]{sm_LeaderVehicle.jpg}
+\newpage
+\includegraphics[width=\textwidth]{sm_FollowerVehicle.jpg}
 
 \section{Lastenheft}
 \label{appendix:lastenheft}
