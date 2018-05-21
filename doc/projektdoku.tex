@@ -145,6 +145,35 @@ sudo apt-get install python-rosinstall python-rosinstall-generator python-wstool
 		\end{itemize}
 		\item C++11 Toolchain / IDE
 	\end{itemize}
+	\subsection{Ad-Hoc Netzwerk}
+	Für die Kommunikation der Fahrzeuge untereinander benötigen diese eine drahtlose Schnittstelle. Für dieses 
+	Projekt wurde sich für eine Kommunikation via WLAN entschieden. Um auch ohne zentralen Router eine Verbindung 
+	zwischen den Fahrzeugen aufzubauen muss ein Ad-Hoc Netzwerk erstellt werden.
+	\subsubsection*{Linux}
+	\begin{lstlisting}
+ifconfig wlan0 down 					# Disable wlan0 adapter
+iw wlan0 set type ibss					# set adapter type to ibss (ad-hoc)
+ifconfig wlan0 up						# enable wlan0 adapter
+iw wlan0 ibss join <ssid> <frequency>	# join network
+ifconfig wlan0 <ip>						# set ip address
+	\end{lstlisting}
+	Hierbei ist es unerheblich, in welcher Reihenfolge die Fahrzeuge das Netzwerk betreten. 
+	Zum Debuggen der Verbindung und zur Fernsteuerung der Fahrzeuge muss auch mit einem externen Laptop dem 
+	Netzwerk beigetreten werden. Dies erfolgt im Falle eines Linux Betriebssystems wie oben dargestellt.
+	
+	Im Falle eines Windows Rechners muss das folgende Verfahren gewählt werden.
+	\subsubsection*{Windows}	
+	\begin{itemize}
+	\item Netzwerk- und Freigabecenter->Neue Verbindung oder neues Netzwerk einrichten
+	\item Manuell mit einem Drahtlosnetzwerk verbinden
+	\item Netzwerkname (SSID) eingeben
+	\item Weiter->Schließen
+	\end{itemize}
+	Nun muss noch folgendes in der Kommandozeile eingeben werden
+	\begin{lstlisting}
+netsh wlan set profileparameter <ssid> connectiontype=ibss connectionmode=manual
+netsh wlan connect <ssid>
+	\end{lstlisting}
 	\subsection{Platooning Projekt Setup}
 	\begin{itemize}
 		\item Git und git-lfs installieren.
