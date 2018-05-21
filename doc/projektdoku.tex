@@ -236,6 +236,80 @@ roslaunch platooning_sim sim_2cars.lauch
 		\label{fahrzeugzusammenbau}
 		% tutorial zum zusammenbau, fotos, ggf. ausführliche Beschreibung in den Anhang verbannen und darauf verweisen
 	\newpage
+	
+	\section{Software-Architektur Gruppe B}
+	\label{sw_b_architektur}
+			\subsection{Architekturübersicht}
+			\label{sw_b_uebersicht}
+			Um das Entwickeln und Testen in der Gruppe effizient und einfach zu halten wurde in der Architektur der Software eine möglichst große Modularisierung angestrebt. Die Middleware ROS bietet zur Unterstützung dieser Konzepte eine Aufteilung in Nodes oder Nodelets an und wurde für das Projekt verwendet.
+			
+			Die vollständige Architektur besteht aus folgenden Nodelets:
+			\begin{itemize}
+				\item Wifi - Ein Nodelet, das eine über ROS Mechanismen zugreifbare Schnittstelle zum drahtlosen Netzwerk bieten soll
+				\item Protocol - Ein Nodelet, das das Wifi Nodelet dazu nutzt, einfache Funktionen zur Fahrzeug Kommunikation bereitzustellen und dabei die Regeln des Kommunikationsprotokolls einhält
+				\item Remote - Ein Nodelet, das unter Nutzung des Wifi Nodelets eine manuelle Manipulation des Fahrzeug Zustandes per Netzwerknachrichten und das Versenden von Log-Nachrichten ermöglicht
+				\item Controller - Ein Nodelet, das unter Nutzung des MAVLink Protokolls mit dem STM Board kommunizieren kann und einfache Funktionen zur Fahrzeugsteuerung zur Verfügung stellt
+				\item Master - Ein Nodelet, das den aktuellen Zustand des Fahrzeuges hält und auf Basis des Remote- und Protocol-Nodelets über Zustandsänderungen entscheidet, welche mittels des Controller-Nodelets angewendet werden
+				\item Launcher - Ein Node, der die anderen Nodelets startet und entsprechende Ressourcen an sie verteilt
+			\end{itemize}
+			
+			Die Entwicklung aller Nodelets wurde nicht vollendet um stattdessen Gruppe C in der Entwicklung ihrer Software und Gruppe in der Fertigstellung der Hardware zu unterstützen.			
+			
+			\subsection{ROS}
+			\label{sw_b_ros}
+			
+			ROS stellt als Modularisierungskonzept Nodes und Nodelets bereit. Während Nodes vollständige Executables darstellen, sind Nodelets statische Libraries welche zusammen in eine ausführbare Datei gelinkt werden können. Dies hat den Vorteil, das dadurch effizientere Binaries entstehen. Daher wurde dieser Ansatz für das Projekt gewählt.
+			
+			Als Kommunikationsmechanismen zwischen den Modules werden ausschließlich die ROS bereitgestellten Konzepte des Services (ein synchroner Aufruf einer gewissen Funktion) und der Message (ein asynchrones Benachrichtigungssystem) genutzt. Um zu vermeiden, dass ROS für diese Kommunikationswege TCP-Ports benutzt, da dies sonst mit großen Performance-Einbußen einher gehen würde, versuchen alle Kommunikationen mit std::shared\_ptr zu arbeiten. In Kombination mit der Verwendung von Nodelets kann ROS dadurch die Kommunikation optimieren.
+			
+			Des weiteren bietet ROS Logging Funktionalität, welcher genutzt wird. Verschiedene Makros erlauben einfache Nachrichten unterschiedlicher Prioritäten, welche auch zur Laufzeit mittels einer Konfigurationsdatei gefiltert werden können.
+			
+			\subsection{Konventionen}
+			\label{sw_b_konventionen}
+			
+			Um eine möglichste große Konsistenz mit bestehenden Code zu gewährleisten wurde sich für die Nutzung von auf Google- und ROS-Style-Guides\cite{googleTest} basierenden Formatierungsrichtlinien geeinigt.
+			
+			Durch die Verwendung der von ROS bereitgestellten Logging Funktionen sollte außerdem jede wichtige Funktion ihren Aufruf vermerken um ein einfacheres Debuggen zu ermöglichen.
+			
+			Die einzelnen Nodelets sollten zusätzlich mittels der Google Test Library\cite{google} mit Unit Tests versehen werden. Integration Tests können mittels launch-Files bereitgestellt werden. Diese bieten in ROS die Möglichkeit mehrere Nodelets zu laden und entweder automatisiert oder manuell verschiedene Services aufzurufen oder Messages zu verschicken.
+			
+			\subsection{Modulbeschreibung}
+				\subsubsection{Wifi}
+    			\label{sw_b_wifi}
+				\paragraph{Aufgabe} Das Wifi Nodelet ist die Schnittstelle für alle anderen Nodelets zu allen Netzwerkfunktionalitäten. Es stellt mit ROS-Kommunikationsmechanismen erreichbare Funktionen bereit um UDP-Pakete über das drahtlose Netzwerk zu verschicken. Die IP-Adresse und der Port können mit Nodelet-Parametern gesetzt werden.
+				
+				\paragraph{Kommunikation} Das Wifi Nodelet abonniert das Topic protocol\_send. Jede Nachricht die dort erhalten wird, wird in ein UDP-Packet verpackt und per Broadcast abgeschickt. Des weiteren stellt es den Service subscribe\_to\_network zur Verfügung. Ein Nodelet kann diesen Service mit einem Filter und einem Namen aufrufen woraufhin das Wifi Nodelet jedes ankommende UDP-Paket mit dem Filter auf einen passenden Typ untersucht und als Message an ein Topic mit dem gegebenen Namen sendet.
+				
+				\paragraph{Implementierung} Das Wifi Nodelet nutzt die Boost.Asio Library für den direkten Zugriff auf Netzwerkadapter und das Senden und Empfangen von UDP Paketen.
+				
+			
+				\subsubsection{Protocol}
+				\label{sw_b_protocol}
+				\paragraph{Aufgabe} Das Protocol Nodelet ist für die Einhaltung des Platooning-Protokolls zur Kommunikation zwischen den Fahrzeugen verantwortlich. Es stellt einfache Funktionen für den Master bereit, welche Steuerungsmöglichkeiten bieten, verwaltet aber abseits davon sämtliche Kommunikation zwischen den Fahrzeugen selbstständig. Zu Testzwecken und für Integrationstests sind einige Parameter auch ohne ein Master Nodelet über Nodelet-Parameter konfigurierbar:
+				\begin{itemize}
+					\item position: Position des Fahrzeuges in der Kolonne
+					\item vehicle\_id: Eindeutige ID des Fahrzeuges
+					\item platoon\_id: Eindeutige ID der Kolonne
+					\item ipd: Abstand innerhalb des Platoons
+					\item ps: Geschwindigkeit des Platoons
+				\end{itemize}
+				
+				\paragraph{Kommunikation} Das Topic car\_bus wird dazu genutzt um mit dem Master Nodelet zu kommunizieren. Änderungen der Platoon Eigenschaften welche an dieses Topic gesendet werden, werden vom Protocol Nodelet nach den Regeln des Kommunikationsprotokolls an die anderen Fahrzeuge weitergegeben. Mittels der Service create\_platoon und leave\_platoon kann der Master das Beitreten beziehungsweise Erstellen oder das Verlassen eines Platoons anfordern. Um die Nachrichten zu verschicken wird das protocol\_send Topic verwendet und zum Empfangen durch den Service subscribe\_to\_network eine Verbindung mit dem Wifi Nodelet aufgebaut.
+				
+				\paragraph{Implementierung}
+				Das Platoon Nodelet spannt einen weiteren separaten Thread auf auf dem der ProtocolWorker ausgeführt wird, welcher für das Senden von Nachrichten genutzt wird. Für das Empfangen von Nachrichten können die ROS-Mechanismen verwendet werden, weil die UDP-Pakete bereits vom Wifi Nodelet in ROS Messages umgewandelt wurden. Sas Konvertieren von Nachrichten in das JSON Format wird mit der Library "JSON for Modern C++"\footnote{https://github.com/nlohmann/json} von Niels Lohmann erreicht.
+    			
+    			\subsubsection{Master}
+    			\label{sw_b_master}
+    			Das Verhalten der Autos in einem Platoon wurde von Gruppe B mithilfe einer UML-Statechart modelliert. Hierfür wurde die Open Source Software Papyrus verwendet. Die State-Machine wurde in die drei Sub-State-Machines PlatoonMain, PlatoonLeaderMain und PlatoonFollowerMain unterteilt.
+
+    			PlatoonMain beschreibt die möglichen Zustände eines Platoons im Anfangsstadium, d.h. hier werden die Platoon-Konfigurationen verarbeitet.
+
+    			PlatoonLeaderMain beschreibt das erlaubte Verhalten des Leader Vehicles in einem Platoon, analog gilt das gleiche für PlatoonFollowerMain. Zusätzlich zum Eintrittspunkt der beiden Sub-State-Machinen wird parallel ein Sub-Sub-State-Machine initialisiert, welches die möglichen Zustände eines einzelnen Autos im Betrieb beschreibt.
+
+    			Die UML-Statechart wurde mithilfe der Boost Statechart Library, eine freie C++ Bibliothek, in ausführbaren C++ Code überführt. Die State-Machine wird initialisiert mittels der Master Nodelet. Details zur State-Machine kann man dem Anhang N entnemmen.
+    			\newpage
+
 	\section{Software-Architektur}
 	\label{sw_architektur}
 		\subsection{Architekturübersicht}
@@ -1379,7 +1453,25 @@ failed 3 of 32 tests
 		\item Dokumentation Tests, Simulation, Nutzerhandbuch, Systemvorraussetzungen, Projektablauf
 		\item Präsentation Projektdetails, Simulation
 	\end{itemize}
-
+	\section{Simon}
+	Meine Haupttätigkeit war die Spezifikation und Modelierung des Systems. Im Zuge dessen habe ich an der 
+	State-Machine mitgearbeitet und an der Planung der Software Implementation gearbeitet.
+	Aufgrund der Verzögerungen habe ich zwischenzeitlich bei der Speifikation des Kommunkationssystems
+	ausgeholfen und mich an dessen Modelierung sowie Implementationsplanung beteiligt.
+	
+	Zum Ende des Projekts nahm ich and den Treffen teil und beteiligte mich an der Lösungsfindung zur Schadensreduktion.
+	
+	Weitere Tätigkeiten:
+	\begin{itemize}
+	\item Einarbeitung in ROS
+	\item Planung und Organisation über die Projektmanagementtools (Slack, ClickUp)
+	\item Teilnahme an den wöchentlichen gruppeninternen Treffen zur Organisation und Planung
+	\item Teilnahme an der gruppenübergreigende Treffen 
+	\item Mithilfe Dokumentation
+	\item Mithilfe Definition der Use-Cases
+	\item Mithilfe Spezifikation und Modelierung des Kommunikationsprotokoll
+	\item Mithilfe Spezifikation und Modelierung der State Machine
+	\end{itemize}
 \newpage
 \printbibliography
 
@@ -1510,6 +1602,12 @@ Es ist zu erwarten das bei längerem Betrieb der Regler etwas Hitze erzeugt. Daf
 \centering
 \includegraphics[width=0.5\textwidth]{Test_Spannungsregler2.jpg}
 \end{figure}
+\section{Statechart}
+\includegraphics[width=\textwidth]{sm_PlatoonMain.jpg}
+\newpage
+\includegraphics[width=\textwidth]{sm_LeaderVehicle.jpg}
+\newpage
+\includegraphics[width=\textwidth]{sm_FollowerVehicle.jpg}
 \section{Lastenheft}
 \label{appendix:lastenheft}
 \includepdf[pages=-]{lastenheft.pdf}
