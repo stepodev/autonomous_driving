@@ -226,20 +226,37 @@ roslaunch platooning_sim sim_2cars.lauch
 			\subsection{Konventionen}
 			\label{sw_b_konventionen}
 			
-			Um eine möglichste große Konsistenz mit bestehenden Code zu gewährleisten wurde sich für die Nutzung von auf Google- und ROS-Style-Guides basierenden Formatierungsrichtlinien geeinigt.
+			Um eine möglichste große Konsistenz mit bestehenden Code zu gewährleisten wurde sich für die Nutzung von auf Google- und ROS-Style-Guides\cite{googleTest} basierenden Formatierungsrichtlinien geeinigt.
 			
 			Durch die Verwendung der von ROS bereitgestellten Logging Funktionen sollte außerdem jede wichtige Funktion ihren Aufruf vermerken um ein einfacheres Debuggen zu ermöglichen.
 			
-			Die einzelnen Nodelets sollten zusätzlich mittels der Google Test Library mit Unit Tests versehen werden. Integration Tests können mittels launch-Files bereitgestellt werden. Diese bieten in ROS die Möglichkeit mehrere Nodelets zu laden und entweder automatisiert oder manuell verschiedene Services aufzurufen oder Messages zu verschicken.
+			Die einzelnen Nodelets sollten zusätzlich mittels der Google Test Library\cite{google} mit Unit Tests versehen werden. Integration Tests können mittels launch-Files bereitgestellt werden. Diese bieten in ROS die Möglichkeit mehrere Nodelets zu laden und entweder automatisiert oder manuell verschiedene Services aufzurufen oder Messages zu verschicken.
 			
 			\subsection{Modulbeschreibung}
+				\subsubsection{Wifi}
+    			\label{sw_b_wifi}
+				\paragraph{Aufgabe} Das Wifi Nodelet ist die Schnittstelle für alle anderen Nodelets zu allen Netzwerkfunktionalitäten. Es stellt mit ROS-Kommunikationsmechanismen erreichbare Funktionen bereit um UDP-Pakete über das drahtlose Netzwerk zu verschicken. Die IP-Adresse und der Port können mit Nodelet-Parametern gesetzt werden.
+				
+				\paragraph{Kommunikation} Das Wifi Nodelet abonniert das Topic protocol\_send. Jede Nachricht die dort erhalten wird, wird in ein UDP-Packet verpackt und per Broadcast abgeschickt. Des weiteren stellt es den Service subscribe\_to\_network zur Verfügung. Ein Nodelet kann diesen Service mit einem Filter und einem Namen aufrufen woraufhin das Wifi Nodelet jedes ankommende UDP-Paket mit dem Filter auf einen passenden Typ untersucht und als Message an ein Topic mit dem gegebenen Namen sendet.
+				
+				\paragraph{Implementierung} Das Wifi Nodelet nutzt die Boost.Asio Library für den direkten Zugriff auf Netzwerkadapter und das Senden und Empfangen von UDP Paketen.
+				
+			
 				\subsubsection{Protocol}
 				\label{sw_b_protocol}
-				%TODO
+				\paragraph{Aufgabe} Das Protocol Nodelet ist für die Einhaltung des Platooning-Protokolls zur Kommunikation zwischen den Fahrzeugen verantwortlich. Es stellt einfache Funktionen für den Master bereit, welche Steuerungsmöglichkeiten bieten, verwaltet aber abseits davon sämtliche Kommunikation zwischen den Fahrzeugen selbstständig. Zu Testzwecken und für Integrationstests sind einige Parameter auch ohne ein Master Nodelet über Nodelet-Parameter konfigurierbar:
+				\begin{itemize}
+					\item position: Position des Fahrzeuges in der Kolonne
+					\item vehicle\_id: Eindeutige ID des Fahrzeuges
+					\item platoon\_id: Eindeutige ID der Kolonne
+					\item ipd: Abstand innerhalb des Platoons
+					\item ps: Geschwindigkeit des Platoons
+				\end{itemize}
 				
-    			\subsubsection{Wifi}
-    			\label{sw_b_wifi}
-				%TODO
+				\paragraph{Kommunikation} Das Topic car\_bus wird dazu genutzt um mit dem Master Nodelet zu kommunizieren. Änderungen der Platoon Eigenschaften welche an dieses Topic gesendet werden, werden vom Protocol Nodelet nach den Regeln des Kommunikationsprotokolls an die anderen Fahrzeuge weitergegeben. Mittels der Service create\_platoon und leave\_platoon kann der Master das Beitreten beziehungsweise Erstellen oder das Verlassen eines Platoons anfordern. Um die Nachrichten zu verschicken wird das protocol\_send Topic verwendet und zum Empfangen durch den Service subscribe\_to\_network eine Verbindung mit dem Wifi Nodelet aufgebaut.
+				
+				\paragraph{Implementierung}
+				Das Platoon Nodelet spannt einen weiteren separaten Thread auf auf dem der ProtocolWorker ausgeführt wird, welcher für das Senden von Nachrichten genutzt wird. Für das Empfangen von Nachrichten können die ROS-Mechanismen verwendet werden, weil die UDP-Pakete bereits vom Wifi Nodelet in ROS Messages umgewandelt wurden. Sas Konvertieren von Nachrichten in das JSON Format wird mit der Library "JSON for Modern C++"\footnote{https://github.com/nlohmann/json} von Niels Lohmann erreicht.
     			
     			\subsubsection{Master}
     			\label{sw_b_master}
@@ -250,6 +267,7 @@ roslaunch platooning_sim sim_2cars.lauch
     			PlatoonLeaderMain beschreibt das erlaubte Verhalten des Leader Vehicles in einem Platoon, analog gilt das gleiche für PlatoonFollowerMain. Zusätzlich zum Eintrittspunkt der beiden Sub-State-Machinen wird parallel ein Sub-Sub-State-Machine initialisiert, welches die möglichen Zustände eines einzelnen Autos im Betrieb beschreibt.
 
     			Die UML-Statechart wurde mithilfe der Boost Statechart Library, eine freie C++ Bibliothek, in ausführbaren C++ Code überführt. Die State-Machine wird initialisiert mittels der Master Nodelet. Details zur State-Machine kann man dem Anhang N entnemmen.
+    			\newpage
 
 	\section{Software-Architektur}
 	\label{sw_architektur}
