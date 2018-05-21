@@ -194,20 +194,34 @@ roslaunch platooning_sim sim_2cars.lauch
 		\label{fahrzeugzusammenbau}
 		% tutorial zum zusammenbau, fotos, ggf. ausführliche Beschreibung in den Anhang verbannen und darauf verweisen
 	\newpage
-
+	
 	\section{Software-Architektur Gruppe B}
-    		\subsection*{Platoon/Wifi}
-    		\subsection*{State-Machine}
-    		Das Verhalten der Autos in einem Platoon wurde von Gruppe B mithilfe einer UML-Statechart modelliert. HierfÃŒr wurde die Open Source Software Papyrus verwendet. Die State-Machine wurde in die drei Sub-State-Machines PlatoonMain, PlatoonLeaderMain und PlatoonFollowerMain unterteilt.
+	\label{sw_b_architektur}
+			\subsection{Architekturübersicht}
+			\label{sw_b_uebersicht}
+			%TODO
+			\subsection{ROS}
+			\label{sw_b_ros}
+			%TODO
+			\subsection{Konventionen}
+			\label{sw_b_konventionen}
+			%TODO
+			\subsection{Modulbeschreibung}
+				\subsubsection{Protocol}
+				\label{sw_b_protocol}
+				%TODO
+    			\subsubsection{Wifi}
+    			\label{sw_b_wifi}
+    			%TODO
+    			\subsubsection{Master}
+    			\label{sw_b_master}
+    			Das Verhalten der Autos in einem Platoon wurde von Gruppe B mithilfe einer UML-Statechart modelliert. HierfÃŒr wurde die Open Source Software Papyrus verwendet. Die State-Machine wurde in die drei Sub-State-Machines PlatoonMain, PlatoonLeaderMain und PlatoonFollowerMain unterteilt.
 
-    PlatoonMain beschreibt die m\"oglichen Zust\"ande eines Platoons im Anfangsstadium, d.h. hier werden die Platoon-Konfigurationen verarbeitet.
+    			PlatoonMain beschreibt die m\"oglichen Zust\"ande eines Platoons im Anfangsstadium, d.h. hier werden die Platoon-Konfigurationen verarbeitet.
 
-    PlatoonLeaderMain beschreibt das erlaubte Verhalten des Leader Vehicles in einem Platoon, analog gilt das gleiche f\"ur PlatoonFollowerMain. Zus\"atzlich zum Eintrittspunkt der beiden Sub-State-Machinen wird parallel ein Sub-Sub-State-Machine initialisiert, welches die m\"oglichen Zust\"ande eines einzelnen Autos im Betrieb beschreibt.
+    			PlatoonLeaderMain beschreibt das erlaubte Verhalten des Leader Vehicles in einem Platoon, analog gilt das gleiche f\"ur PlatoonFollowerMain. Zus\"atzlich zum Eintrittspunkt der beiden Sub-State-Machinen wird parallel ein Sub-Sub-State-Machine initialisiert, welches die m\"oglichen Zust\"ande eines einzelnen Autos im Betrieb beschreibt.
 
-    Die UML-Statechart wurde mithilfe der Boost Statechart Library, eine freie C++ Bibliothek, in ausf\"uhrbaren C++ Code \"uberf\"uhrt. Die State-Machine wird initialisiert mittels der Master Nodelet. Details zur State-Machine kann man dem Anhang N entnemmen.
-
-
-
+    			Die UML-Statechart wurde mithilfe der Boost Statechart Library, eine freie C++ Bibliothek, in ausf\"uhrbaren C++ Code \"uberf\"uhrt. Die State-Machine wird initialisiert mittels der Master Nodelet. Details zur State-Machine kann man dem Anhang N entnemmen.
 
 	\section{Software-Architektur}
 	\label{sw_architektur}
