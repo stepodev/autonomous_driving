@@ -218,6 +218,19 @@ roslaunch platooning_sim sim_2cars.lauch
 	\label{hw_architektur}
 		\subsection{Hardware}
 		\label{hardware}
+		\subsubsection*{Spannungsregler}
+		Es war zuerst angedacht, die von Assystem in Einzelteilen bereitgestellten Powerboards zusammenzulöten
+		und diese dann zu benutzen. Da die Beschaffung der Teile auf Seiten von Assystem aber deutlich länger 
+		gedauert hat, als zuerst angenommen und der Zusammenbau der Teile in Endeffekt zu aufwändig gewesen wäre, 
+		haben wir uns dafür entschieden Spannungsregler extern zu beschaffen.
+		Nach ein bisschen Recherche haben wir uns für einen Regler von Amazon entschieden.
+		Dieser kann zwischen 4,5 V und 38 V Eingangsspannung verarbeiten und diese stufenlos über ein 
+		Potentiometer auf 1,5 V bis 36 V herunterregeln. Dabei muss die Eingangsspannung aber mindestens 1 V höher 
+		liegen als die Ausgangsspannung. Bei den Akkus die wir benutzen ist das in der Regel der Fall. Der 
+		Maximale Ausgangsstrom liegt bei 5 Ampere, was ausreichend ist für die geplante Anwendung (Versorgung von 
+		STM-Board und ODroid). 
+		Nachdem die Regler angekommen waren, wurden diese einem ausführlichen Test unterzogen (siehe Anhang) und 
+		für tauglich erachtet. 
 		 % sensoren, boards, teile ausm 3d drucker, datenblätter im anhang? erläuterung von joe(?) wie er die boards zum laufen gebracht hat
 		\subsection{Fahrzeugzusammenbau}
 		\label{fahrzeugzusammenbau}
@@ -1459,7 +1472,43 @@ failed 3 of 32 tests
 		\item libgtest\_main.so -- libgtest\_main.so
 		\item libgtest.so -- libgtest.so
 	\end{itemize}
+\section{Test Spannungsregler}
+\subsection*{Einleitung}
+Das Tinxi 67050 Spannungsreglermodul ist Weitbereichsregler der Eingangsspannungen von 8-36 Volt stufenlos herunterregelt auf Werte zwischen 1,25-32 Volt.  
+Am Ausgang können maximal 5 Ampere geliefert werden.  
+Das Modul ist ein fertiges Modul, an welches nur noch die Eingangspannung angelegt und die Ausgangsspannung abgenommen werden muss.  
+Die Spannungsregelung erfolgt mittels eines Trimmpotentiometers.
+Die Eingangs und Ausgangsspannung kann auf der integrierten dreistelligen 7-Segment Anzeige abgelesen werden. Über die zwei Buttons kann die Anzeige abgeschaltet bzw. umgeschaltet werden.
+\subsection*{Verpackung und Zubehör}
+Die Module sind in einer ESD Schutz Verpackung angekommen.
+Zubehör:
+\begin{itemize}
+\item Kühlkörper
+\item 4 Befestigungsdome + Muttern
+\end{itemize}
+\subsection*{Test}
+Die Regler wurden mittels einer Einstellbaren Last (Widerstandsarray) getestet.
+Die Last lässt sich zwischen 16 Ohm und ca. 1 Ohm einstellen.
+Initial wurde die Last auf 16 Ohm eingestellt damit das Reglermodul eingestellt werden kann.
+Bei Auslieferung steht das Modul auf maximaler Ausgangsspannung, d.h. bei 19 Volt Eingang ca. 18 Volt Ausgang.
+Mittels des Potentiometers lässt sich jetzt die Spannung auf 5 Volt runterregeln.
 
+Nachdem die 5 Volt eingestellt sind, kann auch mit höheren Strömen getestet werden.
+Es wurden im folgenden mit einer Last von 4 Ohm begonnen und diese nach und nach auf 1 Ohm reduziert.
+Damit hat man einen Strom von von ca. 1 Ampere bis 5 Ampere simuliert. Siehe Bilder.
+Die abrupten Lastwechsel sind ohne Nennenswerte Spannungseinbrüche erfolgt.
+Der Spannungsripple liegt bei ca. 50 mV.
+\subsection*{Abschluss}
+Alle 4 Module sind jetzt auf 5 Volt eingestellt worden und bis zu einem Strom von ca. 5 Ampere kurzzeitig getestet.
+Es ist zu erwarten das bei längerem Betrieb der Regler etwas Hitze erzeugt. Dafür ist aber direkt ein Kühlkörper beigelegt. 
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.5\textwidth]{Test_Spannungsregler1.jpg}
+\end{figure}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.5\textwidth]{Test_Spannungsregler2.jpg}
+\end{figure}
 \section{Lastenheft}
 \label{appendix:lastenheft}
 \includepdf[pages=-]{lastenheft.pdf}
