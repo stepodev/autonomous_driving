@@ -145,6 +145,35 @@ sudo apt-get install python-rosinstall python-rosinstall-generator python-wstool
 		\end{itemize}
 		\item C++11 Toolchain / IDE
 	\end{itemize}
+	\subsection{Ad-Hoc Netzwerk}
+	Für die Kommunikation der Fahrzeuge untereinander benötigen diese eine drahtlose Schnittstelle. Für dieses 
+	Projekt wurde sich für eine Kommunikation via WLAN entschieden. Um auch ohne zentralen Router eine Verbindung 
+	zwischen den Fahrzeugen aufzubauen muss ein Ad-Hoc Netzwerk erstellt werden.
+	\subsubsection*{Linux}
+	\begin{lstlisting}
+ifconfig wlan0 down 					# Disable wlan0 adapter
+iw wlan0 set type ibss					# set adapter type to ibss (ad-hoc)
+ifconfig wlan0 up						# enable wlan0 adapter
+iw wlan0 ibss join <ssid> <frequency>	# join network
+ifconfig wlan0 <ip>						# set ip address
+	\end{lstlisting}
+	Hierbei ist es unerheblich, in welcher Reihenfolge die Fahrzeuge das Netzwerk betreten. 
+	Zum Debuggen der Verbindung und zur Fernsteuerung der Fahrzeuge muss auch mit einem externen Laptop dem 
+	Netzwerk beigetreten werden. Dies erfolgt im Falle eines Linux Betriebssystems wie oben dargestellt.
+	
+	Im Falle eines Windows Rechners muss das folgende Verfahren gewählt werden.
+	\subsubsection*{Windows}	
+	\begin{itemize}
+	\item Netzwerk- und Freigabecenter->Neue Verbindung oder neues Netzwerk einrichten
+	\item Manuell mit einem Drahtlosnetzwerk verbinden
+	\item Netzwerkname (SSID) eingeben
+	\item Weiter->Schließen
+	\end{itemize}
+	Nun muss noch folgendes in der Kommandozeile eingeben werden
+	\begin{lstlisting}
+netsh wlan set profileparameter <ssid> connectiontype=ibss connectionmode=manual
+netsh wlan connect <ssid>
+	\end{lstlisting}
 	\subsection{Platooning Projekt Setup}
 	\begin{itemize}
 		\item Git und git-lfs installieren.
@@ -352,30 +381,6 @@ roslaunch platooning_sim sim_2cars.lauch
                     \subparagraph{hndl\_fv\_leave} Verpackt die zu übertragenden Daten in eine FV\_LEAVE-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_fv\_request} Verpackt die zu übertragenden Daten in eine FV\_REQEUEST-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_ui} Verpackt die zu übertragenden Daten in eine REMOTE\_USERINTERFACE-Nachricht und veröffentlicht diese im Netzwerk.
-				\paragraph{Input} ???
-				\paragraph{Output} ???
-
-			\subsubsection{MessageTypes}
-			\label{messages_types}
-				\paragraph{Aufgabe} ??
-				\paragraph{Assoziationen}
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-
-				\paragraph{Input}
-				\paragraph{Output}
-
-			\subsubsection{Distance Processing}
-			\label{distance_processing}
-				\paragraph{Aufgabe} Der DistanceProcessing-Nodelet misst, wie weit er von den nächstgelegenen Objekten entfernt ist und stellt diese Information anderen Knoten zur Verfügung.
-				\paragraph{Assoziationen} Der DistanceProcessing-Nodelet erhält seine Informationen von einem Ultraschall-Sensor. Es ist Publisher für das LongitudinalProcessing-Nodelet.
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
 
 			\subsubsection{Longitudinal Processing}
 			\label{longitudinal_processing}
@@ -1346,6 +1351,17 @@ failed 3 of 32 tests
 	    \item Erstellung der kompletten Projektdokumentation für alle Modultests
 	  \end{itemize}
 	\section{Benjamin Lorenz}
+	\begin{itemize}
+		\item Aufsetzen der Odroids für alle Gruppen
+		\item Mitarbeit Architektur
+		\item Implementation Simulation in TurtleSim
+		\item Hilfe bei der Implementierung einzelner Module 
+		\item Dokumentieren einzelner Module
+		\item Erstellung Diagramm der Architektur
+		\item Projektplanung und Aufgabenorganisation
+		\item Analyse ROS Topics und Messages
+		\item Analyse der Assystem Software Architektur		
+	\end{itemize}
 	\section{Stephan Orlowsky}
 	\begin{itemize}
 		\item Vorschlag Risikoanalyse
