@@ -48,7 +48,7 @@ backend=biber
 \begin{document}
 \author{Supercoole Kinder}
 \title{Projektdokumentation\\Hochautomatisiertes Fahren}
-\publishers{Humboldt-Universit\"at zu Berlin}
+\publishers{Humboldt-Universität zu Berlin}
 \maketitle
 \tableofcontents
 
@@ -185,6 +185,7 @@ roslaunch platooning_sim sim_2cars.lauch
 		\end{lstlisting}
 	\end{itemize}
 	% ubuntu, SW von assystems, ros. im prinzip beschreibung unserer vm + welche Schritte wurden unternommen ums zum laufen zu bringen und kurze erläuterung dass sw von assystems aufs board geschmissen wurde. und catkin zeugs
+	
 	\section{Fahrzeug-Architektur}
 	\label{hw_architektur}
 		\subsection{Hardware}
@@ -217,11 +218,11 @@ roslaunch platooning_sim sim_2cars.lauch
     			\label{sw_b_master}
     			Das Verhalten der Autos in einem Platoon wurde von Gruppe B mithilfe einer UML-Statechart modelliert. HierfÃŒr wurde die Open Source Software Papyrus verwendet. Die State-Machine wurde in die drei Sub-State-Machines PlatoonMain, PlatoonLeaderMain und PlatoonFollowerMain unterteilt.
 
-    			PlatoonMain beschreibt die m\"oglichen Zust\"ande eines Platoons im Anfangsstadium, d.h. hier werden die Platoon-Konfigurationen verarbeitet.
+    			PlatoonMain beschreibt die m\"oglichen Zustände eines Platoons im Anfangsstadium, d.h. hier werden die Platoon-Konfigurationen verarbeitet.
 
-    			PlatoonLeaderMain beschreibt das erlaubte Verhalten des Leader Vehicles in einem Platoon, analog gilt das gleiche f\"ur PlatoonFollowerMain. Zus\"atzlich zum Eintrittspunkt der beiden Sub-State-Machinen wird parallel ein Sub-Sub-State-Machine initialisiert, welches die m\"oglichen Zust\"ande eines einzelnen Autos im Betrieb beschreibt.
+    			PlatoonLeaderMain beschreibt das erlaubte Verhalten des Leader Vehicles in einem Platoon, analog gilt das gleiche für PlatoonFollowerMain. Zusätzlich zum Eintrittspunkt der beiden Sub-State-Machinen wird parallel ein Sub-Sub-State-Machine initialisiert, welches die möglichen Zustände eines einzelnen Autos im Betrieb beschreibt.
 
-    			Die UML-Statechart wurde mithilfe der Boost Statechart Library, eine freie C++ Bibliothek, in ausf\"uhrbaren C++ Code \"uberf\"uhrt. Die State-Machine wird initialisiert mittels der Master Nodelet. Details zur State-Machine kann man dem Anhang N entnemmen.
+    			Die UML-Statechart wurde mithilfe der Boost Statechart Library, eine freie C++ Bibliothek, in ausführbaren C++ Code überführt. Die State-Machine wird initialisiert mittels der Master Nodelet. Details zur State-Machine kann man dem Anhang N entnemmen.
 
 	\section{Software-Architektur}
 	\label{sw_architektur}
@@ -1351,12 +1352,12 @@ failed 3 of 32 tests
 	\section{Benjamin Lorenz}
 	\section{Stephan Orlowsky}
 	\section{Paul Waljaew}
-    Die Spezifikation des Verhaltens der Autos in einem Platoon wurde von mir mittels einer State Machine beschrieben. Dies entspricht der g\"angigen Praxis im Bereich Embedded Systems und dient dazu den gesamten Lebenszyklus abzubilden, was zu einem besseren Verst\"andnis des zustandsbasierten Systems beigetragen hat. Um die State Machine zu realisieren wurde von mir - mit der Open Source Software Papyrus - ein Diagramm(s. Anhang N) modelliert. Dies diente als Vorlage f\"ur die sp\"atere Implementation. Anschlie\"send gelang mir die Transformation der UML-Statechart in ausf\"uhrbaren C++ Code, mithilfe der Boost Statechart Library.
+    Die Spezifikation des Verhaltens der Autos in einem Platoon wurde von mir mittels einer State Machine beschrieben. Dies entspricht der gängigen Praxis im Bereich Embedded Systems und dient dazu den gesamten Lebenszyklus abzubilden, was zu einem besseren Verständnis des zustandsbasierten Systems beigetragen hat. Um die State Machine zu realisieren wurde von mir - mit der Open Source Software Papyrus - ein Diagramm(s. Anhang N) modelliert. Dies diente als Vorlage für die spätere Implementation. Anschließend gelang mir die Transformation der UML-Statechart in ausführbaren C++ Code, mithilfe der Boost Statechart Library.
 
-    Zu meinen weiteren T\"atigkeiten z\"ahlen:
+    Zu meinen weiteren Tätigkeiten zählen:
      \begin{itemize}
        \item Einarbeitung in ROS
-       \item Einrichtung und Bereitstellung einer Virtuellen Maschine mit Ubuntu 16.04 und ROS Lunar f\"ur die Gruppe B
+       \item Einrichtung und Bereitstellung einer Virtuellen Maschine mit Ubuntu 16.04 und ROS Lunar für die Gruppe B
        \item Einrichtung eines Kommunikationskanals und Projektmanagementtools  (Slack, ClickUp)
        \item Mithilfe Dokumentation
        \item Mithilfe bei der UseCase Erstellung
