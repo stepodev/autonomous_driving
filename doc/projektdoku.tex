@@ -48,7 +48,7 @@ backend=biber
 \begin{document}
 \author{Supercoole Kinder}
 \title{Projektdokumentation\\Hochautomatisiertes Fahren}
-\publishers{Humboldt-Universität zu Berlin}
+\publishers{Humboldt-Universit\"at zu Berlin}
 \maketitle
 \tableofcontents
 
@@ -145,6 +145,35 @@ sudo apt-get install python-rosinstall python-rosinstall-generator python-wstool
 		\end{itemize}
 		\item C++11 Toolchain / IDE
 	\end{itemize}
+	\subsection{Ad-Hoc Netzwerk}
+	Für die Kommunikation der Fahrzeuge untereinander benötigen diese eine drahtlose Schnittstelle. Für dieses 
+	Projekt wurde sich für eine Kommunikation via WLAN entschieden. Um auch ohne zentralen Router eine Verbindung 
+	zwischen den Fahrzeugen aufzubauen muss ein Ad-Hoc Netzwerk erstellt werden.
+	\subsubsection*{Linux}
+	\begin{lstlisting}
+ifconfig wlan0 down 					# Disable wlan0 adapter
+iw wlan0 set type ibss					# set adapter type to ibss (ad-hoc)
+ifconfig wlan0 up						# enable wlan0 adapter
+iw wlan0 ibss join <ssid> <frequency>	# join network
+ifconfig wlan0 <ip>						# set ip address
+	\end{lstlisting}
+	Hierbei ist es unerheblich, in welcher Reihenfolge die Fahrzeuge das Netzwerk betreten. 
+	Zum Debuggen der Verbindung und zur Fernsteuerung der Fahrzeuge muss auch mit einem externen Laptop dem 
+	Netzwerk beigetreten werden. Dies erfolgt im Falle eines Linux Betriebssystems wie oben dargestellt.
+	
+	Im Falle eines Windows Rechners muss das folgende Verfahren gewählt werden.
+	\subsubsection*{Windows}	
+	\begin{itemize}
+	\item Netzwerk- und Freigabecenter->Neue Verbindung oder neues Netzwerk einrichten
+	\item Manuell mit einem Drahtlosnetzwerk verbinden
+	\item Netzwerkname (SSID) eingeben
+	\item Weiter->Schließen
+	\end{itemize}
+	Nun muss noch folgendes in der Kommandozeile eingeben werden
+	\begin{lstlisting}
+netsh wlan set profileparameter <ssid> connectiontype=ibss connectionmode=manual
+netsh wlan connect <ssid>
+	\end{lstlisting}
 	\subsection{Platooning Projekt Setup}
 	\begin{itemize}
 		\item Git und git-lfs installieren.
@@ -185,11 +214,23 @@ roslaunch platooning_sim sim_2cars.lauch
 		\end{lstlisting}
 	\end{itemize}
 	% ubuntu, SW von assystems, ros. im prinzip beschreibung unserer vm + welche Schritte wurden unternommen ums zum laufen zu bringen und kurze erläuterung dass sw von assystems aufs board geschmissen wurde. und catkin zeugs
-	
 	\section{Fahrzeug-Architektur}
 	\label{hw_architektur}
 		\subsection{Hardware}
 		\label{hardware}
+		\subsubsection*{Spannungsregler}
+		Es war zuerst angedacht, die von Assystem in Einzelteilen bereitgestellten Powerboards zusammenzulöten
+		und diese dann zu benutzen. Da die Beschaffung der Teile auf Seiten von Assystem aber deutlich länger 
+		gedauert hat, als zuerst angenommen und der Zusammenbau der Teile in Endeffekt zu aufwändig gewesen wäre, 
+		haben wir uns dafür entschieden Spannungsregler extern zu beschaffen.
+		Nach ein bisschen Recherche haben wir uns für einen Regler von Amazon entschieden.
+		Dieser kann zwischen 4,5 V und 38 V Eingangsspannung verarbeiten und diese stufenlos über ein 
+		Potentiometer auf 1,5 V bis 36 V herunterregeln. Dabei muss die Eingangsspannung aber mindestens 1 V höher 
+		liegen als die Ausgangsspannung. Bei den Akkus die wir benutzen ist das in der Regel der Fall. Der 
+		Maximale Ausgangsstrom liegt bei 5 Ampere, was ausreichend ist für die geplante Anwendung (Versorgung von 
+		STM-Board und ODroid). 
+		Nachdem die Regler angekommen waren, wurden diese einem ausführlichen Test unterzogen (siehe Anhang) und 
+		für tauglich erachtet. 
 		 % sensoren, boards, teile ausm 3d drucker, datenblätter im anhang? erläuterung von joe(?) wie er die boards zum laufen gebracht hat
 		\subsection{Fahrzeugzusammenbau}
 		\label{fahrzeugzusammenbau}
@@ -414,30 +455,6 @@ roslaunch platooning_sim sim_2cars.lauch
                     \subparagraph{hndl\_fv\_leave} Verpackt die zu übertragenden Daten in eine FV\_LEAVE-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_fv\_request} Verpackt die zu übertragenden Daten in eine FV\_REQEUEST-Nachricht und veröffentlicht diese an das Platoon.
                 	\subparagraph{hndl\_ui} Verpackt die zu übertragenden Daten in eine REMOTE\_USERINTERFACE-Nachricht und veröffentlicht diese im Netzwerk.
-				\paragraph{Input} ???
-				\paragraph{Output} ???
-
-			\subsubsection{MessageTypes}
-			\label{messages_types}
-				\paragraph{Aufgabe} ??
-				\paragraph{Assoziationen}
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-
-				\paragraph{Input}
-				\paragraph{Output}
-
-			\subsubsection{Distance Processing}
-			\label{distance_processing}
-				\paragraph{Aufgabe} Der DistanceProcessing-Nodelet misst, wie weit er von den nächstgelegenen Objekten entfernt ist und stellt diese Information anderen Knoten zur Verfügung.
-				\paragraph{Assoziationen} Der DistanceProcessing-Nodelet erhält seine Informationen von einem Ultraschall-Sensor. Es ist Publisher für das LongitudinalProcessing-Nodelet.
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
 
 			\subsubsection{Longitudinal Processing}
 			\label{longitudinal_processing}
@@ -1381,48 +1398,60 @@ failed 3 of 32 tests
 \part{Beschreibung der Eigenleistung}
 \label{eigenleistung}
 	\section{Falco Becker}
-	\section{Yannick Boerner}
+	\section{Yannick Boerner} 
+	  \begin{itemize}
+	    \item Mitarbeit bei Erstellung des Lastenheftes
+		\item Mitarbeit bei Erstellung des Vertrags
+		\item Mitarbeit bei Erstellung der Software-Architektur
+	    \item Bewertung der Unterschiede zwischen ROS und ROS 2
+		\item Forschung und Vorstellung bezüglich der Unterschiede zwischen Nodes und Nodelets
+	    \item Erarbeiten eines Kommunikationsprotokolls für die Fahrzeuge
+		\item Erarbeiten eines Kommunikationsstandards für die gruppenübergreifende Kommunikation der Fahrzeuge
+		\item Hilfe bei der Implementierung einzelner Module 
+	    \item Dokumentieren einzelner Module
+	    \item Erstellung des Konzeptes für die Abschluss-Präsentation 
+		\item Koordinierung der Präsentation
+		\item Vortragen der Präsentation
+	  \end{itemize}
 	\section{Anne Borchard}
 	\section{Franz Eichberg}
 	\section{Jonas Heyden}
-  \begin{itemize}
-    \item Mitarbeit bei Erstellung Lastenheft
-    \item Erstellen der ersten Nodelets, Aufsetzen des initialen ROS-Systems für Nodelets
-    \item Vorstellung der Funktionsweise von Nodelets für alle 3 Projektgruppen, Anlegen von Wiki-Einträgen zum Einrichten von ROS und Nodelets
-    \item Erstellen der Wiki Page zum Einrichten und Starten der Simulation
-    \item Erstellen von einem Teil der Modultests Platooning
-    \item Erstellung der kompletten Projektdokumentation für alle Modultests
-  \end{itemize}
-
+	  \begin{itemize}
+	    \item Mitarbeit bei Erstellung Lastenheft
+	    \item Erstellen der ersten Nodelets, Aufsetzen des initialen ROS-Systems für Nodelets
+	    \item Vorstellung der Funktionsweise von Nodelets für alle 3 Projektgruppen, Anlegen von Wiki-Einträgen zum Einrichten von ROS und Nodelets
+	    \item Erstellen der Wiki Page zum Einrichten und Starten der Simulation
+	    \item Erstellen von einem Teil der Modultests Platooning
+	    \item Erstellung der kompletten Projektdokumentation für alle Modultests
+	  \end{itemize}
 	\section{Benjamin Lorenz}
-	\section{Stephan Orlowsky}
-	\section{Paul Waljaew}
-    Die Spezifikation des Verhaltens der Autos in einem Platoon wurde von mir mittels einer State Machine beschrieben. Dies entspricht der gängigen Praxis im Bereich Embedded Systems und dient dazu den gesamten Lebenszyklus abzubilden, was zu einem besseren Verständnis des zustandsbasierten Systems beigetragen hat. Um die State Machine zu realisieren wurde von mir - mit der Open Source Software Papyrus - ein Diagramm(s. Anhang N) modelliert. Dies diente als Vorlage für die spätere Implementation. Anschließend gelang mir die Transformation der UML-Statechart in ausführbaren C++ Code, mithilfe der Boost Statechart Library.
-
-    Zu meinen weiteren Tätigkeiten zählen:
-     \begin{itemize}
-       \item Einarbeitung in ROS
-       \item Einrichtung und Bereitstellung einer Virtuellen Maschine mit Ubuntu 16.04 und ROS Lunar für die Gruppe B
-       \item Einrichtung eines Kommunikationskanals und Projektmanagementtools  (Slack, ClickUp)
-       \item Mithilfe Dokumentation
-       \item Mithilfe bei der UseCase Erstellung
-       \item Mithilfe beim Testen der Protokollimplementation
-     \end{itemize}
-	\section{Joachim Polednie}
-	Zu Beginn habe ich bei den Planungen zum Fahrzeugbau mitgewirkt. Aufgrund zeitlicher Einschränkungen 
-	meinerseits habe ich diese Aufgabe dann abgegeben. Zur Bereitstellung der Hardware (Spannungsregler und 
-	Fahrzeugteile) hatte ich immer wieder telefonisches Kontakt zu Assystem. Nachdem die Lieferung der Powerboards 
-	sich verzögert hat, habe ich mich um eine Alternative bemüht (siehe Anhang ...). 
-	
-	Zum Ende des Projekt habe ich technisches Support bei der Inbetriebnahme der Fahrzeuge geleistet.
-	
-	Weitere Tätigkeiten:
 	\begin{itemize}
-	\item Sichtung und Kompilierung der STM Software
-	\item Einrichten Ad-Hoc Netzwerk
-	\item Mithilfe Dokumentation
-	\item Mithilfe Kommunikationsprotokoll Definition
-	\item Mithilfe State Machine Definition
+		\item Aufsetzen der Odroids für alle Gruppen
+		\item Mitarbeit Architektur
+		\item Implementation Simulation in TurtleSim
+		\item Hilfe bei der Implementierung einzelner Module 
+		\item Dokumentieren einzelner Module
+		\item Erstellung Diagramm der Architektur
+		\item Projektplanung und Aufgabenorganisation
+		\item Analyse ROS Topics und Messages
+		\item Analyse der Assystem Software Architektur		
+	\end{itemize}
+	\section{Stephan Orlowsky}
+	\begin{itemize}
+		\item Vorschlag Risikoanalyse
+		\item Vorschlag Vertrag
+		\item Mitarbeit Architektur
+		\item Finalisierung Protokoll
+		\item Nodelet Templates
+		\item Wiki, Issuetracking, Meilensteine
+		\item Virtual Maschines
+		\item Implementierung Nodelets
+		\item Implementierung Testframework
+		\item Testing Nodelets
+		\item Implementierung Simulation
+		\item Doxygen
+		\item Dokumentation Tests, Simulation, Nutzerhandbuch, Systemvorraussetzungen, Projektablauf
+		\item Präsentation Projektdetails, Simulation
 	\end{itemize}
 	\section{Simon}
 	Meine Haupttätigkeit war die Spezifikation und Modelierung des Systems. Im Zuge dessen habe ich an der 
@@ -1535,14 +1564,50 @@ failed 3 of 32 tests
 		\item libgtest\_main.so -- libgtest\_main.so
 		\item libgtest.so -- libgtest.so
 	\end{itemize}
+\newpage
+\section{Test Spannungsregler}
+\subsection*{Einleitung}
+Das Tinxi 67050 Spannungsreglermodul ist Weitbereichsregler der Eingangsspannungen von 8-36 Volt stufenlos herunterregelt auf Werte zwischen 1,25-32 Volt.  
+Am Ausgang können maximal 5 Ampere geliefert werden.  
+Das Modul ist ein fertiges Modul, an welches nur noch die Eingangspannung angelegt und die Ausgangsspannung abgenommen werden muss.  
+Die Spannungsregelung erfolgt mittels eines Trimmpotentiometers.
+Die Eingangs und Ausgangsspannung kann auf der integrierten dreistelligen 7-Segment Anzeige abgelesen werden. Über die zwei Buttons kann die Anzeige abgeschaltet bzw. umgeschaltet werden.
+\subsection*{Verpackung und Zubehör}
+Die Module sind in einer ESD Schutz Verpackung angekommen.
+Zubehör:
+\begin{itemize}
+\item Kühlkörper
+\item 4 Befestigungsdome + Muttern
+\end{itemize}
+\subsection*{Test}
+Die Regler wurden mittels einer Einstellbaren Last (Widerstandsarray) getestet.
+Die Last lässt sich zwischen 16 Ohm und ca. 1 Ohm einstellen.
+Initial wurde die Last auf 16 Ohm eingestellt damit das Reglermodul eingestellt werden kann.
+Bei Auslieferung steht das Modul auf maximaler Ausgangsspannung, d.h. bei 19 Volt Eingang ca. 18 Volt Ausgang.
+Mittels des Potentiometers lässt sich jetzt die Spannung auf 5 Volt runterregeln.
 
+Nachdem die 5 Volt eingestellt sind, kann auch mit höheren Strömen getestet werden.
+Es wurden im folgenden mit einer Last von 4 Ohm begonnen und diese nach und nach auf 1 Ohm reduziert.
+Damit hat man einen Strom von von ca. 1 Ampere bis 5 Ampere simuliert. Siehe Bilder.
+Die abrupten Lastwechsel sind ohne Nennenswerte Spannungseinbrüche erfolgt.
+Der Spannungsripple liegt bei ca. 50 mV.
+\subsection*{Abschluss}
+Alle 4 Module sind jetzt auf 5 Volt eingestellt worden und bis zu einem Strom von ca. 5 Ampere kurzzeitig getestet.
+Es ist zu erwarten das bei längerem Betrieb der Regler etwas Hitze erzeugt. Dafür ist aber direkt ein Kühlkörper beigelegt. 
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.5\textwidth]{Test_Spannungsregler1.jpg}
+\end{figure}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.5\textwidth]{Test_Spannungsregler2.jpg}
+\end{figure}
 \section{Statechart}
 \includegraphics[width=\textwidth]{sm_PlatoonMain.jpg}
 \newpage
 \includegraphics[width=\textwidth]{sm_LeaderVehicle.jpg}
 \newpage
 \includegraphics[width=\textwidth]{sm_FollowerVehicle.jpg}
-
 \section{Lastenheft}
 \label{appendix:lastenheft}
 \includepdf[pages=-]{lastenheft.pdf}
