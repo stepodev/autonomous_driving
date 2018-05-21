@@ -1,0 +1,20 @@
+<launch>
+  <env name="ROSCONSOLE_CONFIG_FILE" value="$(find platoon)/roscon.dbg.config"/>
+  <env name="ROSCONSOLE_FORMAT" value="[${severity}] [${time}] ${node}: ${message}"/>
+
+  <node pkg="nodelet" type="nodelet" name="vehicle" args="manager" output="screen">
+    <param name="position" type="int" value="1"/>
+    <param name="ip_address" type="str" value="10.5.32.254"/>
+    <param name="port" type="int" value="10000"/>
+  </node>
+  <node pkg="nodelet" type="nodelet" name="vehicle_protocol" args="load platoon/protocol vehicle" output="screen">
+    <remap from="/vehicle_protocol/car_bus" to="/vehicle/car_bus"/>
+    <remap from="/vehicle_protocol/protocol_recv" to="/vehicle/protocol_recv"/>
+    <remap from="/vehicle_protocol/protocol_send" to="/vehicle/protocol_send"/>
+  </node>
+  <node pkg="nodelet" type="nodelet" name="vehicle_wifi" args="load platoon/wifi vehicle" output="screen">
+    <remap from="/vehicle_wifi/subscribe_to_network" to="/vehicle/subscribe_to_network"/>
+    <remap from="/vehicle_wifi/protocol_send" to="/vehicle/protocol_send"/>
+    <remap from="/vehicle_wifi/protocol_recv" to="/vehicle/protocol_recv"/>
+  </node>
+</launch>
