@@ -46,10 +46,27 @@ backend=biber
 \bibliography{projekt_biblio.bib}
 
 \begin{document}
-\author{Supercoole Kinder}
-\title{Projektdokumentation\\Hochautomatisiertes Fahren}
-\publishers{Humboldt-Universit\"at zu Berlin}
-\maketitle
+%\author{Supercoole Kinder}
+%\title{Projektdokumentation\\Hochautomatisiertes Fahren}
+%\publishers{Humboldt-Universit\"at zu Berlin}
+%\maketitle
+
+\begin{titlepage}
+	\Large
+	\centering
+	Projektdokumentation zum \\ Semesterprojekt \\
+	\Huge Hochautomatisiertes Fahren\\[5mm]
+	\vspace{9.0cm}
+	\Large Humboldt-Universit\"at zu Berlin \\
+	\Large WS 2017/2018 \\
+	\vfill\raggedleft
+	
+	
+	Betreut durch:\hspace{1.5cm}
+	Herr Prof. Dr. Schlingloff\\
+	Frau Prof. Dr. Hafner
+\end{titlepage}
+
 \tableofcontents
 
 \part{Projektdokumentation}
@@ -310,7 +327,7 @@ roslaunch platooning_sim sim_2cars.lauch
     			Die UML-Statechart wurde mithilfe der Boost Statechart Library, eine freie C++ Bibliothek, in ausführbaren C++ Code überführt. Die State-Machine wird initialisiert mittels der Master Nodelet. Details zur State-Machine kann man dem Anhang N entnemmen.
     			\newpage
 
-	\section{Software-Architektur}
+	\section{Software-Architektur Gruppe C}
 	\label{sw_architektur}
 		\subsection{Architekturübersicht}
 		\label{sw_uebersicht}
@@ -391,8 +408,6 @@ roslaunch platooning_sim sim_2cars.lauch
 			\label{platooning}
 				\paragraph{Aufgabe} Das Platooning-Nodelet kommuniziert mit den anderen Fahrzeugen und tauscht mit diesen Daten aus. Zu den Daten gehören Geschwindigkeit des Platoons, die im Platoon einzuhaltende Distanz, Heartbeats sowie Broadcasts.
 				\paragraph{Assoziationen} Zu den Subscribern des Platooning-Nodelet gehören das Prioritization-Nodelet und das MessageDistribution-Nodelet. Publisher für das Platooning-Nodelet ist das MessageDistribution-Nodelet.
-				\paragraph{Methoden}
-					\subparagraph{}
 				\paragraph{Input}
 				    \begin{itemize}
     					\item platooningToggle von Nodelet MessageDistribution
@@ -412,7 +427,7 @@ roslaunch platooning_sim sim_2cars.lauch
 				\paragraph{Assoziationen} Das UserInterface-Nodelet ist Subscriber vom UdpServer-Nodelet.
 				\paragraph{Attribute}
 					\begin{itemize}
-					    \item Alle Attribute sind selbsterkl"arend
+					    \item Alle Attribute sind selbsterkl\"arend
 					\end{itemize}
 				\paragraph{Methoden}
 					\subparagraph{hndl\_*} (Wobei * eine der verschiedenen Variablen oder Nachrichten ist.) Für jede Variable (wie zum Beispiel Geschwindigkeit, Beschleunigung etc.) gibt es im UserInterface-Nodelet eine Methode. Die Methoden empfangen die jeweilige Variable und geben diese dann auf dem User Interface aus.
@@ -431,17 +446,11 @@ roslaunch platooning_sim sim_2cars.lauch
 			\label{message_translation}
 				\paragraph{Aufgabe} Der MessageDistribution-Node ist dafür verantwortlich, Messages in Datentypen zu übersetzen, damit diese dann von den unterschiedlichen Nodes verwendet werden können.
 				\paragraph{Assoziationen} Der MessageDistribution-Node ist Subscriber vom RadioInterface-Node und dem Platooning-Node. Er ist Publisher für den UserInterface-Node, den RadioInterface-Node, den Platooning-Node und den Prioritization-Node.
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
 
 			\subsubsection{Message Distribution}
 			\label{message_distribution}
 				\paragraph{Aufgabe} Das MessageDistribution-Nodelet erhält alle eingehenden Nachrichten. Je nach Typ werden diese Nachrichten dann vom MessageDistribution-Nodelet auf den passenden Topics veröffentlicht. Dadurch erhalten alle Nodelet immer die richtigen Nachrichten.
-				\paragraph{Assoziationen} ???
+
 				\paragraph{Attribute}
 				    \begin{itemize}
 				        \item Alle Attribute sind selbsterklärend.
@@ -460,8 +469,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\label{longitudinal_processing}
 				\paragraph{Aufgabe} Das LongitudinalProcessing-Nodelet ist für die Beschleunigung des Autos verantwortlich. Er erhält die gewünschte Geschwindigkeit aus dem Prioritization-Nodelet und schickt dann die gewünschte Beschleunigung an den VehicleControl-Nodelet.
 				\paragraph{Assoziationen} Der LongitudinalProcessing-Nodelet ist Subscriber vom Prioritization-Nodelet, dem DistancePreprocessing-Nodelet und dem Speed Sensor. Es ist Publisher für das VehicleControl-Nodelet.
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
+
 				\paragraph{Methoden}
 					\subparagraph{hndl\_distance\_from\_sensor} Empfängt den Abstand vom Sensor *TODO* (Was für ein Sensor?) und prüft ob es zwei Messungen gibt (warum das?). Ist das der Fall so wird die Beschleunigung angepasst und die ensprechenden Flags für die erfolgte Distanzmessung gesetzt.
 
@@ -486,7 +494,6 @@ roslaunch platooning_sim sim_2cars.lauch
 				    	\item Daten vom UdpServer
 				    \end{itemize}
 
-				\paragraph{Output}
 
 			\subsubsection{Radio Interface}
 			\label{radio_interface}
@@ -515,12 +522,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\label{udpserver}
 				\paragraph{Aufgabe} Das UdpServer-Nodelet wird vom RadioInterface-Nodelet verwendet, um den Nachrichtenverkehr über das Netzwerk realisieren zu können.
 				\paragraph{Assoziationen} Das UdpServer-Nodelet ist Subscriber vom UserInterface-Nodelet und Publisher für den UserInterface-Nodelet.
-				\paragraph{Attribute}
-					\subparagraph{Tolles Attribut A}
-				\paragraph{Methoden}
-					\subparagraph{Tolle Methode A}
-				\paragraph{Input}
-				\paragraph{Output}
+
 
 	\section{Tests}
 	\label{tests}
@@ -1534,101 +1536,103 @@ failed 3 of 32 tests
 
 \newpage
 \begin{appendices}
-\section{Code Nodelet LaneDetect}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={LaneDetect.hpp}]{LaneDetect.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={LaneDetect.cpp}]{LaneDetect.cpp}
-\section{Code Nodelet LongitudinalProcessing}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={LongitudinalProcessing.hpp}]{LongitudinalProcessing.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={LongitudinalProcessing.cpp}]{LongitudinalProcessing.cpp}
-\section{Code Nodelet MessageDistribution}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={MessageDistribution.hpp}]{MessageDistribution.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={MessageDistribution.cpp}]{MessageDistribution.cpp}
-\section{Code Nodelet MessageTypes}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={MessageTypes.hpp}]{MessageTypes.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={MessageTypes.cpp}]{MessageTypes.cpp}
-\section{Code Nodelet Platooning}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={Platooning.hpp}]{Platooning.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={Platooning.cpp}]{Platooning.cpp}
-\section{Code Nodelet Prioritization}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={Prioritization.hpp}]{Prioritization.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={Prioritization.cpp}]{Prioritization.cpp}
-\section{Code Nodelet RadioInterface}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={RadioInterface.hpp}]{RadioInterface.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={RadioInterface.cpp}]{RadioInterface.cpp}
-\section{Code Nodelet StmSim}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={StmSim.hpp}]{StmSim.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={StmSim.cpp}]{StmSim.cpp}
-\section{Code Nodelet UdpPackageSet}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={UdpPackageSet.hpp}]{UdpPackageSet.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={UdpPackageSet.cpp}]{UdpPackageSet.cpp}
-\section{Code Nodelet UdpServer}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={UdpServer.hpp}]{UdpServer.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={UdpServer.cpp}]{UdpServer.cpp}
-\section{Code Nodelet UserInterface}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={UserInterface.hpp}]{UserInterface.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={UserInterface.cpp}]{UserInterface.cpp}
-\section{Code Nodelet VehicleControl}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
-\lstinputlisting[caption={VehicleControl.hpp}]{VehicleControl.hpp}
-\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
-\lstinputlisting[caption={VehicleControl.cpp}]{VehicleControl.cpp}
-\section{Gruppe B: Common Header Files}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={config.hpp}]{config.hpp}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={messages.hpp}]{messages.hpp}
-\section{Gruppe B: Code Nodelet Wifi}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={wifi.hpp}]{wifi.hpp}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={wifi.cpp}]{wifi.cpp}
-\section{Gruppe B: Code Nodelet Protocol}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={protocol.hpp}]{protocol.hpp}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={protocol.cpp}]{protocol.cpp}
-\section{Gruppe B: Code Nodelet Master (Prototyp)}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={states.hpp}]{states.hpp}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={events.hpp}]{events.hpp}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={master.hpp}]{master.hpp}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={master.cpp}]{master.cpp}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={main.cpp}]{main.cpp}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={lvmain.cpp}]{lvmain.cpp}
-\lstset{style=customcpp,inputpath=./source/groupB}
-\lstinputlisting[caption={fvmain.cpp}]{fvmain.cpp}
-\section{Gruppe B: Konfigurationsdateien}
-\lstset{language=XML,inputpath=./source/groupB}
-\lstinputlisting[caption={wifi.launch}]{wifi.launch}
-\lstset{language=XML,inputpath=./source/groupB}
-\lstinputlisting[caption={roscon.dbg.config}]{roscon.dbg.config}
+\section{Code Gruppe B}
+	\subsection{Common Header Files}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={config.hpp}]{config.hpp}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={messages.hpp}]{messages.hpp}
+	\subsection{Code Nodelet Wifi}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={wifi.hpp}]{wifi.hpp}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={wifi.cpp}]{wifi.cpp}
+	\subsection{Code Nodelet Protocol}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={protocol.hpp}]{protocol.hpp}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={protocol.cpp}]{protocol.cpp}
+	\subsection{Code Nodelet Master (Prototyp)}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={states.hpp}]{states.hpp}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={events.hpp}]{events.hpp}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={master.hpp}]{master.hpp}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={master.cpp}]{master.cpp}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={main.cpp}]{main.cpp}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={lvmain.cpp}]{lvmain.cpp}
+	\lstset{style=customcpp,inputpath=./source/groupB}
+	\lstinputlisting[caption={fvmain.cpp}]{fvmain.cpp}
+	\subsection{Konfigurationsdateien}
+	\lstset{language=XML,inputpath=./source/groupB}
+	\lstinputlisting[caption={wifi.launch}]{wifi.launch}
+	\lstset{language=XML,inputpath=./source/groupB}
+	\lstinputlisting[caption={roscon.dbg.config}]{roscon.dbg.config}
+\section{Code Gruppe C}
+	\subsection{Code Nodelet LaneDetect}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={LaneDetect.hpp}]{LaneDetect.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={LaneDetect.cpp}]{LaneDetect.cpp}
+	\subsection{Code Nodelet LongitudinalProcessing}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={LongitudinalProcessing.hpp}]{LongitudinalProcessing.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={LongitudinalProcessing.cpp}]{LongitudinalProcessing.cpp}
+	\subsection{Code Nodelet MessageDistribution}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={MessageDistribution.hpp}]{MessageDistribution.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={MessageDistribution.cpp}]{MessageDistribution.cpp}
+	\subsection{Code Nodelet MessageTypes}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={MessageTypes.hpp}]{MessageTypes.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={MessageTypes.cpp}]{MessageTypes.cpp}
+	\subsection{Code Nodelet Platooning}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={Platooning.hpp}]{Platooning.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={Platooning.cpp}]{Platooning.cpp}
+	\subsection{Code Nodelet Prioritization}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={Prioritization.hpp}]{Prioritization.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={Prioritization.cpp}]{Prioritization.cpp}
+	\subsection{Code Nodelet RadioInterface}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={RadioInterface.hpp}]{RadioInterface.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={RadioInterface.cpp}]{RadioInterface.cpp}
+	\subsection{Code Nodelet StmSim}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={StmSim.hpp}]{StmSim.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={StmSim.cpp}]{StmSim.cpp}
+	\subsection{Code Nodelet UdpPackageSet}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={UdpPackageSet.hpp}]{UdpPackageSet.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={UdpPackageSet.cpp}]{UdpPackageSet.cpp}
+	\subsection{Code Nodelet UdpServer}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={UdpServer.hpp}]{UdpServer.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={UdpServer.cpp}]{UdpServer.cpp}
+	\subsection{Code Nodelet UserInterface}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={UserInterface.hpp}]{UserInterface.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={UserInterface.cpp}]{UserInterface.cpp}
+	\subsection{Code Nodelet VehicleControl}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/include/platooning}
+	\lstinputlisting[caption={VehicleControl.hpp}]{VehicleControl.hpp}
+	\lstset{style=customcpp,inputpath=../modules/platooning_ws/src/platooning/src}
+	\lstinputlisting[caption={VehicleControl.cpp}]{VehicleControl.cpp}
 
 \section{Google Test Installation}
 \label{appendix:gtest_install}
