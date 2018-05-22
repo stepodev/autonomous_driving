@@ -68,6 +68,7 @@ backend=biber
 \end{titlepage}
 
 \tableofcontents
+\newpage
 
 \part{Projektdokumentation}
 	\section{Projektbeschreibung}
@@ -131,10 +132,10 @@ backend=biber
 
 	Das Projekt wurde in vier Workstreams aufgeteilt: Planung, Software, Fahrzeug und Abnahme. Jeder Workstream wurde grob in drei Meilensteine eingeteilt: ''at least it's something", "getting there'' und "final", welche jeweils verfeinerte Prototypen des finalen Produkts darstellen. Den Meilensteinen sind jeweils Gitlab issues zugeteilt. Jede issue ist durch eine user story beschrieben und wird durch Erfüllung der Akzeptanzkriterien und einem code review abgeschlossen.
 
-	%\includegraphics[width=\textwidth]{projektplan.pdf}
+	\includegraphics[width=\textwidth]{projektplan.pdf}
 
-	\section{Projektablauf}
-	\label{projektablauf}
+	%\section{Projektablauf}
+	%\label{projektablauf}
 	%vergleich ist-zustand mit soll-zustand? was wurde bei den wöchentlichen treffen mit schlingloff etc besprochen, Lieferprobleme...
 	% eventuell sind Projektmetriken interessant: Diagram zur Visualsierung der Zeitverteilung auf verschiedene Aspekte des Projekts (wie viel Zeit für's Coden, in ros einarbeiten etc)
 \newpage
@@ -181,12 +182,12 @@ ifconfig wlan0 <ip>						# set ip address
 	Im Falle eines Windows Rechners muss das folgende Verfahren gewählt werden.
 	\subsubsection*{Windows}	
 	\begin{itemize}
-	\item Netzwerk- und Freigabecenter->Neue Verbindung oder neues Netzwerk einrichten
+	\item Netzwerk- und Freigabecenter $\rightarrow$ Neue Verbindung oder neues Netzwerk einrichten
 	\item Manuell mit einem Drahtlosnetzwerk verbinden
 	\item Netzwerkname (SSID) eingeben
-	\item Weiter->Schließen
+	\item Weiter $\rightarrow$ Schließen
 	\end{itemize}
-	Nun muss noch folgendes in der Kommandozeile eingeben werden
+	Nun muss noch Folgendes in der Kommandozeile eingegeben werden
 	\begin{lstlisting}
 netsh wlan set profileparameter <ssid> connectiontype=ibss connectionmode=manual
 netsh wlan connect <ssid>
@@ -195,7 +196,7 @@ netsh wlan connect <ssid>
 	\begin{itemize}
 		\item Git und git-lfs installieren.
 		\item Das Repository mit git clonen.
-		\item Im Ordner \texttt{platooning\_ws} folgendes ausführen um ROS dependencies zu installieren:
+		\item Im Ordner \texttt{platooning\_ws} Folgendes ausführen um ROS dependencies zu installieren:
 		\item[] \begin{lstlisting}
 rosdep install --from-paths src --ignore-src -r -y
 		\end{lstlisting}
@@ -378,7 +379,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\subsubsection{Prioritization}
 			\label{prioritization}
 				\paragraph{Aufgabe} Das Prioritization-Nodelet erhält Fahrdaten vom Platooning-Nodelet und der MessageDistribution und entscheidet dann, wie sich das Fahrzeug zu verhalten hat. Er entscheidet also zwischen verschiedenen Steuersignalen, welches gerade benutzt werden soll.
-				\paragraph{Assoziationen} Das Prioritization-Nodelet ist Subscriber vom Platooning-Nodelet und dem MessageDistribution-Nodelet. Es ist Publisher für den LongitudinalProcessing-Nodelet und das LateralProcessing-Nodelet.
+				\paragraph{Assoziationen} Das Prioritization-Nodelet ist Subscriber vom Platooning-Nodelet und dem\\MessageDistribution-Nodelet. Es ist Publisher für den LongitudinalProcessing-Nodelet und das\\ LateralProcessing-Nodelet.
 				\paragraph{Attribute}
 					\begin{itemize}
 						\item float \_speed\_ Die Geschwindigkeit, mit der das Auto fahren soll.
@@ -389,7 +390,7 @@ roslaunch platooning_sim sim_2cars.lauch
 				\paragraph{Methoden}
 					\subparagraph{hndl\_remotecontrolInput} Wird aufgerufen, wenn Daten der RemoteControl empfangen wurden und veröffentlicht diese via Topic, falls das Auto im State REMOTECONTROL ist.
 					\subparagraph{hndl\_platooningToggle} Wird aufgerufen, wenn eine PlatooningToggleMessage empfangen wird. Setzt die Variable state\_ dann entsprechend auf PLATOONING.
-					\subparagraph{hndl\_platooningState} Wird aufgerufen, sobald eine PlatooningState Message empfangen wurde. Wenn state\_ auf Platooning gesetzt ist, sorgt die Methode dafür, dass das Auto als FV zur Kolonne aufschließt. ‘
+					\subparagraph{hndl\_platooningState} Wird aufgerufen, sobald eine PlatooningState Message empfangen wurde. Wenn state\_ auf Platooning gesetzt ist, sorgt die Methode dafür, dass das Auto als FV zur Kolonne aufschließt.
 				\paragraph{Input}
 				    \begin{itemize}
 				        \item remotecontrolInput von Nodelet MessageDistribution
@@ -471,7 +472,7 @@ roslaunch platooning_sim sim_2cars.lauch
 				\paragraph{Assoziationen} Der LongitudinalProcessing-Nodelet ist Subscriber vom Prioritization-Nodelet, dem DistancePreprocessing-Nodelet und dem Speed Sensor. Es ist Publisher für das VehicleControl-Nodelet.
 
 				\paragraph{Methoden}
-					\subparagraph{hndl\_distance\_from\_sensor} Empfängt den Abstand vom Sensor *TODO* (Was für ein Sensor?) und prüft ob es zwei Messungen gibt (warum das?). Ist das der Fall so wird die Beschleunigung angepasst und die entsprechenden Flags für die erfolgte Distanzmessung gesetzt.
+					\subparagraph{hndl\_distance\_from\_sensor} Empfängt den Abstand vom Sensor und prüft ob es zwei Messungen gibt. Ist das der Fall so wird die Beschleunigung angepasst und die entsprechenden Flags für die erfolgte Distanzmessung gesetzt. % *TODO* (Was für ein Sensor?)
 
 					\subparagraph{hndl\_target\_distance} Empfängt die aktuelle Zieldistanz und prüft ob diese in einem angemessenen Bereich liegt. Ist das der Fall so wird die Zieldistanz des der PD Steuerung übermittelt. Bei unangemessen niedriger Zieldistanz (kleiner als 0,5) wird diese auf 1 gesetzt. % *TODO* (platoon distance?)
 
@@ -498,7 +499,6 @@ roslaunch platooning_sim sim_2cars.lauch
 			\subsubsection{Radio Interface}
 			\label{radio_interface}
 				\paragraph{Aufgabe} Das RadioInterface-Nodelet wickelt den Nachrichtenverkehr über UDP ab. Er benutzt den UDP-Server, um das Senden und Empfangen von Netzwerk-Nachrichten über UDP zu ermöglichen.
-				\paragraph{Assoziationen} Das RadioInterface-Nodelet ist
 				\paragraph{Attribute}
 					\begin{itemize}
 					    \item std::unique\_ptr<UdpServer> platooning\_server\_ptr\_ Ein einmaliger Pointer für den Platooning Server.
@@ -524,7 +524,7 @@ roslaunch platooning_sim sim_2cars.lauch
 				\paragraph{Assoziationen} Das UdpServer-Nodelet ist Subscriber vom UserInterface-Nodelet und Publisher für den UserInterface-Nodelet.
 
 
-	\section{Tests}
+	\section{Tests Gruppe C}
 	\label{tests}
 		\subsection{Test-Standard}
 		\label{test_standard}
@@ -861,7 +861,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\subsubsection{Nodelet UdpServer}
 			\label{node_upd_server}
 			\paragraph{Test:}{Stresstest}
-				\paragraph{Beschreibung:} 2 Threads senden für 10 Sekunden, UPD server sollte alle erhalten.
+				\paragraph{Beschreibung:} 2 Threads senden für 10 Sekunden, UPD Server sollte alle erhalten.
 				\paragraph{Input:}
 				\begin{itemize} \itemsep-0.5em
 					\item \textbf{Send Counter:} \emph{send\_counter = 0}
@@ -874,7 +874,7 @@ roslaunch platooning_sim sim_2cars.lauch
 
 			\subsubsection{Nodelet RadioInterface}
 			\label{node_radio_interface}
-			\paragraph{Test 1:} {Msg UPD server an IN\_PLATOONING\_MSG}
+			\paragraph{Test 1:} {Msg UPD Server an IN\_PLATOONING\_MSG}
 			\paragraph{Beschreibung:} Überprüft, ob Nachricht von UDP Server an IN\_PLATOONING\_MSG gesendet werden kann.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
@@ -1207,7 +1207,7 @@ roslaunch platooning_sim sim_2cars.lauch
 			\label{integrationtest_platooning}
 
 			\paragraph{Vorwort}
-			Hierzu werden drei erreichbare laufende Platooningteilnehmer benötigt. Das wurde im Projekt mit drei lokalen VMs realisiert, welche vor dem Start der Integrationstests im IDLE modus sind.
+			Hierzu werden drei erreichbare laufende Platooningteilnehmer benötigt. Das wurde im Projekt mit drei lokalen VMs realisiert, welche vor dem Start der Integrationstests im IDLE Modus sind.
 
 			\paragraph{Test 1:}{Platoon erstellen, LV\_BROADCAST erhalten}
 			\paragraph{Beschreibung:} Setzt LV und zwei FVs in CREATING, erwartet, dass LV\_BROADCAST und FV\_HEARTBEAT kommen.
@@ -1244,11 +1244,11 @@ roslaunch platooning_sim sim_2cars.lauch
 
 			\paragraph{Erwarteter Output:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{nix:} FVs reagieren momentan nicht auf platooing Parameter, da diese vom User pro Vehicle gesetzt werden und nicht vom Platoon.
+				\item \textbf{nichts:} FVs reagieren momentan nicht auf platooing Parameter, da diese vom User pro Vehicle gesetzt werden und nicht vom Platoon.
 			\end{itemize}
 
 			\paragraph{Test 4:}{LV timeout}
-			\paragraph{Beschreibung:} LV hört auf lv\_broadcast zu senden. FVs müssen im IDLE modus gehen.
+			\paragraph{Beschreibung:} LV hört auf lv\_broadcast zu senden. FVs müssen im IDLE Modus gehen.
 			\paragraph{Input:}
 			\begin{itemize} \itemsep-0.5em
 				\item \textbf{lv\_broadcast} stoppt
@@ -1256,7 +1256,7 @@ roslaunch platooning_sim sim_2cars.lauch
 
 			\paragraph{Erwarteter Output:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{userinterface:} FV platooning status IDLE
+				\item \textbf{userinterface:} FV platooning Status IDLE
 			\end{itemize}
 
 			\paragraph{Test 5:}{FV timeout}
@@ -1268,7 +1268,7 @@ roslaunch platooning_sim sim_2cars.lauch
 
 			\paragraph{Erwarteter Output:}
 			\begin{itemize} \itemsep-0.5em
-				\item \textbf{userinterface:} LV platooning status IDLE
+				\item \textbf{userinterface:} LV platooning Status IDLE
 			\end{itemize}
 
 		\subsection{Testergebnisse}
@@ -1374,8 +1374,8 @@ failed 3 of 32 tests
 
 	\begin{itemize}
 		\item Über die \textcolor{red}{1} Reiter wird das zu steuernde Fahrzeug ausgewählt.
-		\item Per klick auf \textcolor{red}{2} wird das Platooning Startsignal gesendet.
-		\item Beim klick auf \textcolor{red}{2} werden die Soll-Parameter die in \textcolor{red}{3} festgelegt wurden mit übermittelt.
+		\item Per Klick auf \textcolor{red}{2} wird das Platooning Startsignal gesendet.
+		\item Beim Klick auf \textcolor{red}{2} werden die Soll-Parameter die in \textcolor{red}{3} festgelegt wurden mit übermittelt.
 		\item In \textcolor{red}{4} sieht man den momentanten Status des Fahrzeugs.
 	\end{itemize}
 
