@@ -142,7 +142,7 @@ backend=biber
 	\section{Systemvoraussetzungen}
 	\label{systemvoraussetzungen}
 	\subsection{Entwicklungsumgebung}
-	Das Projekt wurde mit Hilfe von ROS in C++11 entwickelt. Der Großteil des ROS Ecosystems arbeitet momentan unter Ubuntu 16.04 LTS. Demnach sind für die Entwicklung notwending:
+	Das Projekt wurde mit Hilfe von ROS in C++11 entwickelt. Der Großteil des ROS Ecosystems arbeitet momentan unter Ubuntu 16.04 LTS. Demnach sind für die Entwicklung notwendig:
 	\begin{itemize}
 		\item Ubuntu 16.04 LTS
 		\item ROS Lunar
@@ -236,13 +236,13 @@ roslaunch platooning_sim sim_2cars.lauch
 		\subsection{Hardware}
 		\label{hardware}
 		\subsubsection*{Spannungsregler}
-		Es war zuerst angedacht, die von Assystem in Einzelteilen bereitgestellten Powerboards zusammenzulöten
+		Es war zuerst angedacht, die von Assystem in Einzelteilen bereitgestellten Powerboards zusammen zulöten
 		und diese dann zu benutzen. Da die Beschaffung der Teile auf Seiten von Assystem aber deutlich länger 
 		gedauert hat, als zuerst angenommen und der Zusammenbau der Teile in Endeffekt zu aufwändig gewesen wäre, 
 		haben wir uns dafür entschieden Spannungsregler extern zu beschaffen.
 		Nach ein bisschen Recherche haben wir uns für einen Regler von Amazon entschieden.
 		Dieser kann zwischen 4,5 V und 38 V Eingangsspannung verarbeiten und diese stufenlos über ein 
-		Potentiometer auf 1,5 V bis 36 V herunterregeln. Dabei muss die Eingangsspannung aber mindestens 1 V höher 
+		Potentiometer auf 1,5 V bis 36 V herunter regeln. Dabei muss die Eingangsspannung aber mindestens 1 V höher 
 		liegen als die Ausgangsspannung. Bei den Akkus die wir benutzen ist das in der Regel der Fall. Der 
 		Maximale Ausgangsstrom liegt bei 5 Ampere, was ausreichend ist für die geplante Anwendung (Versorgung von 
 		STM-Board und ODroid). 
@@ -471,9 +471,9 @@ roslaunch platooning_sim sim_2cars.lauch
 				\paragraph{Assoziationen} Der LongitudinalProcessing-Nodelet ist Subscriber vom Prioritization-Nodelet, dem DistancePreprocessing-Nodelet und dem Speed Sensor. Es ist Publisher für das VehicleControl-Nodelet.
 
 				\paragraph{Methoden}
-					\subparagraph{hndl\_distance\_from\_sensor} Empfängt den Abstand vom Sensor *TODO* (Was für ein Sensor?) und prüft ob es zwei Messungen gibt (warum das?). Ist das der Fall so wird die Beschleunigung angepasst und die ensprechenden Flags für die erfolgte Distanzmessung gesetzt.
+					\subparagraph{hndl\_distance\_from\_sensor} Empfängt den Abstand vom Sensor *TODO* (Was für ein Sensor?) und prüft ob es zwei Messungen gibt (warum das?). Ist das der Fall so wird die Beschleunigung angepasst und die entsprechenden Flags für die erfolgte Distanzmessung gesetzt.
 
-					\subparagraph{hndl\_target\_distance} Empfängt die aktuelle Zieldistanz *TODO* (platoon distance?) und prüft ob diese in einem angemessenen Bereich liegt. Ist das der Fall so wird die Zieldistanz des der PD Steuerung übermittelt. Bei unangemessen niedriger Zieldistanz (kleiner als 0,5) wird diese auf 1 gesetzt.
+					\subparagraph{hndl\_target\_distance} Empfängt die aktuelle Zieldistanz und prüft ob diese in einem angemessenen Bereich liegt. Ist das der Fall so wird die Zieldistanz des der PD Steuerung übermittelt. Bei unangemessen niedriger Zieldistanz (kleiner als 0,5) wird diese auf 1 gesetzt. % *TODO* (platoon distance?)
 
 					\subparagraph{hndl\_current\_velocity} Empfängt die aktuellen Beschleunigungsdaten. Falls diese von der derzeitigen Beschleunigung abweicht, wird der Wert angepasst und das entsprechende Flag gesetzt.
 
@@ -1395,7 +1395,6 @@ failed 3 of 32 tests
 		\item in der controller UI tab vehicle 2 einstellungen setzen und platooning toggle
 	\end{itemize}
 
-	%brumm brumm auto fahren (wie lasse ich=schlingloff die autos fahren/kann ich die simulation starten? was kann ich alles anstellen und wie? steuerung, hindernisse...)
 \newpage
 \part{Beschreibung der Eigenleistung}
 \label{eigenleistung}
@@ -1407,7 +1406,7 @@ failed 3 of 32 tests
 		\item Wiki für Protokollführung wöchentlicher Sitzungen, GoogleTestSuite, ReferenzVMs
 		\item WLAN Modulinstallation
 		\item Unterstützung Implementierung Nodelets
-		\item Dokumentation Nodelets, Systemvorraussetzungen, Code
+		\item Dokumentation Nodelets, Systemvoraussetzungen, Code
 	\end{itemize}
 	\section{Yannick Boerner} 
 	  \begin{itemize}
@@ -1425,7 +1424,19 @@ failed 3 of 32 tests
 		\item Vortragen der Präsentation
 	  \end{itemize}
 	\section{Anne Borchard}
-	\section{Franz Eichberg}
+	 \begin{itemize}
+	 	\item Mitarbeit bei der Erstellung des Lastenhefts
+	 	\item Mitarbeit bei der Use Case Erstellung
+	 	\item Ausarbeitung und Erstellung einer Risikoanalyse
+	 	\item Mitarbeit bei der Erstellung des gruppenübergreifendem Kommunikationsprotokolls
+	 	\item Recherche zum Testframework Google Test und Erstellen einer Nutzungsanleitung
+	 	\item Erstellen der grundlegenden Dokumentationsstruktur und Vorgabe der logische Strukturierung der Dokumentation mittels Labels
+	 	\item Vorgeben von konkreten Inhalten und Beispielen zu diversen Kapiteln der Dokumentation
+	 	\item Pflege der Bibliographie
+	 	\item Erstellung, Verteilung und Überwachung von Gitlab Issues bezüglich der Dokumentation
+	 	\item Dokumentation diverser Kapitel 
+	 	\item Mitarbeit an und vortragen der abschließenden Präsentation 
+	 \end{itemize}
 	\section{Jonas Heyden}
 	  \begin{itemize}
 	    \item Mitarbeit bei Erstellung Lastenheft
@@ -1461,26 +1472,26 @@ failed 3 of 32 tests
 		\item Testing Nodelets
 		\item Implementierung Simulation
 		\item Doxygen
-		\item Dokumentation Tests, Simulation, Nutzerhandbuch, Systemvorraussetzungen, Projektablauf
+		\item Dokumentation Tests, Simulation, Nutzerhandbuch, Systemvoraussetzungen, Projektablauf
 		\item Präsentation Projektdetails, Simulation
 	\end{itemize}
 	\section{Simon Friedo}
 	Meine Haupttätigkeit war die Spezifikation und Modelierung des Systems. Im Zuge dessen habe ich an der 
 	State-Machine mitgearbeitet und an der Planung der Software Implementation gearbeitet.
-	Aufgrund der Verzögerungen habe ich zwischenzeitlich bei der Speifikation des Kommunkationssystems
-	ausgeholfen und mich an dessen Modelierung sowie Implementationsplanung beteiligt.
+	Aufgrund der Verzögerungen habe ich zwischenzeitlich bei der Spezifikation des Kommunikationssystems
+	ausgeholfen und mich an dessen Modellierung sowie Implementationsplanung beteiligt.
 	
-	Zum Ende des Projekts nahm ich and den Treffen teil und beteiligte mich an der Lösungsfindung zur Schadensreduktion.
+	Zum Ende des Projekts nahm ich an den Treffen teil und beteiligte mich an der Lösungsfindung zur Schadensreduktion.
 	
 	Weitere Tätigkeiten:
 	\begin{itemize}
 	\item Einarbeitung in ROS
 	\item Planung und Organisation über die Projektmanagementtools (Slack, ClickUp)
 	\item Teilnahme an den wöchentlichen gruppeninternen Treffen zur Organisation und Planung
-	\item Teilnahme an der gruppenübergreigende Treffen 
+	\item Teilnahme an den gruppenübergreifende Treffen 
 	\item Mithilfe Dokumentation
 	\item Mithilfe Definition der Use-Cases
-	\item Mithilfe Spezifikation und Modelierung des Kommunikationsprotokoll
+	\item Mithilfe Spezifikation und Modellierung des Kommunikationsprotokoll
 	\item Mithilfe Spezifikation und Modelierung der State Machine
 	\end{itemize}
 	\section{Paul Waljaew}
@@ -1654,7 +1665,7 @@ failed 3 of 32 tests
 \newpage
 \section{Test Spannungsregler}
 \subsection*{Einleitung}
-Das Tinxi 67050 Spannungsreglermodul ist Weitbereichsregler der Eingangsspannungen von 8-36 Volt stufenlos herunterregelt auf Werte zwischen 1,25-32 Volt.  
+Das Tinxi 67050 Spannungsreglermodul ist Weitbereichsregler der Eingangsspannungen von 8-36 Volt stufenlos herunter regelt auf Werte zwischen 1,25-32 Volt.  
 Am Ausgang können maximal 5 Ampere geliefert werden.  
 Das Modul ist ein fertiges Modul, an welches nur noch die Eingangspannung angelegt und die Ausgangsspannung abgenommen werden muss.  
 Die Spannungsregelung erfolgt mittels eines Trimmpotentiometers.
@@ -1671,7 +1682,7 @@ Die Regler wurden mittels einer Einstellbaren Last (Widerstandsarray) getestet.
 Die Last lässt sich zwischen 16 Ohm und ca. 1 Ohm einstellen.
 Initial wurde die Last auf 16 Ohm eingestellt damit das Reglermodul eingestellt werden kann.
 Bei Auslieferung steht das Modul auf maximaler Ausgangsspannung, d.h. bei 19 Volt Eingang ca. 18 Volt Ausgang.
-Mittels des Potentiometers lässt sich jetzt die Spannung auf 5 Volt runterregeln.
+Mittels des Potentiometers lässt sich jetzt die Spannung auf 5 Volt runter regeln.
 
 Nachdem die 5 Volt eingestellt sind, kann auch mit höheren Strömen getestet werden.
 Es wurden im folgenden mit einer Last von 4 Ohm begonnen und diese nach und nach auf 1 Ohm reduziert.
