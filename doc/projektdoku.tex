@@ -122,7 +122,7 @@ backend=biber
 		mit dessen Hilfe wir die Fahrzeuge steuern und deren Sensoren auswerten konnten, vgl. dazu \ref{ros}.
 		Nicht verbindlich vorgeschrieben, jedoch von Vorteil war die Nutzung der IDE\footnote{Integrated development environment}
 		\emph{CLion}\footnote{JetBrains s.r.o., https://www.jetbrains.com/clion/}, da diese diverse von uns geforderte Funktionalitäten unterstützt (vgl. dazu die Abschnitte \ref{coding_standard} und \ref{test_standard}).
-		Die Kommunikation innerhalb unserer Gruppe fand über die Software \emph{slack}\footnote{Slack Technologies, Inc., https://slack.com/intl/de-de/features} statt, die Aufgaben wurden zunächst mit dem Tool \emph{meistertask}\footnote{MeisterLabs GmbH, https://www.meistertask.com/de} zugewiesen. Im Verlauf des Projekts sind wir jedoch komplett auf \emph{GitLab-Issues} umgestiegen, vgl. dazu Abschnitt \ref{projektablauf}. Informationstransfer innerhalb der Gruppe fand im wöchtenlichen Treffen vor dem Seminar statt.
+		Die Kommunikation innerhalb unserer Gruppe fand über die Software \emph{slack}\footnote{Slack Technologies, Inc., https://slack.com/intl/de-de/features} statt, die Aufgaben wurden zunächst mit dem Tool \emph{meistertask}\footnote{MeisterLabs GmbH, https://www.meistertask.com/de} zugewiesen. Im Verlauf des Projekts sind wir jedoch komplett auf \emph{GitLab-Issues} umgestiegen. Informationstransfer innerhalb der Gruppe fand im wöchentlichen Treffen vor dem Seminar statt.
 
 	\section{Projektplan}
 	\label{projektplan}
@@ -1765,23 +1765,27 @@ Es ist zu erwarten das bei längerem Betrieb der Regler etwas Hitze erzeugt. Daf
 
 \section{Hardware}
 \label{appendix:fahrzeugbau}
-	\subsection{Teileliste Kabel}
-	\includepdf[pages=-]{fahrzeugbau/teilelistekabel-min.pdf}
-	\subsection{Teileliste Schrauben}
-	\includepdf[pages=-]{fahrzeugbau/teilelisteschrauben-min.pdf}
-	\subsection{Zusammenbau}
-		\subsubsection{Stoßfänger und Ultraschallsensor}
-		\includepdf[pages=-]{fahrzeugbau/stossfaenger-min.pdf}
-		\subsubsection{Vordere Halterung und Kamerahalterung}
-		\includepdf[pages=-]{fahrzeugbau/kamerahalterung-min.pdf}
-		\subsubsection{Hintere Halterung}
-		\includepdf[pages=-]{fahrzeugbau/hinterehalterung-min.pdf}
-		\subsubsection{Montage Metall-Board}
-		\includepdf[pages=-]{fahrzeugbau/metallboard-min.pdf}
-		\subsubsection{Sensormontage Hinterräder}
-		\includepdf[pages=-]{fahrzeugbau/radsensor-min.pdf}
-		\subsubsection{Verkabelung}
-		\includepdf[pages=-]{fahrzeugbau/verkabelung-min.pdf}
+		\includepdf[pages=1,pagecommand=\subsection{Teileliste Kabel}, offset=0 -2cm]{fahrzeugbau/teilelistekabel.pdf}
+		\includepdf[pages=2-]{fahrzeugbau/teilelistekabel.pdf}
+
+		\includepdf[pages=1,pagecommand=\subsection{Teileliste Schrauben}, offset=0 -1.5cm, scale=0.9]{fahrzeugbau/teilelisteschrauben.pdf}
+		\includepdf[pages=2-]{fahrzeugbau/teilelisteschrauben.pdf}
+
+		\includepdf[pages=1,pagecommand=\subsection{Stoßfänger und Ultraschallsensor}, offset=0 -3cm]{fahrzeugbau/stossfaenger.pdf}
+		\includepdf[pages=2-]{fahrzeugbau/stossfaenger.pdf}
+		
+		\includepdf[pages=1,pagecommand=\subsection{Vordere Halterung und Kamerahalterung}, offset=0 -3cm]{fahrzeugbau/kamerahalterung.pdf}
+		
+		\includepdf[pages=1,pagecommand=\subsection{Hintere Halterung}, offset=0 -3cm]{fahrzeugbau/hinterehalterung.pdf}
+		
+		\includepdf[pages=1,pagecommand=\subsection{Montage Metall-Board}, offset=0 -3cm]{fahrzeugbau/metallboard.pdf}
+		\includepdf[pages=2-]{fahrzeugbau/metallboard.pdf}
+
+		\includepdf[pages=1,pagecommand=\subsection{Sensormontage Hinterräder}, offset=0 -1.5cm, scale=0.9]{fahrzeugbau/radsensor.pdf}
+		\includepdf[pages=2-]{fahrzeugbau/radsensor.pdf}
+
+		\includepdf[pages=1,pagecommand=\subsection{Verkabelung}, offset=0 -3cm]{fahrzeugbau/verkabelung.pdf}
+		\includepdf[pages=2-]{fahrzeugbau/verkabelung.pdf}
 
 \end{appendices}
 \end{document}
