@@ -256,6 +256,8 @@ roslaunch platooning_sim sim_2cars.lauch
 		für tauglich erachtet. 
 		 % sensoren, boards, teile ausm 3d drucker, datenblätter im anhang? erläuterung von joe(?) wie er die boards zum laufen gebracht hat
 		\subsection{Fahrzeugzusammenbau}
+		\label{fahrzeugzusammenbau}
+		Die bebilderte Anleitung zum Fahrzeugzusammenbau befindet sich im Anhang \ref{appendix:fahrzeugbau}. 
 		\subsubsection{Teileliste Hardware}
 		    \begin{itemize}
 				\item LOSI 8ight-E 4WD Buggy 1:8 RTR (RC Auto)
@@ -281,8 +283,7 @@ roslaunch platooning_sim sim_2cars.lauch
 		zwischen den Boards verbunden werden. Die Liste inklusive Bilder der Kabel befindet sich im Anhang.
 		\subsubsection{Teileliste Schrauben}
 		Die Liste der benötigten Schrauben und Abstandshalter inklusive Bilder befindet sich im Anhang.
-		\label{fahrzeugzusammenbau}
-		Die bebilderte Anleitung zum Fahrzeugzusammenbau befindet sich im Anhang.
+		
 		% tutorial zum zusammenbau, fotos, ggf. ausführliche Beschreibung in den Anhang verbannen und darauf verweisen
 	\newpage
 	
@@ -1762,33 +1763,25 @@ Es ist zu erwarten das bei längerem Betrieb der Regler etwas Hitze erzeugt. Daf
 \label{appendix:lastenheft}
 \includepdf[pages=-]{lastenheft.pdf}
 
-
-\section{Fahrzeugbau}
+\section{Hardware}
+\label{appendix:fahrzeugbau}
 	\subsection{Teileliste Kabel}
-	\lstset{style=customcpp,inputpath=./fahrzeugbau}
-	\lstinputlisting[caption={}]{teilelistekabel.pdf}
+	\includepdf[pages=-]{fahrzeugbau/teilelistekabel.pdf}
 	\subsection{Teileliste Schrauben}
-	\lstset{style=customcpp,inputpath=./fahrzeugbau}
-	\lstinputlisting[caption={}]{teilelisteschrauben.pdf}
-	\subsection{Teileliste Kabel}
-	\subsubsection{Stoßfänger und Ultraschallsensor}
-	\lstset{style=customcpp,inputpath=./fahrzeugbau}
-	\lstinputlisting[caption={}]{stossfaenger.pdf}
-	\subsubsection{Vordere Halterung und Kamerahalterung}
-	\lstset{style=customcpp,inputpath=./fahrzeugbau}
-	\lstinputlisting[caption={}]{kamerahalterung.pdf}
-	\subsubsection{Hintere Halterung}
-	\lstset{style=customcpp,inputpath=./fahrzeugbau}
-	\lstinputlisting[caption={}]{hinterehalterung.pdf}
-	\subsubsection{Montage Metall-Board}
-	\lstset{style=customcpp,inputpath=./fahrzeugbau}
-	\lstinputlisting[caption={}]{metallboard.pdf}
-	\subsubsection{Sensormontage Hinterräder}
-	\lstset{style=customcpp,inputpath=./fahrzeugbau}
-	\lstinputlisting[caption={}]{radsensor.pdf}
-	\subsubsection{Verkabelung}
-	\lstset{style=customcpp,inputpath=./fahrzeugbau}
-	\lstinputlisting[caption={}]{verkabelung.pdf}
-	
+	\includepdf[pages=-]{fahrzeugbau/teilelisteschrauben.pdf}
+	\subsection{Zusammenbau}
+		\subsubsection{Stoßfänger und Ultraschallsensor}
+		\includepdf[pages=-]{fahrzeugbau/stossfaenger.pdf}
+		\subsubsection{Vordere Halterung und Kamerahalterung}
+		\includepdf[pages=-]{fahrzeugbau/kamerahalterung.pdf}
+		\subsubsection{Hintere Halterung}
+		\includepdf[pages=-]{fahrzeugbau/hinterehalterung.pdf}
+		\subsubsection{Montage Metall-Board}
+		\includepdf[pages=-]{fahrzeugbau/metallboard.pdf}
+		\subsubsection{Sensormontage Hinterräder}
+		\includepdf[pages=-]{fahrzeugbau/radsensor.pdf}
+		\subsubsection{Verkabelung}
+		\includepdf[pages=-]{fahrzeugbau/verkabelung.pdf}
+
 \end{appendices}
 \end{document}
