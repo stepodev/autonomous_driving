@@ -441,6 +441,22 @@ roslaunch platooning_sim sim_2cars.lauch
 			\label{platooning}
 				\paragraph{Aufgabe} Das Platooning-Nodelet kommuniziert mit den anderen Fahrzeugen und tauscht mit diesen Daten aus. Zu den Daten gehören Geschwindigkeit des Platoons, die im Platoon einzuhaltende Distanz, Heartbeats sowie Broadcasts.
 				\paragraph{Assoziationen} Zu den Subscribern des Platooning-Nodelet gehören das Prioritization-Nodelet und das MessageDistribution-Nodelet. Publisher für das Platooning-Nodelet ist das MessageDistribution-Nodelet.
+				\paragraph{Methoden}
+					\subparagraph{reset} Setzt alle laufenden Timer zurück.
+					\subparagraph{hndl\_msg\_fv\_leave} Entfernt Fahrzeuge aus dem Platoon, welche eine Anfrage auf Verlassen des Platoons gestellt haben.
+					\subparagraph{hndl\_msg\_lv\_accept} Startet die lv\_broadcast und fv\_hearbeat Timer.
+					\subparagraph{hndl\_msg\_lv\_reject} Ist das Fahrzeug im Status FV, werden rejects ignoriert und der Heartbeat-Broadcast weiter gesendet.
+					\subparagraph{hndl\_msg\_fv\_request} Abhängig ob das Fahrzeug LV ist und sich im State RUNNING oder CREATING befindet, wird ein anfragendes Fahrzeug hinzugefügt und die entsprechenden Timer gestartet.
+					\subparagraph{hndl\_msg\_lv\_broadcast} Aktualisiert bei Empfang der Broadcast-Nachricht die Werte für Speed, Platoon Distance, Platoon Member.
+					\subparagraph{hndl\_msg\_fv\_heartbeat} Bei Empfang des fv\_heartbeat wird der Timer für das FV aktualisiert.
+					\subparagraph{hndl\_msg\_platooning\_toggle} Abhängig davon, ob das Platooning an sich aktiviert ist und ob das Fahrzeug FV ist, wird das Platooning deaktiviert. Andernfalls wird der CREATE-Modus gestartet. Ist das Fahrzeug LV wird gewartet, ist es FV wird ein FV\_REQUEST gesendet.
+					\subparagraph{update\_state} Aktualisiert den internen Platoonstatus basierend auf der empfangenen Broadcastnachricht.
+					\subparagraph{hndl\_timeout\_fv\_heartbeat} Überprüft ob jedes Platoonmitglied sich über Heartbeats meldet. Wenn nicht, wird dieses aus dem Platoon entfernt und der Timer zurück gesetzt.
+					\subparagraph{hndl\_timeout\_lv\_broadcast} Überprüft, wann der letzte Broadcast stattgefunden hat. Wenn länger als ein gesetzter Timeout, wird das Platoon verlassen, andernfalls der Timer neu gestartet.
+					\subparagraph{send\_fv\_hearbeat} Sendet Heartbeats für das FV und startet den Timer.
+					\subparagraph{send\_lv\_hearbeat} Sendet Heartbeats für das LV und startet den Timer.
+					\subparagraph{get\_vehicle\_id\_param} Bestimmt eine eindeutige ID des Fahrzeugs.
+					\subparagraph{set\_role} Bestimmt die Rolle des Fahrzeugs im Platoon, LV oder FV.
 				\paragraph{Input}
 				    \begin{itemize}
     					\item platooningToggle von Nodelet MessageDistribution
@@ -1496,7 +1512,7 @@ failed 3 of 32 tests
 	\item Mitarbeit Architektur, State Machine
 	\item Mitarbeit in der Hardware Gruppe
 	\item Recherche ROS2
-	\item Wöchentlicher Sitzungen
+	\item Wöchentliche Sitzungen
 \end{itemize}
 
 \section{Gruppe C}
@@ -1504,7 +1520,8 @@ failed 3 of 32 tests
 \begin{itemize}
 	\item Mitarbeit Architektur
 	\item Recherche ROS2
-	\item Aufsetzen und Bereitstellen Referenz Virtual Machines
+	\item Bewertung der Unterschiede zwischen ROS und ROS 2
+	\item Aufsetzen und Bereitstellen Referenz Virtual Machines ROS
 	\item Wiki für Protokollführung wöchentlicher Sitzungen, GoogleTestSuite, ReferenzVMs
 	\item WLAN Modulinstallation
 	\item Unterstützung Implementierung Nodelets
